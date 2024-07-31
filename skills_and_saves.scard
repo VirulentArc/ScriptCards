@@ -62,10 +62,7 @@
     --?"[&SkillType]" -ninc "initiative"|[
       --?"[*S:[&SkillType]_prof]" -inc "type" -or "[*S:[&SkillType]_prof]" -ne 0|&ProfBonus; + [*S:pb][br][&ProficiencyURL][br]Proficiency[br]Bonus
       --?"[&SkillType(-5)]" -eq "_save"|MakeRoll
-      --?"[*S:[&SkillType]_prof]" -eq 0 -and "[*S:jack_bonus]X" -ne "X"|&ProfBonus; [*S:jack_bonus][br][&JackOfAllTradesURL][br]Jack-of-All-Trades[br]Bonus
       --?"[*S:[&SkillType]_type]" -eq 2|&ExpertBonus; + [*S:pb][br][&ExpertiseURL][br]Expertise[br]Bonus
-    --]|[
-      --&ProfBonus|+ [*S:jack_bonus][br][&JackOfAllTradesURL][br]Jack-of-All-Trades[br]Bonus
     --]|
 
   --:MakeRoll|
@@ -93,6 +90,9 @@
         --&LiveGlobalMsg|+[/tr][/t]
     --]|
 
+    --Rfind|[*S:character_id];Jack of All Trades;repeating_traits;name
+    --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[&SkillType(-5)]" -neq "_save" -and ";strength;dexterity;constitution;intelligence;wisdom;charisma;" -ninc "[&SkillType]"|[
+
     --Rfind|[*S:character_id];Alert;repeating_traits;name
     --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[&SkillType]" -eq "initiative"|[
       --=Alert|5
@@ -101,6 +101,8 @@
     --]|
 
     --?";strength;dexterity;constitution;intelligence;wisdom;charisma;initiative;" -inc "[&SkillType]" -or "[&SkillType(-5)]" -eq "_save"|SkipReliable
+      --?"[*S:[&SkillType]_prof]" -eq 0 -and "[*S:jack_bonus]X" -ne "X"|&ProfBonus; [*S:jack_bonus][br][&JackOfAllTradesURL][br]Jack-of-All-Trades[br]Bonus
+    --]|
 
     --Rfind|[*S:character_id];Reliable Talent;repeating_traits;name
     --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[&SkillType(-5)]" -ne "_save" -and [$SkillRoll] -lt 10 -and [*S:[&SkillType]_prof] -ne 0|[
@@ -113,7 +115,6 @@
     --:SkipReliable|
     
 	--?";strength;dexterity;constitution;intelligence;wisdom;charisma;initiative;" -inc "[&SkillType]" -or "[&SkillType(-5)]" -eq "_save"|=RollTotal;[$SkillRoll.Raw] [ROLL] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] + [$Alert] [&AlertMarker]
-
 
     --?"[&SkillType]" -inc "initiative"|[
       --~|turnorder;replacetoken;@{selected|token_id};[$RollTotal]
