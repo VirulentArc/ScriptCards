@@ -1,0 +1,202 @@
+!scriptcard  {{
+
+  --#sourceToken|@{selected|token_id}
+
+  --/|Formatting
+
+    --#overridetemplate|bg3
+    --&FontType|AlegreyaSans
+    --#debug|0
+    --&diceSound|dice-roll
+    --&SourceChar|@{selected|character_id}
+    --&diceColor|[*S:dice_set]
+
+  --/|Image Variables
+
+    --&StrengthURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/strength_icon.webp?raw=true#.png[/img]
+    --&DexterityURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/dexterity_icon.webp?raw=true#.png[/img]
+    --&ConstitutionURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/constitution_icon.webp?raw=true#.png[/img]
+    --&IntelligenceURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/intelligence_icon.webp?raw=true#.png[/img]
+    --&WisdomURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/wisdom_icon.webp?raw=true#.png[/img]
+    --&CharismaURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/charisma_icon.webp?raw=true#.png[/img]
+    --&ProficiencyURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/proficiency_icon.webp?raw=true#.png[/img]
+    --&ExpertiseURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/expertise_icon.webp?raw=true#.png[/img]
+    --&JackOfAllTradesURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/joat_icon.webp?raw=true#.png[/img]
+    --&ReliableTalentURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/reliable_icon.webp?raw=true#.png[/img]
+    --&AlertURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/alert_icon.webp?raw=true#.png[/img]
+
+  --:RollType|
+    --&SkillType|?{What would you like to roll?|Initiative,initiative|...,|Acrobatics,acrobatics|Animal Handling,animal_handling|Arcana,arcana|Athletics,athletics|Deception,deception|History,history|Insight,insight|intimidation,intimidation|Investigation,investigation|Medicine,medicine|Nature,nature|Perception,perception|Performance,performance|Persuasion,persuasion|Religion,religion|Sleight of Hand,sleight_of_hand|Stealth,stealth|Survival,survival|...,|Strength Save,strength_save|Dexterity Save,dexterity_save|Constitution Save,constitution_save|intelligence Save,intelligence_save|Wisdom Save,wisdom_save|Charisma Save,charisma_save|...,|Strength,strength|Dexterity,dexterity|Constitution,constitution|Intelligence,intelligence|Wisdom,wisdom|Charisma,charisma|...,|Choose Dice Set,ChangeDice}
+
+    --?"[&SkillType]" -inc "ChangeDice"|ChangeDice
+    --?"[&diceColor]" -eq "undefined"|[
+      --&diceColor|Default
+      --!a:[&SourceChar]|!dice_set:Default
+    --]|
+
+    --?";strength;dexterity;constitution;intelligence;wisdom;charisma;" -inc "[&SkillType]"|[
+      --=SkillBonus|[*S:[&SkillType]_mod]
+    --]|[
+      --=SkillBonus|[*S:[&SkillType]_bonus]
+    --]|
+
+    --~SkillReplace|string;replaceall;_; ;[&SkillType]
+    --~SkillTitle|string;totitlecase;[&SkillReplace]
+
+    --?"[&SkillType]" -inc "save"|[
+      --#emoteText|@{selected|token_name} Saving Throw
+    --]|[
+      --#emoteText|@{selected|token_name} Skill Check
+    --]|
+
+    --?";strength_save;athletics;strength;" -inc ";[&SkillType];"|&SkillMod;Strength
+    --?";Stealth;sleight_of_hand;dexterity_save;acrobatics;dexterity;initiative;" -inc ";[&SkillType];"|&SkillMod;Dexterity
+    --?";constitution_save;constitution;" -inc ";[&SkillType];"|&SkillMod;Constitution
+    --?";arcana;intelligence_save;religion;history;investigation;nature;intelligence;" -inc ";[&SkillType];"|&SkillMod;Intelligence
+    --?";animal_handling;wisdom_save;perception;insight;survival;medicine;wisdom;" -inc ";[&SkillType];"|&SkillMod;Wisdom
+    --?";deception;intimidation;performance;charisma_save;persuasion;charisma;" -inc ";[&SkillType];"|&SkillMod;Charisma
+
+    --?[*S:[&SkillMod(tolowercase)]_mod] -eq 0|&AbilityBonus;+|&AbilityBonus; + [*S:[&SkillMod(tolowercase)]_mod][br][&[&SkillMod]URL][br][&SkillMod][br]Bonus
+    --?";strength;dexterity;constitution;intelligence;wisdom;charisma;" -inc "[&SkillType]"|MakeRoll
+
+    --?"[&SkillType]" -ninc "initiative"|[
+      --?"[*S:[&SkillType]_prof]" -inc "type" -or "[*S:[&SkillType]_prof]" -ne 0|&ProfBonus; + [*S:pb][br][&ProficiencyURL][br]Proficiency[br]Bonus
+      --?"[&SkillType(-5)]" -eq "_save"|MakeRoll
+      --?"[*S:[&SkillType]_prof]" -eq 0 -and "[*S:jack_bonus]X" -ne "X"|&ProfBonus; [*S:jack_bonus][br][&JackOfAllTradesURL][br]Jack-of-All-Trades[br]Bonus
+      --?"[*S:[&SkillType]_type]" -eq 2|&ExpertBonus; + [*S:pb][br][&ExpertiseURL][br]Expertise[br]Bonus
+    --]|[
+      --&ProfBonus|+ [*S:jack_bonus][br][&JackOfAllTradesURL][br]Jack-of-All-Trades[br]Bonus
+    --]|
+
+  --:MakeRoll|
+    --=SkillRoll|?{Advantage or Disadvantage?|Normal,1d20|Advantage,2d20kh1|Disadvantage,2d20kl1}
+
+    --?"[&SkillType]" -eq ""|[
+        --#title|Skill Check
+    --]|[
+        --#title|[&SkillTitle]
+    --]|
+    
+    --?[$SkillRoll.Total] -eq 20|&RollOutput;[#FFFAE4]CRITICAL[br]SUCCESS[/#]|&RollOutput;ROLL[br]TOTAL
+    --?[$SkillRoll.Total] -eq 1|&RollOutput;[#e8325f]CRITICAL[br]FAILURE[/#]
+
+    --?"[&SkillType]" -inc "save"|>GetGlobalModifiers;repeating_savemod;GlobalModHash|>GetGlobalModifiers;repeating_skillmod;GlobalModHash
+    --&LiveGlobalMsg|
+    --=LiveGlobalTotal|
+    --~|array;fromkeys;GlobalModKeys;GlobalModHash
+    --?[@GlobalModKeys(length)] -gt 0|[
+        --&LiveGlobalMsg|[t width=100%][tr]
+        --%k|foreach;GlobalModKeys
+            --=LiveGlobalTotal|[$LiveGlobalTotal] + [:GlobalModHash("[&k]")]
+            --&LiveGlobalMsg|+[td width=80]+ [:GlobalModHash("[&k]")][br][&k][/td]
+        --%|
+        --&LiveGlobalMsg|+[/tr][/t]
+    --]|
+
+    --Rfind|[*S:character_id];Alert;repeating_traits;name
+    --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[&SkillType]" -eq "initiative"|[
+      --=Alert|5
+      --&AlertBonus|[&AlertURL][br]Alert[br]Bonus
+      --&AlertMarker|[ALERT]
+    --]|
+
+    --?";strength;dexterity;constitution;intelligence;wisdom;charisma;initiative;" -inc "[&SkillType]" -or "[&SkillType(-5)]" -eq "_save"|SkipReliable
+
+    --Rfind|[*S:character_id];Reliable Talent;repeating_traits;name
+    --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[&SkillType(-5)]" -ne "_save" -and [$SkillRoll] -lt 10 -and [*S:[&SkillType]_prof] -ne 0|[
+      --&ReliableTalentBonus|[&ReliableTalentURL][br][br]Reliable[br]Talent
+      --=RollTotal|10 [RELIABLE] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] [$Alert] [ALERT]
+    --]|[
+      --=RollTotal|[$SkillRoll.Raw] [ROLL] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] + [$Alert] [&AlertMarker]
+    --]|
+
+    --:SkipReliable|
+    
+	--?";strength;dexterity;constitution;intelligence;wisdom;charisma;initiative;" -inc "[&SkillType]" -or "[&SkillType(-5)]" -eq "_save"|=RollTotal;[$SkillRoll.Raw] [ROLL] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] + [$Alert] [&AlertMarker]
+
+
+    --?"[&SkillType]" -inc "initiative"|[
+      --~|turnorder;replacetoken;@{selected|token_id};[$RollTotal]
+    --]|
+
+    --a|[&diceSound]
+
+    --?";Feywild;Eilistraee;Steampunk;" -inc ";[&diceColor];"|&diceSize;60|&diceSize;55
+    --?";Feywild;Eilistraee;Steampunk;" -inc ";[&diceColor];"|&TotalDiceSize;80|&TotalDiceSize;75
+    --?"[&diceColor]" -inc "Nebula"|[
+      --&diceSize|70
+	  --&TotalDiceSize|90
+    --]|
+
+    --&SkillRollURL|[img width=[&diceSize] height=[&diceSize]]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&diceColor]/d20_[$SkillRoll.Raw].webp?raw=true#.png[/img]
+    --&SkillRollTotalURL|[img width=[&TotalDiceSize] height=[&TotalDiceSize]]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&diceColor]/d20_[$RollTotal.Raw].webp?raw=true#.png[/img]
+    --&SkillRollKeptURL|[img width=[&diceSize] height=[&diceSize]]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&diceColor]/d20_[$SkillRoll.KeptDice(1)].webp?raw=true#.png[/img]
+    --&SKillRollDroppedURL|[img width=[&diceSize] height=[&diceSize]]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&diceColor]/d20_[$SkillRoll.DroppedDice(1)].webp?raw=true#.png[/img]
+    --&BottomFrame|[img width=300]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/bottom_frame.webp?raw=true#.png[/img]
+
+    --?"[$SkillRoll.RollText]" -eq "1d20"|[
+      --+|[br][br][br]
+      --+|[t width=100%][tr][td][&SkillRollURL][/td][/tr][/t]
+      --+|[t width=100% title="[$RollTotal.Text]"][tr][td][&SkillRollTotalURL][/td][/tr]
+      --+|[tr][td][F:[&FontType]:30][&RollOutput][/F][/td][/tr][/t]
+      --+|[br][br]
+      --+|[F:[&FontType]:16][t width=100%][tr][td][&AbilityBonus][/td][td][&ProfBonus][/td][td][&ExpertBonus][/td][td][&ReliableTalentBonus][/td][td][&AlertBonus][/td][/tr][/t][/F]
+      --+|[&LiveGlobalMsg]
+      --+|[t width=100%][tr][td][&BottomFrame][/td][/tr][/t]
+    --]|[
+      --+|[br][br][br]
+      --+|[t width=100%][tr][td][&SkillRollKeptURL]&nbsp;&nbsp;[&SKillRollDroppedURL][/td][/tr][/t]
+      --+|[t width=100% title="[$RollTotal.Text]"][tr][td][&SkillRollTotalURL][/td][/tr]
+      --+|[tr][td][F:[&FontType]:30][&RollOutput][/F][/td][/tr][/t]
+      --+|[br][br]
+      --+|[F:[&FontType]:16][t width=100%][tr][td][&AbilityBonus][/td][td][&ProfBonus][/td][td][&ExpertBonus][/td][td][&ReliableTalentBonus][/td][td][&AlertBonus][/td][/tr][/t][/F]
+      --+|[&LiveGlobalMsg]
+      --+|[t width=100%][tr][td][&BottomFrame][/td][/tr][/t]
+    --]|
+
+  --X|
+
+  --:GetGlobalModifiers|GlobalRepeatingSectionName;HashName
+    --?"[%1%]" -eq "repeating_savemod"|&_ggmPrefix;global_save|&_ggmPrefix;global_skill
+    --~|hash;set;[%2%]
+    --Rfirst|[*S:character_id];[%1%]
+    --?"[*R:[&_ggmPrefix]_active_flag]" -eq "NoRepeatingAttributeLoaded"|ENDGGM
+    --:_ggmLoop|
+    --?"[*R:[&_ggmPrefix]_active_flag]" -eq "1"|[
+       --=_ggmTmpRoll|[*R:[&_ggmPrefix]_roll]
+       --h:[%2%]("[*R:[&_ggmPrefix]_name]")|[$_ggmTmpRoll.Total]
+    --]|
+    --Rnext|
+    --?"[*R:global_save_name]" -ne "NoRepeatingAttributeLoaded"|_ggmLoop
+    --:ENDGGM|
+  --<|
+
+  --:ChangeDice|
+    --#title|Change Dice Set
+    --#whisper|self
+    --~|array;define;DiceSets;Default;Dragon_Flame;Behir_Blue;Illithid_Purple;Shining_Honour;Underdark;Blue_Crystal;Nebula;Eilistraee;Rosymorn;Steampunk;Dark_Justicar
+    --&DicePerRow|3
+    --&DieCounter|1
+    --&AllDice|[br][br][t width=100%][tr]
+    --%loop|foreach;DiceSets
+      --~DiceTitle|string;replaceall;_; ;[&loop]
+      --&AllDice|+[td][rbutton][img width=70 height=70]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&loop]/d20_10.webp?raw=true#.png[/img]::WriteDice;[&loop][/rbutton][br][&DiceTitle][/td]
+      --?[= [&DieCounter] % [&DicePerRow] ] -eq 0|&AllDice;+[/tr][tr]
+      -->IncrementCounter|DieCounter
+    --%|
+    --&AllDice|+[/tr][/t]
+    --+|[&AllDice]
+  --X|
+
+  --:IncrementCounter|
+    --&[%1%]|[= [&[%1%]] + 1]
+  --<|
+
+  --:WriteDice|
+    --!a:[&SourceChar]|!dice_set:[&reentryval]
+    --~DiceR|string;replaceall;_; ;[&reentryval]
+    --~DiceT|string;totitlecase;[&DiceR]
+    --+|[br][br][br][F:[&FontType]:30]Dice Set changed to [&DiceT]![/F]
+  --X|
+
+}}
