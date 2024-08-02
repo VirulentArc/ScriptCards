@@ -177,7 +177,7 @@
   --:ChangeDice|
     --#title|Change Dice Set
     --#whisper|self
-    --~|array;define;DiceSets;Default;Dragon_Flame;Behir_Blue;Illithid_Purple;Shining_Honour;Underdark;Blue_Crystal;Nebula;Eilistraee;Rosymorn;Steampunk;Dark_Justicar;Blue_Silk;Clouds;Happy_Face
+    --~|array;define;DiceSets;Default;Dragon_Flame;Behir_Blue;Illithid_Purple;Shining_Honour;Dark_Urge;Underdark;Blue_Crystal;Nebula;Eilistraee;Rosymorn;Steampunk;Dark_Justicar;Blue_Silk;Clouds;Happy_Face;Wyvern_Black;Wyvern_Green;Purple_Hearts;Dwarven_Stone;Golden_Skull
     --&DicePerRow|3
     --&DieCounter|1
     --&AllDice|[br][br][t width=90%][tr]
@@ -198,7 +198,6 @@
   --:WriteDice|
     --!a:[&SourceChar]|!dice_set:[&reentryval]
     --~DiceR|string;replaceall;_; ;[&reentryval]
-    --~DiceT|string;totitlecase;[&DiceR]
     --+|[br][br][br][F:[&FontType]:30]Dice Set changed to [&DiceT]![/F]
   --X|
 
