@@ -124,8 +124,8 @@
 
     --a|[&diceSound]
 
-    --?";Feywild;Eilistraee;Steampunk;" -inc ";[&diceColor];"|&diceSize;60|&diceSize;55
-    --?";Feywild;Eilistraee;Steampunk;" -inc ";[&diceColor];"|&TotalDiceSize;80|&TotalDiceSize;75
+    --?";Feywild;Eilistraee;Steampunk;clouds;Dark_Urge;Wyvern_Black;Wyvern_Green;" -inc ";[&diceColor];"|&diceSize;60|&diceSize;55
+    --?";Feywild;Eilistraee;Steampunk;clouds;Dark_Urge;Wyvern_Black;Wyvern_Green;" -inc ";[&diceColor];"|&TotalDiceSize;80|&TotalDiceSize;75
     --?"[&diceColor]" -inc "Nebula"|[
       --&diceSize|70
 	  --&TotalDiceSize|90
@@ -198,7 +198,7 @@
   --:WriteDice|
     --!a:[&SourceChar]|!dice_set:[&reentryval]
     --~DiceR|string;replaceall;_; ;[&reentryval]
-    --+|[br][br][br][F:[&FontType]:30]Dice Set changed to [&DiceT]![/F]
+    --+|[br][br][br][F:[&FontType]:30]Dice Set changed to [&DiceR]![/F]
   --X|
 
 }}
