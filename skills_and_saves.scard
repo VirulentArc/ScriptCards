@@ -13,17 +13,20 @@
 
   --/|Image Variables
 
-    --&StrengthURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/strength_icon.webp?raw=true#.png[/img]
-    --&DexterityURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/dexterity_icon.webp?raw=true#.png[/img]
-    --&ConstitutionURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/constitution_icon.webp?raw=true#.png[/img]
-    --&IntelligenceURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/intelligence_icon.webp?raw=true#.png[/img]
-    --&WisdomURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/wisdom_icon.webp?raw=true#.png[/img]
-    --&CharismaURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/charisma_icon.webp?raw=true#.png[/img]
-    --&ProficiencyURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/proficiency_icon.webp?raw=true#.png[/img]
-    --&ExpertiseURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/expertise_icon.webp?raw=true#.png[/img]
-    --&JackOfAllTradesURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/joat_icon.webp?raw=true#.png[/img]
-    --&ReliableTalentURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/reliable_icon.webp?raw=true#.png[/img]
-    --&AlertURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/alert_icon.webp?raw=true#.png[/img]
+    --&StrengthURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/strength_icon.webp?raw=true#.png[/img]
+    --&DexterityURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/dexterity_icon.webp?raw=true#.png[/img]
+    --&ConstitutionURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/constitution_icon.webp?raw=true#.png[/img]
+    --&IntelligenceURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/intelligence_icon.webp?raw=true#.png[/img]
+    --&WisdomURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/wisdom_icon.webp?raw=true#.png[/img]
+    --&CharismaURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/charisma_icon.webp?raw=true#.png[/img]
+    --&ProficiencyURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/proficiency_icon.webp?raw=true#.png[/img]
+    --&ExpertiseURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/expertise_icon.webp?raw=true#.png[/img]
+    --&JackOfAllTradesURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/joat_icon.webp?raw=true#.png[/img]
+    --&ReliableTalentURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/reliable_icon.webp?raw=true#.png[/img]
+    --&AlertURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/alert_icon.webp?raw=true#.png[/img]
+    --&RemarkableAthleteURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/remarkabletalent_icon.webp?raw=true#.png[/img]
+    --&SilverTongueURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/silvertongue_icon.webp?raw=true#.png[/img]
+    --&Bonus_Background|width=100% style="background-image:url(https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/bonus_background.webp?raw=true#.png);background-repeat:no-repeat;background-size:80px;background-position: center;display: inline-block;margin-left: auto;margin-right: auto;width: 75px;"
 
   --:RollType|
     --&SkillType|?{What would you like to roll?|Initiative,initiative|...,|Acrobatics,acrobatics|Animal Handling,animal_handling|Arcana,arcana|Athletics,athletics|Deception,deception|History,history|Insight,insight|intimidation,intimidation|Investigation,investigation|Medicine,medicine|Nature,nature|Perception,perception|Performance,performance|Persuasion,persuasion|Religion,religion|Sleight of Hand,sleight_of_hand|Stealth,stealth|Survival,survival|...,|Strength Save,strength_save|Dexterity Save,dexterity_save|Constitution Save,constitution_save|intelligence Save,intelligence_save|Wisdom Save,wisdom_save|Charisma Save,charisma_save|...,|Strength,strength|Dexterity,dexterity|Constitution,constitution|Intelligence,intelligence|Wisdom,wisdom|Charisma,charisma|...,|Choose Dice Set,ChangeDice}
@@ -56,13 +59,14 @@
     --?";animal_handling;wisdom_save;perception;insight;survival;medicine;wisdom;" -inc ";[&SkillType];"|&SkillMod;Wisdom
     --?";deception;intimidation;performance;charisma_save;persuasion;charisma;" -inc ";[&SkillType];"|&SkillMod;Charisma
 
-    --?[*S:[&SkillMod(tolowercase)]_mod] -eq 0|&AbilityBonus;+|&AbilityBonus; + [*S:[&SkillMod(tolowercase)]_mod][br][&[&SkillMod]URL][br][&SkillMod][br]Bonus
+    --?[*S:[&SkillMod(tolowercase)]_mod] -gt 0|&AbilityBonus; [br]+ [*S:[&SkillMod(tolowercase)]_mod][br][&[&SkillMod]URL][br][#8f6239][&SkillMod][br]Bonus[/#]
+
     --?";strength;dexterity;constitution;intelligence;wisdom;charisma;" -inc "[&SkillType]"|MakeRoll
 
     --?"[&SkillType]" -ninc "initiative"|[
-      --?"[*S:[&SkillType]_prof]" -inc "pb" -or "[*S:[&SkillType]_prof]" -ne 0|&ProfBonus; + [*S:pb][br][&ProficiencyURL][br]Proficiency[br]Bonus
+      --?"[*S:[&SkillType]_prof]" -inc "pb" -or "[*S:[&SkillType]_prof]" -ne 0|&ProfBonus; [br]+ [*S:pb][br][&ProficiencyURL][br][#8f6239]Proficiency[br]Bonus[/#]
       --?"[&SkillType(-5)]" -eq "_save"|MakeRoll
-      --?"[*S:[&SkillType]_type]" -eq 2|&ExpertBonus; + [*S:pb][br][&ExpertiseURL][br]Expertise[br]Bonus
+      --?"[*S:[&SkillType]_type]" -eq 2|&ExpertBonus; [br]+ [*S:pb][br][&ExpertiseURL][br][#8f6239]Expertise[br]Bonus[/#]
     --]|
 
   --:MakeRoll|
@@ -85,38 +89,56 @@
         --&LiveGlobalMsg|[t width=100%][tr]
         --%k|foreach;GlobalModKeys
             --=LiveGlobalTotal|[$LiveGlobalTotal] + [:GlobalModHash("[&k]")]
-            --&LiveGlobalMsg|+[td width=80]+ [:GlobalModHash("[&k]")][br][&k][/td]
+            --?"[&k]" -eqi "guidance"|&GlobalURL;[img width=40]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/guidance_icon.webp?raw=true#.png[/img]
+            --?"[&k]" -eqi "bless"|&GlobalURL;[img width=40]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/bless_icon.webp?raw=true#.png[/img]
+            --?"[&k]" -eqi "bardic inspiration"|&GlobalURL;[img width=40]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/bardicinspiration_icon.webp?raw=true#.png[/img]
+            --?";guidance;bless;bardic inspiration;" -ninc "[&k]"|&GlobalURL;[img width=40]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/globalgeneric_icon.webp?raw=true#.png[/img]
+            --&LiveGlobalMsg|+[td width=80]+ [:GlobalModHash("[&k]")][br][&GlobalURL][br][#8f6239][&k][/#][/td]
         --%|
         --&LiveGlobalMsg|+[/tr][/t]
     --]|
+
+    --Rfind|[*S:character_id];Remarkable Athlete;repeating_traits;name
+    --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]" -inc "remarkable"|=RemAth;[*S:pb] / 2 {CEIL}|=RemAth;0
 
     --?";strength;dexterity;constitution;intelligence;wisdom;charisma;" -inc "[&SkillType]" -or "[&SkillType(-5)]" -eq "_save"|SkipTraits
 
     --Rfind|[*S:character_id];Alert;repeating_traits;name
     --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[&SkillType]" -eq "initiative"|[
       --=Alert|5
-      --&AlertBonus|[&AlertURL][br]Alert[br]Bonus
+      --&AlertBonus|[&AlertURL][br][#8f6239]Alert[br]Bonus[/#]
       --&AlertMarker|[ALERT]
     --]|
 
     --Rfind|[*S:character_id];Jack of All Trades;repeating_traits;name
     --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
-      --?"[&SkillType]" -inc "initiative" -or "[*S:[&SkillType]_prof]" -eq 0 -and "[*S:jack_bonus]X" -ne "X"|&ProfBonus; [*S:jack_bonus][br][&JackOfAllTradesURL][br]Jack-of-All-Trades[br]Bonus
+      --?"[&SkillType]" -inc "initiative" -or "[*S:[&SkillType]_prof]" -eq 0 -and "[*S:jack_bonus]X" -ne "X"|&JackBonus; [br][*S:jack_bonus][br][&JackOfAllTradesURL][br][#8f6239]J-o-A-T[br]Bonus[/#]
 	--]|
 
     --?"[&SkillType]" -eq "initiative"|SkipTraits
 
+    --Rfind|[*S:character_id];Silver Tongue;repeating_traits;name
+    --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and [$SkillRoll] -lt 10 -and ";persuasion;deception;" -inc "[&SkillType]"|[
+      --&SilverTongueBonus| [br]10[br][&SilverTongueURL][br][#8f6239]Silver[br]Tongue[/#]
+      --=RollTotal|[br]10 [SILVER TONGUE] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] [TEST1]
+      -->SkipTraits|
+    --]|
+
     --Rfind|[*S:character_id];Reliable Talent;repeating_traits;name
     --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and [$SkillRoll] -lt 10 -and [*S:[&SkillType]_prof] -ne 0|[
-      --&ReliableTalentBonus|[&ReliableTalentURL][br][br]Reliable[br]Talent
-      --=RollTotal|10 [RELIABLE] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] [$Alert] [ALERT]
+      --&ReliableTalentBonus| [br]10[br][&ReliableTalentURL][br][#8f6239]Reliable[br]Talent[/#]
+      --=RollTotal|[br]10 [RELIABLE] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] [$Alert] [ALERT] [$RemAth] [TEST2]
     --]|[
-      --=RollTotal|[$SkillRoll.Raw] [ROLL] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] + [$Alert] [&AlertMarker]
+      --=RollTotal|[$SkillRoll.Raw] [ROLL] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] + [$Alert] [&AlertMarker] [$RemAth] [TEST3]
     --]|
+
+    --?[$RemAth] -ne 0 -and "[*S:[&SkillType]_prof]" -ninc "pb" -and ";Strength;Dexterity;Constitution;" -inc "[&SkillMod]"|&RemAthBonus; [br]+ [$RemAth][&RemarkableAthleteURL][br][#8f6239]Remarkable[br]Athlete[/#]
 
     --:SkipTraits|
 
-	--?";strength;dexterity;constitution;intelligence;wisdom;charisma;initiative;" -inc "[&SkillType]" -or "[&SkillType(-5)]" -eq "_save"|=RollTotal;[$SkillRoll.Raw] [ROLL] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] + [$Alert] [&AlertMarker]
+    --?[$RemAth] -ne 0 -and "[&SkillType]" -eq "initiative"|&RemAthBonus; [br]+ [$RemAth][br][&RemarkableAthleteURL][br][#8f6239]Remarkable[br]Athlete[/#]
+
+	--?";strength;dexterity;constitution;intelligence;wisdom;charisma;initiative;" -inc "[&SkillType]" -or "[&SkillType(-5)]" -eq "_save"|=RollTotal;[$SkillRoll.Raw] [ROLL] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] + [$Alert] [&AlertMarker] [$RemAth] [TEST4]
 
     --?"[&SkillType]" -inc "initiative"|[
       --~|turnorder;replacetoken;@{selected|token_id};[$RollTotal]
@@ -137,13 +159,46 @@
     --&SKillRollDroppedURL|[img width=[&diceSize] height=[&diceSize]]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&diceColor]/d20_[$SkillRoll.DroppedDice(1)].webp?raw=true#.png[/img]
     --&BottomFrame|[img width=300]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/template/bottom_frame.webp?raw=true#.png[/img]
 
+    --?"[&AbilityBonus]" -inc "Bonus"|
+      --&TDA|[td [&Bonus_Background]]
+      --&TDAC|[/td]
+    --]| 
+    --?"[&ProfBonus]" -inc "Bonus"|[
+      --&TDP|[td [&Bonus_Background]]
+      --&TDPC|[/td]
+    --]|
+    --?"[&ExpertBonus]" -inc "Bonus"|[
+      --&TDE|[td [&Bonus_Background]]
+      --&TDEC|[/td]
+    --]|
+    --?"[&ReliableTalentBonus]" -inc "Talent"|[
+      --&TDR|[td [&Bonus_Background]]
+      --&TDRC|[/td]
+    --]|
+    --?"[&AlertBonus]" -inc "Bonus"|[
+      --&TDAL|[td [&Bonus_Background]]
+      --&TDALC|[/td]
+    --]|
+    --?"[&RemAthBonus]" -inc "Athlete"|[
+      --&TDRA|[td [&Bonus_Background]]
+      --&TDRAC|[/td]
+    --]|
+    --?"[&SilverTongueBonus]" -inc "Tongue"|[
+      --&TDS|[td [&Bonus_Background]]
+      --&TDSC|[/td]
+    --]|
+    --?"[&JackBonus]" -inc "J-o-A-T"|[
+      --&TDJ|[td [&Bonus_Background]]
+      --&TDJC|[/td]
+    --]|
+
     --?"[$SkillRoll.RollText]" -eq "1d20"|[
       --+|[br][br][br]
       --+|[t width=100%][tr][td][&SkillRollURL][/td][/tr][/t]
       --+|[t width=100% title="[$RollTotal.Text]"][tr][td][&SkillRollTotalURL][/td][/tr]
       --+|[tr][td][F:[&FontType]:30][&RollOutput][/F][/td][/tr][/t]
       --+|[br][br]
-      --+|[F:[&FontType]:16][t width=100%][tr][td][&AbilityBonus][/td][td][&ProfBonus][/td][td][&ExpertBonus][/td][td][&ReliableTalentBonus][/td][td][&AlertBonus][/td][/tr][/t][/F]
+      --+|[F:[&FontType]:14][t width=100%][tr][&TDA][&AbilityBonus][&TDAC][&TDP][&ProfBonus][&TDPC][&TDE][&ExpertBonus][&TDEC][&TDR][&ReliableTalentBonus][&TDRC][&TDAL][&AlertBonus][&TDALC][&TDRA][&RemAthBonus][&TDRAC][&TDS][&SilverTongueBonus][&TDSC][&TDJ][&JackBonus][&TDJC][/t][/F]
       --+|[&LiveGlobalMsg]
       --+|[t width=100%][tr][td][&BottomFrame][/td][/tr][/t]
     --]|[
@@ -152,7 +207,7 @@
       --+|[t width=100% title="[$RollTotal.Text]"][tr][td][&SkillRollTotalURL][/td][/tr]
       --+|[tr][td][F:[&FontType]:30][&RollOutput][/F][/td][/tr][/t]
       --+|[br][br]
-      --+|[F:[&FontType]:16][t width=100%][tr][td][&AbilityBonus][/td][td][&ProfBonus][/td][td][&ExpertBonus][/td][td][&ReliableTalentBonus][/td][td][&AlertBonus][/td][/tr][/t][/F]
+      --+|[F:[&FontType]:14][t width=100%][tr][&TDA][&AbilityBonus][&TDAC][&TDP][&ProfBonus][&TDPC][&TDE][&ExpertBonus][&TDEC][&TDR][&ReliableTalentBonus][&TDRC][&TDAL][&AlertBonus][&TDALC][&TDRA][&RemAthBonus][&TDRAC][&TDS][&SilverTongueBonus][&TDSC][&TDJ][&JackBonus][&TDJC][/t][/F]
       --+|[&LiveGlobalMsg]
       --+|[t width=100%][tr][td][&BottomFrame][/td][/tr][/t]
     --]|
