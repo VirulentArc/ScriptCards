@@ -12,7 +12,9 @@
   --/|              installation of the ScriptCards MOD using a pro account with API access. 
   --/|              This script also requires the installation of a custom ScriptCards template. Instructions for installing 
   --/|              a custom style template can be found on the Roll20 wiki page for ScriptCards. The code for the scriptcard
-  --/|              template can be found in the post associated with this Script on the Roll20 forums or on my GitHub below.
+  --/|              template can be found in the post associated with this Script on the Roll20 forums below;
+  --/|              https://app.roll20.net/forum/post/11974281/d-and-d-5e-skill-and-saves-macro-scriptcards/?pageforid=11974281#post-11974281
+  --/|              or on my GitHub below as bg3_style_template.css;
   --/|              https://github.com/VirulentArc/ScriptCards
   --/|              Make sure the template "macro" name is bg3 or change #overridetemplate to whatever name you'd prefer
   --/|              it to have.
