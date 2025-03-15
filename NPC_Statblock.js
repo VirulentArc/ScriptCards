@@ -1,0 +1,176 @@
+!Script{{
+
+  --/|Script Name : Tim's NPC Statblock Mod (Scriptcards) for D&D 5E 2014
+  --/|Version     : 1.0.0
+  --/|Author      : Timothy Beasley
+
+  --/|Description : This script displays an NPC statblock that mimics the 2014 Monster Manual in chat that has buttons for all 
+  --/|              rolls; Skills, Saves, Traits, and Actions(bonus, reaction, Legendary, Mythic).
+  --/|
+  --/|Usage       : This script is for the 2014 edition of the official D&D 5E Character Sheet by Roll20 and requires the
+  --/|              installation of the ScriptCards MOD using a pro account with API access. 
+  --/|              This script also requires the installation of a custom ScriptCards template. Instructions for installing 
+  --/|              a custom style template can be found on the Roll20 wiki page for ScriptCards. The code for the scriptcard
+  --/|              template can be found in the post associated with this Script on the Roll20 forums below;
+  --/|              https://app.roll20.net/forum/post/12267264/tims-npc-stat-block-mod-scriptcards-d-and-d-5e-2014
+  --/|              or on my GitHub below as statblock.css;
+  --/|              https://github.com/VirulentArc/ScriptCards
+  --/|              Make sure the template "macro" name is stablock or change #overridetemplate to whatever name you'd prefer
+  --/|              it to have.
+
+  --#Debug|0
+  --#overridetemplate|statblock
+  --#Whisper|self
+  --#title|@{selected|npc_name}
+  --&SourceChar|@{selected|character_id}
+  --&obrac|{
+  --&cbrac|}
+
+  --?"@{selected|npc_actype}" -ne ""|&NPCactype;(@{selected|npc_actype})
+  --+|[F::12][#000][i]@{selected|npc_type}&nbsp;[/i][/#][/F]
+  --+|[img width=300px]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/NPC_Statblock/divider.webp?raw=true#.png[/img]
+  --+|[F::12][b]Armor&nbsp;Class[/b]&nbsp;@{selected|npc_ac}&nbsp;[&NPCactype][br][/F]
+  --?"@{selected|hp}" -ne ""|&BaseHP; @{selected|hp} /
+  --+|[F::12][b]Hit&nbsp;Points[/b][&BaseHP]&nbsp;@{selected|hp|max}&nbsp;(@{selected|npc_hpformula})[br][b]Speed[/b]&nbsp;@{selected|npc_speed}[/F]
+  --+|[img width=300px]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/NPC_Statblock/divider.webp?raw=true#.png[/img]
+
+  --&SkillBlock|[c][t width=100%][tr]
+  --&SkillBlock|+[td][F::14][b][button]STR&nbsp;@{selected|strength}&nbsp;(@{selected|strength_mod})::~selected|npc_str[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_str_save[/button][/td]
+  --&SkillBlock|+[td][F::14][b][button]DEX&nbsp;@{selected|dexterity}&nbsp;(@{selected|dexterity_mod})::~selected|npc_dex[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_dex_save[/button][/td]
+  --&SkillBlock|+[td][F::14][b][button]CON&nbsp;@{selected|constitution}&nbsp;(@{selected|constitution_mod})::~selected|npc_con[/button][/b][/F][br][button]save::~selected|npc_con_save[/button][/td][/tr]
+  --&SkillBlock|+[tr][td][F::14][b][button]INT&nbsp;@{selected|intelligence}&nbsp;(@{selected|intelligence_mod})::~selected|npc_int[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_int_save[/button][/td]
+  --&SkillBlock|+[td][F::14][b][button]WIS&nbsp;@{selected|wisdom}&nbsp;(@{selected|wisdom_mod})::~selected|npc_wis[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_wis_save[/button][/td]
+  --&SkillBlock|+[td][F::14][b][button]CHA&nbsp;@{selected|charisma}&nbsp;(@{selected|charisma_mod})::~selected|npc_cha[/button][/b][/F][br][button]save::~selected|npc_cha_save[/button][/td]
+  --&SkillBlock|+[/tr][/t][/c]
+  --+|[&SkillBlock]
+  --+|[img width=300px]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/NPC_Statblock/divider.webp?raw=true#.png[/img]
+
+  --~|array;define;SaveArray;str;dex;con;int;wis;cha
+  --%SaveLoop|foreach;SaveArray
+    --?"[*[&SourceChar]:npc_[&SaveLoop]_save_base]" -gt 0 -or "[*[&SourceChar]:npc_[&SaveLoop]_save_base]" -ne ""|[
+      --~SaveReplace|string;replaceall;_; ;[&SaveLoop]
+	  --~SaveTitle|string;totitlecase;[&SaveReplace]
+      --+|[F::12][b]Saving&nbsp;Throws&nbsp;[/b][&SaveTitle]&nbsp;[*[&SourceChar]:npc_[&SaveLoop]_save_base][/F]
+    --]|
+  --%|
+
+  --~|array;define;SkillArray;acrobatics;animal_handling;arcana;athletics;history;insight;intimidation;investigation;medicine;nature;perception;performance;persuasion;religion;sleight_of_hand;stealth;survival
+  --%SkillLoop|foreach;SkillArray
+    --?"[*[&SourceChar]:npc_[&SkillLoop]_base]" -gt 0 -or "[*[&SourceChar]:npc_[&SkillLoop]_base]" -ne ""|[
+      --~SkillReplace|string;replaceall;_; ;[&SkillLoop]
+	  --~SkillTitle|string;totitlecase;[&SkillReplace]
+      --+|[F::12][b]Skills&nbsp;[/b][&SkillTitle]&nbsp;[*[&SourceChar]:npc_[&SkillLoop]_base][/F]
+    --]|
+  --%|
+
+  --#parameterDelimiter|$$$
+  --?"@{selected|npc_vulnerabilities}" -ne ""|&SecondBlock$$$+[F::12][b]Damage&nbsp;Vulnerabilities[/b]&nbsp;@{selected|npc_vulnerabilities}[/F][br]
+  --?"@{selected|npc_resistances}" -ne ""|&SecondBlock$$$+[F::12][b]Damage&nbsp;Resistances[/b]&nbsp;@{selected|npc_resistances}[/F][br]
+  --?"@{selected|npc_immunities}" -ne ""|&SecondBlock$$$+[F::12][b]Damage&nbsp;Immunities[/b]&nbsp;@{selected|npc_immunities}[/F][br]
+  --?"@{selected|npc_condition_immunities}" -ne ""|&SecondBlock$$$+[F::12][b]Conditions&nbsp;Immunities[/b]&nbsp;@{selected|npc_condition_immunities}[/F][br]
+  --?"@{selected|npc_senses}" -ne ""|&SecondBlock$$$+[F::12][b]Senses[/b]&nbsp;@{selected|npc_senses}[/F][br]
+  --?"@{selected|npc_languages}" -ne ""|&SecondBlock$$$+[F::12][b]Languages[/b]&nbsp;@{selected|npc_languages}[/F][br]
+  --?"@{selected|npc_challenge}" -ne ""|&SecondBlock$$$+[F::12][b]Challenge[/b]&nbsp;@{selected|npc_challenge}&nbsp;(@{selected|npc_xp}xp)[/F][br]
+  --?"@{selected|npc_pb}" -ne 0|&SecondBlock$$$+[F::12][b]Proficiency Bonus[/b]&nbsp;@{selected|npc_pb}[/F][br]
+  --+|[&SecondBlock]
+  --+|[img width=300px]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/NPC_Statblock/divider.webp?raw=true#.png[/img]
+  --#parameterDelimiter|;
+
+  --&TraitOutput|[t width=100%]
+  --~|array;fullrepeatingsection;Traits;@{selected|character_id};repeating_npctrait;name:description;:
+    --%TraitLoop|foreach;Traits
+      --~TraitSplit|string;split;:;[&TraitLoop]
+      --Rfind|@{selected|character_id};[&TraitSplit1];repeating_npctrait;name
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+        --&TraitOutput|+[tr][td title="[&TraitSplit2]"][#000][i][b][&TraitSplit1]&nbsp;[/b][/i][/#]&nbsp;[r][F::14]|[button]📜::~%[&obrac]selected|[*R>npc_roll_output]}[/button]|[/F][/r][/td][/tr]
+      --]|
+    --%|
+  --&TraitOutput|+[/t]
+  --+|[&TraitOutput]
+
+  --Rfirst|@{selected|character_id};repeating_npcaction
+  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+    --+|[br][F::20]Actions[/F][hr #922610]
+  --]|
+  --&ActionOutput|[t width=100%]
+  --~|array;fullrepeatingsection;Actions;@{selected|character_id};repeating_npcaction;name:description;:
+    --%ActionLoop|foreach;Actions
+      --~ActionSplit|string;split;:;[&ActionLoop]
+      --Rfind|@{selected|character_id};[&ActionSplit1];repeating_npcaction;name
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+        --&ActionOutput|+[tr][td title="[&ActionSplit2]"][#000][i][b][&ActionSplit1]&nbsp;[/b][/i][/#]&nbsp;[r][F::14]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/F][/r][/td][/tr]
+      --]|
+    --%|
+  --&ActionOutput|+[/t]
+  --+|[&ActionOutput]
+
+  --Rfirst|@{selected|character_id};repeating_npcbonusaction
+  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+    --+|[br][F::20]Bonus Actions[/F][hr #922610]
+  --]|
+  --&BonusOutput|[t width=100%]
+  --~|array;fullrepeatingsection;Bonus;@{selected|character_id};repeating_npcbonusaction;name:description;:
+    --%BonusLoop|foreach;Bonus
+      --~BonusSplit|string;split;:;[&BonusLoop]
+      --Rfind|@{selected|character_id};[&BonusSplit1];repeating_npcbonusaction;name
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+        --&BonusOutput|+[tr][td title="[&BonusSplit2]"][#000][i][b][&BonusSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/r][/td][/tr]
+      --]|
+    --%|
+  --&BonusOutput|+[/t]
+  --+|[&BonusOutput]
+
+  --Rfirst|@{selected|character_id};repeating_npcreaction
+  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+    --+|[br][F::20]Reactions[/F][hr #922610]
+  --]|
+  --&ReactionOutput|[t width=100%]
+  --~|array;fullrepeatingsection;Reaction;@{selected|character_id};repeating_npcreaction;name:description;:
+    --%ReactionLoop|foreach;Reaction
+      --~ReactionSplit|string;split;:;[&ReactionLoop]
+      --Rfind|@{selected|character_id};[&ReactionSplit1];repeating_npcreaction;name
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+        --&ReactionOutput|+[tr][td title="[&ReactionSplit2]"][#000][i][b][&ReactionSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_roll_output][&cbrac][/button]|[/r][/td][/tr]
+      --]|
+    --%|
+  --&ReactionOutput|+[/t]
+  --+|[&ReactionOutput]
+
+  --Rfirst|@{selected|character_id};repeating_npcaction-l
+  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+    --+|[br][F::20]Legendary Actions[/F][hr #922610][F::12][#000]@{selected|npc_legendary_actions_desc}[/#][/F]
+  --]|
+  --&LegendOutput|[t width=100%]
+  --~|array;fullrepeatingsection;Legend;@{selected|character_id};repeating_npcaction-l;name:description;:
+    --%LegendLoop|foreach;Legend
+      --~LegendSplit|string;split;:;[&LegendLoop]
+      --Rfind|@{selected|character_id};[&LegendSplit1];repeating_npcaction-l;name
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+        --&LegendOutput|+[tr][td title="[&LegendSplit2]"][#000][i][b][&LegendSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/r][/td][/tr]
+      --]|
+    --%|
+  --&LegendOutput|+[/t]
+  --+|[&LegendOutput]
+
+  --Rfirst|@{selected|character_id};repeating_npcaction-m
+  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+    --+|[br][F::20]Mythic Actions[/F][hr #922610][F::12][#000]@{selected|npc_mythic_actions_desc}[/#][/F]
+  --]|
+  --&MythicOutput|[t width=100%]
+  --~|array;fullrepeatingsection;Mythic;@{selected|character_id};repeating_npcaction-m;name:description;:
+    --%MythicLoop|foreach;Mythic
+      --~MythicSplit|string;split;:;[&MythicLoop]
+      --Rfind|@{selected|character_id};[&MythicSplit1];repeating_npcaction-m;name
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+        --&MythicOutput|+[tr][td title="[&MythicSplit2]"][#000][i][b][&MythicSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/r][/td][/tr]
+      --]|
+    --%|
+  --&MythicOutput|+[/t]
+  --+|[&MythicOutput]
+
+  --+|[br][hr #922610]
+  --+|[c][button]Acrobatics::~selected|npc_Acrobatics[/button]&nbsp;|&nbsp;[button]Animal Handling::~selected|npc_Animal_Handling[/button]&nbsp;|&nbsp;[button]Arcana::~selected|npc_Arcana[/button][br][button]Athletics::~selected|npc_Athletics[/button]&nbsp;|&nbsp;[button]History::~selected|npc_History[/button]&nbsp;|&nbsp;[button]Insight::~selected|npc_Insight[/button]&nbsp;|&nbsp;[button]Intimidation::~selected|npc_intimidation[/button][br][button]Investigation::~selected|npc_Investigation[/button]&nbsp;|&nbsp;[button]Medicine::~selected|npc_Medicine[/button]&nbsp;|&nbsp;[button]Nature::~selected|npc_Nature[/button]&nbsp;|&nbsp;[button]Perception::~selected|npc_Perception[/button][br][button]Performace::~selected|npc_Performance[/button]&nbsp;|&nbsp;[button]Persuasion::~selected|npc_Persuasion[/button]&nbsp;|&nbsp;[button]Religion::~selected|npc_Religion[/button][br][button]Sleight of Hand::~selected|npc_Sleight_of_Hand[/button]&nbsp;|&nbsp;[button]Stealth::~selected|npc_Stealth[/button]&nbsp;|&nbsp;[button]Survivial::~selected|npc_Survival[/button][/c]
+
+--X|
+
+}}
