@@ -1,7 +1,7 @@
 !Script{{
 
   --/|Script Name : Tim's NPC Statblock Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 1.0.0
+  --/|Version     : 1.0.1
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays an NPC statblock that mimics the 2014 Monster Manual in chat that has buttons for all 
@@ -81,7 +81,7 @@
     --%TraitLoop|foreach;Traits
       --~TraitSplit|string;split;:;[&TraitLoop]
       --Rfind|@{selected|character_id};[&TraitSplit1];repeating_npctrait;name
-      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&TraitOutput|+[tr][td title="[&TraitSplit2]"][#000][i][b][&TraitSplit1]&nbsp;[/b][/i][/#]&nbsp;[r][F::14]|[button]📜::~%[&obrac]selected|[*R>npc_roll_output]}[/button]|[/F][/r][/td][/tr]
       --]|
     --%|
@@ -89,7 +89,7 @@
   --+|[&TraitOutput]
 
   --Rfirst|@{selected|character_id};repeating_npcaction
-  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
     --+|[br][F::20]Actions[/F][hr #922610]
   --]|
   --&ActionOutput|[t width=100%]
@@ -97,7 +97,7 @@
     --%ActionLoop|foreach;Actions
       --~ActionSplit|string;split;:;[&ActionLoop]
       --Rfind|@{selected|character_id};[&ActionSplit1];repeating_npcaction;name
-      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&ActionOutput|+[tr][td title="[&ActionSplit2]"][#000][i][b][&ActionSplit1]&nbsp;[/b][/i][/#]&nbsp;[r][F::14]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/F][/r][/td][/tr]
       --]|
     --%|
@@ -105,7 +105,7 @@
   --+|[&ActionOutput]
 
   --Rfirst|@{selected|character_id};repeating_npcbonusaction
-  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
     --+|[br][F::20]Bonus Actions[/F][hr #922610]
   --]|
   --&BonusOutput|[t width=100%]
@@ -113,7 +113,7 @@
     --%BonusLoop|foreach;Bonus
       --~BonusSplit|string;split;:;[&BonusLoop]
       --Rfind|@{selected|character_id};[&BonusSplit1];repeating_npcbonusaction;name
-      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&BonusOutput|+[tr][td title="[&BonusSplit2]"][#000][i][b][&BonusSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/r][/td][/tr]
       --]|
     --%|
@@ -121,7 +121,7 @@
   --+|[&BonusOutput]
 
   --Rfirst|@{selected|character_id};repeating_npcreaction
-  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
     --+|[br][F::20]Reactions[/F][hr #922610]
   --]|
   --&ReactionOutput|[t width=100%]
@@ -129,7 +129,7 @@
     --%ReactionLoop|foreach;Reaction
       --~ReactionSplit|string;split;:;[&ReactionLoop]
       --Rfind|@{selected|character_id};[&ReactionSplit1];repeating_npcreaction;name
-      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&ReactionOutput|+[tr][td title="[&ReactionSplit2]"][#000][i][b][&ReactionSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_roll_output][&cbrac][/button]|[/r][/td][/tr]
       --]|
     --%|
@@ -137,7 +137,7 @@
   --+|[&ReactionOutput]
 
   --Rfirst|@{selected|character_id};repeating_npcaction-l
-  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
     --+|[br][F::20]Legendary Actions[/F][hr #922610][F::12][#000]@{selected|npc_legendary_actions_desc}[/#][/F]
   --]|
   --&LegendOutput|[t width=100%]
@@ -145,7 +145,7 @@
     --%LegendLoop|foreach;Legend
       --~LegendSplit|string;split;:;[&LegendLoop]
       --Rfind|@{selected|character_id};[&LegendSplit1];repeating_npcaction-l;name
-      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&LegendOutput|+[tr][td title="[&LegendSplit2]"][#000][i][b][&LegendSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/r][/td][/tr]
       --]|
     --%|
@@ -153,7 +153,7 @@
   --+|[&LegendOutput]
 
   --Rfirst|@{selected|character_id};repeating_npcaction-m
-  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
     --+|[br][F::20]Mythic Actions[/F][hr #922610][F::12][#000]@{selected|npc_mythic_actions_desc}[/#][/F]
   --]|
   --&MythicOutput|[t width=100%]
@@ -161,7 +161,7 @@
     --%MythicLoop|foreach;Mythic
       --~MythicSplit|string;split;:;[&MythicLoop]
       --Rfind|@{selected|character_id};[&MythicSplit1];repeating_npcaction-m;name
-      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|[
+      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&MythicOutput|+[tr][td title="[&MythicSplit2]"][#000][i][b][&MythicSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/r][/td][/tr]
       --]|
     --%|
