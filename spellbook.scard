@@ -1,0 +1,533 @@
+!Script{{
+
+  --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
+  --/|Version     : 1.0.0
+  --/|Author      : Timothy Beasley
+
+  --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
+  --/|              If the character has an attack roll a d20 button will appear beside the spell name which will roll the attack from the character sheet.
+  --/|              There is a round button which indicates if the spell is prepared, clicking the button will prepare or unprepare the spell.
+  --/|              There is a button shaped like an open book, which when clicked will display the full description of the spell.
+  --/|              If there is any confusion about what something does, all buttons and items on the spellbook have tooltips, just mouseover them.
+  --/|
+  --/|Installation: This script is for the 2014 edition of the official D&D 5E Character Sheet by Roll20 and requires the
+  --/|              installation of the ScriptCards MOD using a pro account with API access. 
+  --/|              This script also requires the installation of a custom ScriptCards template. Instructions for installing 
+  --/|              a custom style template can be found on the Roll20 wiki page for ScriptCards. The code for the scriptcard
+  --/|              template can be found in the post associated with this Script on the Roll20 forums below;
+  --/|              https://app.roll20.net/forum/post/12267264/tims-npc-stat-block-mod-scriptcards-d-and-d-5e-2014
+  --/|              or on my GitHub below as spellbook.css;
+  --/|              https://github.com/VirulentArc/ScriptCards
+  --/|              Make sure the template "macro" name is spellbook or change #overridetemplate to whatever name you'd prefer
+  --/|              it to have.
+
+  --#Debug|0
+  --#overridetemplate|spellbook
+  --#Whisper|self
+  --#diceFontColor|#611b1c
+  --#sourceToken|@{selected|token_id}
+  --#emoteState|0
+  --#title|@{selected|character_name}'s Spell Book
+  --&obrac|{
+  --&cbrac|}
+
+  --/|Image Variables
+    --&LevelBackground|style="background-image: url(https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spell_level.webp?raw=true#.png) ; background-repeat: no-repeat ; background-size: 100% 40px ; background-position: left ; display: block ; width: 245px ; height:42px ; "
+    --&LevelBackground2|style="position: relative; left: 7px ; top: 4px ; "
+    --&LevelBackground3|style="position: relative; left: 68px ; top: 6px ; "
+    --&HeaderImage|style="background-image: url(https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/header.webp?raw=true#.png) ; background-repeat: no-repeat ; background-size: 100% 30px ; background-position: left ; display: block ; width: 100% ; height: 100% ; line-height: 30px ; position: relative ; top: 15px ;"
+    --&HeaderMid1|style="display: inline-block ; position: relative ; top: -7px ; left: 68px ;"
+    --&HeaderMid2|style="display: inline-block ; position: relative ; top: -5px ; left: 98px ; "
+    --&HeaderRight|style="display: inline-block ; position: relative ; top: -6px ; left: 125px ;"
+    --?";wizard;cleric;" -inc ";[*S:class];"|=PrepTotal;[*S:intelligence_mod] + [*S:caster_level] {FLOOR}
+    --?"[*S:class]" -inc "paladin"|=PrepTotal;[*S:charisma_mod] + ([*S:caster_level]/2) {FLOOR}
+    --?"[*S:class]" -inc "druid"|=PrepTotal;[*S:wisdom_mod] + [*S:caster_level]
+    --&RollImage|[d20]1[/d20]
+    --#parameterDelimiter|$$$
+    --?"[*S:class]" -inc "fighter"|&ClassImage$$$&#x132C1;
+    --?";wizard;rogue;" -inc ";[*S:class];"|&ClassImage$$$&#x269a;
+    --?"[*S:class]" -inc "warlock"|&ClassImage$$$&#x26D3;
+    --?"[*S:class]" -inc "Sorcerer"|&ClassImage$$$&#x2726;
+    --?";cleric;paladin;" -inc ";[*S:class];"|&ClassImage$$$&#x273A;
+    --?"[*S:class]" -inc "druid"|&ClassImage$$$&#x130E0;
+    --&Infinity|&#x221E;
+    --&BookImage|&#x1F56E;
+    --&BlueDot|&#x1F535;
+    --&BlankDot|&#x1F518;
+    --?"[*S:class]" -inc "warlock" -or "[*S:class]" -inc "sorcerer" -or "[*S:class]" -inc "bard" -or "[*S:class]" -inc "rogue" -or "[*S:class]" -inc "fighter"|&PrepTotal$$$[&Infinity]|&PrepTotal$$$[$PrepTotal.Raw]
+    --#parameterDelimiter|;
+    --?";wizard;rogue;bard;sorcerer;cleric;paladin;fighter;" -inc ";[*S:class];"|&SlotImage;main
+    --?[*S:class] -inc "warlock"|&SlotImage;warlock
+    --?[*S:class] -inc "druid"|&SlotImage;druid
+    --&EmptySlot|[img width=30]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage]_spent.webp?raw=true#.png[/img]
+    --&FullSlot|[img width=30]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage].webp?raw=true#.png[/img]
+    --&MissingSlot|[img width=30]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spellslot_missing.webp?raw=true#.png[/img]
+    --&SCA|[*S:spellcasting_ability]
+    --~SCA|string;substring;3;3;[&SCA]
+
+  --:MainBook|
+
+    --&Header|[t width=100%][tr][td title="Spellcasting Ability" [&HeaderImage]][b]&nbsp;&#x272F;[F::16][&SCA(touppercase)][/F][/b][/td][td title="Spell Save DC" [&HeaderMid1]][b][F::18]&#x1F6E1;[*S:spell_save_dc][/F][/b][/td][td title="Spellcasting Bonus" [&HeaderMid2]][b][F::5][&RollImage]&nbsp;[/F][F::18][*S:spell_attack_bonus][/F][/b][/td][td title="Max Prepared Spells" [&HeaderRight]][F::20][&ClassImage][/F]&nbsp;[F::18][b][&PrepTotal][/b][/F][/td][/tr][/t]
+    --+|[&Header]
+    --+|[br]
+
+    --Rfirst|[*S:character_id];repeating_spell-cantrip;spellname
+    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|LVLone
+    --&SpellcantripOutput|[t width=100% [&LevelBackground]][tr][td style="position: relative; left: 7px ; top: 11px ; "][br][F::18][b]C[/b][/F][/td][td style="position: relative; left: 100px ; top: 14px ; "][F::44][&Infinity][/F][/td][/tr][/t][t width=240px]
+    --~|array;fromrepeatingsection;lvlcantripSpells;[*S:character_id];repeating_spell-cantrip;spellname
+    --%SpellcantripLoop|foreach;lvlcantripSpells
+      --Rfind|[*S:character_id];[&SpellcantripLoop];repeating_spell-cantrip;spellname
+      --&SpellData|[*S:spellname],cantrip
+      --?"[*R:spellconcentration]" -inc 1|&Concentration;(c)|&Concentration;
+      --?"[*R:spelloutput]" -inc "ATTACK"|[
+        --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+      --]|
+      --&Prepared|[rbutton][&BlueDot]::MainBook[/rbutton]
+      --?"[*R:spelloutput]" -inc "SPELLCARD"|[
+        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+      --]|
+      --&SpellcantripOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[*R:innate]&nbsp;|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][rbutton][&BookImage]::SpellInfo;[&SpellData][/rbutton][/F][/td][/tr]
+    --%|
+    --&SpellcantripOutput|+[/t]
+    --+|[&SpellcantripOutput]
+
+    --:LVLone|
+    --Rfirst|[*S:character_id];repeating_spell-1;spellname
+    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|Done
+    --#parameterDelimiter|$$$
+    --?"@{selected|lvl1_slots_expended}" -eq 0 -and "[*S:lvl1_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 0 -and "[*S:lvl1_slots_total]" -eq 1|&Slots$$$[&EmptySlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 1 -and "[*S:lvl1_slots_total]" -eq 1|&Slots$$$[&FullSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 0 -and "[*S:lvl1_slots_total]" -eq 2|&Slots$$$[&EmptySlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 1 -and "[*S:lvl1_slots_total]" -eq 2|&Slots$$$[&FullSlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 2 -and "[*S:lvl1_slots_total]" -eq 2|&Slots$$$[&FullSlot][&FullSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 0 -and "[*S:lvl1_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 1 -and "[*S:lvl1_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 2 -and "[*S:lvl1_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 3 -and "[*S:lvl1_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 0 -and "[*S:lvl1_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 1 -and "[*S:lvl1_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 2 -and "[*S:lvl1_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 3 -and "[*S:lvl1_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
+    --?"@{selected|lvl1_slots_expended}" -eq 4 -and "[*S:lvl1_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
+    --#parameterDelimiter|;
+    --&SpelloneOutput|[t width=100% [&LevelBackground]][tr][td [&LevelBackground2]][br][F::20][b]1[/b][/F][/td][td [&LevelBackground3]][F::18][&Slots][/F][/td][/tr][/t][t width=240px]
+    --~|array;fromrepeatingsection;lvloneSpells;[*S:character_id];repeating_spell-1;spellname
+    --%SpelloneLoop|foreach;lvloneSpells
+      --Rfind|[*S:character_id];[&SpelloneLoop];repeating_spell-1;spellname
+      --&SpellData|[*R:spellname]1
+      --?"[*R:spellconcentration]" -inc 1|&Concentration;(c)|&Concentration;
+      --?"[*R:spellritual]" -inc "Yes"|&Ritual;(r)|&Ritual;
+      --?"[*R:spelloutput]" -inc "ATTACK"|[
+        --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+      --]|
+      --?"[*R:spelloutput]" -inc "SPELLCARD"|[
+        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+      --]|
+      --#parameterDelimiter|$$$
+      --?"[*R:spellprepared]" -eq 1 -or "[*S:class]" -inc "warlock" -or "[*S:class]" -inc "sorcerer" -or "[*S:class]" -inc "bard" -or "[*S:class]" -inc "rogue"|&Prepared$$$[rbutton][&BlueDot]::PrepareOff;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareOn;[&SpellData][/rbutton]
+      --#parameterDelimiter|;
+      --&SpelloneOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate]|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][rbutton][&BookImage]::SpellInfo;[&SpellData][/rbutton][/F][/td][/tr]
+    --%|
+    --&SpelloneOutput|+[/t]
+    --+|[&SpelloneOutput]
+
+    --Rfirst|[*S:character_id];repeating_spell-2;spellname
+    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|Done
+    --#parameterDelimiter|$$$
+    --?"@{selected|lvl2_slots_expended}" -eq 0 -and "[*S:lvl2_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 0 -and "[*S:lvl2_slots_total]" -eq 1|&Slots$$$[&EmptySlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 1 -and "[*S:lvl2_slots_total]" -eq 1|&Slots$$$[&FullSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 0 -and "[*S:lvl2_slots_total]" -eq 2|&Slots$$$[&EmptySlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 1 -and "[*S:lvl2_slots_total]" -eq 2|&Slots$$$[&FullSlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 2 -and "[*S:lvl2_slots_total]" -eq 2|&Slots$$$[&FullSlot][&FullSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 0 -and "[*S:lvl2_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 1 -and "[*S:lvl2_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 2 -and "[*S:lvl2_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 3 -and "[*S:lvl2_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 0 -and "[*S:lvl2_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 1 -and "[*S:lvl2_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 2 -and "[*S:lvl2_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 3 -and "[*S:lvl2_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
+    --?"@{selected|lvl2_slots_expended}" -eq 4 -and "[*S:lvl2_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
+    --#parameterDelimiter|;
+    --&SpelltwoOutput|[t width=100% [&LevelBackground]][tr][td [&LevelBackground2]][br][F::20][b]2[/b][/F][/td][td [&LevelBackground3]][F::18][&Slots][/F][/td][/tr][/t][t width=240px]
+    --~|array;fromrepeatingsection;lvltwoSpells;[*S:character_id];repeating_spell-2;spellname
+    --%SpelltwoLoop|foreach;lvltwoSpells
+      --Rfind|[*S:character_id];[&SpelltwoLoop];repeating_spell-2;spellname
+      --&SpellData|[*R:spellname]2
+      --?"[*R:spellconcentration]" -inc 1|&Concentration;(c)|&Concentration;
+      --?"[*R:spellritual]" -inc "Yes"|&Ritual;(r)|&Ritual;
+      --?"[*R:spelloutput]" -inc "ATTACK"|[
+        --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+      --]|
+      --?"[*R:spelloutput]" -inc "SPELLCARD"|[
+        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+      --]|
+      --#parameterDelimiter|$$$
+      --?"[*R:spellprepared]" -eq 1 -or "[*S:class]" -inc "warlock" -or "[*S:class]" -inc "sorcerer" -or "[*S:class]" -inc "bard" -or "[*S:class]" -inc "rogue"|&Prepared$$$[rbutton][&BlueDot]::PrepareOff;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareOn;[&SpellData][/rbutton]
+      --#parameterDelimiter|;
+      --&SpelltwoOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate]|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][rbutton][&BookImage]::SpellInfo;[&SpellData][/rbutton][/F][/td][/tr]
+    --%|
+    --&SpelltwoOutput|+[/t]
+    --+|[&SpelltwoOutput]
+
+    --Rfirst|[*S:character_id];repeating_spell-3;spellname
+    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|Done
+    --#parameterDelimiter|$$$
+    --?"@{selected|lvl3_slots_expended}" -eq 0 -and "[*S:lvl3_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 0 -and "[*S:lvl3_slots_total]" -eq 1|&Slots$$$[&EmptySlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 1 -and "[*S:lvl3_slots_total]" -eq 1|&Slots$$$[&FullSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 0 -and "[*S:lvl3_slots_total]" -eq 2|&Slots$$$[&EmptySlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 1 -and "[*S:lvl3_slots_total]" -eq 2|&Slots$$$[&FullSlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 2 -and "[*S:lvl3_slots_total]" -eq 2|&Slots$$$[&FullSlot][&FullSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 0 -and "[*S:lvl3_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 1 -and "[*S:lvl3_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 2 -and "[*S:lvl3_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 3 -and "[*S:lvl3_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 0 -and "[*S:lvl3_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 1 -and "[*S:lvl3_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 2 -and "[*S:lvl3_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 3 -and "[*S:lvl3_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
+    --?"@{selected|lvl3_slots_expended}" -eq 4 -and "[*S:lvl3_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
+    --#parameterDelimiter|;
+    --&SpellthreeOutput|[t width=100% [&LevelBackground]][tr][td [&LevelBackground2]][br][F::20][b]3[/b][/F][/td][td [&LevelBackground3]][F::18][&Slots][/F][/td][/tr][/t][t width=240px]
+    --~|array;fromrepeatingsection;lvlthreeSpells;[*S:character_id];repeating_spell-3;spellname
+    --%SpellthreeLoop|foreach;lvlthreeSpells
+      --Rfind|[*S:character_id];[&SpellthreeLoop];repeating_spell-3;spellname
+      --&SpellData|[*R:spellname]3
+      --?"[*R:spellconcentration]" -inc 1|&Concentration;(c)|&Concentration;
+      --?"[*R:spellritual]" -inc "Yes"|&Ritual;(r)|&Ritual;
+      --?"[*R:spelloutput]" -inc "ATTACK"|[
+        --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+      --]|
+      --?"[*R:spelloutput]" -inc "SPELLCARD"|[
+        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+      --]|
+      --#parameterDelimiter|$$$
+      --?"[*R:spellprepared]" -eq 1 -or "[*S:class]" -inc "warlock" -or "[*S:class]" -inc "sorcerer" -or "[*S:class]" -inc "bard" -or "[*S:class]" -inc "rogue"|&Prepared$$$[rbutton][&BlueDot]::PrepareOff;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareOn;[&SpellData][/rbutton]
+      --#parameterDelimiter|;
+      --&SpellthreeOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate]|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][rbutton][&BookImage]::SpellInfo;[&SpellData][/rbutton][/F][/td][/tr]
+    --%|
+    --&SpellthreeOutput|+[/t]
+    --+|[&SpellthreeOutput]
+
+    --Rfirst|[*S:character_id];repeating_spell-4;spellname
+    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|Done
+    --#parameterDelimiter|$$$
+    --?"@{selected|lvl4_slots_expended}" -eq 0 -and "[*S:lvl4_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 0 -and "[*S:lvl4_slots_total]" -eq 1|&Slots$$$[&EmptySlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 1 -and "[*S:lvl4_slots_total]" -eq 1|&Slots$$$[&FullSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 0 -and "[*S:lvl4_slots_total]" -eq 2|&Slots$$$[&EmptySlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 1 -and "[*S:lvl4_slots_total]" -eq 2|&Slots$$$[&FullSlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 2 -and "[*S:lvl4_slots_total]" -eq 2|&Slots$$$[&FullSlot][&FullSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 0 -and "[*S:lvl4_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 1 -and "[*S:lvl4_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 2 -and "[*S:lvl4_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 3 -and "[*S:lvl4_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 0 -and "[*S:lvl4_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 1 -and "[*S:lvl4_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 2 -and "[*S:lvl4_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 3 -and "[*S:lvl4_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
+    --?"@{selected|lvl4_slots_expended}" -eq 4 -and "[*S:lvl4_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
+    --#parameterDelimiter|;
+    --&SpellfourOutput|[t width=100% [&LevelBackground]][tr][td [&LevelBackground2]][br][F::20][b]4[/b][/F][/td][td [&LevelBackground3]][F::18][&Slots][/F][/td][/tr][/t][t width=240px]
+    --~|array;fromrepeatingsection;lvlfourSpells;[*S:character_id];repeating_spell-4;spellname
+    --%SpellfourLoop|foreach;lvlfourSpells
+      --Rfind|[*S:character_id];[&SpellfourLoop];repeating_spell-4;spellname
+      --&SpellData|[*R:spellname]4
+      --?"[*R:spellconcentration]" -inc 1|&Concentration;(c)|&Concentration;
+      --?"[*R:spellritual]" -inc "Yes"|&Ritual;(r)|&Ritual;
+      --?"[*R:spelloutput]" -inc "ATTACK"|[
+        --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+      --]|
+      --?"[*R:spelloutput]" -inc "SPELLCARD"|[
+        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+      --]|
+      --#parameterDelimiter|$$$
+      --?"[*R:spellprepared]" -eq 1 -or "[*S:class]" -inc "warlock" -or "[*S:class]" -inc "sorcerer" -or "[*S:class]" -inc "bard" -or "[*S:class]" -inc "rogue"|&Prepared$$$[rbutton][&BlueDot]::PrepareOff;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareOn;[&SpellData][/rbutton]
+      --#parameterDelimiter|;
+      --&SpellfourOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate]|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][rbutton][&BookImage]::SpellInfo;[&SpellData][/rbutton][/F][/td][/tr]
+    --%|
+    --&SpellfourOutput|+[/t]
+    --+|[&SpellfourOutput]
+
+    --Rfirst|[*S:character_id];repeating_spell-5;spellname
+    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|Done
+    --#parameterDelimiter|$$$
+    --?"@{selected|lvl5_slots_expended}" -eq 0 -and "[*S:lvl5_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 0 -and "[*S:lvl5_slots_total]" -eq 1|&Slots$$$[&EmptySlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 1 -and "[*S:lvl5_slots_total]" -eq 1|&Slots$$$[&FullSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 0 -and "[*S:lvl5_slots_total]" -eq 2|&Slots$$$[&EmptySlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 1 -and "[*S:lvl5_slots_total]" -eq 2|&Slots$$$[&FullSlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 2 -and "[*S:lvl5_slots_total]" -eq 2|&Slots$$$[&FullSlot][&FullSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 0 -and "[*S:lvl5_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 1 -and "[*S:lvl5_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 2 -and "[*S:lvl5_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 3 -and "[*S:lvl5_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 0 -and "[*S:lvl5_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 1 -and "[*S:lvl5_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 2 -and "[*S:lvl5_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 3 -and "[*S:lvl5_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
+    --?"@{selected|lvl5_slots_expended}" -eq 4 -and "[*S:lvl5_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
+    --#parameterDelimiter|;
+    --&SpellfiveOutput|[t width=100% [&LevelBackground]][tr][td [&LevelBackground2]][br][F::20][b]5[/b][/F][/td][td [&LevelBackground3]][F::18][&Slots][/F][/td][/tr][/t][t width=240px]
+    --~|array;fromrepeatingsection;lvlfiveSpells;[*S:character_id];repeating_spell-5;spellname
+    --%SpellfiveLoop|foreach;lvlfiveSpells
+      --Rfind|[*S:character_id];[&SpellfiveLoop];repeating_spell-5;spellname
+      --&SpellData|[*R:spellname]5
+      --?"[*R:spellconcentration]" -inc 1|&Concentration;(c)|&Concentration;
+      --?"[*R:spellritual]" -inc "Yes"|&Ritual;(r)|&Ritual;
+      --?"[*R:spelloutput]" -inc "ATTACK"|[
+        --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+      --]|
+      --?"[*R:spelloutput]" -inc "SPELLCARD"|[
+        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+      --]|
+      --#parameterDelimiter|$$$
+      --?"[*R:spellprepared]" -eq 1 -or "[*S:class]" -inc "warlock" -or "[*S:class]" -inc "sorcerer" -or "[*S:class]" -inc "bard" -or "[*S:class]" -inc "rogue"|&Prepared$$$[rbutton][&BlueDot]::PrepareOff;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareOn;[&SpellData][/rbutton]
+      --#parameterDelimiter|;
+      --&SpellfiveOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate]|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][rbutton][&BookImage]::SpellInfo;[&SpellData][/rbutton][/F][/td][/tr]
+    --%|
+    --&SpellfiveOutput|+[/t]
+    --+|[&SpellfiveOutput]
+
+    --Rfirst|[*S:character_id];repeating_spell-6;spellname
+    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|Done
+    --#parameterDelimiter|$$$
+    --?"@{selected|lvl6_slots_expended}" -eq 0 -and "[*S:lvl6_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 0 -and "[*S:lvl6_slots_total]" -eq 1|&Slots$$$[&EmptySlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 1 -and "[*S:lvl6_slots_total]" -eq 1|&Slots$$$[&FullSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 0 -and "[*S:lvl6_slots_total]" -eq 2|&Slots$$$[&EmptySlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 1 -and "[*S:lvl6_slots_total]" -eq 2|&Slots$$$[&FullSlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 2 -and "[*S:lvl6_slots_total]" -eq 2|&Slots$$$[&FullSlot][&FullSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 0 -and "[*S:lvl6_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 1 -and "[*S:lvl6_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 2 -and "[*S:lvl6_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 3 -and "[*S:lvl6_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 0 -and "[*S:lvl6_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 1 -and "[*S:lvl6_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 2 -and "[*S:lvl6_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 3 -and "[*S:lvl6_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
+    --?"@{selected|lvl6_slots_expended}" -eq 4 -and "[*S:lvl6_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
+    --#parameterDelimiter|;
+    --&SpellsixOutput|[t width=100% [&LevelBackground]][tr][td [&LevelBackground2]][br][F::20][b]6[/b][/F][/td][td [&LevelBackground3]][F::18][&Slots][/F][/td][/tr][/t][t width=240px]
+    --~|array;fromrepeatingsection;lvlsixSpells;[*S:character_id];repeating_spell-6;spellname
+    --%SpellsixLoop|foreach;lvlsixSpells
+      --Rfind|[*S:character_id];[&SpellsixLoop];repeating_spell-6;spellname
+      --&SpellData|[*R:spellname]6
+      --?"[*R:spellconcentration]" -inc 1|&Concentration;(c)|&Concentration;
+      --?"[*R:spellritual]" -inc "Yes"|&Ritual;(r)|&Ritual;
+      --?"[*R:spelloutput]" -inc "ATTACK"|[
+        --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+      --]|
+      --?"[*R:spelloutput]" -inc "SPELLCARD"|[
+        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+      --]|
+      --#parameterDelimiter|$$$
+      --?"[*R:spellprepared]" -eq 1 -or "[*S:class]" -inc "warlock" -or "[*S:class]" -inc "sorcerer" -or "[*S:class]" -inc "bard" -or "[*S:class]" -inc "rogue"|&Prepared$$$[rbutton][&BlueDot]::PrepareOff;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareOn;[&SpellData][/rbutton]
+      --#parameterDelimiter|;
+      --&SpellsixOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate]|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][rbutton][&BookImage]::SpellInfo;[&SpellData][/rbutton][/F][/td][/tr]
+    --%|
+    --&SpellsixOutput|+[/t]
+    --+|[&SpellsixOutput]
+
+    --Rfirst|[*S:character_id];repeating_spell-7;spellname
+    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|Done
+    --#parameterDelimiter|$$$
+    --?"@{selected|lvl7_slots_expended}" -eq 0 -and "[*S:lvl7_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 0 -and "[*S:lvl7_slots_total]" -eq 1|&Slots$$$[&EmptySlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 1 -and "[*S:lvl7_slots_total]" -eq 1|&Slots$$$[&FullSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 0 -and "[*S:lvl7_slots_total]" -eq 2|&Slots$$$[&EmptySlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 1 -and "[*S:lvl7_slots_total]" -eq 2|&Slots$$$[&FullSlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 2 -and "[*S:lvl7_slots_total]" -eq 2|&Slots$$$[&FullSlot][&FullSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 0 -and "[*S:lvl7_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 1 -and "[*S:lvl7_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 2 -and "[*S:lvl7_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 3 -and "[*S:lvl7_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 0 -and "[*S:lvl7_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 1 -and "[*S:lvl7_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 2 -and "[*S:lvl7_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 3 -and "[*S:lvl7_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
+    --?"@{selected|lvl7_slots_expended}" -eq 4 -and "[*S:lvl7_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
+    --#parameterDelimiter|;
+    --&SpellsevenOutput|[t width=100% [&LevelBackground]][tr][td [&LevelBackground2]][br][F::20][b]7[/b][/F][/td][td [&LevelBackground3]][F::18][&Slots][/F][/td][/tr][/t][t width=240px]
+    --~|array;fromrepeatingsection;lvlsevenSpells;[*S:character_id];repeating_spell-7;spellname
+    --%SpellsevenLoop|foreach;lvlsevenSpells
+      --Rfind|[*S:character_id];[&SpellsevenLoop];repeating_spell-7;spellname
+      --&SpellData|[*R:spellname]7
+      --?"[*R:spellconcentration]" -inc 1|&Concentration;(c)|&Concentration;
+      --?"[*R:spellritual]" -inc "Yes"|&Ritual;(r)|&Ritual;
+      --?"[*R:spelloutput]" -inc "ATTACK"|[
+        --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+      --]|
+      --?"[*R:spelloutput]" -inc "SPELLCARD"|[
+        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+      --]|
+      --#parameterDelimiter|$$$
+      --?"[*R:spellprepared]" -eq 1 -or "[*S:class]" -inc "warlock" -or "[*S:class]" -inc "sorcerer" -or "[*S:class]" -inc "bard" -or "[*S:class]" -inc "rogue"|&Prepared$$$[rbutton][&BlueDot]::PrepareOff;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareOn;[&SpellData][/rbutton]
+      --#parameterDelimiter|;
+      --&SpellsevenOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate]|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][rbutton][&BookImage]::SpellInfo;[&SpellData][/rbutton][/F][/td][/tr]
+    --%|
+    --&SpellsevenOutput|+[/t]
+    --+|[&SpellsevenOutput]
+
+    --Rfirst|[*S:character_id];repeating_spell-8;spellname
+    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|Done
+    --#parameterDelimiter|$$$
+    --?"@{selected|lvl8_slots_expended}" -eq 0 -and "[*S:lvl8_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 0 -and "[*S:lvl8_slots_total]" -eq 1|&Slots$$$[&EmptySlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 1 -and "[*S:lvl8_slots_total]" -eq 1|&Slots$$$[&FullSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 0 -and "[*S:lvl8_slots_total]" -eq 2|&Slots$$$[&EmptySlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 1 -and "[*S:lvl8_slots_total]" -eq 2|&Slots$$$[&FullSlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 2 -and "[*S:lvl8_slots_total]" -eq 2|&Slots$$$[&FullSlot][&FullSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 0 -and "[*S:lvl8_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 1 -and "[*S:lvl8_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 2 -and "[*S:lvl8_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 3 -and "[*S:lvl8_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 0 -and "[*S:lvl8_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 1 -and "[*S:lvl8_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 2 -and "[*S:lvl8_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 3 -and "[*S:lvl8_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
+    --?"@{selected|lvl8_slots_expended}" -eq 4 -and "[*S:lvl8_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
+    --#parameterDelimiter|;
+    --&SpelleightOutput|[t width=100% [&LevelBackground]][tr][td [&LevelBackground2]][br][F::20][b]8[/b][/F][/td][td [&LevelBackground3]][F::18][&Slots][/F][/td][/tr][/t][t width=240px]
+    --~|array;fromrepeatingsection;lvleightSpells;[*S:character_id];repeating_spell-8;spellname
+    --%SpelleightLoop|foreach;lvleightSpells
+      --Rfind|[*S:character_id];[&SpelleightLoop];repeating_spell-8;spellname
+      --&SpellData|[*R:spellname]8
+      --?"[*R:spellconcentration]" -inc 1|&Concentration;(c)|&Concentration;
+      --?"[*R:spellritual]" -inc "Yes"|&Ritual;(r)|&Ritual;
+      --?"[*R:spelloutput]" -inc "ATTACK"|[
+        --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+      --]|
+      --?"[*R:spelloutput]" -inc "SPELLCARD"|[
+        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+      --]|
+      --#parameterDelimiter|$$$
+      --?"[*R:spellprepared]" -eq 1 -or "[*S:class]" -inc "warlock" -or "[*S:class]" -inc "sorcerer" -or "[*S:class]" -inc "bard" -or "[*S:class]" -inc "rogue"|&Prepared$$$[rbutton][&BlueDot]::PrepareOff;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareOn;[&SpellData][/rbutton]
+      --#parameterDelimiter|;
+      --&SpelleightOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate]|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][rbutton][&BookImage]::SpellInfo;[&SpellData][/rbutton][/F][/td][/tr]
+    --%|
+    --&SpelleightOutput|+[/t]
+    --+|[&SpelleightOutput]
+
+    --Rfirst|[*S:character_id];repeating_spell-9;spellname
+    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|Done
+    --#parameterDelimiter|$$$
+    --?"@{selected|lvl9_slots_expended}" -eq 0 -and "[*S:lvl9_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 0 -and "[*S:lvl9_slots_total]" -eq 1|&Slots$$$[&EmptySlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 1 -and "[*S:lvl9_slots_total]" -eq 1|&Slots$$$[&FullSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 0 -and "[*S:lvl9_slots_total]" -eq 2|&Slots$$$[&EmptySlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 1 -and "[*S:lvl9_slots_total]" -eq 2|&Slots$$$[&FullSlot][&EmptySlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 2 -and "[*S:lvl9_slots_total]" -eq 2|&Slots$$$[&FullSlot][&FullSlot][&MissingSlot][&MissingSlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 0 -and "[*S:lvl9_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 1 -and "[*S:lvl9_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 2 -and "[*S:lvl9_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 3 -and "[*S:lvl9_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 0 -and "[*S:lvl9_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 1 -and "[*S:lvl9_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 2 -and "[*S:lvl9_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 3 -and "[*S:lvl9_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
+    --?"@{selected|lvl9_slots_expended}" -eq 4 -and "[*S:lvl9_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
+    --#parameterDelimiter|;
+    --&SpellnineOutput|[t width=100% [&LevelBackground]][tr][td [&LevelBackground2]][br][F::20][b]9[/b][/F][/td][td [&LevelBackground3]][F::18][&Slots][/F][/td][/tr][/t][t width=240px]
+    --~|array;fromrepeatingsection;lvlnineSpells;[*S:character_id];repeating_spell-9;spellname
+    --%SpellnineLoop|foreach;lvlnineSpells
+      --Rfind|[*S:character_id];[&SpellnineLoop];repeating_spell-9;spellname
+      --&SpellData|[*R:spellname]9
+      --?"[*R:spellconcentration]" -inc 1|&Concentration;(c)|&Concentration;
+      --?"[*R:spellritual]" -inc "Yes"|&Ritual;(r)|&Ritual;
+      --?"[*R:spelloutput]" -inc "ATTACK"|[
+        --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+      --]|
+      --?"[*R:spelloutput]" -inc "SPELLCARD"|[
+        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+      --]|
+      --#parameterDelimiter|$$$
+      --?"[*R:spellprepared]" -eq 1 -or "[*S:class]" -inc "warlock" -or "[*S:class]" -inc "sorcerer" -or "[*S:class]" -inc "bard" -or "[*S:class]" -inc "rogue"|&Prepared$$$[rbutton][&BlueDot]::PrepareOff;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareOn;[&SpellData][/rbutton]
+      --#parameterDelimiter|;
+      --&SpellnineOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate]|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][rbutton][&BookImage]::SpellInfo;[&SpellData][/rbutton][/F][/td][/tr]
+    --%|
+    --&SpellnineOutput|+[/t]
+    --+|[&SpellnineOutput]
+
+  --X|
+
+  --:PrepareOff|
+    --?"[*S:class]" -ninc "warlock" -or "[*S:class]" -ninc "sorcerer" -or "[*S:class]" -ninc "bard" -or "[*S:class]" -ninc "rogue"|[
+      --&SpellEntry|[&reentryval]
+      --~SpellLetters|string;nonumbers;[&SpellEntry]
+      --~SpellLevel|string;onlynumbers;[&SpellEntry]
+      --Rfind|@{selected|character_id};[&SpellLetters];repeating_spell-[&SpellLevel];spellname
+      --!a:@{selected|character_id}|[*R>spellprepared]:0
+      -->MainBook|
+    --]|[
+      -->MainBook|
+    --]|
+  --X|
+
+  --:PrepareOn|
+    --&SpellEntry|[&reentryval]
+    --~SpellLetters|string;nonumbers;[&SpellEntry]
+    --~SpellLevel|string;onlynumbers;[&SpellEntry]
+    --Rfind|@{selected|character_id};[&SpellLetters];repeating_spell-[&SpellLevel];spellname
+    --!a:@{selected|character_id}|[*R>spellprepared]:1
+    -->MainBook|
+  --X|
+
+  --:SpellInfo|
+    --&SpellEntry|[&reentryval]
+    --?"[&SpellEntry]" -inc "cantrip"|[
+      --~SpellSplit|string;split;,;[&SpellEntry]
+      --&SpellLetters|[&SpellSplit1]
+      --&SpellLevel|[&SpellSplit2]
+    --]|[
+      --~SpellLetters|string;nonumbers;[&SpellEntry]
+      --~SpellLevel|string;onlynumbers;[&SpellEntry]
+    --]|
+    --Rfind|@{selected|character_id};[&SpellLetters];repeating_spell-[&SpellLevel];spellname
+
+    --#title|&nbsp;&nbsp;[*R:spellname]
+    --?[*R:spelllevel] -eq cantrip|&spllvl;cantrip|&spllvl;[*R:spelllevel]
+    --?[&spllvl] -eq 1|&lvlsuffix;st
+    --?[&spllvl] -eq 2|&lvlsuffix;nd
+    --?[&spllvl] -eq 3|&lvlsuffix;rd
+    --?[&spllvl] -ge 4|&lvlsuffix;th
+
+    --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal;
+    --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic;S|&Somatic;
+    --?"[*R:spellcomp_m]" -inc "m=1"|[
+      --&Components|M
+      --&Materials|([*R:spellcomp_materials])
+    --]|
+    --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
+
+    --&SpellDesc|[*R:spelldescription]
+    --=SpellDescCalc|[&SpellDesc(length)] - 1024
+
+    --&SpellOutput|[br][t width=100% style="line-height: 1.25em ;"][tr][td height=15px][i][&spllvl][&lvlsuffix]-Level [*R:spellschool][/i][/td][/tr]
+    --&SpellOutput|+[tr][td][b]Casting Time:[/b] [*R:spellcastingtime][/td][/tr]
+    --&SpellOutput|+[tr][td][b]Range:[/b][*R:spellrange][/td][/tr]
+    --&SpellOutput|+[tr][td][b]Components:[/b][&Verbal][&Somatic][&Components] [&Materials][/td][/tr]
+    --&SpellOutput|+[tr][td][b]Duration:[/b][&Concentration]&nbsp;[*R:spellduration][/td][/tr][/t]
+
+    --?"[&SpellDesc(length)]" -gt 900|[
+      --&SpellOutput|+[t style="line-height: 1em ;" width=100% title="[&SpellDesc([$SpellDescCalc.Raw],[&SpellDesc(length)])]"][tr][td][&SpellDesc(0,[$SpellDescCalc.Raw])]...[/td][/tr][/t]
+    --]|[
+      --&SpellOutput|+[t style="line-height: 1em ;" width=100%][tr][td][&SpellDesc][/td][/tr][/t]
+    --]|
+    --?"[*R:spellathigherlevels]" -ne ""|[
+      --&SpellOutput|+[t style="line-height: 1em ;" width=100%][tr][td]&nbsp;&nbsp;&nbsp;&nbsp;[b][i]At Higher Levels:[/i][/b][*R:spellathigherlevels][/td][/tr][/t]
+    --]|
+    --+|[&SpellOutput]
+  --X|
+
+  --:CastSpell|
+
+  --X|
+
+  --:Done|
+  --X|
+
+}}
