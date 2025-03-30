@@ -1,7 +1,7 @@
 !Script{{
 
   --/|Script Name : Tim's NPC Statblock Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 1.0.1
+  --/|Version     : 1.0.2
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays an NPC statblock that mimics the 2014 Monster Manual in chat that has buttons for all 
@@ -25,14 +25,15 @@
   --&SourceChar|@{selected|character_id}
   --&obrac|{
   --&cbrac|}
+  --&Divider|[t][tr][td height=5px][/td][/tr][/t][t][tr][td width=100% style="border: none; border-top: 0.10em solid transparent; border-bottom: 0.25em solid transparent; border-left: 14em solid #7e2d40; line-height: 1.25em; font-size: 1.4em; display: block;"][/td][/tr][/t][t][tr][td height=5px][/td][/tr][/t]
 
   --?"@{selected|npc_actype}" -ne ""|&NPCactype;(@{selected|npc_actype})
   --+|[F::12][#000][i]@{selected|npc_type}&nbsp;[/i][/#][/F]
-  --+|[img width=300px]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/NPC_Statblock/divider.webp?raw=true#.png[/img]
+  --+|[&Divider]
   --+|[F::12][b]Armor&nbsp;Class[/b]&nbsp;@{selected|npc_ac}&nbsp;[&NPCactype][br][/F]
   --?"@{selected|hp}" -ne ""|&BaseHP; @{selected|hp} /
   --+|[F::12][b]Hit&nbsp;Points[/b][&BaseHP]&nbsp;@{selected|hp|max}&nbsp;(@{selected|npc_hpformula})[br][b]Speed[/b]&nbsp;@{selected|npc_speed}[/F]
-  --+|[img width=300px]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/NPC_Statblock/divider.webp?raw=true#.png[/img]
+  --+|[&Divider]
 
   --&SkillBlock|[c][t width=100%][tr]
   --&SkillBlock|+[td][F::14][b][button]STR&nbsp;@{selected|strength}&nbsp;(@{selected|strength_mod})::~selected|npc_str[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_str_save[/button][/td]
@@ -43,7 +44,7 @@
   --&SkillBlock|+[td][F::14][b][button]CHA&nbsp;@{selected|charisma}&nbsp;(@{selected|charisma_mod})::~selected|npc_cha[/button][/b][/F][br][button]save::~selected|npc_cha_save[/button][/td]
   --&SkillBlock|+[/tr][/t][/c]
   --+|[&SkillBlock]
-  --+|[img width=300px]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/NPC_Statblock/divider.webp?raw=true#.png[/img]
+  --+|[&Divider]
 
   --~|array;define;SaveArray;str;dex;con;int;wis;cha
   --%SaveLoop|foreach;SaveArray
@@ -73,7 +74,7 @@
   --?"@{selected|npc_challenge}" -ne ""|&SecondBlock$$$+[F::12][b]Challenge[/b]&nbsp;@{selected|npc_challenge}&nbsp;(@{selected|npc_xp}xp)[/F][br]
   --?"@{selected|npc_pb}" -ne 0|&SecondBlock$$$+[F::12][b]Proficiency Bonus[/b]&nbsp;@{selected|npc_pb}[/F][br]
   --+|[&SecondBlock]
-  --+|[img width=300px]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/NPC_Statblock/divider.webp?raw=true#.png[/img]
+  --+|[&Divider]
   --#parameterDelimiter|;
 
   --&TraitOutput|[t width=100%]
@@ -82,7 +83,7 @@
       --~TraitSplit|string;split;:;[&TraitLoop]
       --Rfind|@{selected|character_id};[&TraitSplit1];repeating_npctrait;name
       --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
-        --&TraitOutput|+[tr][td title="[&TraitSplit2]"][#000][i][b][&TraitSplit1]&nbsp;[/b][/i][/#]&nbsp;[r][F::14]|[button]📜::~%[&obrac]selected|[*R>npc_roll_output]}[/button]|[/F][/r][/td][/tr]
+        --&TraitOutput|+[tr][td title="[&TraitSplit2]"][#000][i][b][&TraitSplit1]&nbsp;[/b][/i][/#]&nbsp;[r][F::14]|[button]&#x1F4DC;::~%[&obrac]selected|[*R>npc_roll_output]}[/button]|[/F][/r][/td][/tr]
       --]|
     --%|
   --&TraitOutput|+[/t]
