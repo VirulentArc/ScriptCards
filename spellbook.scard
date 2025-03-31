@@ -1,7 +1,7 @@
 !Script{{
 
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 1.0.0
+  --/|Version     : 1.0.1
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -40,6 +40,7 @@
     --&HeaderMid2|style="display: inline-block ; position: relative ; top: -5px ; left: 98px ; "
     --&HeaderRight|style="display: inline-block ; position: relative ; top: -6px ; left: 125px ;"
     --?";wizard;cleric;" -inc ";[*S:class];"|=PrepTotal;[*S:intelligence_mod] + [*S:caster_level] {FLOOR}
+    --?";artificer;" -inc ";[*S:class];"|=PrepTotal;[*S:intelligence_mod] + ([*S:caster_level]/2) {FLOOR}
     --?"[*S:class]" -inc "paladin"|=PrepTotal;[*S:charisma_mod] + ([*S:caster_level]/2) {FLOOR}
     --?"[*S:class]" -inc "druid"|=PrepTotal;[*S:wisdom_mod] + [*S:caster_level]
     --&RollImage|[d20]1[/d20]
@@ -50,6 +51,7 @@
     --?"[*S:class]" -inc "Sorcerer"|&ClassImage$$$&#x2726;
     --?";cleric;paladin;" -inc ";[*S:class];"|&ClassImage$$$&#x273A;
     --?"[*S:class]" -inc "druid"|&ClassImage$$$&#x130E0;
+    --?"[*S:class]" -inc "artificer"|&ClassImage$$$&#x2699;
     --&Infinity|&#x221E;
     --&BookImage|&#x1F56E;
     --&BlueDot|&#x1F535;
@@ -57,10 +59,9 @@
     --?"[*S:class]" -inc "warlock" -or "[*S:class]" -inc "sorcerer" -or "[*S:class]" -inc "bard" -or "[*S:class]" -inc "rogue" -or "[*S:class]" -inc "fighter"|&PrepTotal$$$[&Infinity]|&PrepTotal$$$[$PrepTotal.Raw]
     --#parameterDelimiter|;
     --?";wizard;rogue;bard;sorcerer;cleric;paladin;fighter;" -inc ";[*S:class];"|&SlotImage;main
-    --?[*S:class] -inc "warlock"|&SlotImage;warlock
-    --?[*S:class] -inc "druid"|&SlotImage;druid
-    --&EmptySlot|[img width=30]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage]_spent.webp?raw=true#.png[/img]
-    --&FullSlot|[img width=30]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage].webp?raw=true#.png[/img]
+    --?";warlock;druid;artificer;" -inc ";[*S:class];"|&SlotImage;[*S:class]
+    --&EmptySlot|[img width=30]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage(tolowercase)]_spent.webp?raw=true#.png[/img]
+    --&FullSlot|[img width=30]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage(tolowercase)].webp?raw=true#.png[/img]
     --&MissingSlot|[img width=30]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spellslot_missing.webp?raw=true#.png[/img]
     --&SCA|[*S:spellcasting_ability]
     --~SCA|string;substring;3;3;[&SCA]
