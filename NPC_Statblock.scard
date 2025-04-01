@@ -21,67 +21,68 @@
   --#Debug|0
   --#overridetemplate|statblock
   --#Whisper|self
-  --#title|@{selected|npc_name}
-  --&SourceChar|@{selected|character_id}
+  --#sourceToken|@{selected|token_id}
+  --#title|[*S:npc_name]
+  --#emoteState|0
   --&obrac|{
   --&cbrac|}
   --&Divider|[t][tr][td height=5px][/td][/tr][/t][t][tr][td width=100% style="border: none; border-top: 0.10em solid transparent; border-bottom: 0.25em solid transparent; border-left: 14em solid #7e2d40; line-height: 1.25em; font-size: 1.4em; display: block;"][/td][/tr][/t][t][tr][td height=5px][/td][/tr][/t]
 
-  --?"@{selected|npc_actype}" -ne ""|&NPCactype;(@{selected|npc_actype})
-  --+|[F::12][#000][i]@{selected|npc_type}&nbsp;[/i][/#][/F]
+  --?"[*S:npc_actype]" -ne ""|&NPCactype;([*S:npc_actype])
+  --+|[F::12][#000][i][*S:npc_type]&nbsp;[/i][/#][/F]
   --+|[&Divider]
-  --+|[F::12][b]Armor&nbsp;Class[/b]&nbsp;@{selected|npc_ac}&nbsp;[&NPCactype][br][/F]
-  --?"@{selected|hp}" -ne ""|&BaseHP; @{selected|hp} /
-  --+|[F::12][b]Hit&nbsp;Points[/b][&BaseHP]&nbsp;@{selected|hp|max}&nbsp;(@{selected|npc_hpformula})[br][b]Speed[/b]&nbsp;@{selected|npc_speed}[/F]
+  --+|[F::12][b]Armor&nbsp;Class[/b]&nbsp;[*S:npc_ac]&nbsp;[&NPCactype][br][/F]
+  --?"[*S:hp]" -ne ""|&BaseHP; [*S:hp] /
+  --+|[F::12][b]Hit&nbsp;Points[/b][&BaseHP]&nbsp;[*S:hp^]&nbsp;([*S:npc_hpformula])[br][b]Speed[/b]&nbsp;[*S:npc_speed][/F]
   --+|[&Divider]
 
   --&SkillBlock|[c][t width=100%][tr]
-  --&SkillBlock|+[td][F::14][b][button]STR&nbsp;@{selected|strength}&nbsp;(@{selected|strength_mod})::~selected|npc_str[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_str_save[/button][/td]
-  --&SkillBlock|+[td][F::14][b][button]DEX&nbsp;@{selected|dexterity}&nbsp;(@{selected|dexterity_mod})::~selected|npc_dex[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_dex_save[/button][/td]
-  --&SkillBlock|+[td][F::14][b][button]CON&nbsp;@{selected|constitution}&nbsp;(@{selected|constitution_mod})::~selected|npc_con[/button][/b][/F][br][button]save::~selected|npc_con_save[/button][/td][/tr]
-  --&SkillBlock|+[tr][td][F::14][b][button]INT&nbsp;@{selected|intelligence}&nbsp;(@{selected|intelligence_mod})::~selected|npc_int[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_int_save[/button][/td]
-  --&SkillBlock|+[td][F::14][b][button]WIS&nbsp;@{selected|wisdom}&nbsp;(@{selected|wisdom_mod})::~selected|npc_wis[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_wis_save[/button][/td]
-  --&SkillBlock|+[td][F::14][b][button]CHA&nbsp;@{selected|charisma}&nbsp;(@{selected|charisma_mod})::~selected|npc_cha[/button][/b][/F][br][button]save::~selected|npc_cha_save[/button][/td]
+  --&SkillBlock|+[td][F::14][b][button]STR&nbsp;[*S:strength]&nbsp;([*S:strength_mod])::~selected|npc_str[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_str_save[/button][/td]
+  --&SkillBlock|+[td][F::14][b][button]DEX&nbsp;[*S:dexterity]&nbsp;([*S:dexterity_mod])::~selected|npc_dex[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_dex_save[/button][/td]
+  --&SkillBlock|+[td][F::14][b][button]CON&nbsp;[*S:constitution]&nbsp;([*S:constitution_mod])::~selected|npc_con[/button][/b][/F][br][button]save::~selected|npc_con_save[/button][/td][/tr]
+  --&SkillBlock|+[tr][td][F::14][b][button]INT&nbsp;[*S:intelligence]&nbsp;([*S:intelligence_mod])::~selected|npc_int[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_int_save[/button][/td]
+  --&SkillBlock|+[td][F::14][b][button]WIS&nbsp;[*S:wisdom]&nbsp;([*S:wisdom_mod])::~selected|npc_wis[/button]&nbsp;|[/b][/F][br][button]save::~selected|npc_wis_save[/button][/td]
+  --&SkillBlock|+[td][F::14][b][button]CHA&nbsp;[*S:charisma]&nbsp;([*S:charisma_mod])::~selected|npc_cha[/button][/b][/F][br][button]save::~selected|npc_cha_save[/button][/td]
   --&SkillBlock|+[/tr][/t][/c]
   --+|[&SkillBlock]
   --+|[&Divider]
 
   --~|array;define;SaveArray;str;dex;con;int;wis;cha
   --%SaveLoop|foreach;SaveArray
-    --?"[*[&SourceChar]:npc_[&SaveLoop]_save_base]" -gt 0 -or "[*[&SourceChar]:npc_[&SaveLoop]_save_base]" -ne ""|[
+    --?"[*S:npc_[&SaveLoop]_save_base]" -gt 0 -or "[*S:npc_[&SaveLoop]_save_base]" -ne ""|[
       --~SaveReplace|string;replaceall;_; ;[&SaveLoop]
 	  --~SaveTitle|string;totitlecase;[&SaveReplace]
-      --+|[F::12][b]Saving&nbsp;Throws&nbsp;[/b][&SaveTitle]&nbsp;[*[&SourceChar]:npc_[&SaveLoop]_save_base][/F]
+      --+|[F::12][b]Saving&nbsp;Throws&nbsp;[/b][&SaveTitle]&nbsp;[*S:npc_[&SaveLoop]_save_base][/F]
     --]|
   --%|
 
   --~|array;define;SkillArray;acrobatics;animal_handling;arcana;athletics;history;insight;intimidation;investigation;medicine;nature;perception;performance;persuasion;religion;sleight_of_hand;stealth;survival
   --%SkillLoop|foreach;SkillArray
-    --?"[*[&SourceChar]:npc_[&SkillLoop]_base]" -gt 0 -or "[*[&SourceChar]:npc_[&SkillLoop]_base]" -ne ""|[
+    --?"[*S:npc_[&SkillLoop]_base]" -gt 0 -or "[*S:npc_[&SkillLoop]_base]" -ne ""|[
       --~SkillReplace|string;replaceall;_; ;[&SkillLoop]
 	  --~SkillTitle|string;totitlecase;[&SkillReplace]
-      --+|[F::12][b]Skills&nbsp;[/b][&SkillTitle]&nbsp;[*[&SourceChar]:npc_[&SkillLoop]_base][/F]
+      --+|[F::12][b]Skills&nbsp;[/b][&SkillTitle]&nbsp;[*S:npc_[&SkillLoop]_base][/F]
     --]|
   --%|
 
   --#parameterDelimiter|$$$
-  --?"@{selected|npc_vulnerabilities}" -ne ""|&SecondBlock$$$+[F::12][b]Damage&nbsp;Vulnerabilities[/b]&nbsp;@{selected|npc_vulnerabilities}[/F][br]
-  --?"@{selected|npc_resistances}" -ne ""|&SecondBlock$$$+[F::12][b]Damage&nbsp;Resistances[/b]&nbsp;@{selected|npc_resistances}[/F][br]
-  --?"@{selected|npc_immunities}" -ne ""|&SecondBlock$$$+[F::12][b]Damage&nbsp;Immunities[/b]&nbsp;@{selected|npc_immunities}[/F][br]
-  --?"@{selected|npc_condition_immunities}" -ne ""|&SecondBlock$$$+[F::12][b]Conditions&nbsp;Immunities[/b]&nbsp;@{selected|npc_condition_immunities}[/F][br]
-  --?"@{selected|npc_senses}" -ne ""|&SecondBlock$$$+[F::12][b]Senses[/b]&nbsp;@{selected|npc_senses}[/F][br]
-  --?"@{selected|npc_languages}" -ne ""|&SecondBlock$$$+[F::12][b]Languages[/b]&nbsp;@{selected|npc_languages}[/F][br]
-  --?"@{selected|npc_challenge}" -ne ""|&SecondBlock$$$+[F::12][b]Challenge[/b]&nbsp;@{selected|npc_challenge}&nbsp;(@{selected|npc_xp}xp)[/F][br]
-  --?"@{selected|npc_pb}" -ne 0|&SecondBlock$$$+[F::12][b]Proficiency Bonus[/b]&nbsp;@{selected|npc_pb}[/F][br]
+  --?"[*S:npc_vulnerabilities]" -ne ""|&SecondBlock$$$+[F::12][b]Damage&nbsp;Vulnerabilities[/b]&nbsp;[*S:npc_vulnerabilities][/F][br]
+  --?"[*S:npc_resistances]" -ne ""|&SecondBlock$$$+[F::12][b]Damage&nbsp;Resistances[/b]&nbsp;[*S:npc_resistances][/F][br]
+  --?"[*S:npc_immunities]" -ne ""|&SecondBlock$$$+[F::12][b]Damage&nbsp;Immunities[/b]&nbsp;[*S:npc_immunities][/F][br]
+  --?"[*S:npc_condition_immunities]" -ne ""|&SecondBlock$$$+[F::12][b]Conditions&nbsp;Immunities[/b]&nbsp;[*S:npc_condition_immunities][/F][br]
+  --?"[*S:npc_senses]" -ne ""|&SecondBlock$$$+[F::12][b]Senses[/b]&nbsp;[*S:npc_senses][/F][br]
+  --?"[*S:npc_languages]" -ne ""|&SecondBlock$$$+[F::12][b]Languages[/b]&nbsp;[*S:npc_languages][/F][br]
+  --?"[*S:npc_challenge]" -ne ""|&SecondBlock$$$+[F::12][b]Challenge[/b]&nbsp;[*S:npc_challenge]&nbsp;[*S:npc_xp]xp[/F][br]
+  --?"[*S:npc_pb]" -ne 0|&SecondBlock$$$+[F::12][b]Proficiency Bonus[/b]&nbsp;[*S:npc_pb][/F][br]
   --+|[&SecondBlock]
   --+|[&Divider]
   --#parameterDelimiter|;
 
   --&TraitOutput|[t width=100%]
-  --~|array;fullrepeatingsection;Traits;@{selected|character_id};repeating_npctrait;name:description;:
+  --~|array;fullrepeatingsection;Traits;[*S:character_id];repeating_npctrait;name:description;:
     --%TraitLoop|foreach;Traits
       --~TraitSplit|string;split;:;[&TraitLoop]
-      --Rfind|@{selected|character_id};[&TraitSplit1];repeating_npctrait;name
+      --Rfind|[*S:character_id];[&TraitSplit1];repeating_npctrait;name
       --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&TraitOutput|+[tr][td title="[&TraitSplit2]"][#000][i][b][&TraitSplit1]&nbsp;[/b][/i][/#]&nbsp;[r][F::14]|[button]&#x1F4DC;::~%[&obrac]selected|[*R>npc_roll_output]}[/button]|[/F][/r][/td][/tr]
       --]|
@@ -89,15 +90,15 @@
   --&TraitOutput|+[/t]
   --+|[&TraitOutput]
 
-  --Rfirst|@{selected|character_id};repeating_npcaction
+  --Rfirst|[*S:character_id];repeating_npcaction
   --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
     --+|[br][F::20]Actions[/F][hr #922610]
   --]|
   --&ActionOutput|[t width=100%]
-  --~|array;fullrepeatingsection;Actions;@{selected|character_id};repeating_npcaction;name:description;:
+  --~|array;fullrepeatingsection;Actions;[*S:character_id];repeating_npcaction;name:description;:
     --%ActionLoop|foreach;Actions
       --~ActionSplit|string;split;:;[&ActionLoop]
-      --Rfind|@{selected|character_id};[&ActionSplit1];repeating_npcaction;name
+      --Rfind|[*S:character_id];[&ActionSplit1];repeating_npcaction;name
       --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&ActionOutput|+[tr][td title="[&ActionSplit2]"][#000][i][b][&ActionSplit1]&nbsp;[/b][/i][/#]&nbsp;[r][F::14]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/F][/r][/td][/tr]
       --]|
@@ -105,15 +106,15 @@
   --&ActionOutput|+[/t]
   --+|[&ActionOutput]
 
-  --Rfirst|@{selected|character_id};repeating_npcbonusaction
+  --Rfirst|[*S:character_id];repeating_npcbonusaction
   --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
     --+|[br][F::20]Bonus Actions[/F][hr #922610]
   --]|
   --&BonusOutput|[t width=100%]
-  --~|array;fullrepeatingsection;Bonus;@{selected|character_id};repeating_npcbonusaction;name:description;:
+  --~|array;fullrepeatingsection;Bonus;[*S:character_id];repeating_npcbonusaction;name:description;:
     --%BonusLoop|foreach;Bonus
       --~BonusSplit|string;split;:;[&BonusLoop]
-      --Rfind|@{selected|character_id};[&BonusSplit1];repeating_npcbonusaction;name
+      --Rfind|[*S:character_id];[&BonusSplit1];repeating_npcbonusaction;name
       --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&BonusOutput|+[tr][td title="[&BonusSplit2]"][#000][i][b][&BonusSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/r][/td][/tr]
       --]|
@@ -121,15 +122,15 @@
   --&BonusOutput|+[/t]
   --+|[&BonusOutput]
 
-  --Rfirst|@{selected|character_id};repeating_npcreaction
+  --Rfirst|[*S:character_id];repeating_npcreaction
   --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
     --+|[br][F::20]Reactions[/F][hr #922610]
   --]|
   --&ReactionOutput|[t width=100%]
-  --~|array;fullrepeatingsection;Reaction;@{selected|character_id};repeating_npcreaction;name:description;:
+  --~|array;fullrepeatingsection;Reaction;[*S:character_id];repeating_npcreaction;name:description;:
     --%ReactionLoop|foreach;Reaction
       --~ReactionSplit|string;split;:;[&ReactionLoop]
-      --Rfind|@{selected|character_id};[&ReactionSplit1];repeating_npcreaction;name
+      --Rfind|[*S:character_id];[&ReactionSplit1];repeating_npcreaction;name
       --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&ReactionOutput|+[tr][td title="[&ReactionSplit2]"][#000][i][b][&ReactionSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_roll_output][&cbrac][/button]|[/r][/td][/tr]
       --]|
@@ -137,15 +138,15 @@
   --&ReactionOutput|+[/t]
   --+|[&ReactionOutput]
 
-  --Rfirst|@{selected|character_id};repeating_npcaction-l
+  --Rfirst|[*S:character_id];repeating_npcaction-l
   --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
-    --+|[br][F::20]Legendary Actions[/F][hr #922610][F::12][#000]@{selected|npc_legendary_actions_desc}[/#][/F]
+    --+|[br][F::20]Legendary Actions[/F][hr #922610][F::12][#000][*S:npc_legendary_actions_desc][/#][/F]
   --]|
   --&LegendOutput|[t width=100%]
-  --~|array;fullrepeatingsection;Legend;@{selected|character_id};repeating_npcaction-l;name:description;:
+  --~|array;fullrepeatingsection;Legend;[*S:character_id];repeating_npcaction-l;name:description;:
     --%LegendLoop|foreach;Legend
       --~LegendSplit|string;split;:;[&LegendLoop]
-      --Rfind|@{selected|character_id};[&LegendSplit1];repeating_npcaction-l;name
+      --Rfind|[*S:character_id];[&LegendSplit1];repeating_npcaction-l;name
       --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&LegendOutput|+[tr][td title="[&LegendSplit2]"][#000][i][b][&LegendSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/r][/td][/tr]
       --]|
@@ -153,15 +154,15 @@
   --&LegendOutput|+[/t]
   --+|[&LegendOutput]
 
-  --Rfirst|@{selected|character_id};repeating_npcaction-m
+  --Rfirst|[*S:character_id];repeating_npcaction-m
   --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
     --+|[br][F::20]Mythic Actions[/F][hr #922610][F::12][#000]@{selected|npc_mythic_actions_desc}[/#][/F]
   --]|
   --&MythicOutput|[t width=100%]
-  --~|array;fullrepeatingsection;Mythic;@{selected|character_id};repeating_npcaction-m;name:description;:
+  --~|array;fullrepeatingsection;Mythic;[*S:character_id];repeating_npcaction-m;name:description;:
     --%MythicLoop|foreach;Mythic
       --~MythicSplit|string;split;:;[&MythicLoop]
-      --Rfind|@{selected|character_id};[&MythicSplit1];repeating_npcaction-m;name
+      --Rfind|[*S:character_id];[&MythicSplit1];repeating_npcaction-m;name
       --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
         --&MythicOutput|+[tr][td title="[&MythicSplit2]"][#000][i][b][&MythicSplit1]&nbsp;[/b][/i][/#]&nbsp;[r]|[button]⚔️::~%[&obrac]selected|[*R>npc_action][&cbrac][/button]|[/r][/td][/tr]
       --]|
