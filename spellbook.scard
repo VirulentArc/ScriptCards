@@ -1,13 +1,14 @@
 !Script{{
 
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 2.0.1
+  --/|Version     : 2.1.0
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
   --/|              If the character has an attack roll a d20 button will appear beside the spell name which will roll the attack from the character sheet.
-  --/|              There is a round button which indicates if the spell is prepared, clicking the button will prepare or unprepare the spell.
+  --/|              There is a round button which indicates if the spell is prepared, clicking the button will prepare or unprepare the spell(class dependant).
   --/|              There is a button shaped like an open book, which when clicked will display the full description of the spell.
+  --/|              Use the plus or minus buttons to add or remove spell slots.
   --/|              If there is any confusion about what something does, all buttons and items on the spellbook have tooltips, just mouseover them.
   --/|              If the character is a cleric or druid, only prepared spells will display, otherwise the list can get very long.
   --/|
@@ -33,11 +34,9 @@
   --&cbrac|}
 
   --/|Styling
-    --&HeaderImage|style="background-image: url(https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/header.webp?raw=true#.png) ; background-repeat: no-repeat ; background-size: 100% 30px ; background-position: left ; display: block ; width: 100% ; height: 100% ; line-height: 30px ; position: relative ; top: 15px ;"
-    --&HeaderMid1|style="display: inline-block ; position: relative ; top: -7px ; left: 68px ;"
-    --&HeaderMid2|style="display: inline-block ; position: relative ; top: -5px ; left: 98px ; "
-    --&HeaderRight|style="display: inline-block ; position: relative ; top: -6px ; left: 125px ;"
-    --&LevelBackground|style="background-image: url(https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spell_level.webp?raw=true#.png) ; background-repeat: no-repeat ; background-size: 100% 40px ; background-position: left ; display: block ; width: 245px ; height:42px ; "
+    --&HeaderImage|style="background-image: url(https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/header.webp?raw=true#.png) ; background-repeat: no-repeat ; background-size: 240px 30px ; background-position: center ; display: block ; width: 240px ; height: 100% ; line-height: 40px ; text-align: center ;"
+    --&HeaderBonus|style="display: inline-block ; position: relative ; top: 2px ;"
+    --&LevelBackground|style="background-image: url(https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spell_level.webp?raw=true#.png) ; background-repeat: no-repeat ; background-size: 240px 40px ; background-position: left ; display: block ; width: 240px ; height: 100% ; text-align: center ; vertical-align: middle ;"
     --?";wizard;cleric;druid;" -inc ";[*S:class];"|=PrepTotal;[*S:caster_level] + @{selected|spellcasting_ability} {FLOOR}
     --?";paladin;artificer;" -inc ";[*S:class];"|=PrepTotal;([*S:caster_level]/2) + @{selected|spellcasting_ability} {FLOOR}
     --&RollImage|[d20]1[/d20]
@@ -54,6 +53,7 @@
     --&BlueDot|&#x1F535;
     --&BlankDot|&#x1F518;
     --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[*S:class];"|&PrepTotal$$$[&Infinity]|&PrepTotal$$$[$PrepTotal.Raw]
+    --?"[&PrepTotal]" -eq "[&Infinity]"|&FontSize$$$30|&FontSize$$$20
     --#parameterDelimiter|;
     --?";wizard;rogue;bard;sorcerer;cleric;paladin;fighter;" -inc ";[*S:class];"|&SlotImage;main|&SlotImage;[*S:class]
     --&EmptySlot|[img width=30]https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage(tolowercase)]_spent.webp?raw=true#.png[/img]
@@ -79,9 +79,8 @@
 --X|
 
   --:Header|
-    --&Header|[t width=100%][tr][td title="Spellcasting Ability" [&HeaderImage]][b]&nbsp;&#x272F;[F::16][&SCA(touppercase)][/F][/b][/td][td title="Spell Save DC" [&HeaderMid1]][b][F::18]&#x1F6E1;[*S:spell_save_dc][/F][/b][/td][td title="Spellcasting Bonus" [&HeaderMid2]][b][F::5][&RollImage]&nbsp;[/F][F::18][*S:spell_attack_bonus][/F][/b][/td][td title="Max Prepared Spells" [&HeaderRight]][F::20][&ClassImage][/F]&nbsp;[F::18][b][&PrepTotal][/b][/F][/td][/tr][/t]
+    --&Header|[t width=100% [&HeaderImage]][tr][td title="Spellcasting Ability" width=60px][b]&#x272F;[F::16][&SCA(touppercase)][/F][/b][/td][td title="Spell Save DC" width=60px][F::16]&#x1F6E1;[/F][b][F::20][*S:spell_save_dc][/F][/b][/td][td title="Spellcasting Bonus" width=60px [&HeaderBonus]][b][F::5][&RollImage]&nbsp;[/F][F::20][*S:spell_attack_bonus][/F][/b][/td][td title="Max Prepared Spells" width=60px][F::18][&ClassImage][/F][F::[&FontSize]][b][&PrepTotal][/b][/F][/td][/tr][/t]
     --+|[&Header]
-    --+|[br]
   --<|
 
   --:BookOutput|
@@ -98,18 +97,32 @@
     --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
     --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 1 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
     --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 2 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 3 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 3 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&MissingSlot]
     --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
     --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 1 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
     --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 2 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
     --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 3 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
     --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 4 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
     --?"[&SpellLevel]" -inc "cantrip"|&Slots$$$[&Infinity]|&Slots$$$[&Slots]
+    --?"[&Slots]" -eq "[&Infinity]"|&InfStyle$$$style="position: relative; top: 1px ; "|&InfStyle$$$
     --?"[&SpellLevel]" -inc "cantrip"|&SpellLevelOutput$$$C|&SpellLevelOutput$$$[&SpellLevel]
-    --?"[&SpellLevel]" -inc "cantrip"|&LevelBackground2$$$style="position: relative; left: 5px ; top: 10px ; "|&LevelBackground2$$$style="position: relative; left: 7px ; top: 4px ; "
-    --?"[&SpellLevel]" -inc "cantrip"|&LevelBackground3$$$style="position: relative; left: 100px ; top: 14px ; "|&LevelBackground3$$$style="position: relative; left: 68px ; top: 6px ; "
-    --?"[&SpellLevel]" -inc "cantrip"|&SpellOutput$$$[t width=100% [&LevelBackground]][tr][td [&LevelBackground2]][br][F::20][b][&SpellLevelOutput][/b][/F][/td][td [&LevelBackground3]][F::44][&Slots][/F][/td][/tr][/t][t width=240px]|&SpellOutput$$$[t width=100% [&LevelBackground]][tr][td [&LevelBackground2]][br][F::20][b][&SpellLevelOutput][/b][/F][/td][td [&LevelBackground3]][F::18][&Slots][/F][/td][/tr][/t][t width=240px]
+    --&LevelStyle|style="position: relative; top: -2px ; "
+    --&MinusStyle|style="position: relative; top: -4px ; "
     --#parameterDelimiter|;
+    --?"[*S:lvl[&SpellLevel]_slots_total]" -eq "[*S:lvl[&SpellLevel]_slots_expended]"|[
+      --&PlusSlot|
+    --]|[
+      --&PlusSlot|[rbutton]+::AddSlot;[&SpellLevel][/rbutton]
+    --]|
+    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0|[
+      --&MinusSlot|
+    --]|[
+      --&MinusSlot|[rbutton]-::SubtractSlot;[&SpellLevel][/rbutton]
+    --]|
+    --?"[&SpellLevel]" -inc "cantrip"|&PlusSlot;
+    --?"[&SpellLevel]" -inc "cantrip"|&MinusSlot;
+    --&SpellOutput|[t width=100% [&LevelBackground]][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][&SpellLevelOutput][/b][/F][/td][td width=40px [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td width=135px [&InfStyle]][F::46][&Slots][/F][/td][td width=40px][b][F::22][&PlusSlot][/F][/b][/td][/tr][/t]
+    --&SpellOutput|+[t width=240px]
     --~|array;fromrepeatingsection;lvlSpells;[*S:character_id];repeating_spell-[&SpellLevel];spellname
     --%SpellLoop|foreach;lvlSpells
       --Rfind|[*S:character_id];[&SpellLoop];repeating_spell-[&SpellLevel];spellname
@@ -137,13 +150,29 @@
     --+|[&SpellOutput]
   --<|
 
+  --:AddSlot|
+    --=SlotLevel|[&reentryval]
+    --=SlotsExpended|[*S:lvl[$SlotLevel]_slots_expended]
+    --=SlotsLeft|[$SlotsExpended] + 1
+    --!a:[*S:character_id]|lvl[$SlotLevel]_slots_expended:[$SlotsLeft]
+    -->RestartBook|
+  --X|
+
+  --:SubtractSlot|
+    --=SlotLevel|[&reentryval]
+    --=SlotsExpended|[*S:lvl[$SlotLevel]_slots_expended]
+    --=SlotsLeft|[$SlotsExpended] - 1
+    --!a:[*S:character_id]|lvl[$SlotLevel]_slots_expended:[$SlotsLeft]
+    -->RestartBook|
+  --X|
+
   --:PrepareOff|
     --?";sorcerer;warlock;fighter;rogue;artificer;bard;" -ninc ";[*S:class];"|[
       --&SpellEntry|[&reentryval]
       --~SpellLetters|string;nonumbers;[&SpellEntry]
       --~SpellNumbers|string;onlynumbers;[&SpellEntry]
-      --Rfind|@{selected|character_id};[&SpellLetters];repeating_spell-[&SpellNumbers];spellname
-      --!a:@{selected|character_id}|[*R>spellprepared]:0
+      --Rfind|[*S:character_id];[&SpellLetters];repeating_spell-[&SpellNumbers];spellname
+      --!a:[*S:character_id]|[*R>spellprepared]:0
       -->RestartBook|
     --]|[
       -->RestartBook|
@@ -154,8 +183,8 @@
     --&SpellEntry|[&reentryval]
     --~SpellLetters|string;nonumbers;[&SpellEntry]
     --~SpellLevel|string;onlynumbers;[&SpellEntry]
-    --Rfind|@{selected|character_id};[&SpellLetters];repeating_spell-[&SpellLevel];spellname
-    --!a:@{selected|character_id}|[*R>spellprepared]:1
+    --Rfind|[*S:character_id];[&SpellLetters];repeating_spell-[&SpellLevel];spellname
+    --!a:[*S:character_id]|[*R>spellprepared]:1
     -->RestartBook|
   --X|
 
