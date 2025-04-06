@@ -1,7 +1,7 @@
 !Script{{
 
   --/|Script Name : Tim's NPC Statblock Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 1.1.0
+  --/|Version     : 1.1.1
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays an NPC statblock that mimics the 2014 Monster Manual in chat that has buttons for all 
@@ -49,51 +49,63 @@
   --+|[&SkillBlock]
   --+|[&Divider]
 
-  --&SecondBlock|[t width=240px][tr]
+  --&SecondBlock|[t width=240px][tr][td style="width: 240px ; display: block ; font-size: 12px ; "]
   --~|array;define;SaveArray;str;dex;con;int;wis;cha
   --%SaveLoop|foreach;SaveArray
-    --?"[*S:npc_[&SaveLoop]_save_base]" -gt 0 -or "[*S:npc_[&SaveLoop]_save_base]" -ne ""|[
-      --~SaveReplace|string;replaceall;_; ;[&SaveLoop]
-	  --~SaveTitle|string;totitlecase;[&SaveReplace]
-      --&SecondBlock|+[td][F::12][b]Saving&nbsp;Throws&nbsp;[/b][&SaveTitle]&nbsp;[*S:npc_[&SaveLoop]_save_base][/F][/td]
+    --?"[*S:npc_[&SaveLoop]_save_base]" -gt 0|[
+	  --~SaveTitle|string;totitlecase;[&SaveLoop]
+      --&AddSave|+[&SaveTitle]&nbsp;[*S:npc_[&SaveLoop]_save_base],&nbsp;
     --]|
   --%|
-  --&SecondBlock|+[/tr][tr]
+  --?"[&AddSave]" -ne ""|[
+    --&SavingThrows|[b]Saving&nbsp;Throws&nbsp;[/b]
+  --]|
+  --=SecondBlockCalc|[&AddSave(length)] - 7
+  --&SecondBlock|+[&SavingThrows][&AddSave(0,[$SecondBlockCalc.Raw])][/td][/tr][/t]
+  --+|[&SecondBlock]
+
+  --&ThirdBlock|[t width=240px][tr][td style="width: 240px ; display: block ; font-size: 12px ; "]
   --~|array;define;SkillArray;acrobatics;animal_handling;arcana;athletics;history;insight;intimidation;investigation;medicine;nature;perception;performance;persuasion;religion;sleight_of_hand;stealth;survival
   --%SkillLoop|foreach;SkillArray
-    --?"[*S:npc_[&SkillLoop]_base]" -gt 0 -or "[*S:npc_[&SkillLoop]_base]" -ne ""|[
-      --~SkillReplace|string;replaceall;_; ;[&SkillLoop]
-	  --~SkillTitle|string;totitlecase;[&SkillReplace]
-      --&SecondBlock|+[td][F::12][b]Skills&nbsp;[/b][&SkillTitle]&nbsp;[*S:npc_[&SkillLoop]_base][/F][/td]
+    --?"[*S:npc_[&SkillLoop]_base]" -gt 0|[
+	  --~SkillTitle|string;totitlecase;[&SkillLoop]
+      --&AddSkill|+[&SkillTitle]&nbsp;[*S:npc_[&SkillLoop]_base],&nbsp;
     --]|
   --%|
-  --&SecondBlock|+[/tr]
+  --?"[&AddSkill]" -ne ""|[
+    --&SkillHeading|[b]Skills&nbsp;[/b]
+  --]|
+  --=ThirdBlockCalc|[&AddSkill(length)] - 7
+  --&ThirdBlock|+[&SkillHeading][&AddSkill(0,[$ThirdBlockCalc.Raw])][/td][/tr][/t]
+  --+|[&ThirdBlock]
+
   --#parameterDelimiter|$$$
-  --?"[*S:npc_vulnerabilities]" -ne ""|&SecondBlock$$$+[tr][td][F::12][b]Damage&nbsp;Vulnerabilities[/b]&nbsp;[*S:npc_vulnerabilities][/F][br][/td][/tr]
-  --?"[*S:npc_resistances]" -ne ""|&SecondBlock$$$+[tr][td][F::12][b]Damage&nbsp;Resistances[/b]&nbsp;[*S:npc_resistances][/F][br][/td][/tr]
-  --?"[*S:npc_immunities]" -ne ""|&SecondBlock$$$+[tr][td][F::12][b]Damage&nbsp;Immunities[/b]&nbsp;[*S:npc_immunities][/F][br][/td][/tr]
-  --?"[*S:npc_condition_immunities]" -ne ""|&SecondBlock$$$+[tr][td][F::12][b]Conditions&nbsp;Immunities[/b]&nbsp;[*S:npc_condition_immunities][/F][br][/td][/tr]
-  --?"[*S:npc_senses]" -ne ""|&SecondBlock$$$+[tr][td][F::12][b]Senses[/b]&nbsp;[*S:npc_senses][/F][br][/td][/tr]
-  --?"[*S:npc_languages]" -ne ""|&SecondBlock$$$+[tr][td][F::12][b]Languages[/b]&nbsp;[*S:npc_languages][/F][br][/td][/tr]
-  --?"[*S:npc_challenge]" -ne ""|&SecondBlock$$$+[tr][td][F::12][b]Challenge[/b]&nbsp;[*S:npc_challenge]&nbsp;[*S:npc_xp]xp[/F][br][/td][/tr]
-  --?"[*S:npc_pb]" -ne 0|&SecondBlock$$$+[tr][td][F::12][b]Proficiency Bonus[/b]&nbsp;[*S:npc_pb][/F][br][/td][/tr]
-  --&SecondBlock|+[/t]
-  --+|[&SecondBlock]
+  --?"[*S:npc_vulnerabilities]" -ne ""|&FourthBlock$$$[tr][td][F::12][b]Damage&nbsp;Vulnerabilities[/b]&nbsp;[*S:npc_vulnerabilities][/F][br][/td][/tr]
+  --?"[*S:npc_resistances]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Damage&nbsp;Resistances[/b]&nbsp;[*S:npc_resistances][/F][br][/td][/tr]
+  --?"[*S:npc_immunities]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Damage&nbsp;Immunities[/b]&nbsp;[*S:npc_immunities][/F][br][/td][/tr]
+  --?"[*S:npc_condition_immunities]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Conditions&nbsp;Immunities[/b]&nbsp;[*S:npc_condition_immunities][/F][br][/td][/tr]
+  --?"[*S:npc_senses]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Senses[/b]&nbsp;[*S:npc_senses][/F][br][/td][/tr]
+  --?"[*S:npc_languages]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Languages[/b]&nbsp;[*S:npc_languages][/F][br][/td][/tr]
+  --?"[*S:npc_challenge]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Challenge[/b]&nbsp;[*S:npc_challenge]&nbsp;[*S:npc_xp]xp[/F][br][/td][/tr]
+  --?"[*S:npc_pb]" -ne 0|&FourthBlock$$$+[tr][td][F::12][b]Proficiency Bonus[/b]&nbsp;[*S:npc_pb][/F][br][/td][/tr]
+  --&FourthBlock|+[/t]
+  --+|[&FourthBlock]
   --+|[&Divider]
   --#parameterDelimiter|;
 
-  --&TraitOutput|[t width=240px]
-  --~|array;fullrepeatingsection;Traits;[*S:character_id];repeating_npctrait;name:description;|
-    --%TraitLoop|foreach;Traits
-      --~TraitSplit|string;split;|;[&TraitLoop]
-      --Rfind|[*S:character_id];[&TraitSplit1];repeating_npctrait;name
-      --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
-        --&TraitOutput|+[tr][td title="[&TraitLoop]" style="width: 200px ; display: inline-block ; white-space: nowrap ; overflow: hidden ; text-overflow: ellipsis ; color: #000 ; font-weight: bold ; font-style: italic ; "][&TraitSplit1][/td][td style="width: 40px ; display: inline-block ; text-align: right ; "][F::14]|[button]&#x1F4DC;::~%[&obrac]selected|[*R>npc_roll_output]}[/button]|[/F][/td][/tr]
-      --]|
-    --%|
-  --&TraitOutput|+[/t]
-  --+|[&TraitOutput]
-  --+|[&Space]
+  --Rfirst|[*S:character_id];repeating_npcatrait
+  --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
+    --&TraitOutput|[t width=240px]
+    --~|array;fullrepeatingsection;Traits;[*S:character_id];repeating_npctrait;name:description;|
+      --%TraitLoop|foreach;Traits
+        --~TraitSplit|string;split;|;[&TraitLoop]
+        --Rfind|[*S:character_id];[&TraitSplit1];repeating_npctrait;name
+          --&TraitOutput|+[tr][td title="[&TraitLoop]" style="width: 200px ; display: inline-block ; white-space: nowrap ; overflow: hidden ; text-overflow: ellipsis ; color: #000 ; font-weight: bold ; font-style: italic ; "][&TraitSplit1][/td][td style="width: 40px ; display: inline-block ; text-align: right ; "][F::14]|[button]&#x1F4DC;::~%[&obrac]selected|[*R>npc_roll_output]}[/button]|[/F][/td][/tr]
+      --%|
+    --&TraitOutput|+[/t]
+    --+|[&TraitOutput]
+    --+|[&Space]
+  --]|
 
   --Rfirst|[*S:character_id];repeating_npcaction
   --?"[*R:name]" -ne "NoRepeatingAttributeLoaded" -and "[*R:name]X" -ne "X"|[
