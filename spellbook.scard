@@ -1,7 +1,7 @@
 !Script{{
 
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 2.1.0
+  --/|Version     : 2.2.1
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -11,6 +11,8 @@
   --/|              Use the plus or minus buttons to add or remove spell slots.
   --/|              If there is any confusion about what something does, all buttons and items on the spellbook have tooltips, just mouseover them.
   --/|              If the character is a cleric or druid, only prepared spells will display, otherwise the list can get very long.
+  --/|              If you want to use your own spell macros, this script will detect if they exist and run them instead. Just make sure they are
+  --/|              named exactly as the spell only instead of spaces, use a hyphen -
   --/|
   --/|Installation: This script is for the 2014 edition of the official D&D 5E Character Sheet by Roll20 and requires the
   --/|              installation of the ScriptCards MOD using a pro account with API access. 
@@ -103,25 +105,17 @@
     --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 2 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
     --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 3 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
     --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 4 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
+    --?"[*S:lvl[&SpellLevel]_slots_total]" -eq "[*S:lvl[&SpellLevel]_slots_expended]"|&PlusSlot$$$|&PlusSlot$$$[rbutton]+::AddSlot;[&SpellLevel][/rbutton]
+    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0|&MinusSlot$$$|&MinusSlot$$$[rbutton]-::SubtractSlot;[&SpellLevel][/rbutton]
     --?"[&SpellLevel]" -inc "cantrip"|&Slots$$$[&Infinity]|&Slots$$$[&Slots]
     --?"[&Slots]" -eq "[&Infinity]"|&InfStyle$$$style="position: relative; top: 1px ; "|&InfStyle$$$
     --?"[&SpellLevel]" -inc "cantrip"|&SpellLevelOutput$$$C|&SpellLevelOutput$$$[&SpellLevel]
     --&LevelStyle|style="position: relative; top: -2px ; "
     --&MinusStyle|style="position: relative; top: -4px ; "
     --#parameterDelimiter|;
-    --?"[*S:lvl[&SpellLevel]_slots_total]" -eq "[*S:lvl[&SpellLevel]_slots_expended]"|[
-      --&PlusSlot|
-    --]|[
-      --&PlusSlot|[rbutton]+::AddSlot;[&SpellLevel][/rbutton]
-    --]|
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0|[
-      --&MinusSlot|
-    --]|[
-      --&MinusSlot|[rbutton]-::SubtractSlot;[&SpellLevel][/rbutton]
-    --]|
     --?"[&SpellLevel]" -inc "cantrip"|&PlusSlot;
     --?"[&SpellLevel]" -inc "cantrip"|&MinusSlot;
-    --&SpellOutput|[t width=100% [&LevelBackground]][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][&SpellLevelOutput][/b][/F][/td][td width=40px [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td width=135px [&InfStyle]][F::46][&Slots][/F][/td][td width=40px][b][F::22][&PlusSlot][/F][/b][/td][/tr][/t]
+    --&SpellOutput|[t width=100% [&LevelBackground]][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][&SpellLevelOutput][/b][/F][/td][td width=40px [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td width=135px [&InfStyle]][F::46][&Slots][/F][/td][td width=40px][b][F::22][l][&PlusSlot][/l][/F][/b][/td][/tr][/t]
     --&SpellOutput|+[t width=240px]
     --~|array;fromrepeatingsection;lvlSpells;[*S:character_id];repeating_spell-[&SpellLevel];spellname
     --%SpellLoop|foreach;lvlSpells
@@ -129,21 +123,44 @@
       --&SpellData|[*R:spellname][&SpellLevel]
       --?"[*R:spellconcentration]" -inc 1|&Concentration;(c)|&Concentration;
       --?"[*R:spellritual]" -inc "Yes"|&Ritual;(r)|&Ritual;
-      --?"[*R:spelloutput]" -inc "ATTACK"|[
-        --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
-      --]|
-      --?"[*R:spelloutput]" -inc "SPELLCARD"|[
-        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+      --~MacroName|string;replaceall; ;-;[&SpellLoop]
+      --~MacroButton|system;findability;[*S:character_name];[&MacroName]
+      --?"[&MacroButton]" -ne "AbilityNotFound"|[
+        --&SpellRoll|[F::6][button][&RollImage]::~[*S:character_name]|[&MacroButton][/button][/F]
+      --]|[
+        --?"[*R:spelloutput]" -inc "ATTACK"|[
+          --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+        --]|
+        --?"[*R:spelloutput]" -inc "SPELLCARD"|[
+          --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
+        --]|
       --]|
       --#parameterDelimiter|$$$
-      --&SpellDetail|[button][&BookImage]::~%[&obrac]selected|[*R>output][&cbrac][/button]
+      --?"[&MacroButton]" -ne "AbilityNotFound"|[
+        --&SpellDetail|[button][&BookImage]::~[*S:character_name]|[&MacroButton][/button]
+      --]|[
+        --&SpellDetail|[button][&BookImage]::~%[&obrac]selected|[*R>output][&cbrac][/button]
+      --]|
       --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[*S:class];" -or "[*R:spellprepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip"|&Prepared$$$[rbutton][&BlueDot]::PrepareOff;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareOn;[&SpellData][/rbutton]
+      --?"[*R:spellcomp_v]" -inc "v=1"|&ToolVerb$$$V|&ToolVerb$$$
+      --?"[*R:spellcomp_s]" -inc "s=1"|&ToolSomatic$$$,S|&ToolSomatic$$$
+      --?"[*R:spellcomp_m]" -inc "m=1"|&ToolMat$$$,M([*R:spellcomp_materials])|&ToolMat$$$
+      --&ToolComp|[&ToolVerb][&ToolSomatic][&ToolMat]&nbsp;&#124;&nbsp;
+      --&ToolRange|R:&nbsp;[*R:spellrange]&nbsp;&#124;&nbsp;
+      --?"[*R:spelltarget]" -eq ""|&ToolTarget$$$|&ToolTarget$$$T:&nbsp;[*R:spelltarget]&nbsp;&#124;&nbsp;
+      --&ToolDuration|[*R:spellduration]&nbsp;&#124;&nbsp;
+      --?"[*R:spellcastingtime]" -eq ""|&ToolCT$$$|&ToolCT$$$[*R:spellcastingtime]&nbsp;&#124;&nbsp;
+      --?"[*R:spellritual]" -inc "Yes"|&ToolRit$$$[&Ritual]&nbsp;&#124;&nbsp;|&ToolRit$$$
+	  --?"[*R:spellconcentration]" -eq ""|&ToolCon$$$|&ToolCon$$$(c)&nbsp;&#124;&nbsp;
+      --?"[*R:innate]" -eq ""|&ToolInnate$$$|&ToolInnate$$$[*R:innate]&nbsp;&#124;&nbsp;
+      --?"[*R:spellathigherlevels]" -eq ""|&ToolHigher$$$|&ToolHigher$$$&nbsp;&#124;&nbsp;[*R:spellathigherlevels]
       --#parameterDelimiter|;
+      --&ToolTip|title="[&ToolCT][&ToolRange][&ToolTarget][&ToolComp][&ToolRit][&ToolCon][&ToolDuration][&ToolInnate][*R:spelldescription][&ToolHigher]"
       --?"[*S:class]" -inc "cleric" -or "[*S:class]" -inc "druid" -and "[*R:spellprepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip"|[
-        --&SpellOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate]|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][&SpellDetail][/F][/td][/tr]
+        --&SpellOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " [&ToolTip]][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][&SpellDetail][/F][/td][/tr]
       --]|
       --?"[*S:class]" -ninc "cleric" -and "[*S:class]" -ninc "druid" -and "[&SpellLevel]" -ninc "cantrip"|[
-        --&SpellOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " title="[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate]|[*R:spelldescription]"][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][&SpellDetail][/F][/td][/tr]
+        --&SpellOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " [&ToolTip]][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][&SpellDetail][/F][/td][/tr]
       --]|
     --%|
     --&SpellOutput|+[/t]
