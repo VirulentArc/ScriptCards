@@ -31,7 +31,7 @@
 
 --:Aura|
   --#Whisper|self
-  --?"[*[&tok]:t-aura1_radius]" -ninc 30|[
+  --?"[*[&tok]:t-aura1_radius]" -ne 30|[
 	--!t:[&tok]|aura1_radius:30
     --!t:[&tok]|aura1_color:#4a86e8
     --!t:[&tok]|emits_low_light:1
