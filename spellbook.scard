@@ -1,7 +1,7 @@
 !Script{{
 
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 2.2.1
+  --/|Version     : 2.2.2
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -89,30 +89,32 @@
     --&SpellLevel|[%1%]
     --Rfirst|[*S:character_id];repeating_spell-[&SpellLevel];spellname
     --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|Done
-    --#parameterDelimiter|$$$
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 1|&Slots$$$[&EmptySlot][&MissingSlot][&MissingSlot][&MissingSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 1 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 1|&Slots$$$[&FullSlot][&MissingSlot][&MissingSlot][&MissingSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 2|&Slots$$$[&EmptySlot][&EmptySlot][&MissingSlot][&MissingSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 1 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 2|&Slots$$$[&FullSlot][&EmptySlot][&MissingSlot][&MissingSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 2 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 2|&Slots$$$[&FullSlot][&FullSlot][&MissingSlot][&MissingSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 1 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 2 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 3 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&MissingSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 1 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 2 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 3 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 4 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
-    --?"[*S:lvl[&SpellLevel]_slots_total]" -eq "[*S:lvl[&SpellLevel]_slots_expended]"|&PlusSlot$$$|&PlusSlot$$$[rbutton]+::AddSlot;[&SpellLevel][/rbutton]
-    --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0|&MinusSlot$$$|&MinusSlot$$$[rbutton]-::SubtractSlot;[&SpellLevel][/rbutton]
+    --?"[&SpellLevel]" -ninc "cantrip"|[
+      --#parameterDelimiter|$$$
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 1|&Slots$$$[&EmptySlot][&MissingSlot][&MissingSlot][&MissingSlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 1 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 1|&Slots$$$[&FullSlot][&MissingSlot][&MissingSlot][&MissingSlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 2|&Slots$$$[&EmptySlot][&EmptySlot][&MissingSlot][&MissingSlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 1 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 2|&Slots$$$[&FullSlot][&EmptySlot][&MissingSlot][&MissingSlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 2 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 2|&Slots$$$[&FullSlot][&FullSlot][&MissingSlot][&MissingSlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&MissingSlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 1 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&MissingSlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 2 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&MissingSlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 3 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 3|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&MissingSlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&EmptySlot][&EmptySlot][&EmptySlot][&EmptySlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 1 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&EmptySlot][&EmptySlot][&EmptySlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 2 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&EmptySlot][&EmptySlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 3 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&EmptySlot]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 4 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 4|&Slots$$$[&FullSlot][&FullSlot][&FullSlot][&FullSlot]
+      --?"[*S:lvl[&SpellLevel]_slots_total]" -eq "[*S:lvl[&SpellLevel]_slots_expended]"|&PlusSlot$$$|&PlusSlot$$$[rbutton]+::AddSlot;[&SpellLevel][/rbutton]
+      --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0|&MinusSlot$$$|&MinusSlot$$$[rbutton]-::SubtractSlot;[&SpellLevel][/rbutton]
+      --#parameterDelimiter|;
+	--]|
     --?"[&SpellLevel]" -inc "cantrip"|&Slots$$$[&Infinity]|&Slots$$$[&Slots]
     --?"[&Slots]" -eq "[&Infinity]"|&InfStyle$$$style="position: relative; top: 1px ; "|&InfStyle$$$
     --?"[&SpellLevel]" -inc "cantrip"|&SpellLevelOutput$$$C|&SpellLevelOutput$$$[&SpellLevel]
     --&LevelStyle|style="position: relative; top: -2px ; "
     --&MinusStyle|style="position: relative; top: -4px ; "
-    --#parameterDelimiter|;
     --?"[&SpellLevel]" -inc "cantrip"|&PlusSlot;
     --?"[&SpellLevel]" -inc "cantrip"|&MinusSlot;
     --&SpellOutput|[t width=100% [&LevelBackground]][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][&SpellLevelOutput][/b][/F][/td][td width=40px [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td width=135px [&InfStyle]][F::46][&Slots][/F][/td][td width=40px][b][F::22][l][&PlusSlot][/l][/F][/b][/td][/tr][/t]
@@ -129,7 +131,7 @@
         --&SpellRoll|[F::6][button][&RollImage]::~[*S:character_name]|[&MacroButton][/button][/F]
       --]|[
         --?"[*R:spelloutput]" -inc "ATTACK"|[
-          --&SpellRoll|[F::6][button][&RollImage]::~%[&obrac]selected|[*R>spell][&cbrac][/button][/F]
+          --&SpellRoll|[F::6][sheetbutton][&RollImage]::@{selected|character_name}::[*R>spell][/sheetbutton][/F]
         --]|
         --?"[*R:spelloutput]" -inc "SPELLCARD"|[
           --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::SpellInfo;[&SpellData][/rbutton][/F]
@@ -139,7 +141,7 @@
       --?"[&MacroButton]" -ne "AbilityNotFound"|[
         --&SpellDetail|[button][&BookImage]::~[*S:character_name]|[&MacroButton][/button]
       --]|[
-        --&SpellDetail|[button][&BookImage]::~%[&obrac]selected|[*R>output][&cbrac][/button]
+        --&SpellDetail|[sheetbutton][&BookImage]::@{selected|character_name}::[*R>output][/sheetbutton]
       --]|
       --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[*S:class];" -or "[*R:spellprepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip"|&Prepared$$$[rbutton][&BlueDot]::PrepareOff;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareOn;[&SpellData][/rbutton]
       --?"[*R:spellcomp_v]" -inc "v=1"|&ToolVerb$$$V|&ToolVerb$$$
