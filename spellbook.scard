@@ -19,7 +19,7 @@
   --/|              This script also requires the installation of a custom ScriptCards template. Instructions for installing 
   --/|              a custom style template can be found on the Roll20 wiki page for ScriptCards. The code for the scriptcard
   --/|              template can be found in the post associated with this Script on the Roll20 forums below;
-  --/|              https://app.roll20.net/forum/post/12267264/tims-npc-stat-block-mod-scriptcards-d-and-d-5e-2014
+  --/|              https://app.roll20.net/forum/post/12285368/tims-spellbook-mod-scriptcards-d-and-d-5e-2014
   --/|              or on my GitHub below as spellbook.css;
   --/|              https://github.com/VirulentArc/ScriptCards
   --/|              Make sure the template "macro" name is spellbook or change #overridetemplate to whatever name you'd prefer
@@ -110,9 +110,11 @@
       --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0|&MinusSlot$$$|&MinusSlot$$$[rbutton]-::SubtractSlot;[&SpellLevel][/rbutton]
       --#parameterDelimiter|;
 	--]|
+    --#parameterDelimiter|$$$
     --?"[&SpellLevel]" -inc "cantrip"|&Slots$$$[&Infinity]|&Slots$$$[&Slots]
     --?"[&Slots]" -eq "[&Infinity]"|&InfStyle$$$style="position: relative; top: 1px ; "|&InfStyle$$$
     --?"[&SpellLevel]" -inc "cantrip"|&SpellLevelOutput$$$C|&SpellLevelOutput$$$[&SpellLevel]
+    --#parameterDelimiter|;
     --&LevelStyle|style="position: relative; top: -2px ; "
     --&MinusStyle|style="position: relative; top: -4px ; "
     --?"[&SpellLevel]" -inc "cantrip"|&PlusSlot;
