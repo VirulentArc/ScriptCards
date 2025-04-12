@@ -13,7 +13,7 @@
   --&cbrac|}
 
   --:Begin|
-  --+|[t width=240px style="text-align: center ;"][tr][td title="[*R:description]" style="display: inline-block ; position: relative ; top: 20px ; height: 40px ; text-align: center ; font-size: 14px ;"][button]Description::~%[&obrac]selected|[*R>output][&cbrac][/button]|[/td][td style="display: inline-block ; position: relative ; top: 20px ; height: 40px ; text-align: center ; font-size: 14px ;"][rbutton]Roll HP::RollTwilight[/rbutton]|[/td][td style="display: inline-block ; position: relative ; top: 20px ; height: 40px ; text-align: center ; font-size: 14px ;"][rbutton]Aura ON/OFF::Aura[/rbutton][/td][/tr][/t]
+  --+|[t width=240px style="text-align: center ;"][tr][td title="[*R:description]" style="display: inline-block ; position: relative ; top: 20px ; height: 40px ; text-align: center ; font-size: 14px ;"][sheetbutton]Description::@{selected|character_name}::[*R>output][/sheetbutton]|[/td][td style="display: inline-block ; position: relative ; top: 20px ; height: 40px ; text-align: center ; font-size: 14px ;"][rbutton]Roll HP::RollTwilight[/rbutton]|[/td][td style="display: inline-block ; position: relative ; top: 20px ; height: 40px ; text-align: center ; font-size: 14px ;"][rbutton]Aura ON/OFF::Aura[/rbutton][/td][/tr][/t]
   
 --X|
 
