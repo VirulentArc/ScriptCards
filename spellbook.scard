@@ -1,7 +1,7 @@
 !Script{{
 
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 2.2.2
+  --/|Version     : 2.2.3
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -66,17 +66,26 @@
 
     --:RestartBook|
     -->Header|
-    -->BookOutput|cantrip
-    -->BookOutput|1
-    -->BookOutput|2
-    -->BookOutput|3
-    -->BookOutput|4
-    -->BookOutput|5
-    -->BookOutput|6
-    -->BookOutput|7
-    -->BookOutput|8
-    -->BookOutput|9
-    -->Done|
+    --Rfirst|[*S:character_id];repeating_spell-cantrip;spellname
+    --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;cantrip
+    --Rfirst|[*S:character_id];repeating_spell-1;spellname
+    --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;1
+    --Rfirst|[*S:character_id];repeating_spell-2;spellname
+    --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;2
+    --Rfirst|[*S:character_id];repeating_spell-3;spellname
+    --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;3
+    --Rfirst|[*S:character_id];repeating_spell-4;spellname
+    --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;4
+    --Rfirst|[*S:character_id];repeating_spell-5;spellname
+    --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;5
+    --Rfirst|[*S:character_id];repeating_spell-6;spellname
+    --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;6
+    --Rfirst|[*S:character_id];repeating_spell-7;spellname
+    --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;7
+    --Rfirst|[*S:character_id];repeating_spell-8;spellname
+    --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;8
+    --Rfirst|[*S:character_id];repeating_spell-9;spellname
+    --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;9
 
 --X|
 
@@ -87,8 +96,6 @@
 
   --:BookOutput|
     --&SpellLevel|[%1%]
-    --Rfirst|[*S:character_id];repeating_spell-[&SpellLevel];spellname
-    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|Done
     --?"[&SpellLevel]" -ninc "cantrip"|[
       --#parameterDelimiter|$$$
       --?"[*S:lvl[&SpellLevel]_slots_expended]" -eq 0 -and "[*S:lvl[&SpellLevel]_slots_total]" -eq 0|&Slots$$$[&MissingSlot][&MissingSlot][&MissingSlot][&MissingSlot]
@@ -161,10 +168,10 @@
       --#parameterDelimiter|;
       --&ToolTip|title="[&ToolCT][&ToolRange][&ToolTarget][&ToolComp][&ToolRit][&ToolCon][&ToolDuration][&ToolInnate][*R:spelldescription][&ToolHigher]"
       --?"[*S:class]" -inc "cleric" -or "[*S:class]" -inc "druid" -and "[*R:spellprepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip"|[
-        --&SpellOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " [&ToolTip]][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][&SpellDetail][/F][/td][/tr]
+        --&SpellOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " [&ToolTip]][b][#000][&SpellLoop][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][&SpellDetail][/F][/td][/tr]
       --]|
       --?"[*S:class]" -ninc "cleric" -and "[*S:class]" -ninc "druid" -and "[&SpellLevel]" -ninc "cantrip"|[
-        --&SpellOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " [&ToolTip]][b][#000][*R:spellname][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][&SpellDetail][/F][/td][/tr]
+        --&SpellOutput|+[tr][td width=165px height=17px style="display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom ; " [&ToolTip]][b][#000][&SpellLoop][/#][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[*R:innate][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td width=20 title="Spell Details"][F::16][&SpellDetail][/F][/td][/tr]
       --]|
     --%|
     --&SpellOutput|+[/t]
@@ -188,7 +195,7 @@
   --X|
 
   --:PrepareOff|
-    --?";sorcerer;warlock;fighter;rogue;artificer;bard;" -ninc ";[*S:class];"|[
+    --?";sorcerer;warlock;fighter;rogue;artificer;bard;cleric;druid;" -ninc ";[*S:class];"|[
       --&SpellEntry|[&reentryval]
       --~SpellLetters|string;nonumbers;[&SpellEntry]
       --~SpellNumbers|string;onlynumbers;[&SpellEntry]
@@ -207,9 +214,6 @@
     --Rfind|[*S:character_id];[&SpellLetters];repeating_spell-[&SpellLevel];spellname
     --!a:[*S:character_id]|[*R>spellprepared]:1
     -->RestartBook|
-  --X|
-
-  --:Done|
   --X|
 
 }}

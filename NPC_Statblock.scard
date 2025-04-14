@@ -116,7 +116,9 @@
       --%TraitLoop|foreach;Traits
         --~TraitSplit|string;split;|;[&TraitLoop]
         --Rfind|[*S:character_id];[&TraitSplit1];repeating_npctrait;name
+        --?"[*R:name]X" -ne "X"|[
           --&TraitOutput|+[tr][td title="[&TraitLoop]" style="width: 200px ; display: inline-block ; white-space: nowrap ; overflow: hidden ; text-overflow: ellipsis ; color: #000 ; font-weight: bold ; "][i][&TraitSplit1][/i][/td][td style="width: 40px ; display: inline-block ; text-align: right ; "][F::14]|[sheetbutton]&#x1F4DC;::@{selected|character_name}::[*R>npc_roll_output][/sheetbutton]|[/F][/td][/tr]
+        --]|
       --%|
     --&TraitOutput|+[/t]
     --+|[&TraitOutput]
@@ -140,7 +142,9 @@
     --%ActionLoop|foreach;actionarray
       --Rfind|[*S:character_id];[&ActionLoop];repeating_npc[&Action];name
       --&ToolTip|[*R:name]|[*R:description]
-      --&ActionOutput|+[tr][td title="[&ToolTip]" style="width: 200px ; display: inline-block ; white-space: nowrap ; overflow: hidden ; text-overflow: ellipsis ; color: #000 ; font-weight: bold ; "][i][*R:name][/i][/td][td style="width: 40px ; display: inline-block ; text-align: right ; "][F::14]|[sheetbutton]&#x2694;&#xfe0f;::@{selected|character_name}::[&ButtonURL][/sheetbutton]|[/F][/td][/tr]
+      --?"[*R:name]X" -ne "X"|[
+        --&ActionOutput|+[tr][td title="[&ToolTip]" style="width: 200px ; display: inline-block ; white-space: nowrap ; overflow: hidden ; text-overflow: ellipsis ; color: #000 ; font-weight: bold ; "][i][*R:name][/i][/td][td style="width: 40px ; display: inline-block ; text-align: right ; "][F::14]|[sheetbutton]&#x2694;&#xfe0f;::@{selected|character_name}::[&ButtonURL][/sheetbutton]|[/F][/td][/tr]
+      --]|
     --%|
     --&ActionOutput|+[/t]
     --+|[&ActionOutput]
