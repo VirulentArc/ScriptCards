@@ -38,6 +38,8 @@
     --#whisper|self
     --#Debug|0
     --#emoteState|0
+    --#emoteBackground|#f1e5c9
+    --#emoteFontColor|#6e2425
 
   --\|Token Image Variables
 
@@ -93,6 +95,8 @@
   --X|
 
   --:SpellInfo|
+    --#emoteState|0
+    --#emoteText|
     --#whisper|self
     --Rfind|@{selected|character_id};[&SpellName];repeating_spell-[&SpellLevel];spellname
 
@@ -119,9 +123,10 @@
     --&SpellStats|[t width=240px style="margin-bottom: 5px ; "][tr][td][i][&spllvl][&lvlsuffix]-Level [*R:spellschool][/i][/td][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td style="text-align: right ; font-size: 18px ;"][rbutton]⚙::Settings[/rbutton][/td][/tr][/t]
     --&SpellStats|+[t width=240px][tr][td][b]Casting Time:[/b]&nbsp;[*R:spellcastingtime][/td][/tr]
     --&SpellStats|+[tr][td][b]Range:[/b]&nbsp;[*R:spellrange][/td][/tr]
+    --&SpellStats|+[tr][td][b]Target:[/b]&nbsp;[*R:spelltarget][/td][/tr]
     --&SpellStats|+[tr][td][b]Components:[/b]&nbsp;[&Verbal][&Somatic][&Components] [&Materials][/td][/tr]
-    --&SpellStats|+[tr][td][b]Duration:[/b]&nbsp;[&Concentration]&nbsp;[*R:spellduration][/td][/tr][/t]
-    --&SpellStats|+[br]
+    --&SpellStats|+[tr][td][b]Duration:[/b]&nbsp;[&Concentration]&nbsp;[*R:spellduration][/td][/tr]
+    --&SpellStats|+[tr][td][b]Classes:[/b]&nbsp;Wizard[/td][/tr][/t]
     --&SpellStats|+[t width=240px title="[&SpellDesc([$SpellDescCalc.Raw],[&SpellDesc(length)])]"][tr][td style="margin-bottom: 5px ; "][&SpellDesc(0,[$SpellDescCalc.Raw])]...[/td][/tr][/t]
     --&SpellStats|+[br]
     --&SpellStats|+[t width=240px style="text-align: center ; "][tr][td][b][rbutton]Cast Spell::WhatBeast[/rbutton][/b][/td][/tr][/t]
@@ -131,7 +136,10 @@
 
   --:WhatBeast|
     --#whisper|self
-    --&Realm|[t width=240px style="font-weight: bold ; text-align: center ; "][tr][td colspan=3 style="height: 30px ; "][b]What type of Familiar are you summoning?[/b][/td][/tr]
+    --#emoteState|visible
+    --#emoteText|Choose Familiar Type
+    --#title|
+    --&Realm|[t width=240px style="font-weight: bold ; text-align: center ; "]
     --&Realm|+[tr style="font-size: 15px ; height: 50px ; "][td style="text-align: right ; "][b][rbutton]Celestial::GetFamiliar;Celestial[/rbutton]
     --&Realm|+[td style="text-align: center ; "]&nbsp;|&nbsp;&nbsp;&nbsp;[rbutton]Fey::GetFamiliar;Fey[/rbutton]&nbsp;&nbsp;&nbsp;|&nbsp;[/td]
     --&Realm|+[td style="text-align: left ; "][rbutton]Fiend::GetFamiliar;Fiend[/rbutton][/b]&nbsp;&nbsp;[/td][/tr][/t]
@@ -140,12 +148,14 @@
 
   --:GetFamiliar|
     --&Realm|[&reentryval]
-    --#title|Choose Familiar
+    --#emoteState|visible
+    --#emoteText|Choose Familiar Form
+    --#title|
     --#whisper|self
     --~|array;define;FamiliarToken;Bat;Cat;Crab;Frog;Hawk;Lizard;Octopus;Owl;Snake;Quipper;Rat;Raven;Seahorse;Spider;Weasel
     --&TokensPerRow|3
     --&TokenCounter|1
-    --&AllTokens|[t width=240px][tr][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td width=30 style="text-align: right ; font-size: 18px ;"][rbutton]⚙::Settings[/rbutton][/td][/tr][/t][t width=112% style="position: relative ; left: -14px ; "][tr]
+    --&AllTokens|[t width=240px][tr][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td width=30 style="text-align: right ; font-size: 18px ;"][rbutton]⚙::Settings[/rbutton][/td][/tr][/t][t width=112% style="position: relative ; left: -13px ; "][tr]
     --%TokenLoop|foreach;FamiliarToken
       --?"[*[&FindFamiliar]:[&TokenLoop]]" -ne "0"|&FinalToken;[*[&FindFamiliar]:[&TokenLoop]]|&FinalToken;[&[&TokenLoop]Token]
       --c[&TokenLoop]|Bat:&DisplayName;Bat|Cat:&DisplayName;Cat|Crab:&DisplayName;Crab|Frog:&DisplayName;Frog(Toad)|Hawk:&DisplayName;Hawk|Lizard:&DisplayName;Lizard|Octopus:&DisplayName;Octopus|Owl:&DisplayName;Owl|Snake:&DisplayName;Poisonous Snake|Quipper:&DisplayName;Quipper (Fish)|Rat:&DisplayName;Rat|Raven:&DisplayName;Raven|Seahorse:&DisplayName;Sea Horse|Spider:&DisplayName;Spider|Weasel:&DisplayName;Weasel
@@ -160,8 +170,6 @@
   --:Familiar|
     --#whisper|
     --#emoteState|visible
-    --#emoteBackground|#f1e5c9
-    --#emoteFontColor|#6e2425
     --#title|
     --&FamiliarType|[&reentryval]
     --c[&FamiliarType]|Bat:&TokenSide;1|Cat:&TokenSide;2|Crab:&TokenSide;3|Frog:&TokenSide;4|Hawk:&TokenSide;5|Lizard:&TokenSide;6|Octopus:&TokenSide;7|Owl:&TokenSide;8|Snake:&TokenSide;9|Quipper:&TokenSide;10|Rat:&TokenSide;11|Raven:&TokenSide;12|Seahorse:&TokenSide;13|Spider:&TokenSide;14|Weasel:&TokenSide;15
@@ -274,13 +282,15 @@
   --X|
 
   --:Settings|
-    --#title|Custom Familiar
+    --#emoteState|visible
+    --#emoteText|Custom Familiar
+    --#title|
     --#whisper|self
     --+|[t width=240px][tr][td]&#x2022;[b]Here you can change the tokens.[br]&#x2022;The image for the token must be in your roll20 library.[br]&#x2022;Have the URL of the image ready.[br]&#x2022;Click on the familiar you'd like to change and then follow the prompts in the chat window.[/b][/td][/tr][/t]
     --~|array;define;FamiliarToken;Bat;Cat;Crab;Frog;Hawk;Lizard;Octopus;Owl;Snake;Quipper;Rat;Raven;Seahorse;Spider;Weasel
     --&TokensPerRow|3
     --&TokenCounter|1
-    --&AllTokens|[t width=112% style="position: relative ; left: -14px ; "][tr]
+    --&AllTokens|[t width=112% style="position: relative ; left: -13px ; "][tr]
     --%TokenLoop|foreach;FamiliarToken
       --?"[*[&FindFamiliar]:[&TokenLoop]]" -ne "0"|&FinalToken;[*[&FindFamiliar]:[&TokenLoop]]|&FinalToken;[&[&TokenLoop]Token]
       --c[&TokenLoop]|Bat:&DisplayName;Bat|Cat:&DisplayName;Cat|Crab:&DisplayName;Crab|Frog:&DisplayName;Frog(Toad)|Hawk:&DisplayName;Hawk|Lizard:&DisplayName;Lizard|Octopus:&DisplayName;Octopus|Owl:&DisplayName;Owl|Snake:&DisplayName;Poisonous Snake|Quipper:&DisplayName;Quipper (Fish)|Rat:&DisplayName;Rat|Raven:&DisplayName;Raven|Seahorse:&DisplayName;Sea Horse|Spider:&DisplayName;Spider|Weasel:&DisplayName;Weasel
@@ -290,7 +300,7 @@
     --%|
     --?"@{FindFamiliar|custom_name}" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;@{FindFamiliar|custom_name}
     --?"[&UpdateName]" -eq "0"|&TokenDisplayName;[&TokenDisplayName]|&TokenDisplayName;[&UpdateName]
-    --&AllTokens|+[/tr][/t][t width=240px style="border: 1mm ridge rgb(218,165,32) ; text-align: center ; "][tr][td style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][b]Custom Name[/b][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]CHANGE::UpdateName[/rbutton][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]RESET::ResetName[/rbutton][/td][/tr][tr][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][b]Current Name[/b][/td][td colspan=2 style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][&TokenDisplayName][/td][/tr][tr][td colspan=3][rbutton]EXIT::RestartMod[/rbutton][/td][/tr][/t]
+    --&AllTokens|+[/tr][/t][t width=235px style="border: 1mm ridge rgb(218,165,32) ; text-align: center ; "][tr][td style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][b]Custom Name[/b][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]CHANGE::UpdateName[/rbutton][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]RESET::ResetName[/rbutton][/td][/tr][tr][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][b]Current Name[/b][/td][td colspan=2 style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][&TokenDisplayName][/td][/tr][tr][td colspan=3][rbutton]EXIT::RestartMod[/rbutton][/td][/tr][/t]
     --+|[&AllTokens]
   --X|
 
