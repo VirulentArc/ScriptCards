@@ -1,7 +1,7 @@
 !scriptcards {{ 
 
   --/|Script Name : Tim's Find Familiar Mod for D&D 5E 2014
-  --/|Version     : v3.0
+  --/|Version     : v3.0.1
   --/|Author      : Timothy Beasley
   --/|API MODs    : ScriptCards
 
@@ -27,7 +27,6 @@
   --/|              Token Actions are created for Skills, Saves and Attribute rolls. I've included them for convenience, but would instead recommend my NPC Statblock Mod
   --/|              that can also be found on my github.
 
-  --:RestartMod|
 
   --:DoFormatting|
     --#overridetemplate|statblock
@@ -57,8 +56,11 @@
     --&SeahorseToken|https://files.d20.io/images/407846104/PaAX9a0fqWOAGSey_WtiOQ/original.png?1725295994
     --&SpiderToken|https://files.d20.io/images/407846105/ww3DHHb5YLDZo6qyFdLQsw/original.png?1725295994
     --&WeaselToken|https://files.d20.io/images/407846106/JvvrVk9bNm4zG7QcrKzZuA/original.png?1725295994
-    --&BackgroundImage|width=100% style="background-image: url(https://files.d20.io/images/431269924/wXGXxCLvc_js7eWmz5NQkw/original.png) ; background-repeat: no-repeat ; background-size: 85px 100px ; background-position: center ; display: inline-block ; bottom: 0;  margin-left: auto ; margin-right: auto ; width: 33% ; text-align: center ; "
-    --&SettingsBackground|width=100% style="background-image: url(https://files.d20.io/images/431269924/wXGXxCLvc_js7eWmz5NQkw/original.png) ; background-repeat: no-repeat ; background-size: 85px 85px ; background-position: center ; display: inline-block ; bottom: 0;  margin-left: auto ; margin-right: auto ; width: 33% ; text-align: center ; "
+    --&BackgroundImage|width=100% style="background-image: url(https://files.d20.io/images/431269924/wXGXxCLvc_js7eWmz5NQkw/original.png) ; background-repeat: no-repeat ; background-size: 85px 100px ; background-position: center ; display: inline-block ; bottom: 0;  margin-left: auto ; margin-right: auto ; width: 33% ; text-align: center ; white-space: nowrap ; "
+    --&SettingsBackground|width=100% style="background-image: url(https://files.d20.io/images/431269924/wXGXxCLvc_js7eWmz5NQkw/original.png) ; background-repeat: no-repeat ; background-size: 85px 85px ; background-position: center ; display: inline-block ; bottom: 0;  margin-left: auto ; margin-right: auto ; width: 33% ; text-align: center ; white-space: nowrap ;"
+
+
+  --:RestartMod|
 
   --:DoesCharacterExist|
 	--?"[*[&FindFamiliar]:character_name]" -eq ""|NoCharacter|IsFirstRun
@@ -67,7 +69,7 @@
 --X|
 
   --:IsFirstRun|
-	--?"@{FindFamiliar|firstrun}" -neq 1|WriteVar|SpellInfo
+	--?"@{FindFamiliar|firstrun}" -ne 1|WriteVar|SpellInfo
   --X|
 
   --:WriteVar|
@@ -112,29 +114,27 @@
     --&SpellDesc|[*R:spelldescription]
     --=SpellDescCalc|[&SpellDesc(length)] - 1024
 
-    --/|Output
+  --/|Output
 
-      --+|[t width=100% style="margin-bottom: 5px ; "][tr][td][i][&spllvl][&lvlsuffix]-Level [*R:spellschool][/i][/td][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td style="text-align: right ; font-size: 18px ;"][rbutton]⚙::Settings[/rbutton][/td][/tr][/t]
-	  --+Casting Time:|[*R:spellcastingtime]
-      --+Range:|[*R:spellrange]
-      --+Components:|[&Verbal][&Somatic][&Components] [&Materials]
-	  --+Duration:|[&Concentration]&nbsp;[*R:spellduration]
-      --+|[br]
-      --+|[t width=100% title="[&SpellDesc([$SpellDescCalc.Raw],[&SpellDesc(length)])]"][tr][td][&SpellDesc(0,[$SpellDescCalc.Raw])]...[/td][/tr][/t]
-      --?"[*R:spellathigherlevels]" -ne ""|[
-        --+&nbsp;&nbsp;&nbsp;&nbsp;[i]At Higher Levels:[/i]|[*R:spellathigherlevels]
-      --]|
-      --+|[br]
-      --+|[c][b][rbutton]Cast Spell::WhatBeast[/rbutton][/b][/c]
-      --+|[br]
+    --&SpellStats|[t width=240px style="margin-bottom: 5px ; "][tr][td][i][&spllvl][&lvlsuffix]-Level [*R:spellschool][/i][/td][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td style="text-align: right ; font-size: 18px ;"][rbutton]⚙::Settings[/rbutton][/td][/tr][/t]
+    --&SpellStats|+[t width=240px][tr][td][b]Casting Time:[/b]&nbsp;[*R:spellcastingtime][/td][/tr]
+    --&SpellStats|+[tr][td][b]Range:[/b]&nbsp;[*R:spellrange][/td][/tr]
+    --&SpellStats|+[tr][td][b]Components:[/b]&nbsp;[&Verbal][&Somatic][&Components] [&Materials][/td][/tr]
+    --&SpellStats|+[tr][td][b]Duration:[/b]&nbsp;[&Concentration]&nbsp;[*R:spellduration][/td][/tr][/t]
+    --&SpellStats|+[br]
+    --&SpellStats|+[t width=240px title="[&SpellDesc([$SpellDescCalc.Raw],[&SpellDesc(length)])]"][tr][td style="margin-bottom: 5px ; "][&SpellDesc(0,[$SpellDescCalc.Raw])]...[/td][/tr][/t]
+    --&SpellStats|+[br]
+    --&SpellStats|+[t width=240px style="text-align: center ; "][tr][td][b][rbutton]Cast Spell::WhatBeast[/rbutton][/b][/td][/tr][/t]
+    --&SpellStats|+[br]
+    --+|[&SpellStats]
   --X|
 
   --:WhatBeast|
     --#whisper|self
-    --&Realm|[t width=100% style="font-weight: bold ; "][tr][td colspan=3 style="height: 30px ; "][b]What type of Familiar are you summoning?[/b][/td][/tr]
+    --&Realm|[t width=240px style="font-weight: bold ; text-align: center ; "][tr][td colspan=3 style="height: 30px ; "][b]What type of Familiar are you summoning?[/b][/td][/tr]
     --&Realm|+[tr style="font-size: 15px ; height: 50px ; "][td style="text-align: right ; "][b][rbutton]Celestial::GetFamiliar;Celestial[/rbutton]
     --&Realm|+[td style="text-align: center ; "]&nbsp;|&nbsp;&nbsp;&nbsp;[rbutton]Fey::GetFamiliar;Fey[/rbutton]&nbsp;&nbsp;&nbsp;|&nbsp;[/td]
-    --&Realm|+[td style="text-align: left ; "][rbutton]Fiend::GetFamiliar;Fiend[/rbutton][/b][/td][/tr][/t]
+    --&Realm|+[td style="text-align: left ; "][rbutton]Fiend::GetFamiliar;Fiend[/rbutton][/b]&nbsp;&nbsp;[/td][/tr][/t]
     --+|[&Realm]
   --X|
 
@@ -145,11 +145,11 @@
     --~|array;define;FamiliarToken;Bat;Cat;Crab;Frog;Hawk;Lizard;Octopus;Owl;Snake;Quipper;Rat;Raven;Seahorse;Spider;Weasel
     --&TokensPerRow|3
     --&TokenCounter|1
-    --&AllTokens|[t width=240px][tr]
+    --&AllTokens|[t width=240px][tr][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td width=30 style="text-align: right ; font-size: 18px ;"][rbutton]⚙::Settings[/rbutton][/td][/tr][/t][t width=112% style="position: relative ; left: -14px ; "][tr]
     --%TokenLoop|foreach;FamiliarToken
       --?"[*[&FindFamiliar]:[&TokenLoop]]" -ne "0"|&FinalToken;[*[&FindFamiliar]:[&TokenLoop]]|&FinalToken;[&[&TokenLoop]Token]
       --c[&TokenLoop]|Bat:&DisplayName;Bat|Cat:&DisplayName;Cat|Crab:&DisplayName;Crab|Frog:&DisplayName;Frog(Toad)|Hawk:&DisplayName;Hawk|Lizard:&DisplayName;Lizard|Octopus:&DisplayName;Octopus|Owl:&DisplayName;Owl|Snake:&DisplayName;Poisonous Snake|Quipper:&DisplayName;Quipper (Fish)|Rat:&DisplayName;Rat|Raven:&DisplayName;Raven|Seahorse:&DisplayName;Sea Horse|Spider:&DisplayName;Spider|Weasel:&DisplayName;Weasel
-      --&AllTokens|+[td [&BackgroundImage]][img width=70][&FinalToken][/img][br][b][rbutton][&DisplayName]::Familiar;[&TokenLoop][/rbutton][/b][br][br][/td]
+      --&AllTokens|+[td [&BackgroundImage]][rbutton][img width=70][&FinalToken][/img][br]::Familiar;[&TokenLoop][/rbutton][br][b][&DisplayName][/b][br][br][/td]
       --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
       -->IncrementCounter|TokenCounter
     --%|
@@ -162,7 +162,6 @@
     --#emoteState|visible
     --#emoteBackground|#f1e5c9
     --#emoteFontColor|#6e2425
-    --#emoteText|[*S:character_name] casts Find Familiar
     --#title|
     --&FamiliarType|[&reentryval]
     --c[&FamiliarType]|Bat:&TokenSide;1|Cat:&TokenSide;2|Crab:&TokenSide;3|Frog:&TokenSide;4|Hawk:&TokenSide;5|Lizard:&TokenSide;6|Octopus:&TokenSide;7|Owl:&TokenSide;8|Snake:&TokenSide;9|Quipper:&TokenSide;10|Rat:&TokenSide;11|Raven:&TokenSide;12|Seahorse:&TokenSide;13|Spider:&TokenSide;14|Weasel:&TokenSide;15
@@ -256,6 +255,7 @@
           --]|
           --!a:[&FindFamiliar]|[*R>name]:[&AttackTwo]|[*R>attack_flag]:off|[*R>description]:[&AttackTwoDesc]
     --?"@{FindFamiliar|custom_name}" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;@{FindFamiliar|custom_name}
+    --?"[&UpdateName]" -eq "0"|&TokenDisplayName;[&TokenDisplayName]|&TokenDisplayName;[&UpdateName]
     --?"[*[&FindFamiliar]:[&FamiliarType]]" -ne "0"|&TokenDisplay;[*[&FindFamiliar]:[&FamiliarType]]|&TokenDisplay;[&[&FamiliarType]Token]
     --/|Summon The Familiar
     --!ot:NewTID|name:"[&TokenDisplayName]"|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:[*S:t-width]|height:[*S:t-height]|imgsrc:"[&TokenDisplay]"|represents:"[&FindFamiliar]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:[&NightDistance]|night_vision_effect:Nocturnal|order:toFront
@@ -263,8 +263,9 @@
     --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-smoke
     --?"[&FamiliarType]" -inc "Snake"|&DisplayName;Snake|&DisplayName;[&FamiliarType]
     --~NameReplace|string;replaceall; ;;[&DisplayName]
-    --?"@{FindFamiliar|custom_name}" -ne 0|&FamiliarName;@{FindFamiliar|custom_name}|&FamiliarName;a [&FamiliarType]
-    --+|[t width=100% style="text-align: center ; "][tr][td style="font-weight: bold ; "][*S:character_name] takes 1 hour to cast [&SpellName] and summons [&FamiliarName].[/td][/tr][tr][td][img width=100][&[&NameReplace]Token][/img][/td][/tr][/t]
+    --?"@{FindFamiliar|custom_name}" -ne "0"|&FamiliarName;[&TokenDisplayName]|&FamiliarName;a [&TokenDisplayName]
+    --#emoteText|[*S:character_name] Takes 1 hour to cast [&SpellName] and summons [&FamiliarName]
+    --+|[t width=267px style="text-align: center ; "][tr][td][img width=120][&[&NameReplace]Token][/img][/td][/tr][/t]
   --X|
 
   --:NoCharacter|
@@ -275,45 +276,47 @@
   --:Settings|
     --#title|Custom Familiar
     --#whisper|self
-    --+|[br]&#x2022;[b]Here you can change the tokens.[br]&#x2022;The image for the token must be in your roll20 library.[br]&#x2022;Have the URL of the image ready.[br]&#x2022;Click on the familiar you'd like to change and then follow the prompts in the chat window.[/b]
+    --+|[t width=240px][tr][td]&#x2022;[b]Here you can change the tokens.[br]&#x2022;The image for the token must be in your roll20 library.[br]&#x2022;Have the URL of the image ready.[br]&#x2022;Click on the familiar you'd like to change and then follow the prompts in the chat window.[/b][/td][/tr][/t]
     --~|array;define;FamiliarToken;Bat;Cat;Crab;Frog;Hawk;Lizard;Octopus;Owl;Snake;Quipper;Rat;Raven;Seahorse;Spider;Weasel
     --&TokensPerRow|3
     --&TokenCounter|1
-    --&AllTokens|[t width=100%][tr]
+    --&AllTokens|[t width=112% style="position: relative ; left: -14px ; "][tr]
     --%TokenLoop|foreach;FamiliarToken
       --?"[*[&FindFamiliar]:[&TokenLoop]]" -ne "0"|&FinalToken;[*[&FindFamiliar]:[&TokenLoop]]|&FinalToken;[&[&TokenLoop]Token]
       --c[&TokenLoop]|Bat:&DisplayName;Bat|Cat:&DisplayName;Cat|Crab:&DisplayName;Crab|Frog:&DisplayName;Frog(Toad)|Hawk:&DisplayName;Hawk|Lizard:&DisplayName;Lizard|Octopus:&DisplayName;Octopus|Owl:&DisplayName;Owl|Snake:&DisplayName;Poisonous Snake|Quipper:&DisplayName;Quipper (Fish)|Rat:&DisplayName;Rat|Raven:&DisplayName;Raven|Seahorse:&DisplayName;Sea Horse|Spider:&DisplayName;Spider|Weasel:&DisplayName;Weasel
-      --&AllTokens|+[td [&SettingsBackground]][img width=70][&FinalToken][/img][rbutton][&DisplayName]::UpdateToken;[&TokenLoop][/rbutton][br][br][rbutton]RESET::ResetToken;[&TokenLoop][/rbutton][br][/td]
+      --&AllTokens|+[td [&SettingsBackground]][rbutton][img width=70][&FinalToken][/img]::UpdateToken;[&TokenLoop][/rbutton][br][b][&DisplayName][/b][br][br][rbutton]RESET::ResetToken;[&TokenLoop][/rbutton][br][/td]
       --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
       -->IncrementCounter|TokenCounter
     --%|
     --?"@{FindFamiliar|custom_name}" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;@{FindFamiliar|custom_name}
-    --&AllTokens|+[/tr][/t][t width=100% style="border: 1mm ridge rgb(218,165,32) ; text-align: center ; "][tr][td style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][b]Custom Name[/b][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]ADD::UpdateName[/rbutton][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]RESET::ResetName[/rbutton][/td][/tr][tr][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][b]Current Name[/b][/td][td colspan=2 style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][&TokenDisplayName][/td][/tr][/t]
+    --?"[&UpdateName]" -eq "0"|&TokenDisplayName;[&TokenDisplayName]|&TokenDisplayName;[&UpdateName]
+    --&AllTokens|+[/tr][/t][t width=240px style="border: 1mm ridge rgb(218,165,32) ; text-align: center ; "][tr][td style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][b]Custom Name[/b][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]CHANGE::UpdateName[/rbutton][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]RESET::ResetName[/rbutton][/td][/tr][tr][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][b]Current Name[/b][/td][td colspan=2 style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][&TokenDisplayName][/td][/tr][tr][td colspan=3][rbutton]EXIT::RestartMod[/rbutton][/td][/tr][/t]
     --+|[&AllTokens]
   --X|
 
   --:UpdateToken|
     --&FamUpdate|[&reentryval]
-    --IClick to change your familiar's token to a custom one. ;Click Here|q;UpdateToken;What Is The URL To Your Token Image? It must be an image from your Roll20 Library.
+    --I. ;Click Here to add image URL|q;UpdateToken;What Is The URL To Your Token Image? It must be an image from your Roll20 Library.
     --!a:[&FindFamiliar]|![&FamUpdate]:[&UpdateToken]
-    -->RestartMod|
-  --X|
-
- --:UpdateName|
-    --IClick to change your familiar's name to a custom one. ;Click Here|q;UpdateName;What are you naming your Familiar?
-    --!a:[&FindFamiliar]|!custom_name:[&UpdateName]
-    --+|[c][b]You have updated your familiar's name to @{FindFamiliar|custom_name}.[/b][/c]
+    -->Settings|
   --X|
 
   --:ResetToken|
     --&TokenReset|[&reentryval]
     --!a:[&FindFamiliar]|![&TokenReset]:0
-    -->RestartMod|
+    -->Settings|
+  --X|
+
+ --:UpdateName|
+    --I. ;Click Here to Change Name|q;UpdateName;What are you naming your Familiar?
+    --!a:[&FindFamiliar]|!custom_name:[&UpdateName]
+	-->Settings|
   --X|
 
   --:ResetName|
     --!a:[&FindFamiliar]|!custom_name:0
-    --+|[c][b]You have reset your familiar's name back to default.[/b][/c]
+    --&UpdateName|0
+    -->Settings|
   --X|
 
   --:IncrementCounter|
