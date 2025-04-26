@@ -1,7 +1,7 @@
 !scriptcards {{ 
 
   --/|Script Name : Tim's Spiritual Weapon Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 1.0.0
+  --/|Version     : 1.1.0
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the Spiritual Weapon spell in chat. It allows you to choose from 157 BG3 weapons and summon the token beside the caster token.
@@ -230,10 +230,7 @@
     --]|
     --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
 
-    --&SpellDesc|[*R:spelldescription]
-
     --/|Output
-
       --&SpellStats|[t width=240px style="margin-bottom: 5px ; "][tr][td][i][&spllvl][&lvlsuffix]-Level [*R:spellschool][/i][/td][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td width=20px style="text-align: right ; font-size: 18px ;"][rbutton]⚙::ChooseWeaponType[/rbutton][/td][/tr][/t]
       --&SpellStats|+[t width=240px][tr][td][b]Casting Time:[/b]&nbsp;[*R:spellcastingtime][/td][/tr]
       --&SpellStats|+[tr][td][b]Range:[/b]&nbsp;[*R:spellrange][/td][/tr]
@@ -241,7 +238,7 @@
       --&SpellStats|+[tr][td][b]Components:[/b]&nbsp;[&Verbal][&Somatic][&Components] [&Materials][/td][/tr]
       --&SpellStats|+[tr][td][b]Duration:[/b]&nbsp;[&Concentration]&nbsp;[*R:spellduration][/td][/tr]
       --&SpellStats|+[tr][td][b]Classes:[/b]&nbsp;Cleric[/td][/tr][/t]
-      --&SpellStats|+[t width=240px][tr][td style="margin-bottom: 5px ; "][&SpellDesc][/td][/tr][/t]
+      --&SpellStats|+[t width=240px][tr][td style="margin-bottom: 5px ; "][*R:spelldescription][/td][/tr][/t]
       --&SpellStats|+[t width=240px][tr][td style="margin-bottom: 5px ; "]&nbsp;&nbsp;&nbsp;&nbsp;[b][i]At Higher Levels:[/i][/b][*R:spellathigherlevels][/td][/tr][/t]
       --&SpellStats|+[br]
       --&SpellStats|+[t width=240px style="text-align: center ; font-weight: bold ; "][tr][td [&ButtonStyle]][rbutton]2nd::GetWeapon;2[/rbutton][/td][td [&ButtonStyle]][rbutton]3rd::GetWeapon;3[/rbutton][/td][td [&ButtonStyle]][rbutton]4th::GetWeapon;4[/rbutton][/td][td [&ButtonStyle]][rbutton]5th::GetWeapon;5[/rbutton][/td][/tr]
@@ -265,12 +262,7 @@
       --?[= [&TypeCounter] % [&TypesPerRow] ] -eq 0|&AllTypes;+[/tr][tr]
       -->IncrementCounter|TypeCounter
     --%|
-    --:RandomRoll|
-      --=WeaponRoll|1d27
-      --=WeaponNum|1d11
-      --&RandomToken|[@Whichweapon([$WeaponRoll.Raw])][$WeaponNum.Raw]
-	  --?"[&[&RandomToken]]" -eq ""|>RandomRoll
-      --&AllTypes|+[/tr][tr][td [&ButtonStyle]][rbutton]Random Weapon::SaveToken;[&RandomToken][/rbutton][/td][td [&ButtonStyle]][rbutton]Custom Token::CustomToken[/rbutton][/td][/tr][/t]
+      --&AllTypes|+[/tr][tr][td [&ButtonStyle]][rbutton]Random Weapon::SaveToken;Random[/rbutton][/td][td [&ButtonStyle]][rbutton]Custom Token::CustomToken[/rbutton][/td][/tr][/t]
       --+|[&AllTypes]
   --X|
 
@@ -304,29 +296,45 @@
   --:SaveToken|
     --&WeaponChosen|[&reentryval]
     --#whisper|self
-    --~WeaponName|string;nonumbers;[&WeaponChosen]
-    --!a:[&SpiritualWeapon]|!WeaponChosen:[&WeaponChosen]
-    --!a:[&SpiritualWeapon]|!WeaponName:[&WeaponName]
-    --#emoteText|Spiritual Weapon changed
-    --+|[t width=240px style="text-align: center ; font-size: 14px ; "][tr][td][img width=120][&[&WeaponChosen]][/img][br][b][&WeaponName][/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][tr][/t]
-  --X|
+    --?"[&WeaponChosen]" -eq "Random"|[
+      --!a:[&SpiritualWeapon]|!WeaponChosen:[&WeaponChosen]
+      --+|[t width=240px style="text-align: center ; font-size: 14px ; "][tr][td][b]Spiritual Weapon set to Random. A Random Spiritual Weapon will be chosen at each summoning.[/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
+    --]|[
+      --~WeaponName|string;nonumbers;[&WeaponChosen]
+      --!a:[&SpiritualWeapon]|!WeaponChosen:[&WeaponChosen]
+      --!a:[&SpiritualWeapon]|!WeaponName:[&WeaponName]
+      --#emoteText|Spiritual Weapon changed
+      --+|[t width=240px style="text-align: center ; font-size: 14px ; "][tr][td][img width=120][&[&WeaponChosen]][/img][br][b][&WeaponName][/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
+    --]|
+ --X|
 
   --:GetWeapon|
     --#title|
     --#whisper|
+    --&SlotLevel|[&reentryval]
     --&TokenImage|[*[&SpiritualWeapon]:WeaponChosen]
     --?"[&TokenImage]" -ninc "http"|[
+      --?"[&TokenImage]" -eq "Random"|[
+	    --~|array;define;Whichweapon;BattleAxe;Club;Dagger;Flail;Glaive;Greataxe;Greatclub;Greatsword;Halberd;Handaxe;Javelin;Lance;Light-Hammer;Longsword;Mace;Maul;Morningstar;Pike;Quarterstaff;Rapier;Scimitar;Shortsword;Sickle;Spear;Trident;Warhammer;Warpick
+        --:RandomRoll|
+        --=WeaponRoll|1d27
+        --=WeaponNum|1d11
+        --&RandomToken|[@Whichweapon([$WeaponRoll.Raw])][$WeaponNum.Raw]
+	    --?"[&[&RandomToken]]" -eq ""|>RandomRoll
+        --~WeaponName|string;nonumbers;[&RandomToken]
+        --&TokenImage|[&RandomToken]
+      --]|[
+        --&WeaponName|[*[&SpiritualWeapon]:WeaponName]
+      --]|
       --&TokenImage|[&[&TokenImage]]
     --]|[
       --&TokenImage|[&TokenImage]
     --]|
-    --&SlotLevel|[&reentryval]
     --=SlotsTotal|0
     --=SlotsExpended|[*S:lvl[&SlotLevel]_slots_expended]
     --?[$SlotsExpended.Raw] -eq 0|[
       -->NoSlots|
     --]|[
-    --&WeaponName|[*[&SpiritualWeapon]:WeaponName]
     --+|[t width=267px style="text-align: center ; "][tr][td][img width=120][&TokenImage][/img][/td][/tr][/t]
       --!ot:NewTID|name:Spiritual-[&WeaponName]|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:[*S:t-width]|height:[*S:t-height]|imgsrc:"[&TokenImage]"|represents:"[&SpiritualWeapon]"|showname:1|order:toFront
       --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-magic
