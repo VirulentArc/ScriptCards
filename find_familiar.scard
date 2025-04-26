@@ -1,12 +1,11 @@
 !scriptcards {{ 
 
   --/|Script Name : Tim's Find Familiar Mod for D&D 5E 2014
-  --/|Version     : v3.0.1
+  --/|Version     : v3.1.0
   --/|Author      : Timothy Beasley
   --/|API MODs    : ScriptCards
 
-  --/|Description : ***This script on first run will throw errors about missing attributes. Please ignore the errors, they are unavoidable, but will not happen on subsequent runs of the Mod.***
-  --/|              This Mod will display(to the caster) the spell Find Familiar and ask if it is being cast as a ritual, if "no" it will 
+  --/|Description : This Mod will display(to the caster) the spell Find Familiar and ask if it is being cast as a ritual, if "no" it will 
   --/|              ask you at what level you are casting the spell and remove the appropriate spell slot. If cast as a ritual it will skip this step.
   --/|              It will then ask if the Familiar being summoned is a Celestial, Fey, or Fiend; and will finally ask which Familiar
   --/|              you are summoning from a list provided. It will then Spawn the token beside the Summoner.
@@ -41,7 +40,7 @@
     --#emoteBackground|#f1e5c9
     --#emoteFontColor|#6e2425
 
-  --\|Token Image Variables
+  --/|Token Image Variables
 
     --&BatToken|https://files.d20.io/images/407846117/a4ZJKr0ySyLpeDUmM1FGsw/original.png?1725295994
     --&CatToken|https://files.d20.io/images/407846114/yY73RMgm6_BCLaNg2rxBzQ/original.png?1725295994
@@ -65,40 +64,37 @@
   --:RestartMod|
 
   --:DoesCharacterExist|
-	--?"[*[&FindFamiliar]:character_name]" -eq ""|NoCharacter|IsFirstRun
+	--?"[*[&FindFamiliar]:character_name]" -eq ""|NoCharacter|SpellInfo
   --X|
 
 --X|
 
-  --:IsFirstRun|
-	--?"@{FindFamiliar|firstrun}" -ne 1|WriteVar|SpellInfo
-  --X|
-
-  --:WriteVar|
-    --!or:[&FindFamiliar]:npcaction|name:Bite|attack_flag:on|attack_type:melee|attack_target:one target|attack_range:5 ft.|attack_tohit:1|attack_damage:1|attack_damagetype:piercing|attack_tohitrange:+5, Reach 5ft., one target|attack_onhit:1 (1d4 + 3) piercing damage|attack_crit:1d4
-    --!or:[&FindFamiliar]:npcaction|name:Ink Cloud|attack_flag:off|description:(Recharges after a Short or Long Rest). A 5-foot-radius cloud of ink extends all around the octopus if it is underwater. The area is heavily obscured for 1 minute, although a significant current can disperse the ink. After releasing the ink, the octopus can use the Dash action as a bonus action.
-    --!or:[&FindFamiliar]:npctrait|name:Temp|description:Temp
-    --!or:[&FindFamiliar]:npctrait|name:Temp1|description:Temp1
-    --!or:[&FindFamiliar]:npctrait|name:Temp2|description:Temp2
-    --&obrac|{
-    --&cbrac|}
-    --&perc|%
-    --!ob:AbilID:[&FindFamiliar]:Bite:y|[&perc][&obrac]FindFamiliar|repeating_npcaction_$0_npc_action[&cbrac]
-    --!ob:AbilID2:[&FindFamiliar]:Ink Cloud:y|@[&obrac]FindFamiliar|@[&obrac]FindFamiliar|wtype[&cbrac]&[&obrac]template:npcaction[&cbrac] @[&obrac]Octopus|npc_name_flag[&cbrac] [&obrac][&obrac]rname=Ink Cloud (Recharges after a Short or Long Rest)[&cbrac][&cbrac] [&obrac][&obrac]description=A 5-foot-radius cloud of ink extends all around the octopus if it is underwater. The area is heavily obscured for 1 minute, although a significant current can disperse the ink. After releasing the ink, the octopus can use the Dash action as a bonus action.[&cbrac][&cbrac] @[&obrac]Octopus|charname_output[&cbrac]
-    --!ob:AbilID3:[&FindFamiliar]:Skills:y|&[&obrac]template:npcaction[&cbrac][&obrac][&obrac]name=[&cbrac][&cbrac][&obrac][&obrac]rname=Familiar Skills[&cbrac][&cbrac][&obrac][&obrac]description=Select your skill check:[Acrobatics](~FindFamiliar|acrobatics)[Animal Handl.](~FindFamiliar|animalhandling)[Arcana](~FindFamiliar|arcana)[Athletics](~FindFamiliar|athletics)[Deception](~FindFamiliar|deception)[History](~FindFamiliar|history)[Insight](~FindFamiliar|insight)[Intimidation](~FindFamiliar|intimidation)[Investigation](~FindFamiliar|investigation)[Medicine](~FindFamiliar|medicine)[Nature](~FindFamiliar|nature)[Perception](~FindFamiliar|Perception)[Performance](~FindFamiliar|performance)[Persuasion](~FindFamiliar|persuasion)[Religion](~FindFamiliar|religion)[Sleight Of Hand](~FindFamiliar|sleightofhand)[Stealth](~FindFamiliar|stealth)[Survival](~FindFamiliar|survival)[&cbrac][&cbrac]
-    --!ob:AbilID4:[&FindFamiliar]:Saves & Attributes:y|&[&obrac]template:npcaction[&cbrac][&obrac][&obrac]name=[&cbrac][&cbrac][&obrac][&obrac]rname=Familiar Saving Throws and Attributes[&cbrac][&cbrac][&obrac][&obrac]description=Select your Save or Ability Roll:[STR Save](~FindFamiliar|strength_save)[DEX Save](~FindFamiliar|dexterity_save)[CON Save](~FindFamiliar|constitution_save)[INT Save](~FindFamiliar|intelligence_save)[WIS Save](~FindFamiliar|wisdom_save)[CHA Save](~FindFamiliar|charisma_save)[&perc]NEWLINE[&perc][&perc]NEWLINE[&perc][Strength](~FindFamiliar|strength)[Dexterity](~FindFamiliar|dexterity)[Constitution](~FindFamiliar|constitution)[Intelligence](~FindFamiliar|intelligence)[Wisdom](~FindFamiliar|wisdom)[Charisma](~FindFamiliar|charisma)[&cbrac][&cbrac]
-
-    --!a:[&FindFamiliar]|!custom_name:0
-    --!a:[&FindFamiliar]|!firstrun:1
-    --!a:[&FindFamiliar]|!Bat:0|!Cat:0|!Crab:0|!Frog:0|!Hawk:0|!Lizard:0|!Octopus:0|!Owl:0|!Snake:0|!Quipper:0|!Rat:0|!Raven:0|!Seahorse:0|!Spider:0|!Weasel:0
-    -->SpellInfo|
-  --X|
-
   --:SpellInfo|
+  
     --#emoteState|0
     --#emoteText|
     --#whisper|self
+
+    --~MacroButton|system;findability;[*[&FindFamiliar]:character_name];Ink-Cloud
+
     --Rfind|@{selected|character_id};[&SpellName];repeating_spell-[&SpellLevel];spellname
+
+    --?"[&MacroButton]" -eq "AbilityNotFound"|[
+      --!or:[&FindFamiliar]:npcaction|name:Bite|attack_flag:on|attack_type:melee|attack_target:one target|attack_range:5 ft.|attack_tohit:1|attack_damage:1|attack_damagetype:piercing|attack_tohitrange:+5, Reach 5ft., one target|attack_onhit:1 (1d4 + 3) piercing damage|attack_crit:1d4
+      --!or:[&FindFamiliar]:npcaction|name:Ink-Cloud|attack_flag:off|description:(Recharges after a Short or Long Rest). A 5-foot-radius cloud of ink extends all around the octopus if it is underwater. The area is heavily obscured for 1 minute, although a significant current can disperse the ink. After releasing the ink, the octopus can use the Dash action as a bonus action.
+      --!or:[&FindFamiliar]:npctrait|name:Temp|description:Temp
+      --!or:[&FindFamiliar]:npctrait|name:Temp1|description:Temp1
+      --!or:[&FindFamiliar]:npctrait|name:Temp2|description:Temp2
+      --&obrac|{
+      --&cbrac|}
+      --&perc|%
+      --!ob:AbilID:[&FindFamiliar]:Bite:y|[&perc][&obrac]FindFamiliar|repeating_npcaction_$0_npc_action[&cbrac]
+      --!ob:AbilID2:[&FindFamiliar]:Ink-Cloud:n|@[&obrac]FindFamiliar|@[&obrac]FindFamiliar|wtype[&cbrac]&[&obrac]template:npcaction[&cbrac] @[&obrac]Octopus|npc_name_flag[&cbrac] [&obrac][&obrac]rname=Ink Cloud (Recharges after a Short or Long Rest)[&cbrac][&cbrac] [&obrac][&obrac]description=A 5-foot-radius cloud of ink extends all around the octopus if it is underwater. The area is heavily obscured for 1 minute, although a significant current can disperse the ink. After releasing the ink, the octopus can use the Dash action as a bonus action.[&cbrac][&cbrac] @[&obrac]Octopus|charname_output[&cbrac]
+      --!ob:AbilID3:[&FindFamiliar]:Skills:y|&[&obrac]template:npcaction[&cbrac][&obrac][&obrac]name=[&cbrac][&cbrac][&obrac][&obrac]rname=Familiar Skills[&cbrac][&cbrac][&obrac][&obrac]description=Select your skill check:[Acrobatics](~FindFamiliar|acrobatics)[Animal Handl.](~FindFamiliar|animalhandling)[Arcana](~FindFamiliar|arcana)[Athletics](~FindFamiliar|athletics)[Deception](~FindFamiliar|deception)[History](~FindFamiliar|history)[Insight](~FindFamiliar|insight)[Intimidation](~FindFamiliar|intimidation)[Investigation](~FindFamiliar|investigation)[Medicine](~FindFamiliar|medicine)[Nature](~FindFamiliar|nature)[Perception](~FindFamiliar|Perception)[Performance](~FindFamiliar|performance)[Persuasion](~FindFamiliar|persuasion)[Religion](~FindFamiliar|religion)[Sleight Of Hand](~FindFamiliar|sleightofhand)[Stealth](~FindFamiliar|stealth)[Survival](~FindFamiliar|survival)[&cbrac][&cbrac]
+      --!ob:AbilID4:[&FindFamiliar]:Saves & Attributes:y|&[&obrac]template:npcaction[&cbrac][&obrac][&obrac]name=[&cbrac][&cbrac][&obrac][&obrac]rname=Familiar Saving Throws and Attributes[&cbrac][&cbrac][&obrac][&obrac]description=Select your Save or Ability Roll:[STR Save](~FindFamiliar|strength_save)[DEX Save](~FindFamiliar|dexterity_save)[CON Save](~FindFamiliar|constitution_save)[INT Save](~FindFamiliar|intelligence_save)[WIS Save](~FindFamiliar|wisdom_save)[CHA Save](~FindFamiliar|charisma_save)[&perc]NEWLINE[&perc][&perc]NEWLINE[&perc][Strength](~FindFamiliar|strength)[Dexterity](~FindFamiliar|dexterity)[Constitution](~FindFamiliar|constitution)[Intelligence](~FindFamiliar|intelligence)[Wisdom](~FindFamiliar|wisdom)[Charisma](~FindFamiliar|charisma)[&cbrac][&cbrac]
+      --!a:[&FindFamiliar]|!custom_name:0
+      --!a:[&FindFamiliar]|!Bat:0|!Cat:0|!Crab:0|!Frog:0|!Hawk:0|!Lizard:0|!Octopus:0|!Owl:0|!Snake:0|!Quipper:0|!Rat:0|!Raven:0|!Seahorse:0|!Spider:0|!Weasel:0
+    --]|
 
     --#title|[*R:spellname]
     --?[*R:spelllevel] -eq cantrip|&spllvl;cantrip|&spllvl;[*R:spelllevel]
@@ -255,14 +251,14 @@
       --!ability:[@AbilityArr(0)]|name:[&AttackOne]|istokenaction:True
       --!a:[&FindFamiliar]|[*R>name]:[&AttackOne]|[*R>attack_flag]:[&AttackOneFlag]|[*R>attack_type]:[&AttackOneType]|[*R>attack_target]:[&AttackOneTarget]|[R>attack_range]:[&AttackOneRange]|[*R>attack_tohit]:[&ToHitOne]|[*R>attack_damage]:[&DamageOne]|[*R>attack_damage2]:[&DamageOneTwo]|[*R>attack_damagetype]:[&DamageOneType]|[*R>attack_damagetype2]:[&DamageOneTypeTwo]|[*R>attack_tohitrange]:|[*R>attack_onhit]:[&OnHitOne]|[*R>attack_onhit2]:[&OnHitOneTwo]|[*R>description]:[&AttackOneDesc]
         --Rnext|
-          --~|array;objects:ability;AbilArr;Ink Cloud;[&FindFamiliar]
+          --~|array;objects:ability;AbilArr;Ink-Cloud;[&FindFamiliar]
           --?"[&FamiliarType]" -inc "Octopus"|[
             --!ability:[@AbilArr(0)]|istokenaction:True
           --]|[
             --!ability:[@AbilArr(0)]|istokenaction:False
           --]|
           --!a:[&FindFamiliar]|[*R>name]:[&AttackTwo]|[*R>attack_flag]:off|[*R>description]:[&AttackTwoDesc]
-    --?"@{FindFamiliar|custom_name}" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;@{FindFamiliar|custom_name}
+    --?"[*[&FindFamiliar]:custom_name]" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;[*[&FindFamiliar]:custom_name]
     --?"[&UpdateName]" -eq "0"|&TokenDisplayName;[&TokenDisplayName]|&TokenDisplayName;[&UpdateName]
     --?"[*[&FindFamiliar]:[&FamiliarType]]" -ne "0"|&TokenDisplay;[*[&FindFamiliar]:[&FamiliarType]]|&TokenDisplay;[&[&FamiliarType]Token]
     --/|Summon The Familiar
@@ -271,7 +267,7 @@
     --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-smoke
     --?"[&FamiliarType]" -inc "Snake"|&DisplayName;Snake|&DisplayName;[&FamiliarType]
     --~NameReplace|string;replaceall; ;;[&DisplayName]
-    --?"@{FindFamiliar|custom_name}" -ne "0"|&FamiliarName;[&TokenDisplayName]|&FamiliarName;a [&TokenDisplayName]
+    --?"[*[&FindFamiliar]:custom_name]" -ne "0"|&FamiliarName;[&TokenDisplayName]|&FamiliarName;a [&TokenDisplayName]
     --#emoteText|[*S:character_name] Takes 1 hour to cast [&SpellName] and summons [&FamiliarName]
     --+|[t width=267px style="text-align: center ; "][tr][td][img width=120][&[&NameReplace]Token][/img][/td][/tr][/t]
   --X|
@@ -298,7 +294,7 @@
       --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
       -->IncrementCounter|TokenCounter
     --%|
-    --?"@{FindFamiliar|custom_name}" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;@{FindFamiliar|custom_name}
+    --?"[*[&FindFamiliar]:custom_name]" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;[*[&FindFamiliar]:custom_name]
     --?"[&UpdateName]" -eq "0"|&TokenDisplayName;[&TokenDisplayName]|&TokenDisplayName;[&UpdateName]
     --&AllTokens|+[/tr][/t][t width=235px style="border: 1mm ridge rgb(218,165,32) ; text-align: center ; "][tr][td style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][b]Custom Name[/b][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]CHANGE::UpdateName[/rbutton][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]RESET::ResetName[/rbutton][/td][/tr][tr][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][b]Current Name[/b][/td][td colspan=2 style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][&TokenDisplayName][/td][/tr][tr][td colspan=3][rbutton]EXIT::RestartMod[/rbutton][/td][/tr][/t]
     --+|[&AllTokens]
