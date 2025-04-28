@@ -1,7 +1,7 @@
 !scriptcards {{ 
 
   --/|Script Name : Tim's Find Familiar Mod for D&D 5E 2014
-  --/|Version     : v3.1.0
+  --/|Version     : v3.1.1
   --/|Author      : Timothy Beasley
   --/|API MODs    : ScriptCards
 
@@ -262,7 +262,7 @@
     --?"[&UpdateName]" -eq "0"|&TokenDisplayName;[&TokenDisplayName]|&TokenDisplayName;[&UpdateName]
     --?"[*[&FindFamiliar]:[&FamiliarType]]" -ne "0"|&TokenDisplay;[*[&FindFamiliar]:[&FamiliarType]]|&TokenDisplay;[&[&FamiliarType]Token]
     --/|Summon The Familiar
-    --!ot:NewTID|name:"[&TokenDisplayName]"|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:[*S:t-width]|height:[*S:t-height]|imgsrc:"[&TokenDisplay]"|represents:"[&FindFamiliar]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:[&NightDistance]|night_vision_effect:Nocturnal|order:toFront
+    --!ot:NewTID|name:"[&TokenDisplayName]"|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:[*S:t-width]|height:[*S:t-height]|imgsrc:"[&TokenDisplay]"|represents:"[&FindFamiliar]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:[&NightDistance]|night_vision_effect:Nocturnal|order:toFront|showplayers_name:1
     --/|Add a puff of smoke where the Familiar spawns
     --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-smoke
     --?"[&FamiliarType]" -inc "Snake"|&DisplayName;Snake|&DisplayName;[&FamiliarType]
