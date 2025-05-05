@@ -1,7 +1,7 @@
 !scriptcards {{ 
 
   --/|Script Name : Tim's Spiritual Weapon Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 1.1.0
+  --/|Version     : 1.2.1
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the Spiritual Weapon spell in chat. It allows you to choose from 157 BG3 weapons and summon the token beside the caster token.
@@ -20,9 +20,9 @@
   --/|              Make sure the template "macro" name is statblock or change #overridetemplate to whatever name you'd prefer
   --/|              it to have.
 
-  --:DoFormatting|
     --#overridetemplate|statblock
     --&SpiritualWeapon|@{SpiritualWeapon|character_id}
+    --&sfx|explode-magic
     --#sourceToken|@{selected|token_id}
     --#Debug|0
     --#emoteState|0
@@ -43,11 +43,10 @@
     --&Dagger2|https://s3.amazonaws.com/files.d20.io/images/409077705/mgFZUxkJ_DpbELZ9f1_vxw/original.webp?17260970895
     --&Dagger3|https://s3.amazonaws.com/files.d20.io/images/409077701/vX4XqpfYM8X5mivBWURsYw/original.webp?17260970895
     --&Dagger4|https://s3.amazonaws.com/files.d20.io/images/409077695/0olUbB2P5_R4z5MO3mC87w/original.webp?17260970895
-    --&Dagger5|https://s3.amazonaws.com/files.d20.io/images/409077679/9M73vuyMaeUT776_ZocMsg/original.webp?17260970825
-    --&Dagger6|https://s3.amazonaws.com/files.d20.io/images/409077697/n9GZRLZT1_4YK4fSWXrHiA/original.webp?17260970895
-    --&Dagger7|https://s3.amazonaws.com/files.d20.io/images/409077699/l9rZXJIYP72-r9__VJ7lLQ/original.webp?17260970895
-    --&Dagger8|https://s3.amazonaws.com/files.d20.io/images/409077700/H0N4_oe-in-VhB_Tu938RA/original.webp?17260970895
-    --&Dagger9|https://s3.amazonaws.com/files.d20.io/images/409077702/QC4KRwQM25UnhZfSQD9ARQ/original.webp?17260970895
+    --&Dagger5|https://s3.amazonaws.com/files.d20.io/images/409077697/n9GZRLZT1_4YK4fSWXrHiA/original.webp?17260970895
+    --&Dagger6|https://s3.amazonaws.com/files.d20.io/images/409077699/l9rZXJIYP72-r9__VJ7lLQ/original.webp?17260970895
+    --&Dagger7|https://s3.amazonaws.com/files.d20.io/images/409077700/H0N4_oe-in-VhB_Tu938RA/original.webp?17260970895
+    --&Dagger8|https://s3.amazonaws.com/files.d20.io/images/409077702/QC4KRwQM25UnhZfSQD9ARQ/original.webp?17260970895
     --&Flail1|https://s3.amazonaws.com/files.d20.io/images/409083962/Dz9T8IfmRoqIPkj_zgR7yg/original.webp?17260999705
     --&Flail2|https://s3.amazonaws.com/files.d20.io/images/409083963/MIHEldJbGlhEay1CPRUqKQ/original.webp?17260999705
     --&Flail3|https://s3.amazonaws.com/files.d20.io/images/409083964/cf3JIHgGnFVhWa80tTsBqA/original.webp?17260999705
@@ -191,8 +190,51 @@
     --&Warpick1|https://s3.amazonaws.com/files.d20.io/images/409078131/AXJIMbJ92TCuFeYGu-t1rQ/original.webp?17260972285
     --&Warpick2|https://s3.amazonaws.com/files.d20.io/images/409078132/GfKKHrqWfBCwgcu2FEGy1A/original.webp?17260972285
     --&Warpick3|https://s3.amazonaws.com/files.d20.io/images/409078133/RnqkAqHB06CCtUasb18zag/original.webp?17260972285
-
-    --&TokenCell|width=100% style="background-image: url(https://files.d20.io/images/431269924/wXGXxCLvc_js7eWmz5NQkw/original.png) ; background-repeat: no-repeat ; background-size: 85px 80px ; background-position: center ; display: inline-block ; bottom: 0;  margin-left: auto ; margin-right: auto ; width: 33% ; text-align: center ; white-space: nowrap ; height: 80px ; "
+    --&Miscellaneous1|https://files.d20.io/images/438882017/wukPASLxU2LF8xxDVFRQ5Q/original.webp
+    --&Miscellaneous2|https://files.d20.io/images/438882005/2F9l5eqTX4D206i99smJJA/original.webp
+    --&Miscellaneous3|https://files.d20.io/images/438882007/skK3-XXdZKIdFKTDgKUgBQ/original.webp
+    --&Miscellaneous4|https://files.d20.io/images/438882006/ttM4hIg8LgaMGSCe7HO7iA/original.webp
+    --&Miscellaneous5|https://files.d20.io/images/438882008/pgK3RrG7NtQ3ZWO6tIl49g/original.webp
+    --&Miscellaneous6|https://files.d20.io/images/438882011/E-ueQ16SKfUqJZJbX1GQRQ/original.webp
+    --&Miscellaneous7|https://files.d20.io/images/438882014/rXPYomxbzoOjI0YBfhYrww/original.webp
+    --&Miscellaneous8|https://files.d20.io/images/438882012/JV1YxEqbTubak6EUhC2GwQ/original.webp
+    --&Miscellaneous9|https://files.d20.io/images/438882016/5Lwbw664YgwGHXfKSGsJZg/original.webp
+    --&Miscellaneous10|https://files.d20.io/images/438882018/O-9HFfCBaLIwFrRaB7Pj0w/original.webp
+    --&Miscellaneous11|https://files.d20.io/images/438882019/vuui1j8WlGyD67NAzP6Scw/original.webp
+    --&Miscellaneous12|https://files.d20.io/images/438882021/bple62pyePfdBlxBo9FRHQ/original.webp
+    --&Miscellaneous13|https://files.d20.io/images/438882022/ocQiVloMs5u88oP5VucUlg/original.webp
+    --&Miscellaneous14|https://files.d20.io/images/438882027/to6rKubnef_WfIEHLhSA5g/original.webp
+    --&Miscellaneous15|https://files.d20.io/images/438882028/XCjtdNppRuyGusqawT1tpA/original.webp
+    --&Miscellaneous16|https://files.d20.io/images/438882029/3ytG0DZCbD1Uq_9-jrzBMg/original.webp
+    --&Miscellaneous17|https://files.d20.io/images/438882030/q0UjBxgTm3RoBs38asvSEg/original.webp
+    --&Miscellaneous18|https://files.d20.io/images/438882031/DDk-cGWaBMpX71IcE4LDQw/original.webp
+    --&Miscellaneous19|https://files.d20.io/images/438882032/ZdhCl8Rwnyy6VNi95MQnFA/original.webp
+    --&Miscellaneous20|https://files.d20.io/images/438882033/DtJ9XZ0y393wAukEn6nHvg/original.webp
+    --&Miscellaneous21|https://files.d20.io/images/438882034/49cEN93OVT7risbXzlF9UA/original.webp
+    --&Miscellaneous22|https://files.d20.io/images/438882035/amxmhHyr_4y3Pwa_hlLdxA/original.webp
+    --&Miscellaneous23|https://files.d20.io/images/438882036/S6MLXfdh5ZE_2CekkET47w/original.webp
+    --&Miscellaneous24|https://files.d20.io/images/438882037/Z6bIFId5gZsvv1PmSs5xLA/original.webp
+    --&Miscellaneous25|https://files.d20.io/images/438882038/mtgK5PdR1LYG2SdfMwbVaQ/original.webp
+    --&Miscellaneous26|https://files.d20.io/images/438882040/FURmDEHUKfZbkVVtfDi3XA/original.webp
+    --&Miscellaneous27|https://files.d20.io/images/438882043/5LLoq_KS2xW-OBd7x3ntCA/original.webp
+    --&Miscellaneous28|https://files.d20.io/images/438882045/Adn2XJi4ueOcYfUSxW_MYg/original.webp
+    --&Miscellaneous29|https://files.d20.io/images/438882047/C42wQoyPEIu-ZcSw4MydgQ/original.webp
+    --&Miscellaneous30|https://files.d20.io/images/438882052/F8X8tQcnCDw_lzjCJ7mxMA/original.webp
+    --&Miscellaneous31|https://files.d20.io/images/438882048/tk4tpyXMUXGvZUtYwnRzKQ/original.webp
+    --&Miscellaneous32|https://files.d20.io/images/438882050/1o4l1MpeXMcKOTKl8UJJ7Q/original.webp
+    --&Miscellaneous33|https://files.d20.io/images/438882051/STYCr1etT4_NxAX-S1R1Xw/original.webp
+    --&Miscellaneous34|https://files.d20.io/images/438882053/eHxsWO3Ystz-5GG1wJsluQ/original.webp
+    --&Miscellaneous35|https://files.d20.io/images/438882056/6QvAWREBdPV0qakmPTHZQw/original.webp
+    --&Miscellaneous36|https://files.d20.io/images/438882057/0G0_oLf1jxK1i50qTgFzJg/original.webp
+    --&Miscellaneous37|https://files.d20.io/images/438882058/OrQMcWYwYXrxmvqKvYg1XA/original.webp
+    --&Miscellaneous38|https://files.d20.io/images/438882059/LBO08OBSmDoi15ygrH-vDg/original.webp
+    --&Miscellaneous39|https://files.d20.io/images/438882060/9GFU845YqAMsbfFKpMsQhQ/original.webp
+    --&Miscellaneous40|https://files.d20.io/images/438882061/lcgaSxBMUtbsXAQ4A12A-w/original.webp
+    --&Miscellaneous41|https://files.d20.io/images/438882062/2wbMIDTgDOJK8cVXzKW-iA/original.webp
+    --&Miscellaneous42|https://files.d20.io/images/438882063/7itg9ygL5qKnhbj1wej-NA/original.webp
+    --&Miscellaneous43|https://files.d20.io/images/438882066/0UUg1xYN42oG3X5F-mB5jw/original.webp
+    --~|hash;set;Misc;Miscellaneous1==Anvil;Miscellaneous2==Bagpipes;Miscellaneous3==Banana;Miscellaneous4==Barrel;Miscellaneous5==Floating-Boot;Miscellaneous6==Floating-Boot;Miscellaneous7==Chess-Piece;Miscellaneous8==Storm-Cloud;Miscellaneous9==Storm-Cloud;Miscellaneous10==Crowbar;Miscellaneous11==Demon-Skull;Miscellaneous12==Trout;Miscellaneous13==Flute;Miscellaneous14==Pan;Miscellaneous15==Castiron-Pan;Miscellaneous16==Horn;Miscellaneous17==Hourglass;Miscellaneous18==Ice-Pick;Miscellaneous19==Rainbow-Lollipop;Miscellaneous20==Pink-Lollipop;Miscellaneous21==Colorful-Lollipop;Miscellaneous22==Mage-Hand;Miscellaneous23==Hand-Mirror;Miscellaneous24==Golden-Moon;Miscellaneous25==Magical-Moon;Miscellaneous26==Crescent-Moon;Miscellaneous27==Beer-Mug;Miscellaneous28==Beer-Stein;Miscellaneous29==Needle;Miscellaneous30==Rolling-Pin;Miscellaneous31==Handsaw;Miscellaneous32==Scroll;Miscellaneous33==Shovel;Miscellaneous34==Skull;Miscellaneous35==Spellbook;Miscellaneous36==Grimoire;Miscellaneous37==Ancient-Spellbook;Miscellaneous38==Warlock-Grimoire;Miscellaneous39==Spellbook;Miscellaneous40==Necromancer-Spellbook;Miscellaneous41==Wooden-Spoon;Miscellaneous42==Gravestone;Miscellaneous43==Torch
+    --&TokenCell|width=100% style="background-image: url(https://files.d20.io/images/431269924/wXGXxCLvc_js7eWmz5NQkw/original.png) ; background-repeat: no-repeat ; background-size: 85px 80px ; background-position: center ; display: inline-block ; bottom: 0;  margin-left: auto ; margin-right: auto ; width: 33% ; text-align: center ; font-weight: bold ; font-size: 14px ; "
     --&ButtonStyle|style="align-self: center;  background-color: transparent ; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: #6e2425; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
 
     --?"@{SpiritualWeapon|charactersheet_type}" -ne "npc"|NoCharacter|SpellInfo
@@ -253,7 +295,7 @@
     --#emoteText|Choose Weapon Type
     --#title|
     --#Whisper|self
-    --~|array;define;Whichweapon;BattleAxe;Club;Dagger;Flail;Glaive;Greataxe;Greatclub;Greatsword;Halberd;Handaxe;Javelin;Lance;Light-Hammer;Longsword;Mace;Maul;Morningstar;Pike;Quarterstaff;Rapier;Scimitar;Shortsword;Sickle;Spear;Trident;Warhammer;Warpick
+    --~|array;define;Whichweapon;BattleAxe;Club;Dagger;Flail;Glaive;Greataxe;Greatclub;Greatsword;Halberd;Handaxe;Javelin;Lance;Light-Hammer;Longsword;Mace;Maul;Morningstar;Pike;Quarterstaff;Rapier;Scimitar;Shortsword;Sickle;Spear;Trident;Warhammer;Warpick;Miscellaneous
     --&TypesPerRow|3
     --&TypeCounter|1
     --&AllTypes|[t width=120% style="text-align: center ; position: relative ; left: -24px ; "][tr]
@@ -269,22 +311,24 @@
   --:ChooseToken|
     --&WeaponType|[&reentryval]
     --#emoteState|visible
-    --#emoteText|Choose Your Spiritual Weapon
+    --#emoteText|Choose Your Spiritual [&WeaponType]
     --#title|
     --#whisper|self
-    --+|[t width=240px][tr][td][/td][/tr][/t]
-    --~|array;define;SpiritualToken;[&WeaponType]1;[&WeaponType]2;[&WeaponType]3;[&WeaponType]4;[&WeaponType]5;[&WeaponType]6;[&WeaponType]7;[&WeaponType]8;[&WeaponType]9;[&WeaponType]10;[&WeaponType]11
     --&TokensPerRow|3
     --&TokenCounter|1
-    --&AllTokens|[t width=100%][tr]
-    --%TokenLoop|foreach;SpiritualToken
-      --?"[&[&TokenLoop]]" -ne ""|[
-        --&TokenOutput|[&[&TokenLoop]]
-        --&AllTokens|+[td [&TokenCell]][rbutton][img width=70][&TokenOutput][/img]::SaveToken;[&TokenLoop][/rbutton][/td]
-        --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
-        -->IncrementCounter|TokenCounter
-      --]|
-    --%|
+    --&AllTokens|[t width=240px][tr]
+      --%TokenLoop|1;43;1
+        --&TokenImage|[&[&WeaponType][&TokenLoop]]
+   	    --?"[&TokenImage]" -ne ""|[
+          --&WeaponMat|
+          --?"[&WeaponType]" -ninc "misc"|>SpecificName;[&WeaponType];[&RandomToken]|&WeaponMat;[:Misc("[&WeaponType][&TokenLoop]")]
+          --~WeaponMat|string;replaceall;-; ;[&WeaponMat]
+          --?"[&WeaponType]" -ninc "misc"|=WeaponMatLength;[&WeaponMat(length)] - 1|=WeaponMatLength;[&WeaponMat(length)]
+          --&AllTokens|+[td [&TokenCell]][rbutton][img width=70][&TokenImage][/img]::SaveToken;[&WeaponType][&TokenLoop][/rbutton][br][&WeaponMat(0,[$WeaponMatLength.Raw])][/td]
+          --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
+          -->IncrementCounter|TokenCounter
+        --]|
+      --%|
     --&AllTokens|+[/tr][/t]
     --+|[&AllTokens]
   --X|
@@ -304,7 +348,11 @@
       --!a:[&SpiritualWeapon]|!WeaponChosen:[&WeaponChosen]
       --!a:[&SpiritualWeapon]|!WeaponName:[&WeaponName]
       --#emoteText|Spiritual Weapon changed
-      --+|[t width=240px style="text-align: center ; font-size: 14px ; "][tr][td][img width=120][&[&WeaponChosen]][/img][br][b][&WeaponName][/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
+      --&TokenImage|[&[&WeaponChosen]]
+      --&WeaponMat|
+      -->SpecificName|[&WeaponName];[&RandomToken]
+   	  --?"[&WeaponName]" -inc "Misc"|&WeaponName;
+      --+|[t width=240px style="text-align: center ; font-size: 14px ; "][tr][td][img width=120][&[&WeaponChosen]][/img][br][b][&WeaponMat][&WeaponName][/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
     --]|
  --X|
 
@@ -321,51 +369,64 @@
         --=WeaponNum|1d11
         --&RandomToken|[@Whichweapon([$WeaponRoll.Raw])][$WeaponNum.Raw]
 	    --?"[&[&RandomToken]]" -eq ""|>RandomRoll
-        --~WeaponName|string;nonumbers;[&RandomToken]
-        --&TokenImage|[&RandomToken]
-      --]|[
+          --~WeaponName|string;nonumbers;[&RandomToken]
+          --&TokenImage|[&RandomToken]
+        --]|[
         --&WeaponName|[*[&SpiritualWeapon]:WeaponName]
       --]|
       --&TokenImage|[&[&TokenImage]]
     --]|[
       --&TokenImage|[&TokenImage]
     --]|
-    --=SlotsTotal|0
     --=SlotsExpended|[*S:lvl[&SlotLevel]_slots_expended]
     --?[$SlotsExpended.Raw] -eq 0|[
-      -->NoSlots|
+      -->NoSlots|[&SlotLevel]
     --]|[
+    --&WeaponMat|
+    -->SpecificName|[&WeaponName];[&RandomToken]
+	--?"[&WeaponName]" -inc "Misc"|&WeaponName;
     --+|[t width=267px style="text-align: center ; "][tr][td][img width=120][&TokenImage][/img][/td][/tr][/t]
-      --!ot:NewTID|name:Spiritual-[&WeaponName]|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:[*S:t-width]|height:[*S:t-height]|imgsrc:"[&TokenImage]"|represents:"[&SpiritualWeapon]"|showname:1|order:toFront
-      --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-magic
+      --!ot:NewTID|name:[&WeaponMat][&WeaponName]|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:[*S:t-width]|height:[*S:t-height]|imgsrc:"[&TokenImage]"|represents:"[&SpiritualWeapon]"|showname:1|order:toFront|showplayers_name:1
+      --vpoint|[=[*S:t-left]+70] [*S:t-top] [&sfx]
       --=SlotsLeft|[$SlotsExpended] - 1
       --!a:[*S:character_id]|lvl[&SlotLevel]_slots_expended:[$SlotsLeft]
       --Rfirst|[&SpiritualWeapon];repeating_npcaction
       --=Dice|[&SlotLevel]-1
       --!a:[&SpiritualWeapon]|[*R>name]:Attack Spell Level [&SlotLevel]|[*R>attack_flag]:on|[*R>attack_type]:Melee|[*R>attack_target]:one target|[R>attack_range]:5 ft.|[*R>attack_tohit]:[*S:spell_attack_bonus]|[*R>attack_damage]:[$Dice.Total]d8+[*S:spell_attack_bonus]|[*R>attack_damagetype]:force|[*R>attack_onhit]:([$Dice.Total]d8+[*S:spell_attack_bonus]) 11 (1d8 + [*S:spell_attack_bonus])
     --]|
-    -->SummonMessage|
+    -->SummonMessage|[&SlotLevel];[&WeaponMat]
   --X|
 
   --:CustomToken|
-      --I. ;Click Here to add image URL|q;CustomToken;What Is The URL To Your Token Image? It must be an image from your Roll20 Library.
-      --I. ;Click Here to add a custom name|q;CustomName;What name do you want to give your Spiritual Weapon
-      --!a:[&SpiritualWeapon]|!WeaponChosen:[&CustomToken]
-      --!a:[&SpiritualWeapon]|!WeaponName:[&CustomName]
-      --+|[t width=240px style="text-align: center ; "][tr][td][img width=120][&CustomToken][/img][br][b][&CustomName][/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][tr][/t]
+    --I. ;Click Here to add image URL|q;CustomToken;What Is The URL To Your Token Image? It must be an image from your Roll20 Library.
+    --I. ;Click Here to add a custom name|q;CustomName;What name do you want to give your Spiritual Weapon
+    --!a:[&SpiritualWeapon]|!WeaponChosen:[&CustomToken]
+    --!a:[&SpiritualWeapon]|!WeaponName:[&CustomName]
+    --+|[t width=240px style="text-align: center ; "][tr][td][img width=120][&CustomToken][/img][br][b][&CustomName][/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][tr][/t]
   --X|
 
   --:SummonMessage|
     --#whisper|
     --#emoteState|visible
-    --#emoteText|[*S:character_name] summons their Spiritual [&WeaponName]
-    --+|[t width=267px][tr][td style="height: 20px ; "][tr][td][c][f14][*S:character_name] has [b][$SlotsLeft.Raw][/b] of [b][$SlotsExpended.Raw][/b] level [b][&SlotLevel.Raw][/b] slots left.[/f][/c][/td][/tr][/t]
+    --#emoteText|[*S:character_name] summons their Spiritual [%2%][&WeaponName]
+    --+|[t width=267px][tr][td style="height: 20px ; "][tr][td][c][f14][*S:character_name] has [b][$SlotsLeft.Raw][/b] of [b][*S:lvl[%1%]_slots_total][/b] level [b][%1%][/b] slots left.[/f][/c][/td][/tr][/t]
   --X|
 
   --:NoSlots|
     --#emoteState|0
-    --+|[t width=267px][tr][td style="height: 30px ; font-size: 14px ; "][c][*S:character_name] has no level [b][&SlotLevel.Raw][/b] spell slots available.[/c][/td][/tr][/t]
+    --+|[t width=267px][tr][td style="height: 30px ; font-size: 14px ; "][c][*S:character_name] has no level [b][%1%][/b] spell slots available.[/c][/td][/tr][/t]
   --X|
+
+  --:SpecificName|
+    --?"[%1%]" -inc "Misc"|&WeaponMat;[:Misc("[*[&SpiritualWeapon]:WeaponChosen]")]
+    --?"[%1%]" -inc "random"|&TokenImage;[&[%2%]]
+    --?";[&Longsword11];[&Mace3];[&Maul1];[&Maul4];[&Morningstar3];[&Quarterstaff1];[&Quarterstaff8];[&Scimitar1];[&Scimitar3];[&Scimitar4];[&Scimitar10];[&Sickle3];[&Trident2];[&Trident7];[&Pike6];" -inc ";[&TokenImage];"|&WeaponMat;Magic-
+    --?";[&BattleAxe3];[&Club3];[&Dagger1];[&Dagger9];[&Flail5];[&Glaive2];[&Greataxe2];[&Greatsword1];[&Mace2];[&Mace7];[&Morningstar5];[&Rapier5];[&Rapier7];[&Scimitar5];[&Scimitar6];[&Scimitar7];[&Trident5];[&Warhammer1];[&Warhammer4];[&Pike5];" -inc ";[&TokenImage];"|&WeaponMat;Adamantine-
+    --?";[&Greatclub2];[&Greatclub3];[&Greatsword5];[&Greatsword6];[&Greatsword7];[&Greatsword8];[&Greatsword9];[&Halberd3];[&Halberd4];[&Halberd5];[&Handaxe2];[&Javelin1];[&Javelin3];[&Light-Hammer2];[&Light-Hammer4];[&Light-Hammer5];[&Longsword3];[&Longsword7];[&Longsword9];[&Mace1];[&Mace9];[&Maul3];[&Morningstar4];[&Quarterstaff2];[&Rapier2];[&Scimitar8];[&Shortsword3];[&Shortsword6];[&Shortsword7];[&Spear4];[&Spear6];[&Spear7];[&Trident1];[&Trident6];[&Warhammer2];[&Warpick1];" -inc ";[&TokenImage];"|&WeaponMat;Radiant-
+    --?";[&BattleAxe2];[&Dagger6];[&Glaive3];[&Greataxe3];[&Greatsword3];[&Greatsword4];[&Halberd1];[&Handaxe3];[&Longsword4];[&Light-Hammer6];[&Mace6];[&Maul5];[&Morningstar1];[&Pike2];[&Rapier6];[&Scimitar11];[&Shortsword4];[&Sickle2];[&Spear3];[&Trident3];[&Warhammer3];[&Warpick2];[&Scimitar9];" -inc ";[&TokenImage];"|&WeaponMat;Rusty-
+    --?";[&Dagger5];[&Dagger8];[&Flail3];[&Quarterstaff3];[&Rapier3];[&Shortsword1];[&Shortsword8];[&Spear8];[&Spear9];[&Greatsword10];[&Longsword8];" -inc ";[&TokenImage];"|&WeaponMat;Cursed-
+    --?"[&WeaponMat]" -eq ""|&WeaponMat;Common-
+  --<|
 
   --:NoCharacter|
     --#title|No Character Found
