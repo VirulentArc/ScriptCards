@@ -342,7 +342,7 @@
     --#whisper|self
     --?"[&WeaponChosen]" -eq "Random"|[
       --!a:[&SpiritualWeapon]|!WeaponChosen:[&WeaponChosen]
-      --+|[t width=240px style="text-align: center ; font-size: 14px ; "][tr][td][b]Spiritual Weapon set to Random. A Random Spiritual Weapon will be chosen at each summoning.[/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
+      --+|[t width=240px style="text-align: center ; font-size: 14px ; "][tr][td][b]Spiritual Weapon set to Random. A Random Spiritual Weapon will be chosen at each summoning. This does not include the Miscellaneous Weapons.[/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
     --]|[
       --~WeaponName|string;nonumbers;[&WeaponChosen]
       --!a:[&SpiritualWeapon]|!WeaponChosen:[&WeaponChosen]
