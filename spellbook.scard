@@ -36,9 +36,9 @@
   --&cbrac|}
 
   --/|Styling
-    --&HeaderImage|style="background-image: url(https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/header.webp?raw=true#.png) ; background-repeat: no-repeat ; background-size: 240px 30px ; background-position: center ; display: block ; width: 240px ; height: 100% ; line-height: 40px ; text-align: center ;"
+    --&HeaderImage|style="background-image: url(https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/header.webp#.png) ; background-repeat: no-repeat ; background-size: 240px 30px ; background-position: center ; display: block ; width: 240px ; height: 100% ; line-height: 40px ; text-align: center ;"
     --&HeaderBonus|style="display: inline-block ; position: relative ; top: 2px ;"
-    --&LevelBackground|style="background-image: url(https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spell_level.webp?raw=true#.png) ; background-repeat: no-repeat ; background-size: 240px 40px ; background-position: left ; display: block ; width: 240px ; height: 100% ; text-align: center ; vertical-align: middle ;"
+    --&LevelBackground|style="background-image: url(https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spell_level.webp#.png) ; background-repeat: no-repeat ; background-size: 240px 40px ; background-position: left ; display: block ; width: 240px ; height: 100% ; text-align: center ; vertical-align: middle ;"
     --?";wizard;cleric;druid;" -inc ";[*S:class];"|=PrepTotal;[*S:caster_level] + @{selected|spellcasting_ability} {FLOOR}
     --?";paladin;artificer;" -inc ";[*S:class];"|=PrepTotal;([*S:caster_level]/2) + @{selected|spellcasting_ability} {FLOOR}
     --&RollImage|[d20]1[/d20]
@@ -58,9 +58,9 @@
     --?"[&PrepTotal]" -eq "[&Infinity]"|&FontSize$$$30|&FontSize$$$20
     --#parameterDelimiter|;
     --?";wizard;rogue;bard;sorcerer;cleric;paladin;fighter;" -inc ";[*S:class];"|&SlotImage;main|&SlotImage;[*S:class]
-    --&EmptySlot|[img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage(tolowercase)]_spent.webp?raw=true#.png[/img]
-    --&FullSlot|[img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage(tolowercase)].webp?raw=true#.png[/img]
-    --&MissingSlot|[img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_missing.webp?raw=true#.png[/img]
+    --&EmptySlot|[img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage(tolowercase)]_spent.webp#.png[/img]
+    --&FullSlot|[img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage(tolowercase)].webp#.png[/img]
+    --&MissingSlot|[img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_missing.webp#.png[/img]
     --&SCA|[*S:spellcasting_ability]
     --~SCA|string;substring;3;3;[&SCA]
 
