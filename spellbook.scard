@@ -1,13 +1,14 @@
 !Script{{
 
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 2.2.4
+  --/|Version     : 2.3.0
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
   --/|              If the character has an attack roll a d20 button will appear beside the spell name which will roll the attack from the character sheet.
   --/|              There is a round button which indicates if the spell is prepared, clicking the button will prepare or unprepare the spell(class dependant).
   --/|              There is a button shaped like an open book, which when clicked will display the full description of the spell.
+  --/|              Clicking on the spell slots will take you to a card that will allow you to choose the slot colour.
   --/|              Use the plus or minus buttons to add or remove spell slots.
   --/|              If there is any confusion about what something does, all buttons and items on the spellbook have tooltips, just mouseover them.
   --/|              If the character is a cleric or druid, only prepared spells will display, otherwise the list can get very long.
@@ -31,9 +32,12 @@
   --#diceFontColor|#611b1c
   --#sourceToken|@{selected|token_id}
   --#emoteState|0
-  --#title|@{selected|character_name}'s Spell Book
-  --&obrac|{
-  --&cbrac|}
+
+  --:RestartBook|
+
+  --?"[*S:SlotStyle]" -eq "undefined"|[
+    --!a:[*S:character_id]|!SlotStyle:default
+  --]|
 
   --/|Styling
     --&HeaderImage|style="background-image: url(https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/header.webp#.png) ; background-repeat: no-repeat ; background-size: 240px 30px ; background-position: center ; display: block ; width: 240px ; height: 100% ; line-height: 40px ; text-align: center ;"
@@ -57,14 +61,14 @@
     --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[*S:class];"|&PrepTotal$$$[&Infinity]|&PrepTotal$$$[$PrepTotal.Raw]
     --?"[&PrepTotal]" -eq "[&Infinity]"|&FontSize$$$30|&FontSize$$$20
     --#parameterDelimiter|;
-    --?";wizard;rogue;bard;sorcerer;cleric;paladin;fighter;" -inc ";[*S:class];"|&SlotImage;main|&SlotImage;[*S:class]
-    --&EmptySlot|[img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage(tolowercase)]_spent.webp#.png[/img]
-    --&FullSlot|[img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&SlotImage(tolowercase)].webp#.png[/img]
+    --&EmptySlot|[img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_spent.webp#.png[/img]
+    --&FullSlot|[img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_[*S:SlotStyle].webp#.png[/img]
     --&MissingSlot|[img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_missing.webp#.png[/img]
     --&SCA|[*S:spellcasting_ability]
     --~SCA|string;substring;3;3;[&SCA]
+    --&ButtonStyle|style="align-self: center;  background-color: transparent ; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: #6e2425; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
+    --&Darkbg|style="background-image: url(https://github.com/VirulentArc/Resources/blob/main/d20/Supernotes_Themes/spellbook/template/darkbg.png?raw=true) ; width: 30px ; padding: .5em ; "
 
-    --:RestartBook|
     -->Header|
     --Rfirst|[*S:character_id];repeating_spell-cantrip;spellname
     --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;cantrip
@@ -86,7 +90,6 @@
     --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;8
     --Rfirst|[*S:character_id];repeating_spell-9;spellname
     --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>BookOutput;9
-
 --X|
 
   --:Header|
@@ -95,6 +98,7 @@
   --<|
 
   --:BookOutput|
+    --#title|@{selected|character_name}'s Spell Book
     --&SpellLevel|[%1%]
     --?"[&SpellLevel]" -ninc "cantrip"|[
       --#parameterDelimiter|$$$
@@ -126,7 +130,7 @@
     --&MinusStyle|style="position: relative; top: -4px ; "
     --?"[&SpellLevel]" -inc "cantrip"|&PlusSlot;
     --?"[&SpellLevel]" -inc "cantrip"|&MinusSlot;
-    --&SpellOutput|[t width=100% [&LevelBackground]][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][&SpellLevelOutput][/b][/F][/td][td width=40px [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td width=135px [&InfStyle]][F::46][&Slots][/F][/td][td width=40px][b][F::22][l][&PlusSlot][/l][/F][/b][/td][/tr][/t]
+    --&SpellOutput|[t width=100% [&LevelBackground]][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][&SpellLevelOutput][/b][/F][/td][td width=40px [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td width=135px [&InfStyle]][F::46][rbutton][&Slots]::SlotChoice[/rbutton][/F][/td][td width=40px][b][F::22][l][&PlusSlot][/l][/F][/b][/td][/tr][/t]
     --&SpellOutput|+[t width=240px]
     --~|array;fromrepeatingsection;lvlSpells;[*S:character_id];repeating_spell-[&SpellLevel];spellname
     --%SpellLoop|foreach;lvlSpells
@@ -177,6 +181,32 @@
     --&SpellOutput|+[/t]
     --+|[&SpellOutput]
   --<|
+
+  --:SlotChoice|
+    --#title|Choose a Slot Style
+    --#whisper|self
+    --~|array;define;SlotChoice;default;red;orange;yellow;green;blue;purple;pink
+    --&SlotsPerRow|4
+    --&SlotsCounter|1
+    --&SlotOutput|[br][br][t width=100% style="text-align: center ;" border=1][tr]
+    --%loop|foreach;SlotChoice
+      --&SlotOutput|+[td width=30 [&Darkbg]][rbutton][img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_[&loop].webp#.png[/img]::WriteSlot;[&loop][/rbutton][br][b][&loop][/b][/td]
+      --?[= [&SlotsCounter] % [&SlotsPerRow] ] -eq 0|&SlotOutput;+[/tr][tr]
+      -->IncrementCounter|SlotsCounter
+    --%|
+    --&SlotOutput|+[/tr][/t]
+    --+|[&SlotOutput]
+    --+|[br][br][t width=100% border=1 style="text-align: center ;"][tr][td width=60%][b]Current Slot Style[/b][/td][td [&Darkbg]][img width=30]https://raw.githubusercontent.com/VirulentArc/Resources/refs/heads/main/d20/Supernotes_Themes/spellbook/template/spellslot_[*S:SlotStyle].webp#.png[/img][/td][/tr][/t][t width=100% style="text-align: center ; "][tr][td [&ButtonStyle]][rbutton]SpellBook::RestartBook[/rbutton][/td][/t]
+  --X|
+
+  --:IncrementCounter|
+    --&[%1%]|[= [&[%1%]] + 1]
+  --<|
+
+  --:WriteSlot|
+    --!a:[*S:character_id]|!SlotStyle:[&reentryval]
+    -->SlotChoice|
+  --X|
 
   --:AddSlot|
     --=SlotLevel|[&reentryval]
