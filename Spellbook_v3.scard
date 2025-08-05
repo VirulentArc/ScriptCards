@@ -26,7 +26,6 @@
     --X|
   --]|
 
-
   --:RestartBook|
   --#Whisper|self
   --#sourceToken|@{selected|token_id}
@@ -131,7 +130,7 @@
 
   --/| HANDLE CANTRIPS FIRST (SKIP SLOT CALCULATIONS)
   --?"[&SpellLevel]" -eq "cantrip"|[
-    --&Slots|[&Infinity]
+    --&Slots|[#[&IconColor]][&Infinity][/#]
     --&PlusSlot|
     --&MinusSlot|
     --&SpellLevelOutput|C
