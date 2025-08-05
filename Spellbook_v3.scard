@@ -1,6 +1,6 @@
 !script {{
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 3.1.1
+  --/|Version     : 3.1.2
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -497,13 +497,8 @@
     --!a:[&CharID]|!tmpChosen:[&tmpChoice]
     --!a:[&CharID]|!tmpUI:[:ImageDB("UI_[&tmpChoice]")]
     --!a:[&CharID]|!tmpSpellUI:[:ImageDB("UI_spell_[&tmpChoice]")]
-    --?";dnd5e;chloromancy;bloodwake" -inc "[&tmpChoice]"|[
-      --&Stretch|100%
-      --&Repeat|no-repeat
-    --]|[
-	  --&Stretch|auto
-      --&Repeat|repeat-y
-    --]|
+    --?";dnd5e;chloromancy;bloodwake;" -inc ";[&tmpChoice];"|&Stretch;100%|&Stretch;auto
+    --?";dnd5e;chloromancy;bloodwake;" -inc ";[&tmpChoice];"|&Repeat;no-repeat|&Repeat;repeat-y
     --&tmpWrite|[:ImageDB("[&tmpChoice]")]
     --?"[*S:spellcolor]" -ninc "custom"|[
       --c[&tmpChoice]|dnd5e:&SpellColor;000|abyssal_ink:&SpellColor;CCF2FF|astral_void:&SpellColor;D6FCFF|dark_arcane:&SpellColor;D0F0C0|ember_core:&SpellColor;9CA298|gilded_vine:&SpellColor;DAD4C8|celestial_veil:&SpellColor;F5F5DC|stormcaller:&SpellColor;DBE9F1|sacred_rose:&SpellColor;C2A3AD|chloromancy:&SpellColor;C8A2C8|bloodwake:&SpellColor;FFE4E1|neon_tides:&SpellColor;A8FFB0
@@ -519,8 +514,8 @@
     --?";ember_core;gilded_vine;celestial_veil;sacred_rose;" -inc ";[&tmpChoice];"|&BarURL;https://files.d20.io/images/451067246/vh7nlY8sMJ8QeeA_lxm7aw/original.webp
     --?"[&tmpChoice]" -eq "dnd5e"|&BarURL;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png
     --&Obrac|\\[
-    --&VbarNew|\\\\|\\\\|
-    --!ability:[&CurrentTemplate]|action:boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% [&Obrac]&Stretch] ; background-repeat: [&Obrac]&Repeat] ; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: .5em ;'}[&VbarNew]titlecode::{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 101% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div style='margin: 0em .25em 0em .25em ; font-size: 18px ; font-variant: small-caps ; font-family: serif ; color: #[&Obrac]&IconColor] ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; text-align: center ; line-height: .75em ; '}[&VbarNew]textcode::{/div}{div}{div style='color: #[&Obrac]&SpellColor] ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&VbarNew]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 113% 4px ; width: 113% ; height:4px; display: block ; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&VbarNew]buttonstyle::style='color: #[&Obrac]&IconColor] ; background-color: transparent ; padding: 2px ; border: none'[&VbarNew]footer::
+    --&Vbar|\\\\|\\\\|
+    --!ability:[&CurrentTemplate]|action:boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% [&Obrac]&Stretch] ; background-repeat: [&Obrac]&Repeat] ; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: .5em ;'}[&Vbar]titlecode::{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 101% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div style='margin: 0em .25em 0em .25em ; font-size: 18px ; font-variant: small-caps ; font-family: serif ; color: #[&Obrac]&IconColor] ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; text-align: center ; line-height: .75em ; '}[&Vbar]textcode::{/div}{div}{div style='color: #[&Obrac]&SpellColor] ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&Vbar]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 113% 4px ; width: 113% ; height:4px; display: block ; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&Vbar]buttonstyle::style='color: #[&Obrac]&IconColor] ; background-color: transparent ; padding: 2px ; border: none'[&Vbar]footer::
     --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]Click on the SPELLBOOK button above to run the Spellbook with the new template.[/td][/tr][/t]
   --:EndFirstRun|
   --~|hash;clear;ImageDB

@@ -137,8 +137,8 @@
       --#parameterDelimiter|;
       --&Description|[*R:description]
       --?"[&Description]" -eq ""|&Description;This is an attack roll.|&Description;[&Description(replaceall,>,)]
-      --&ToolTip|[*R:name]&nbsp;&#x2666;&nbsp;[&Description(replaceall,<br,&nbsp;)]
       --&Name|[*R:name]
+      --&ToolTip|[&Name]&nbsp;&#x2666;&nbsp;[&Description(replaceall,<br,&nbsp;)]
       --?"[&Name]X" -ne "X"|[
         --&ActionOutput|+[tr][td title="[&ToolTip]" style="width: 200px ; display: inline-block ; white-space: nowrap ; overflow: hidden ; text-overflow: ellipsis ; color: #000 ; font-weight: bold italic ; "][i][&Name][/i][/td][td style="width: 40px ; display: inline-block ; text-align: right ; font-family: 'Segoe UI Symbol', 'Arial Unicode MS', monospace; "][F::[&ButtonSize]][sheetbutton]|&nbsp;[&ButtonEmote]&nbsp;|::@{selected|character_name}::[&ButtonURL][/sheetbutton][/F][/td][/tr]
       --]|
