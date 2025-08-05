@@ -1,18 +1,32 @@
 !Scriptcard {{ 
 
-  --#overridetemplate|spellbook
+  --#overridetemplate|statblock
   --#sourceToken|@{selected|character_id}
   --&tok|@{selected|token_id}
   --#diceFontColor|#611b1c
   --#Whisper|self
   --#debug|0
 
+  --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
+  --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
+  --?"[*[&TemplateMuleID]:character_name]" -eq ""|[
+    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the Spellbook mod will be kept.[/td][/tr][/t]
+    --X|
+  --]|
+
+  --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
+  --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblock
+  --?"[&IsTemplate]" -eq "AbilityNotFound"|[
+    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]The style information has been written, please run the Mod again.[/td][/tr][/t]
+    --&StatBlock|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; display: block ; text-align: left ; font-size: 12px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: 1.2em ;'}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 101% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div style='margin: 0em .25em 0em .25em ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #572719 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -10px; left: 4px ; line-height: .7em ;'}||textcode::{/div}{div}{div style='color: #572719 ; font-weight: normal; display: inline-block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px';'}||buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 111% 4px ; width: 111% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -14px'}{/div}||buttonstyle::style='color: #572719 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --!ob:StyleSaveResult:[&TemplateMuleID]:statblock:0|[&StatBlock]
+    --@sc-reloadtemplates|
+    --X|
+  --]|
+
   --Rfind|[*S:character_id];Channel Divinity: Twilight Sanctuary;repeating_traits;name
   --#title|[*R:name]
-  --&obrac|{
-  --&cbrac|}
 
-  --:Begin|
   --+|[t width=240px style="text-align: center ;"][tr][td title="[*R:description]" style="display: inline-block ; position: relative ; top: 20px ; height: 40px ; text-align: center ; font-size: 14px ;"][sheetbutton]Description::@{selected|character_name}::[*R>output][/sheetbutton]|[/td][td style="display: inline-block ; position: relative ; top: 20px ; height: 40px ; text-align: center ; font-size: 14px ;"][rbutton]Roll HP::RollTwilight[/rbutton]|[/td][td style="display: inline-block ; position: relative ; top: 20px ; height: 40px ; text-align: center ; font-size: 14px ;"][rbutton]Aura ON/OFF::Aura[/rbutton][/td][/tr][/t]
   
 --X|
@@ -20,13 +34,13 @@
 --:RollTwilight|
   --#Whisper|
   --=TwilightRoll|1d6
-  --&RollOutput|[c][t width=100%][tr][td style="display: inline-block ; position: relative ; top: 30px ; height: 20px ; text-align: center ; font-size: 22px ;"][d6][$TwilightRoll.Raw][/d6][/td][/tr]
-  --&RollOutput|+[tr][td style="display: inline-block ; position: relative ; top: 45px ; height: 40px ; text-align: center ; font-size: 16px ; font-weight: bold ; color: #000 ;"]+&nbsp;WIS&nbsp;([*S:caster_level])[/td][/tr]
   --=RollTotal|[$TwilightRoll] + [*S:caster_level]
+  --&RollOutput|[t width=266px style="text-align: center"][tr][td style="display: inline-block ; position: relative ; top: 30px ; height: 20px ; text-align: center ; font-size: 22px ;"][d6][$TwilightRoll.Raw][/d6][/td][/tr]
+  --&RollOutput|+[tr][td style="display: inline-block ; position: relative ; top: 45px ; height: 40px ; text-align: center ; font-size: 16px ; font-weight: bold ; color: #000 ;"]+&nbsp;WIS&nbsp;([*S:caster_level])[/td][/tr]
   --&RollOutput|+[tr][td style="display: inline-block ; position: relative ; top: 40px ; height: 40px ; text-align: center ; font-size: 22px ; font-weight: bold ; color: #000 ;"]Total[/td][/tr]
-  --&RollOutput|+[tr][td style="display: inline-block ; position: relative ; top: 30px ; height: 40px ; text-align: center ; font-size: 32px ; font-weight: bold ;"][$RollTotal.Raw][/td][/tr][/t][/c]
+  --&RollOutput|+[tr][td style="display: inline-block ; position: relative ; top: 30px ; height: 40px ; text-align: center ; font-size: 32px ; font-weight: bold ;"][$RollTotal.Raw][/td][/tr][/t]
   --+|[&RollOutput]
-  --!a:[*S:character_id]|hp_temp:[$RollTotal]
+  --!a:[*S:character_id]|!hp_temp:[$RollTotal.Total]
 --X|
 
 --:Aura|
