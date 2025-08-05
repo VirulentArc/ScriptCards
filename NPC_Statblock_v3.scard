@@ -5,7 +5,7 @@
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays an NPC statblock that mimics the 2014 Monster Manual in chat that has buttons for all 
-  --/|              rolls; Skills, Saves, Traits, and Actions(bonus, reaction, Legendary, Mythic).
+  --/|              rolls; Skills, Saves, Traits, and Actions(actions, bonus, reaction, Legendary, Mythic).
   --/|
   --/|Usage       : This script is for the 2014 edition of the official D&D 5E Character Sheet by Roll20 and requires the
   --/|              installation of the ScriptCards MOD using a pro account with API access. 
