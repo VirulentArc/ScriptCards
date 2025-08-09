@@ -212,7 +212,7 @@
     --~|array;add;lvl[&SpellLevel]Spellnames;[&CurrentSpellName]
     --%FieldIndex|0;[@SpellPropsArray(maxindex)];1
       --h:lvl[&SpellLevel]Hash("[&CurrentSpellName]-[@SpellPropsArray([&FieldIndex])]")|[&SpellLoop(split,%%%,[&FieldIndex])]
-	  --~|hash;clear;lvl[= [&SpellLevel] - 1]Hash
+      --~|hash;clear;lvl[= [&SpellLevel] - 1]Hash
     --%|
   --%|
 
@@ -285,13 +285,13 @@
     --&ToolTip|+&nbsp;&#x2666;&nbsp;[&ToolComponents]
     --&Ritual|
     --?"[&SpellRitual]" -eq "Yes"|[
-	  --&Ritual|(r)
-	  --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Ritual]
+      --&Ritual|(r)
+      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Ritual]
     --]|
     --&Concentration|
     --?"[&SpellConcentration]" -inc "1"|[
-	  --&Concentration|(c)
-	  --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Concentration]
+      --&Concentration|(c)
+      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Concentration]
     --]|
     --&ToolTip|+&nbsp;&#x2666;&nbsp;DURATION:&nbsp;[&SpellDuration]
     --?"[&Innate]" -ne ""|&ToolTip$$$+&nbsp;&#x2666;&nbsp;[&Innate]
@@ -478,7 +478,7 @@
     --c[&tmpChoice]|action:&ResetColor;00FF00|bonus:&ResetColor;0000FF|reaction:&ResetColor;FF0000
     --!a:[&CharID]|![&reentryval]color:[&ResetColor]
     --^SettingsCard|
-	--X|
+    --X|
   --]|
   --?"[&tmpChoice]" -inc "spell"|[
     --&tmpChoice|[&tmpChoice(replace,spell,)]
