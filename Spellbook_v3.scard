@@ -136,7 +136,7 @@
   --?"[&PrepTotal]" -eq "[&Infinity]"|&FontSize$$$30|&FontSize$$$20
   --#parameterDelimiter|;
 
-  --&Header|[t width=110% [&HeaderImage]][tr][td title="Spellcasting Ability" width=60px][b][#[&IconColor]]&#x272F;[/#][F::16][&SCA(touppercase)][/F][/b][/td][td title="Spell Save DC" width=60px][#[&IconColor]][F::16]&#x26E8;[/#][/F][b][F::20][&SpellSaveDC][/F][/b][/td][td title="Spellcasting Bonus" width=60px [&RollStyle]][b][F::6][&RollImage]&nbsp;[/F][F::20][&SpellAttackBonus][/F][/b][/td][td width=20px [&ClassStyle] title="[&ClassName]: [*S:subclass]"][F::20][#[&IconColor]][&ClassImage][/#][/F][/td][td title="Max Prepared Spells" width=20px [&PrepStyle]][F::[&FontSize]][b][&PrepTotal][/b][/F][/td][td title="Settings" [&GearStyle]][F::20][rbutton][&SettingsIcon]::SettingsCard;1[/rbutton][/F][/td][/tr][/t]
+  --&Header|[t width=110% [&HeaderImage]][tr][td title="Spellcasting Ability" width=60px][b][#[&IconColor]]&#x272F;[/#][F::16][&SCA(touppercase)][/F][/b][/td][td title="Spell Save DC" width=60px][#[&IconColor]][F::16]&#x26E8;[/#][/F][b][F::20][&SpellSaveDC][/F][/b][/td][td title="Spellcasting Bonus" width=60px [&RollStyle]][b][F::6][&RollImage]&nbsp;[/F][F::20][&SpellAttackBonus][/F][/b][/td][td width=20px [&ClassStyle] title="[&ClassName]: [*S:subclass]"][F::20][#[&IconColor]][&ClassImage][/#][/F][/td][td title="Max Prepared Spells" width=20px [&PrepStyle]][F::[&FontSize]][b][&PrepTotal][/b][/F][/td][td title="Settings" [&GearStyle]][F::20][rbutton][&SettingsIcon]::SettingsCard;0[/rbutton][/F][/td][/tr][/t]
   --?"[&ActionToggle]" -eq "yes" -or "[&BonusToggle]" -eq "yes" -or "[&ReactionToggle]" -eq "yes"|[
     --&Header|+[t width=100% style="text-align: center"][tr][td][&ActionTitle][&ActionImage]&nbsp;&nbsp;[&BonusTitle][&BonusImage]&nbsp;&nbsp;[&ReactionTitle][&ReactionImage][/td][/tr][/t]
   --]|
@@ -378,40 +378,35 @@
   --h:ImageDB("slot_pink")|https://files.d20.io/images/450522303/YWhi_Ya-XstU77ZVWD3mvQ/original.webp
 
   --#title|[&CharName]'s Spell Book Settings Page [&reentryval]
-  --?"[&reentryval]" -eq "1"|[
-    --~|array;define;ThemeChoice;dnd5e;abyssal_ink;astral_void;dark_arcane
-  --]|
-  --?"[&reentryval]" -eq "2"|[
-    --~|array;define;ThemeChoice;ember_core;gilded_vine;celestial_veil;stormcaller
-  --]|
-  --?"[&reentryval]" -eq "3"|[
-    --~|array;define;ThemeChoice;sacred_rose;chloromancy;bloodwake;neon_tides
-  --]|
+  --~|array;define;ThemeChoice;dnd5e;abyssal_ink;astral_void;dark_arcane;ember_core;gilded_vine;celestial_veil;stormcaller;sacred_rose;chloromancy;bloodwake;neon_tides
   --#whisper|self
   --&ThemePerRow|2
   --&ThemeCounter|0
+  --&ArrayCounter|[= [&reentryval] +3]
   --&ThemeOutput|[br][t width=100% [&Darkbg] border=1][tr]
-  --%ThemeLoop|foreach;ThemeChoice
+  --%ThemeLoop|[&reentryval];[&ArrayCounter]
+    --&ThemeChosen|[@ThemeChoice([&ThemeLoop])]
     --&ChosenTheme|
-    --?"[&ThemeLoop]" -eq "[*S:tmpChosen]"|[
+    --?"[&ThemeChosen]" -eq "[*S:tmpChosen]"|[
       --&ChosenTheme|style="border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8); text-align: center ; "
     --]|
     --?"[= [&ThemeCounter] % [&ThemePerRow] ]" -eq "0" -and "[&ThemeCounter]" -ne "0"|&ThemeOutput;+[/tr][tr]
-    --&ThemeName|[&ThemeLoop(replace,_, )]
-    --&ThemeOutput|+[td [&ChosenTheme]][rbutton][img width=100px][:ImageDB("[&ThemeLoop]")][/img]::TemplateChange;[&ThemeLoop][/rbutton][br][br][b][&ThemeName(totitlecase)][/b][br][br][/td]
+    --&ThemeName|[&ThemeChosen(replace,_, )]
+    --&ThemeOutput|+[td [&ChosenTheme]][rbutton][img width=100px][:ImageDB("[&ThemeChosen]")][/img]::TemplateChange;[&ThemeChosen][/rbutton][br][br][b][&ThemeName(totitlecase)][/b][br][br][/td]
     --&ThemeCounter|[= [&ThemeCounter] + 1 ]
   --%|
   --&ThemeOutput|+[/tr][/t]
   --+|[&ThemeOutput]
-  --%UILoop|foreach;ThemeChoice
-    --&UIThemeName|[&UILoop(replace,_, )]
+  --%UILoop|[&reentryval];[&ArrayCounter]
+    --&UIChosen|[@ThemeChoice([&UILoop])]
     --&ChosenUI|
-    --?"[:ImageDB("UI_spell_[&UILoop]")]" -eq "[*S:tmpSpellUI]"|[
+    --?"[:ImageDB("UI_spell_[&UIChosen]")]" -eq "[*S:tmpSpellUI]"|[
       --&ChosenUI|border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8);
     --]|
-    --+|[t width=110% style="background-image: url([:ImageDB("UI_spell_[&UILoop]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 255px ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; [&ChosenUI]"][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]1[/#][/b][/F][/td][td width=40 [&MinusStyle]][b][F::30][#[&IconColor]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotStyle]][F::14][rbutton][#[&SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&UILoop][/rbutton][/F][/td][td width=40 [&PlusStyle] title="Show or Hide All Spells"][b][F::20][#[&IconColor]][l]+[/l][/#][/F][/b][/td][/tr][/t]
+    --&UIThemeName|[&UIChosen(replace,_, )]
+    --+|[t width=110% style="background-image: url([:ImageDB("UI_spell_[&UIChosen]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 255px ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; [&ChosenUI]"][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]1[/#][/b][/F][/td][td width=40 [&MinusStyle]][b][F::30][#[&IconColor]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotStyle]][F::14][rbutton][#[&SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&UIChosen][/rbutton][/F][/td][td width=40 [&PlusStyle] title="Show or Hide All Spells"][b][F::20][#[&IconColor]][l]+[/l][/#][/F][/b][/td][/tr][/t]
   --%|
-  --+|[br][c][rbutton][b]Page 1[/b]::SettingsCard;1[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 2[/b]::SettingsCard;2[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 3[/b]::SettingsCard;3[/rbutton][/c][br]
+  --+|[br][c][rbutton][b]Page 1[/b]::SettingsCard;0[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 2[/b]::SettingsCard;4[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 3[/b]::SettingsCard;8[/rbutton][/c][br]
   --+|[t width=100% border=1][tr][td width=75% height=30px][c][b][#[&SpellColor]]Spell Color #[&SpellColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Spell Font Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]spell[/rbutton][/c][/td][td title="Reset to Theme Font Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]spell[/rbutton][/c][/td][/tr][/t]
   --+|[t width=100% border=1][tr][td width=75% height=30px][c][b][#[&IconColor]]Icon Color #[&IconColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Icon Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]icon[/rbutton][/c][/td][td title="Reset to Theme Icon Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]icon[/rbutton][/c][/td][/tr][/t]
   --~|array;define;ActionArray;action;bonus;reaction
