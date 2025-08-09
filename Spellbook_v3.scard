@@ -416,8 +416,8 @@
     --+|[t width=110% style="background-image: url([:ImageDB("UI_spell_[&UILoop]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 255px ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; [&ChosenUI]"][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]1[/#][/b][/F][/td][td width=40 [&MinusStyle]][b][F::30][#[&IconColor]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotStyle]][F::14][rbutton][#[&SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&UILoop][/rbutton][/F][/td][td width=40 [&PlusStyle] title="Show or Hide All Spells"][b][F::20][#[&IconColor]][l]+[/l][/#][/F][/b][/td][/tr][/t]
   --%|
   --+|[br][c][rbutton][b]Page 1[/b]::SettingsCard;1[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 2[/b]::SettingsCard;2[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 3[/b]::SettingsCard;3[/rbutton][/c][br]
-  --+|[t width=100% border=1][tr][td width=75% height=30px][c][b][#[&SpellColor]]Spell Color #[&SpellColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Theme Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]spell[/rbutton][/c][/td][td title="Reset to Theme Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]spell[/rbutton][/c][/td][/tr][/t]
-  --+|[t width=100% border=1][tr][td width=75% height=30px][c][b][#[&IconColor]]Icon Color #[&IconColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Theme Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]icon[/rbutton][/c][/td][td title="Reset to Theme Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]icon[/rbutton][/c][/td][/tr][/t]
+  --+|[t width=100% border=1][tr][td width=75% height=30px][c][b][#[&SpellColor]]Spell Color #[&SpellColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Spell Font Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]spell[/rbutton][/c][/td][td title="Reset to Theme Font Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]spell[/rbutton][/c][/td][/tr][/t]
+  --+|[t width=100% border=1][tr][td width=75% height=30px][c][b][#[&IconColor]]Icon Color #[&IconColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Icon Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]icon[/rbutton][/c][/td][td title="Reset to Theme Icon Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]icon[/rbutton][/c][/td][/tr][/t]
   --~|array;define;ActionArray;action;bonus;reaction
   --%ActionLoop|foreach;ActionArray
   --&ActionType|[&ActionLoop(totitlecase)]
@@ -425,7 +425,7 @@
     --c[&ActionLoop]|action:&ActionsImage;&#x25A0|bonus:&ActionsImage;&#x25C6|reaction:&ActionsImage;&#x2B22
     --?"[&ActionLoop]" -eq "action"|&ActionFontSize;22|&ActionFontSize;18
     --?"[*S:[&ActionLoop]toggle]" -eq "no"|&Toggle;&#x2610|&Toggle;&#x2611
-    --+|[t width=100% border=1 style="text-align: center ; "][tr][td width=145 height=30][r][b][#[&SpellColor]][&ActionType] #[&ColorAction]&nbsp;-&nbsp;[/#][#[&ColorAction]][F::[&ActionFontSize]][&ActionsImage];&nbsp;[/F][/#][/b][/r][/td][td][rbutton][F::18][&Toggle];[/F]::ActionToggle;[&ActionLoop]toggle[/rbutton][/td][td [&DetailStyle] title="Change Theme Color"][c][rbutton]&#x1F3A8;::ChangeColor;[&ActionLoop][/rbutton][/c][/td][td title="Reset to Theme Color"][c][rbutton]&#x21BB;::ResetColor;[&ActionLoop][/rbutton][/c][/td][/tr][/t]
+    --+|[t width=100% border=1 style="text-align: center ; "][tr][td width=145 height=30][r][b][#[&SpellColor]][&ActionType] #[&ColorAction]&nbsp;-&nbsp;[/#][#[&ColorAction]][F::[&ActionFontSize]][&ActionsImage];&nbsp;[/F][/#][/b][/r][/td][td][rbutton][F::18][&Toggle];[/F]::ActionToggle;[&ActionLoop]toggle[/rbutton][/td][td [&DetailStyle] title="Change To Custom Color"][c][rbutton]&#x1F3A8;::ChangeColor;[&ActionLoop][/rbutton][/c][/td][td title="Reset to Default Color"][c][rbutton]&#x21BB;::ResetColor;[&ActionLoop][/rbutton][/c][/td][/tr][/t]
   --%|
    --~|array;define;SlotChoice;default;red;orange;yellow;green;blue;purple;pink
   --&SlotsPerRow|4
@@ -554,9 +554,9 @@
     --!a:[&CharID]|!tmpUI:https://files.d20.io/images/450559935/u5eIBjrmDj3lTMWxppChYA/original.webp
     --!a:[&CharID]|!tmpSpellUI:https://files.d20.io/images/450554788/nh4hybJS9-nejMG2Sa5NpA/original.webp
     --!a:[&CharID]|!SlotStyle:https://files.d20.io/images/450522298/64BSHbeFMBOEyHr4scG0Vg/original.webp
-    --!a:[&CharID]|!actiontoggle:0
-    --!a:[&CharID]|!bonustoggle:0
-    --!a:[&CharID]|!reactiontoggle:0
+    --!a:[&CharID]|!actiontoggle:no
+    --!a:[&CharID]|!bonustoggle:no
+    --!a:[&CharID]|!reactiontoggle:no
     --!a:[&CharID]|!actioncolor:00FF00
     --!a:[&CharID]|!bonuscolor:0000FF
     --!a:[&CharID]|!reactioncolor:FF0000
