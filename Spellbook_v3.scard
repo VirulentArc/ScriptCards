@@ -283,17 +283,15 @@
     --?[&CompS] -ne "0"|&ToolComponents$$$+,S
     --?[&CompM] -ne "0"|&ToolComponents$$$+,M([&CompMaterials])
     --&ToolTip|+&nbsp;&#x2666;&nbsp;[&ToolComponents]
+    --&Ritual|
     --?"[&SpellRitual]" -eq "Yes"|[
 	  --&Ritual|(r)
 	  --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Ritual]
-    --]|[
-   	  --&Ritual|
     --]|
+    --&Concentration|
     --?"[&SpellConcentration]" -inc "1"|[
 	  --&Concentration|(c)
 	  --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Concentration]
-	--]|[
-   	  --&Concentration|
     --]|
     --&ToolTip|+&nbsp;&#x2666;&nbsp;DURATION:&nbsp;[&SpellDuration]
     --?"[&Innate]" -ne ""|&ToolTip$$$+&nbsp;&#x2666;&nbsp;[&Innate]
@@ -394,10 +392,9 @@
   --&ThemeCounter|0
   --&ThemeOutput|[br][t width=100% [&Darkbg] border=1][tr]
   --%ThemeLoop|foreach;ThemeChoice
+    --&ChosenTheme|
     --?"[&ThemeLoop]" -eq "[*S:tmpChosen]"|[
       --&ChosenTheme|style="border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8); text-align: center ; "
-    --]|[
-      --&ChosenTheme|
     --]|
     --?"[= [&ThemeCounter] % [&ThemePerRow] ]" -eq "0" -and "[&ThemeCounter]" -ne "0"|&ThemeOutput;+[/tr][tr]
     --&ThemeName|[&ThemeLoop(replace,_, )]
@@ -408,10 +405,9 @@
   --+|[&ThemeOutput]
   --%UILoop|foreach;ThemeChoice
     --&UIThemeName|[&UILoop(replace,_, )]
+    --&ChosenUI|
     --?"[:ImageDB("UI_spell_[&UILoop]")]" -eq "[*S:tmpSpellUI]"|[
       --&ChosenUI|border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8);
-    --]|[
-      --&ChosenUI|
     --]|
     --+|[t width=110% style="background-image: url([:ImageDB("UI_spell_[&UILoop]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 255px ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; [&ChosenUI]"][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]1[/#][/b][/F][/td][td width=40 [&MinusStyle]][b][F::30][#[&IconColor]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotStyle]][F::14][rbutton][#[&SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&UILoop][/rbutton][/F][/td][td width=40 [&PlusStyle] title="Show or Hide All Spells"][b][F::20][#[&IconColor]][l]+[/l][/#][/F][/b][/td][/tr][/t]
   --%|
