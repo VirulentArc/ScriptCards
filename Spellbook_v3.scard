@@ -1,6 +1,6 @@
 !script {{
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 3.1.2
+  --/|Version     : 3.2.0
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -49,6 +49,12 @@
   --&SpellColor|[&SpellColor(replace,custom,)]
   --&IconColor|[*S:iconcolor]
   --&IconColor|[&IconColor(replace,custom,)]
+  --&ActionToggle|[*S:actiontoggle]
+  --&BonusToggle|[*S:bonustoggle]
+  --&ReactionToggle|[*S:reactiontoggle]
+  --&ActionColor|[*S:actionColor]
+  --&BonusColor|[*S:bonusColor]
+  --&ReactionColor|[*S:reactioncolor]
 
   --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
   --~CurrentTemplate|system;findability;ScriptCards_TemplateMule;Spellbook[&CharID]
@@ -76,8 +82,8 @@
   --&MissingSlot|[img width=30]https://files.d20.io/images/450522300/P-PGyu9BUz3bPQF7eWYe5A/original.webp[/img]
   --&FullSlot|[img width=30][*S:SlotStyle][/img]
   --&ButtonStyle|style="align-self: center; background-color: transparent; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: [&IconColor]; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
-  --&Darkbg|style="background-color: rgba(0, 0, 0, 0.5) ; "
-  --&Slotbg|style="background-color: rgba(0, 0, 0, 0.5) ; width: 30px ; padding: .5em ; "
+  --&Darkbg|style="background-color: rgba(0, 0, 0, 0.5) ; text-align: center ; "
+  --&Slotbg|style="background-color: rgba(0, 0, 0, 0.5) ; padding: .5em ; border: 1px ; text-align: center ; "
   --&ClassStyle|style="font-family: 'Segoe UI Symbol', 'Arial Unicode MS', monospace; font-size: 2em; position: relative ; left: 10px ; top: -3px ; "
   --&DetailStyle|style="font-family: 'Segoe UI Symbol', 'Arial Unicode MS', monospace; position: relative ; right: 4px ; "
   --&PrepStyle|style="position: relative ; left: 10px ; "
@@ -104,15 +110,36 @@
   --~SubClassKey|string;replace;domain;;[&SubClassKey]
   --~SubClassKey|string;trim;[&SubClassKey]
   --c[&SubClassKey]|abjuration:&ClassImage;26E8|conjuration:&ClassImage;169B9|divination:&ClassImage;2135|enchantment:&ClassImage;272F|evocation:&ClassImage;2739|illusion:&ClassImage;1F441|necromancy:&ClassImage;2620|transmutation:&ClassImage;21BB|wild magic:&ClassImage;1F3B2|draconic bloodline:&ClassImage;1F409|divine soul:&ClassImage;2728|storm sorcery:&ClassImage;26C8|shadow magic:&ClassImage;1F316|aberrant mind:&ClassImage;1F47D|clockwork soul:&ClassImage;231B|fiend:&ClassImage;1F47F|great old one:&ClassImage;1F419|archfey:&ClassImage;1F33C|celestial:&ClassImage;1F31F|undying:&ClassImage;9904|hexblade:&ClassImage;9876|fathomless:&ClassImage;127754|genie:&ClassImage;129502|undead:&ClassImage;128128|knowledge:&ClassImage;1F4D6|life:&ClassImage;2764|light:&ClassImage;2600|nature:&ClassImage;1F33F|tempest:&ClassImage;26C8|trickery:&ClassImage;1F47B|war:&ClassImage;2694|twilight:&ClassImage;1F317|order:&ClassImage;2696|forge:&ClassImage;1F528|grave:&ClassImage;26B0|peace:&ClassImage;1F54A|devotion:&ClassImage;271D|vengeance:&ClassImage;2694|ancients:&ClassImage;1F33F|conquest:&ClassImage;1F451|oathbreaker:&ClassImage;2620|redemption:&ClassImage;1F5E8|glory:&ClassImage;1F3C6|watchers:&ClassImage;1F441|crown:&ClassImage;1F451|land:&ClassImage;1F30F|moon:&ClassImage;1F31C|dreams:&ClassImage;1F4A4|shepherd:&ClassImage;1F411|spores:&ClassImage;1F344|stars:&ClassImage;1F320|wildfire:&ClassImage;1F525|fey wanderer:&ClassImage;1F33C|swarmkeeper:&ClassImage;1F41D|monster slayer:&ClassImage;1F5E1|hunter:&ClassImage;1F3F9|gloom stalker:&ClassImage;1F311|horizon walker:&ClassImage;1F30C|beast master:&ClassImage;1F43E|drakewarden:&ClassImage;1F409|alchemist:&ClassImage;2697|artillerist:&ClassImage;1F52B|battle smith:&ClassImage;2699|armorer:&ClassImage;128737|arcane trickster:&ClassImage;1F4A8|assassin:&ClassImage;1F5E1|thief:&ClassImage;1F512|inquisitive:&ClassImage;1F50E|mastermind:&ClassImage;1F9E0|scout:&ClassImage;1F43E|swashbuckler:&ClassImage;1F45F|phantom:&ClassImage;1F47B|soulknife:&ClassImage;1F9D8|open hand:&ClassImage;270A|shadow:&ClassImage;1F316|four elements:&ClassImage;1F30A|mercy:&ClassImage;1F489|astral self:&ClassImage;1F9D8|drunken master:&ClassImage;1F37B|kensei:&ClassImage;1F5E1|sun soul:&ClassImage;1F525|long death:&ClassImage;2620|ascendant dragon:&ClassImage;1F409|battle master:&ClassImage;2694|eldritch knight:&ClassImage;1F4A8|arcane archer:&ClassImage;1F3F9|cavalier:&ClassImage;1F40E|samurai:&ClassImage;1F5E1|psi warrior:&ClassImage;1F9E0|rune knight:&ClassImage;16B9C|echo knight:&ClassImage;1F47B|lore:&ClassImage;1F4D6|valor:&ClassImage;2694|glamour:&ClassImage;1F33C|creation:&ClassImage;2728|swords:&ClassImage;1F5E1|whispers:&ClassImage;1F47B|eloquence:&ClassImage;1F5E8|spirits:&ClassImage;2620
+
+  --&ActionTitle|
+  --&ActionImage|
+  --&BonusTitle|
+  --&BonusImage|
+  --&ReactionTitle|
+  --&ReactionImage|
+  --?"[&ActionToggle]" -eq "yes"|[
+    --&ActionTitle|Action&nbsp;-&nbsp; 
+    --&ActionImage|[F::20][#[&ActionColor]]&#x25A0;[/#][/F]
+  --]|
+  --?"[&BonusToggle]" -eq "yes"|[
+    --&BonusTitle|Bonus&nbsp;-&nbsp; 
+    --&BonusImage|[F::18][#[&BonusColor]]&#x25C6;[/#][/F]
+  --]|
+  --?"[&ReactionToggle]" -eq "yes"|[
+    --&ReactionTitle|Reaction&nbsp;-&nbsp; 
+    --&ReactionImage|[F::18][#[&ReactionColor]]&#x2B22;[/#][/F]
+  --]|
+
   --#parameterDelimiter|$$$
   --?"[&ClassImage]" -ne ""|&ClassImage$$$&#x[&ClassImage];|&ClassImage$$$&#x1F56E;
-
   --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName];"|&PrepTotal$$$[&Infinity]|&PrepTotal$$$[$PrepTotal.Raw]
-
   --?"[&PrepTotal]" -eq "[&Infinity]"|&FontSize$$$30|&FontSize$$$20
   --#parameterDelimiter|;
 
   --&Header|[t width=110% [&HeaderImage]][tr][td title="Spellcasting Ability" width=60px][b][#[&IconColor]]&#x272F;[/#][F::16][&SCA(touppercase)][/F][/b][/td][td title="Spell Save DC" width=60px][#[&IconColor]][F::16]&#x26E8;[/#][/F][b][F::20][&SpellSaveDC][/F][/b][/td][td title="Spellcasting Bonus" width=60px [&RollStyle]][b][F::6][&RollImage]&nbsp;[/F][F::20][&SpellAttackBonus][/F][/b][/td][td width=20px [&ClassStyle] title="[&ClassName]: [*S:subclass]"][F::20][#[&IconColor]][&ClassImage][/#][/F][/td][td title="Max Prepared Spells" width=20px [&PrepStyle]][F::[&FontSize]][b][&PrepTotal][/b][/F][/td][td title="Settings" [&GearStyle]][F::20][rbutton][&SettingsIcon]::SettingsCard;1[/rbutton][/F][/td][/tr][/t]
+  --?"[&ActionToggle]" -eq "yes" -or "[&BonusToggle]" -eq "yes" -or "[&ReactionToggle]" -eq "yes"|[
+    --&Header|+[t width=100% style="text-align: center"][tr][td][&ActionTitle][&ActionImage]&nbsp;&nbsp;[&BonusTitle][&BonusImage]&nbsp;&nbsp;[&ReactionTitle][&ReactionImage][/td][/tr][/t]
+  --]|
   --+|[&Header]
 
   --/| PROCESS SPELL LEVELS
@@ -190,7 +217,7 @@
   --%|
 
   --/| SPELL LEVEL HEADER OUTPUT
-  --&SpellOutput|[t width=110% [&LevelBackground]][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]][&SpellLevelOutput][/#][/b][/F][/td][td width=40px [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td width=135px [&SlotStyle]][F::46][&Slots][/F][/td][td width=40px [&PlusStyle] title="Show/Hide All Spells"][b][F::20][l][&PlusSlot][&PrepShow][/l][/F][/b][/td][/tr][/t]
+  --&SpellOutput|[t width=110% [&LevelBackground]][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]][&SpellLevelOutput][/#][/b][/F][/td][td width=40px [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td width=135px [&SlotStyle]][F::46][&Slots][/F][/td][td width=40px [&PlusStyle] title="Show or Hide All Spells"][b][F::20][l][&PlusSlot][&PrepShow][/l][/F][/b][/td][/tr][/t]
   --?"[&SlotsTotal]" -gt "4"|[
     --&SpellOutput|+[t width=110% [&LevelBackground]][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b]W[/b][/F][/td][td width=40px [&MinusStyle]][/td][td width=135px [&SlotStyle]][F::46][&WarlockSlots][/F][/td][td width=40px [&PlusStyle]][/td][/tr][/t]
   --]|
@@ -272,19 +299,25 @@
     --?"[&Innate]" -ne ""|&ToolTip$$$+&nbsp;&#x2666;&nbsp;[&Innate]
     --&ToolTip|+&nbsp;&#x2666;&nbsp;[&SpellDescription]
     --?"[&SpellHigherLevels]" -ne "undefined"|&ToolTip$$$+&nbsp;&#x2666;&nbsp;AT HIGHER LEVELS: [&SpellHigherLevels]
-    --&ToolTip|+" 
+    --&ToolTip|+"
+
+    --/| ARE WE SHOWING ACTION TYPE?
+    --?"[&SpellCastingTime]" -inc "action" -and "[&SpellCastingTime]" -ninc "bonus"|&CastingTime$$$[&ActionImage]
+    --?"[&SpellCastingTime]" -inc "bonus"|&CastingTime$$$[&BonusImage]
+    --?"[&SpellCastingTime]" -inc "reaction"|&CastingTime$$$[&ReactionImage]
+
     --#parameterDelimiter|;
 
     --/| WHEN TO DISPLAY SPELL
     --?"[&SpellLevel]" -inc "cantrip"|>DisplaySpell
-    --?";warlock;sorcerer;bard;rogue;fighter;" -inc ";[&ClassName];"|>DisplaySpell
+    --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName];"|>DisplaySpell
     --?"[&PrepToggle]" -eq "1"|>DisplaySpell
     --?"[&SpellPrepared]" -eq "1"|>DisplaySpell
     --^NextSpell|
 
     --/| SPELL OUTPUT LINE
     --:DisplaySpell|
-    --&SpellOutput|+[tr][td width=5px title="[&SpellSchool(totitlecase)]" style="text-align: center ; "][F::18][#[&IconColor]][&SchoolIcon];[/#][/F][/td][td width=165px height=17px [&SpellStyle] [&ToolTip] ][b][&SpellName][/b][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td title="Spell Details" [&DetailStyle]][F::16][&SpellDetail][/F][/td][/tr]
+    --&SpellOutput|+[tr][td width=5px title="[&SpellSchool(totitlecase)]" style="text-align: center ; "][F::18][#[&IconColor]][&SchoolIcon];[/#][/F][/td][td width=165px height=17px [&SpellStyle] [&ToolTip] ][b][&SpellName][/b][&CastingTime][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td title="Spell Details" [&DetailStyle]][F::16][&SpellDetail][/F][/td][/tr]
     --:NextSpell|
     --&SpellIndex|[= [&SpellIndex] + 1 ]
   --%|
@@ -346,7 +379,7 @@
   --h:ImageDB("slot_purple")|https://files.d20.io/images/450522304/1XS2up9_jyQ-KT4fs4If_Q/original.webp
   --h:ImageDB("slot_pink")|https://files.d20.io/images/450522303/YWhi_Ya-XstU77ZVWD3mvQ/original.webp
 
-  --#title|[&CharName]'s Spellbook Settings PG [&reentryval]
+  --#title|[&CharName]'s Spell Book Settings Page [&reentryval]
   --?"[&reentryval]" -eq "1"|[
     --~|array;define;ThemeChoice;dnd5e;abyssal_ink;astral_void;dark_arcane
   --]|
@@ -359,39 +392,64 @@
   --#whisper|self
   --&ThemePerRow|2
   --&ThemeCounter|0
-  --&ThemeOutput|[br][t width=100% style="text-align: center;" border=1][tr]
+  --&ThemeOutput|[br][t width=100% [&Darkbg] border=1][tr]
   --%ThemeLoop|foreach;ThemeChoice
+    --?"[&ThemeLoop]" -eq "[*S:tmpChosen]"|[
+      --&ChosenTheme|style="border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8); text-align: center ; "
+    --]|[
+      --&ChosenTheme|
+    --]|
     --?"[= [&ThemeCounter] % [&ThemePerRow] ]" -eq "0" -and "[&ThemeCounter]" -ne "0"|&ThemeOutput;+[/tr][tr]
-    --&ThemeName|[&ThemeLoop(replace,_,)]
-    --&ThemeOutput|+[td [&Darkbg]][rbutton][img width=100px][:ImageDB("[&ThemeLoop]")][/img]::TemplateChange;[&ThemeLoop][/rbutton][br][br][b][&ThemeName(totitlecase)][/b][br][br][/td]
+    --&ThemeName|[&ThemeLoop(replace,_, )]
+    --&ThemeOutput|+[td [&ChosenTheme]][rbutton][img width=100px][:ImageDB("[&ThemeLoop]")][/img]::TemplateChange;[&ThemeLoop][/rbutton][br][br][b][&ThemeName(totitlecase)][/b][br][br][/td]
     --&ThemeCounter|[= [&ThemeCounter] + 1 ]
   --%|
   --&ThemeOutput|+[/tr][/t]
   --+|[&ThemeOutput]
-  --&ChosenTheme|[*S:tmpChosen]
-  --&CurrentTheme|[&ChosenTheme(replace,_, )]
-  --+|[br][br][t width=100% style="text-align: center;"][tr][td width=60% height=30px][b]Current Theme[/b][/td][td [&Darkbg]][b][&CurrentTheme(totitlecase)][/b][/td][/tr][/t]
   --%UILoop|foreach;ThemeChoice
-    --&UIURL|[:ImageDB("UI_spell_[&UILoop]")]
-    --+|[t width=100%][tr][td][rbutton][img][&UIURL][/img]::UIChoice;[&UILoop][/rbutton][br][/td][/tr][/t]
+    --&UIThemeName|[&UILoop(replace,_, )]
+    --?"[:ImageDB("UI_spell_[&UILoop]")]" -eq "[*S:tmpSpellUI]"|[
+      --&ChosenUI|border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8);
+    --]|[
+      --&ChosenUI|
+    --]|
+    --+|[t width=110% style="background-image: url([:ImageDB("UI_spell_[&UILoop]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 255px ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; [&ChosenUI]"][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]1[/#][/b][/F][/td][td width=40 [&MinusStyle]][b][F::30][#[&IconColor]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotStyle]][F::14][rbutton][#[&SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&UILoop][/rbutton][/F][/td][td width=40 [&PlusStyle] title="Show or Hide All Spells"][b][F::20][#[&IconColor]][l]+[/l][/#][/F][/b][/td][/tr][/t]
   --%|
-  --+|[c][t width=100%][tr][td width=20px height=30px style="border: 1px solid ;"][rbutton]Reset UI::UIChoice;[*S:tmpChosen][/rbutton][/td][tr][/t][/c]
-  --+|[br][c][rbutton]1::SettingsCard;1[/rbutton]&nbsp;|&nbsp;[rbutton]2::SettingsCard;2[/rbutton]&nbsp;|&nbsp;[rbutton]3::SettingsCard;3[/rbutton][/c][br]
-  --+|[t width=100% border=1][tr][td width=50% height=30px][c][b][#[&SpellColor]]SPELL COLOR[/#][/b][/c][/td][td width=25%][c][rbutton]Change::ChangeColor;[*S:tmpChosen]spell[/rbutton][/c][/td][td width=25%][c][rbutton]Reset::ResetColor;[*S:tmpChosen]spell[/rbutton][/c][/td][/tr][/t]
-  --+|[t width=100% border=1][tr][td width=50% height=30px][c][b][#[&IconColor]]ICON COLOR[/#][/b][/c][/td][td width=25%][c][rbutton]Change::ChangeColor;[*S:tmpChosen]icon[/rbutton][/c][/td][td width=25%][c][rbutton]Reset::ResetColor;[*S:tmpChosen]icon[/rbutton][/c][/td][/tr][/t]
-  --~|array;define;SlotChoice;default;red;orange;yellow;green;blue;purple;pink
+  --+|[br][c][rbutton][b]Page 1[/b]::SettingsCard;1[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 2[/b]::SettingsCard;2[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 3[/b]::SettingsCard;3[/rbutton][/c][br]
+  --+|[t width=100% border=1][tr][td width=75% height=30px][c][b][#[&SpellColor]]Spell Color #[&SpellColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Theme Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]spell[/rbutton][/c][/td][td title="Reset to Theme Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]spell[/rbutton][/c][/td][/tr][/t]
+  --+|[t width=100% border=1][tr][td width=75% height=30px][c][b][#[&IconColor]]Icon Color #[&IconColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Theme Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]icon[/rbutton][/c][/td][td title="Reset to Theme Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]icon[/rbutton][/c][/td][/tr][/t]
+  --~|array;define;ActionArray;action;bonus;reaction
+  --%ActionLoop|foreach;ActionArray
+  --&ActionType|[&ActionLoop(totitlecase)]
+    --&ColorAction|[*S:[&ActionLoop]color]
+    --c[&ActionLoop]|action:&ActionsImage;&#x25A0|bonus:&ActionsImage;&#x25C6|reaction:&ActionsImage;&#x2B22
+    --?"[&ActionLoop]" -eq "action"|&ActionFontSize;22|&ActionFontSize;18
+    --?"[*S:[&ActionLoop]toggle]" -eq "no"|&Toggle;&#x2610|&Toggle;&#x2611
+    --+|[t width=100% border=1 style="text-align: center ; "][tr][td width=145 height=30][r][b][#[&SpellColor]][&ActionType] #[&ColorAction]&nbsp;-&nbsp;[/#][#[&ColorAction]][F::[&ActionFontSize]][&ActionsImage];&nbsp;[/F][/#][/b][/r][/td][td][rbutton][F::18][&Toggle];[/F]::ActionToggle;[&ActionLoop]toggle[/rbutton][/td][td [&DetailStyle] title="Change Theme Color"][c][rbutton]&#x1F3A8;::ChangeColor;[&ActionLoop][/rbutton][/c][/td][td title="Reset to Theme Color"][c][rbutton]&#x21BB;::ResetColor;[&ActionLoop][/rbutton][/c][/td][/tr][/t]
+  --%|
+   --~|array;define;SlotChoice;default;red;orange;yellow;green;blue;purple;pink
   --&SlotsPerRow|4
   --&SlotsCounter|1
-  --&SlotOutput|[br][br][t width=100% style="text-align: center;" border=1][tr]
+  --&SlotOutput|[br][br][t width=100% border=1 [&Slotbg]][tr]
   --%SlotLoop|foreach;SlotChoice
-    --&SlotOutput|+[td width=30 [&Slotbg]][rbutton][img width=30][:ImageDB("slot_[&SlotLoop]")][/img]::WriteSlot;[&SlotLoop][/rbutton][br][b][&SlotLoop(totitlecase)][/b][/td]
+    --&ChosenStyle|
+    --&ChosenSlot|
+    --?"[:ImageDB("slot_[&SlotLoop]")]" -eq "[*S:SlotStyle]"|[
+      --&ChosenSlot|style="border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8); text-align: center ; "
+    --]|
+    --&SlotOutput|+[td width=25% height=50px [&ChosenSlot]][rbutton][img width=30][:ImageDB("slot_[&SlotLoop]")][/img]::WriteSlot;[&SlotLoop][/rbutton][br][b][&SlotLoop(totitlecase)][/b][/td]
     --?[= [&SlotsCounter] % [&SlotsPerRow] ] -eq 0|&SlotOutput;+[/tr][tr]
     --&SlotsCounter|[= [&SlotsCounter] + 1 ]
   --%|
   --&SlotOutput|+[/tr][/t]
   --+|[&SlotOutput]
-  --+|[br][br][t width=100% border=1 style="text-align: center;"][tr][td width=60%][b]Current Slot Style[/b][/td][td [&Darkbg]][img width=30][*S:SlotStyle][/img][/td][/tr][/t]
   --+|[t width=100% style="text-align: center;"][tr][br][td [&ButtonStyle]][rbutton]SpellBook::RestartBook[/rbutton][/td][/t]
+--X|
+
+--:ActionToggle|
+  --?"[*S:[&reentryval]]" -inc "no"|&UpdateToggle;yes|&UpdateToggle;no
+  --!a:[&CharID]|![&reentryval]:[&UpdateToggle]
+  --^SettingsCard|
 --X|
 
 --:UIChoice|
@@ -405,6 +463,11 @@
 --:ChangeColor|
   --&tmpChoice|[&reentryval]
   --I. ;Click Here to Change Color|q;UpdateColor;Input the HEX code of the color?
+  --?"[&tmpChoice]" -inc "action" -or "[&tmpChoice]" -inc "bonus" -or "[&tmpChoice]" -inc "reaction"|[
+    --&tmpChoice|[&tmpChoice(replace,#,)]
+    --!a:[&CharID]|![&tmpChoice]color:[&UpdateColor]
+    --^SettingsCard|
+  --]|
   --&UpdateColor|custom[&UpdateColor(replace,#,)]
   --?"[&tmpChoice]" -inc "spell"|[
     --&tmpChoice|[&tmpChoice(replace,spell,)]
@@ -414,11 +477,17 @@
     --&tmpChoice|[&tmpChoice(replace,icon,)]
     --!a:[&CharID]|!iconcolor:[&UpdateColor]
   --]|
-  -->ChangeFontColor|
+  --^ChangeFontColor|
 --X|
 
 --:ResetColor|
   --&tmpChoice|[&reentryval]
+  --?"[&tmpChoice]" -inc "action" -or "[&tmpChoice]" -inc "bonus" -or "[&tmpChoice]" -inc "reaction"|[
+    --c[&tmpChoice]|action:&ResetColor;00FF00|bonus:&ResetColor;0000FF|reaction:&ResetColor;FF0000
+    --!a:[&CharID]|![&reentryval]color:[&ResetColor]
+    --^SettingsCard|
+	--X|
+  --]|
   --?"[&tmpChoice]" -inc "spell"|[
     --&tmpChoice|[&tmpChoice(replace,spell,)]
     --&ResetColor|[*S:spellcolor]
@@ -431,7 +500,7 @@
     --&ResetColor|[&ResetColor(replace,custom,)]
     --!a:[&CharID]|!iconcolor:[&ResetColor]
   --]|
-  -->ChangeFontColor|
+  --^ChangeFontColor|
 --X|
 
 --:WriteSlot|
@@ -485,6 +554,12 @@
     --!a:[&CharID]|!tmpUI:https://files.d20.io/images/450559935/u5eIBjrmDj3lTMWxppChYA/original.webp
     --!a:[&CharID]|!tmpSpellUI:https://files.d20.io/images/450554788/nh4hybJS9-nejMG2Sa5NpA/original.webp
     --!a:[&CharID]|!SlotStyle:https://files.d20.io/images/450522298/64BSHbeFMBOEyHr4scG0Vg/original.webp
+    --!a:[&CharID]|!actiontoggle:0
+    --!a:[&CharID]|!bonustoggle:0
+    --!a:[&CharID]|!reactiontoggle:0
+    --!a:[&CharID]|!actioncolor:00FF00
+    --!a:[&CharID]|!bonuscolor:0000FF
+    --!a:[&CharID]|!reactioncolor:FF0000
     --&Obrac|\\[
     --&Vbar|||
     --&defaultTemplate|boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% 100%; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: .5em ;'}[&Vbar]titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) ; background-size: 101% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div style='margin: 0em .25em 0em .25em ; font-size: 18px ; font-variant: small-caps ; font-family: serif ; color: #6e2425 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; text-align: center ; line-height: .75em ; '}[&Vbar]textcode::{/div}{div}{div style='color: #000 ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&Vbar]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) ; background-size: 113% 4px ; width: 113% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&Vbar]buttonstyle::style='color: #611b1c ; background-color: transparent ; padding: 2px ; border: none'[&Vbar]footer::
