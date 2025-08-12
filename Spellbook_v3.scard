@@ -374,7 +374,8 @@
   --h:ImageDB("slot_purple")|https://files.d20.io/images/450522304/1XS2up9_jyQ-KT4fs4If_Q/original.webp
   --h:ImageDB("slot_pink")|https://files.d20.io/images/450522303/YWhi_Ya-XstU77ZVWD3mvQ/original.webp
 
-  --?";[&Pages];" -ne ";0;4;8;"|&Pages;0|&Pages;[&reentryval]
+  --&Pages|[&reentryval]
+  --?"[&Pages]" -ne "0" -and "[&Pages]" -ne "4" -and "[&Pages]" -ne "8"|&Pages;0|&Pages;[&reentryval]
   --~|array;define;ThemeChoice;dnd5e;abyssal_ink;astral_void;dark_arcane;ember_core;gilded_vine;celestial_veil;stormcaller;sacred_rose;chloromancy;bloodwake;neon_tides
   --#whisper|self
   --&ThemePerRow|2
