@@ -1,6 +1,6 @@
 !script {{
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 3.2.0
+  --/|Version     : 3.2.1
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -377,15 +377,16 @@
   --h:ImageDB("slot_purple")|https://files.d20.io/images/450522304/1XS2up9_jyQ-KT4fs4If_Q/original.webp
   --h:ImageDB("slot_pink")|https://files.d20.io/images/450522303/YWhi_Ya-XstU77ZVWD3mvQ/original.webp
 
+  --?";[&Pages];" -ne ";0;4;8;"|&Pages;0|&Pages;[&reentryval]
   --~|array;define;ThemeChoice;dnd5e;abyssal_ink;astral_void;dark_arcane;ember_core;gilded_vine;celestial_veil;stormcaller;sacred_rose;chloromancy;bloodwake;neon_tides
   --#whisper|self
   --&ThemePerRow|2
   --&ThemeCounter|0
-  --&ArrayCounter|[= [&reentryval] +3]
-  --c[&reentryval]|0:&PageNum;1|4:&PageNum;2|8:&PageNum;3
+  --&ArrayCounter|[= [&Pages] +3]
+  --c[&Pages]|0:&PageNum;1|4:&PageNum;2|8:&PageNum;3
   --#title|[&CharName]'s Spell Book Settings Page [&PageNum]
   --&ThemeOutput|[br][t width=100% [&Darkbg] border=1][tr]
-  --%ThemeLoop|[&reentryval];[&ArrayCounter]
+  --%ThemeLoop|[&Pages];[&ArrayCounter]
     --&ThemeChosen|[@ThemeChoice([&ThemeLoop])]
     --&ChosenTheme|
     --?"[&ThemeChosen]" -eq "[*S:tmpChosen]"|[
@@ -398,14 +399,14 @@
   --%|
   --&ThemeOutput|+[/tr][/t]
   --+|[&ThemeOutput]
-  --%UILoop|[&reentryval];[&ArrayCounter]
-    --&UIChosen|[@ThemeChoice([&UILoop])]
+  --%UILoop|[&Pages];[&ArrayCounter]
+    --&CurrentUI|[@ThemeChoice([&UILoop])]
     --&ChosenUI|
-    --?"[:ImageDB("UI_spell_[&UIChosen]")]" -eq "[*S:tmpSpellUI]"|[
+    --?"[:ImageDB("UI_spell_[&CurrentUI]")]" -eq "[*S:tmpSpellUI]"|[
       --&ChosenUI|border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8);
     --]|
-    --&UIThemeName|[&UIChosen(replace,_, )]
-    --+|[t width=110% style="background-image: url([:ImageDB("UI_spell_[&UIChosen]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 255px ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; [&ChosenUI]"][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]1[/#][/b][/F][/td][td width=40 [&MinusStyle]][b][F::30][#[&IconColor]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotStyle]][F::14][rbutton][#[&SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&UIChosen][/rbutton][/F][/td][td width=40 [&PlusStyle] title="Show or Hide All Spells"][b][F::20][#[&IconColor]][l]+[/l][/#][/F][/b][/td][/tr][/t]
+    --&UIThemeName|[&CurrentUI(replace,_, )]
+    --+|[t width=110% style="background-image: url([:ImageDB("UI_spell_[&CurrentUI]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 255px ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; [&ChosenUI]"][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]1[/#][/b][/F][/td][td width=40 [&MinusStyle]][b][F::30][#[&IconColor]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotStyle]][F::14][rbutton][#[&SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&CurrentUI][/rbutton][/F][/td][td width=40 [&PlusStyle] title="Show or Hide All Spells"][b][F::20][#[&IconColor]][l]+[/l][/#][/F][/b][/td][/tr][/t]
   --%|
   --+|[br][c][rbutton][b]Page 1[/b]::SettingsCard;0[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 2[/b]::SettingsCard;4[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 3[/b]::SettingsCard;8[/rbutton][/c][br]
   --+|[t width=100% border=1][tr][td width=75% height=30px][c][b][#[&SpellColor]]Spell Color #[&SpellColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Spell Font Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]spell[/rbutton][/c][/td][td title="Reset to Theme Font Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]spell[/rbutton][/c][/td][/tr][/t]
