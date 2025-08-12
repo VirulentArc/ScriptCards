@@ -1,6 +1,6 @@
 !script {{
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 3.2.1
+  --/|Version     : 3.3.0
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -67,9 +67,8 @@
 
   --/| STYLING
   --#title|[&CharName]'s Spell Book
-  --&HeaderImage|style="background-image: url([*S:tmpUI]) ; background-repeat: no-repeat ; background-size: 240px 30px ; background-position: center ; display: block ; width: 240px ; height: 100% ; line-height: 40px ; text-align: center ; position: relative ; left: -10px ; "
-  --&RollStyle|style="display: inline-block ; position: relative ; top: 2px ;"
-  --&LevelBackground|style="background-image: url([*S:tmpSpellUI]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 255px ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; "
+  --&HeaderImage|style="background-image: url([*S:tmpUI]) ; background-repeat: no-repeat ; background-size: 90% 30px ; background-position: left ; display: block ; width: 100% ; height: 100% ; line-height: 40px ; text-align: center ; position: relative ; left: -10px ; "
+  --&LevelBackground|style="background-image: url([*S:tmpSpellUI]) ; background-repeat: no-repeat ; background-size: 98% 40px ; display: inline-block ; width: 100% ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; "
   --&RollImage|[d20]1[/d20]
   --#diceFontColor|[&IconColor]
   --&SpellStyle|style="color: #[&SpellColor] ; display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom  ; "
@@ -82,14 +81,14 @@
   --&MissingSlot|[img width=30]https://files.d20.io/images/450522300/P-PGyu9BUz3bPQF7eWYe5A/original.webp[/img]
   --&FullSlot|[img width=30][*S:SlotStyle][/img]
   --&ButtonStyle|style="align-self: center; background-color: transparent; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: [&IconColor]; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
-  --&Darkbg|style="background-color: rgba(0, 0, 0, 0.5) ; text-align: center ; "
-  --&Slotbg|style="background-color: rgba(0, 0, 0, 0.5) ; padding: .5em ; border: 1px ; text-align: center ; "
-  --&ClassStyle|style="font-family: 'Segoe UI Symbol', 'Arial Unicode MS', monospace; font-size: 2em; position: relative ; left: 10px ; top: -3px ; "
+  --&Darkbg|style="background-color: rgba(0, 0, 0, 0.5) ; text-align: center ; position: relative ; left: -12px ; "
+  --&Slotbg|style="background-color: rgba(0, 0, 0, 0.5) ; padding: .5em ; border: 1px ; text-align: center ; position: relative ; left: -6px ; "
+  --&ClassStyle|style="font-family: 'Segoe UI Symbol', 'Arial Unicode MS', monospace; font-size: 2em; position: relative ; top: -3px ; left: 8px ; "
   --&DetailStyle|style="font-family: 'Segoe UI Symbol', 'Arial Unicode MS', monospace; position: relative ; right: 4px ; "
-  --&PrepStyle|style="position: relative ; left: 10px ; "
-  --&GearStyle|style="position: relative ; left: 20px ; "
+  --&PrepStyle|style="position: relative ; right: 4px ; "
+  --&RollStyle|style="position: relative ; top: 3px ; left: 10px ; "
   --&LevelStyle|style="position: relative ; top: -3px ; left: 2px ; "
-  --&MinusStyle|style="position: relative ; top: -4px ; left: 16px ; "
+  --&MinusStyle|style="position: relative ; top: -4px ; "
 
   --/| PREPARED SPELLS CALCULATION
   --&PrepMod|
@@ -136,7 +135,7 @@
   --?"[&PrepTotal]" -eq "[&Infinity]"|&FontSize$$$30|&FontSize$$$20
   --#parameterDelimiter|;
 
-  --&Header|[t width=110% [&HeaderImage]][tr][td title="Spellcasting Ability" width=60px][b][#[&IconColor]]&#x272F;[/#][F::16][&SCA(touppercase)][/F][/b][/td][td title="Spell Save DC" width=60px][#[&IconColor]][F::16]&#x26E8;[/#][/F][b][F::20][&SpellSaveDC][/F][/b][/td][td title="Spellcasting Bonus" width=60px [&RollStyle]][b][F::6][&RollImage]&nbsp;[/F][F::20][&SpellAttackBonus][/F][/b][/td][td width=20px [&ClassStyle] title="[&ClassName]: [*S:subclass]"][F::20][#[&IconColor]][&ClassImage][/#][/F][/td][td title="Max Prepared Spells" width=20px [&PrepStyle]][F::[&FontSize]][b][&PrepTotal][/b][/F][/td][td title="Settings" [&GearStyle]][F::20][rbutton][&SettingsIcon]::SettingsCard;0[/rbutton][/F][/td][/tr][/t]
+  --&Header|[t width=100% [&HeaderImage]][tr][td title="Spellcasting Ability" width=70px][b][F::18][#[&IconColor]]&#x272F;[/F][/#][F::18][&SCA(touppercase)][/F][/b][/td][td title="Spell Save DC" width=70px]&nbsp;[#[&IconColor]][F::18]&#x26E8;[/#][/F][b]&nbsp;[F::20][&SpellSaveDC][/F][/b][/td][td title="Spellcasting Bonus" width=35px [&RollStyle]][F::7][&RollImage]&nbsp;[/F][/td][td width=35px [&PrepStyle] title="Spellcasting Bonus"][F::20][b][&SpellAttackBonus][/b][/F][/td][td width=35px [&ClassStyle] title="[&ClassName]: [*S:subclass]"][F::20][#[&IconColor]][&ClassImage][/#][/F][/td][td width=35px title="Max Prepared Spells" [&PrepStyle]][F::[&FontSize]][b][&PrepTotal][/b][/F][/td][td title="Settings" width=25px]&nbsp;[F::20][rbutton][&SettingsIcon]::SettingsCard;0[/rbutton][/F][/td][/tr][/t]
   --?"[&ActionToggle]" -eq "yes" -or "[&BonusToggle]" -eq "yes" -or "[&ReactionToggle]" -eq "yes"|[
     --&Header|+[t width=100% style="text-align: center"][tr][td][&ActionTitle][&ActionImage]&nbsp;&nbsp;[&BonusTitle][&BonusImage]&nbsp;&nbsp;[&ReactionTitle][&ReactionImage][/td][/tr][/t]
   --]|
@@ -156,22 +155,21 @@
   --&SpellLevel|[%1%]
 
   --/| HANDLE CANTRIPS FIRST (SKIP SLOT CALCULATIONS)
+  --&ArrowStyle|
+  --&PrepShow|
+  --&SlotStyle|
   --?"[&SpellLevel]" -eq "cantrip"|[
-    --&Slots|[#[&IconColor]][&Infinity][/#]
+    --&SlotDisplay|[F::46][#[&IconColor]][&Infinity][/#][/F]
     --&PlusSlot|
     --&MinusSlot|
     --&SpellLevelOutput|C
+    --&SlotStyle|style="position: relative ; top: 2px ; "
     --#parameterDelimiter|$$$
     --?"[&PrepToggle]" -eq "0"|&PrepShow$$$[rbutton]&#x2B9F;::ToggleShow;1[/rbutton]|&PrepShow$$$[rbutton]&#x2B9D;::ToggleShow;0[/rbutton]
     --#parameterDelimiter|;
     --?";sorcerer;warlock;fighter;rogue;bard;" -inc ";[&ClassName];"|&PrepShow;
-    --&PlusStyle|style="position: relative ; top: 2px ; left: 8px ; "
-    --&SlotStyle|style="position: relative ; left: 12px ; top: 2px ;"
+    --&ArrowStyle|style="position: relative ; right: 8px ; "
     --^SkipSlotCalc|
-  --]|[
-    --&PrepShow|
-    --&PlusStyle|style="position: relative ; top: 1px ; left: 16px ; "
-    --&SlotStyle|style="position: relative ; left: 15px ; "
   --]|
   
   --/| DETERMINE SLOTS AND DISPLAY
@@ -192,7 +190,6 @@
       --?"[&slotPosition]" -gt "[&SlotsTotal]"|&WarlockSlots;+[&MissingSlot]
     --%|
   --]|
-  --&Slots|[&SlotDisplay]
 
   --/| DEFINE PLUS AND MINUS SLOT BUTTONS
   --#parameterDelimiter|$$$
@@ -217,12 +214,12 @@
   --%|
 
   --/| SPELL LEVEL HEADER OUTPUT
-  --&SpellOutput|[t width=110% [&LevelBackground]][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]][&SpellLevelOutput][/#][/b][/F][/td][td width=40px [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td width=135px [&SlotStyle]][F::46][&Slots][/F][/td][td width=40px [&PlusStyle] title="Show or Hide All Spells"][b][F::20][l][&PlusSlot][&PrepShow][/l][/F][/b][/td][/tr][/t]
+  --&SpellOutput|[t width=100% [&LevelBackground]][tr][td width=30 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]][&SpellLevelOutput][/#][/b][/F][/td][td width=80 [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td [&SlotStyle] width=140][&SlotDisplay][/td][td width=70 [&ArrowStyle] title="Show or Hide All Spells"][F::20][b][l][&PlusSlot][/l][/b][&PrepShow][/F][/td][/tr][/t]
   --?"[&SlotsTotal]" -gt "4"|[
-    --&SpellOutput|+[t width=110% [&LevelBackground]][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b]W[/b][/F][/td][td width=40px [&MinusStyle]][/td][td width=135px [&SlotStyle]][F::46][&WarlockSlots][/F][/td][td width=40px [&PlusStyle]][/td][/tr][/t]
+    --&SpellOutput|+[t width=110% [&LevelBackground]][tr][td width=30 height=40 [&LevelStyle]][br][F::20][b]W[/b][/F][/td][td width=80 [&MinusStyle]][/td][td width=140][&WarlockSlots][/td][td width=70][/td][/tr][/t]
   --]|
 
-  --&SpellOutput|+[t width=110% style="position: relative ; left: -10px ;"]
+  --&SpellOutput|+[t width=100% style="position: relative ; left: -10px ;"]
 
   --&SpellIndex|0
   --%SpellName|foreach;lvl[&SpellLevel]Spellnames
@@ -258,7 +255,7 @@
       --]|
       --?"[&SpellOutputType]" -inc "SPELLCARD"|[
         --/| TEMPORARY FIX RBUTTON IS USED FOR SPACING ONLY
-        --&SpellRoll|[F::6][rbutton]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;::RestartBook[/rbutton][/F]
+        --&SpellRoll|
       --]|
       --&SpellDetail|[sheetbutton][&BookImage]::[*S:character_name]::&#37;{selected|repeating_spell-[&SpellLevel]_$[&SpellIndex]_output}[/sheetbutton]
     --]|
@@ -315,7 +312,7 @@
 
     --/| SPELL OUTPUT LINE
     --:DisplaySpell|
-    --&SpellOutput|+[tr][td width=5px title="[&SpellSchool(totitlecase)]" style="text-align: center ; "][F::18][#[&IconColor]][&SchoolIcon];[/#][/F][/td][td width=165px height=17px [&SpellStyle] [&ToolTip] ][b][&SpellName][/b][&CastingTime][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td width=20 title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=40 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td title="Spell Details" [&DetailStyle]][F::16][&SpellDetail][/F][/td][/tr]
+    --&SpellOutput|+[tr][td width=5px title="[&SpellSchool(totitlecase)]" style="text-align: center ; "][F::18][#[&IconColor]][&SchoolIcon];[/#][/F][/td][td width=215px height=17px [&SpellStyle] [&ToolTip] ][b][&SpellName][/b][&CastingTime][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=34 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td title="Spell Details" [&DetailStyle]][F::16][&SpellDetail][/F][/td][/tr]
     --:NextSpell|
     --&SpellIndex|[= [&SpellIndex] + 1 ]
   --%|
@@ -385,7 +382,7 @@
   --&ArrayCounter|[= [&Pages] +3]
   --c[&Pages]|0:&PageNum;1|4:&PageNum;2|8:&PageNum;3
   --#title|[&CharName]'s Spell Book Settings Page [&PageNum]
-  --&ThemeOutput|[br][t width=100% [&Darkbg] border=1][tr]
+  --&ThemeOutput|[br][t width=98% [&Darkbg] border=1][tr]
   --%ThemeLoop|[&Pages];[&ArrayCounter]
     --&ThemeChosen|[@ThemeChoice([&ThemeLoop])]
     --&ChosenTheme|
@@ -406,11 +403,11 @@
       --&ChosenUI|border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8);
     --]|
     --&UIThemeName|[&CurrentUI(replace,_, )]
-    --+|[t width=110% style="background-image: url([:ImageDB("UI_spell_[&CurrentUI]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 255px ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; [&ChosenUI]"][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]1[/#][/b][/F][/td][td width=40 [&MinusStyle]][b][F::30][#[&IconColor]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotStyle]][F::14][rbutton][#[&SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&CurrentUI][/rbutton][/F][/td][td width=40 [&PlusStyle] title="Show or Hide All Spells"][b][F::20][#[&IconColor]][l]+[/l][/#][/F][/b][/td][/tr][/t]
+    --+|[t width=100% style="background-image: url([:ImageDB("UI_spell_[&CurrentUI]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 98% ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; [&ChosenUI]"][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]&nbsp;1[/#][/b][/F][/td][td width=90 [&MinusStyle]][b][F::30][#[&IconColor]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotStyle]][F::14][rbutton][#[&SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&CurrentUI][/rbutton][/F][/td][td width=40 [&PlusStyle] title="Show or Hide All Spells"][b][F::20][#[&IconColor]][l]+[/l][/#][/F][/b][/td][/tr][/t]
   --%|
   --+|[br][c][rbutton][b]Page 1[/b]::SettingsCard;0[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 2[/b]::SettingsCard;4[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 3[/b]::SettingsCard;8[/rbutton][/c][br]
-  --+|[t width=100% border=1][tr][td width=75% height=30px][c][b][#[&SpellColor]]Spell Color #[&SpellColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Spell Font Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]spell[/rbutton][/c][/td][td title="Reset to Theme Font Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]spell[/rbutton][/c][/td][/tr][/t]
-  --+|[t width=100% border=1][tr][td width=75% height=30px][c][b][#[&IconColor]]Icon Color #[&IconColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Icon Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]icon[/rbutton][/c][/td][td title="Reset to Theme Icon Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]icon[/rbutton][/c][/td][/tr][/t]
+  --+|[t width=90% border=1][tr][td width=70% height=30px][c][b][#[&SpellColor]]Spell Color #[&SpellColor][/#][/b][/c][/td][td [&DetailStyle] width=10 title="Change Spell Font Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]spell[/rbutton][/c][/td][td title="Reset to Theme Font Color" width=10][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]spell[/rbutton][/c][/td][/tr][/t]
+  --+|[t width=90% border=1][tr][td width=70% height=30px][c][b][#[&IconColor]]Icon Color #[&IconColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Icon Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]icon[/rbutton][/c][/td][td title="Reset to Theme Icon Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]icon[/rbutton][/c][/td][/tr][/t]
   --~|array;define;ActionArray;action;bonus;reaction
   --%ActionLoop|foreach;ActionArray
   --&ActionType|[&ActionLoop(totitlecase)]
@@ -418,12 +415,12 @@
     --c[&ActionLoop]|action:&ActionsImage;&#x25A0|bonus:&ActionsImage;&#x25C6|reaction:&ActionsImage;&#x2B22
     --?"[&ActionLoop]" -eq "action"|&ActionFontSize;22|&ActionFontSize;18
     --?"[*S:[&ActionLoop]toggle]" -eq "no"|&Toggle;&#x2610|&Toggle;&#x2611
-    --+|[t width=100% border=1 style="text-align: center ; "][tr][td width=145 height=30][r][b][#[&SpellColor]][&ActionType] #[&ColorAction]&nbsp;-&nbsp;[/#][#[&ColorAction]][F::[&ActionFontSize]][&ActionsImage];&nbsp;[/F][/#][/b][/r][/td][td][rbutton][F::18][&Toggle];[/F]::ActionToggle;[&ActionLoop]toggle[/rbutton][/td][td [&DetailStyle] title="Change To Custom Color"][c][rbutton]&#x1F3A8;::ChangeColor;[&ActionLoop][/rbutton][/c][/td][td title="Reset to Default Color"][c][rbutton]&#x21BB;::ResetColor;[&ActionLoop][/rbutton][/c][/td][/tr][/t]
+    --+|[t width=90% border=1 style="text-align: center ; "][tr][td width=55% height=30][r][b][#[&SpellColor]][&ActionType] #[&ColorAction]&nbsp;-&nbsp;[/#][#[&ColorAction]][F::[&ActionFontSize]][&ActionsImage];&nbsp;[/F][/#][/b][/r][/td][td][rbutton][F::18][&Toggle];[/F]::ActionToggle;[&ActionLoop]toggle[/rbutton][/td][td [&DetailStyle] title="Change To Custom Color"][c][rbutton]&#x1F3A8;::ChangeColor;[&ActionLoop][/rbutton][/c][/td][td title="Reset to Default Color"][c][rbutton]&#x21BB;::ResetColor;[&ActionLoop][/rbutton][/c][/td][/tr][/t]
   --%|
    --~|array;define;SlotChoice;default;red;orange;yellow;green;blue;purple;pink
   --&SlotsPerRow|4
   --&SlotsCounter|1
-  --&SlotOutput|[br][br][t width=100% border=1 [&Slotbg]][tr]
+  --&SlotOutput|[br][br][t width=95% border=1 [&Slotbg]][tr]
   --%SlotLoop|foreach;SlotChoice
     --&ChosenStyle|
     --&ChosenSlot|
@@ -436,7 +433,7 @@
   --%|
   --&SlotOutput|+[/tr][/t]
   --+|[&SlotOutput]
-  --+|[t width=100% style="text-align: center;"][tr][br][td [&ButtonStyle]][rbutton]SpellBook::RestartBook[/rbutton][/td][/t]
+  --+|[t width=90% style="text-align: center;"][tr][br][td [&ButtonStyle]][rbutton]SpellBook::RestartBook[/rbutton][/td][/t]
 --X|
 
 --:ActionToggle|
@@ -555,7 +552,7 @@
     --!a:[&CharID]|!reactioncolor:FF0000
     --&Obrac|\\[
     --&Vbar|||
-    --&defaultTemplate|boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% 100%; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: .5em ;'}[&Vbar]titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) ; background-size: 101% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div style='margin: 0em .25em 0em .25em ; font-size: 18px ; font-variant: small-caps ; font-family: serif ; color: #6e2425 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; text-align: center ; line-height: .75em ; '}[&Vbar]textcode::{/div}{div}{div style='color: #000 ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&Vbar]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) ; background-size: 113% 4px ; width: 113% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&Vbar]buttonstyle::style='color: #611b1c ; background-color: transparent ; padding: 2px ; border: none'[&Vbar]footer::
+    --&defaultTemplate|boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% 100% ; width: 120% ; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: .5em ; position: relative ; left: -40px'}[&Vbar]titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) ; background-size: 100% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div style='margin: 0em .25em 0em .25em ; font-size: 18px ; font-variant: small-caps ; font-family: serif ; color: #6e2425 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; text-align: center ; line-height: .75em ; '}[&Vbar]textcode::{/div}{div}{div style='width: 100% ; color: #000 ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&Vbar]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) ; background-size: 100% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&Vbar]buttonstyle::style='color: #611b1c ; background-color: transparent ; padding: 2px ; border: none'[&Vbar]footer::
     --!ob:StyleSaveResult:[&TemplateMuleID]:Spellbook[&CharID]:0|[&defaultTemplate]
     --+|Default Style information has been written, please run the Spellbook again.
     --^EndFirstRun|
@@ -583,7 +580,7 @@
     --?"[&tmpChoice]" -eq "dnd5e"|&BarURL;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png
     --&Obrac|\\[
     --&Vbar|\\\\|\\\\|
-    --!ability:[&CurrentTemplate]|action:boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% [&Obrac]&Stretch] ; background-repeat: [&Obrac]&Repeat] ; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: .5em ;'}[&Vbar]titlecode::{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 101% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div style='margin: 0em .25em 0em .25em ; font-size: 18px ; font-variant: small-caps ; font-family: serif ; color: #[&Obrac]&IconColor] ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; text-align: center ; line-height: .75em ; '}[&Vbar]textcode::{/div}{div}{div style='color: #[&Obrac]&SpellColor] ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&Vbar]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 113% 4px ; width: 113% ; height:4px; display: block ; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&Vbar]buttonstyle::style='color: #[&Obrac]&IconColor] ; background-color: transparent ; padding: 2px ; border: none'[&Vbar]footer::
+    --!ability:[&CurrentTemplate]|action:boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% [&Obrac]&Stretch] ; width: 120% ; height: 100% ; background-repeat: [&Obrac]&Repeat] ; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: .5em ; position: relative ; left: -40px'}[&Vbar]titlecode::{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 100% 4px ; width:101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div style='margin: 0em .25em 0em .25em ; font-size: 18px ; font-variant: small-caps ; font-family: serif ; color: #[&Obrac]&IconColor] ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; text-align: center ; line-height: .75em ; '}[&Vbar]textcode::{/div}{div}{div style='width: 100% ; color: #[&Obrac]&SpellColor] ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&Vbar]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 100% 4px ; width: 101% ; height:4px; display: block ; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&Vbar]buttonstyle::style='color: #[&Obrac]&IconColor] ; background-color: transparent ; padding: 2px ; border: none'[&Vbar]footer::
     --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]Click on the SPELLBOOK button above to run the Spellbook with the new template.[/td][/tr][/t]
   --:EndFirstRun|
   --~|hash;clear;ImageDB
