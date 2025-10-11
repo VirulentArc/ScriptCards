@@ -1,7 +1,7 @@
 !Script{{
 
   --/|Script Name : Tim's NPC Statblock Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 3.0
+  --/|Version     : 3.1
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays an NPC statblock that mimics the 2014 Monster Manual in chat that has buttons for all 
@@ -31,6 +31,7 @@
   --]|
 
   --#Debug|0
+  --#reentrant|NPCBlock- @{selected|character_id}
   --#overridetemplate|statblock
   --#Whisper|self
   --#sourceToken|@{selected|token_id}
