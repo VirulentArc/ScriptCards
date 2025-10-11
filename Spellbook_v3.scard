@@ -1,6 +1,6 @@
 !script {{
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 3.3.1
+  --/|Version     : 3.4.0
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -27,6 +27,7 @@
   --]|
 
   --:RestartBook|
+  --#reentrant|Spellbook- @{selected|character_id}
   --#Whisper|self
   --#sourceToken|@{selected|token_id}
   --#emoteState|0
@@ -34,15 +35,13 @@
 
   --/| CACHE CHARACTER DATA
   --&CharID|[*S:character_id]
-  --#reentrant|Spellbook- @{selected|character_id}
   --&CharName|[*S:character_name]
   --&ClassName|[*S:class]
   --&SubClass|[*S:subclass]
   --&CasterLevel|[*S:caster_level]
   --&SCA|[*S:spellcasting_ability]
   --~SCA|string;substring;3;3;[&SCA]
-  --&SpellSaveDC|[*S:spell_save_dc]
-  --&SpellAttackBonus|[*S:spell_attack_bonus]
+  --&PB|[*S:pb]
   --&PrepToggle|[*S:preptoggle]
   --&tmpChosen|[*S:tmpChosen]
   --&SpellColor|[*S:spellcolor]
@@ -89,11 +88,12 @@
   --&RollStyle|style="position: relative ; top: 3px ; left: 10px ; "
   --&LevelStyle|style="position: relative ; top: -3px ; left: 2px ; "
   --&MinusStyle|style="position: relative ; top: -4px ; "
+  --&SpellCastAbil|[= @{selected|spellcasting_ability}]
 
   --/| PREPARED SPELLS CALCULATION
   --&PrepMod|
   --c[&ClassName]|Wizard:&PrepMod;1|Cleric:&PrepMod;1|Druid:&PrepMod;1|Paladin:&PrepMod;0.5|Artificer:&PrepMod;0.5
-  --=PrepTotal|[&CasterLevel] * [&PrepMod] + @{selected|spellcasting_ability} {FLOOR}
+  --=PrepTotal|[&CasterLevel] * [&PrepMod] + [&SpellCastAbil] {FLOOR}
   --&PrepTotal|[$PrepTotal.Total]
 
   --/| SUBCLASS ICON MAPPING
@@ -134,7 +134,7 @@
   --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName];"|&PrepTotal$$$[&Infinity]|&PrepTotal$$$[$PrepTotal.Raw]
   --?"[&PrepTotal]" -eq "[&Infinity]"|&FontSize$$$30|&FontSize$$$20
 
-  --&Header|[t width=100% [&HeaderImage]][tr][td title="Spellcasting Ability" width=70px][b][F::18][#[&IconColor]]&#x272F;[/F][/#][F::18][&SCA(touppercase)][/F][/b][/td][td title="Spell Save DC" width=70px]&nbsp;[#[&IconColor]][F::18]&#x26E8;[/#][/F][b]&nbsp;[F::20][&SpellSaveDC][/F][/b][/td][td title="Spellcasting Bonus" width=35px [&RollStyle]][F::7][&RollImage]&nbsp;[/F][/td][td width=35px [&PrepStyle] title="Spellcasting Bonus"][F::20][b][&SpellAttackBonus][/b][/F][/td][td width=35px [&ClassStyle] title="[&ClassName]: [*S:subclass]"][F::20][#[&IconColor]][&ClassImage][/#][/F][/td][td width=35px title="Max Prepared Spells" [&PrepStyle]][F::[&FontSize]][b][&PrepTotal][/b][/F][/td][td title="Settings" width=30px]&nbsp;&nbsp;[F::20][rbutton][&SettingsIcon]::SettingsCard;0[/rbutton][/F][/td][/tr][/t]
+  --&Header|[t width=100% [&HeaderImage]][tr][td title="Spellcasting Ability: Click to Change" width=70px][b][F::18][#[&IconColor]]&#x272F;[/F][/#][F::18][rbutton][#[&SpellColor]][&SCA(touppercase)][/#]::SCAChoice[/rbutton][/F][/b][/td][td title="Spell Save DC" width=70px]&nbsp;[#[&IconColor]][F::18]&#x26E8;[/#][/F][b]&nbsp;[F::20][*S:spell_save_dc][/F][/b][/td][td title="Spellcasting Bonus" width=35px [&RollStyle]][F::7][&RollImage]&nbsp;[/F][/td][td width=35px [&PrepStyle] title="Spellcasting Bonus"][F::20][b][*S:spell_attack_bonus][/b][/F][/td][td width=35px [&ClassStyle] title="[&ClassName]: [*S:subclass]"][F::20][#[&IconColor]][&ClassImage][/#][/F][/td][td width=35px title="Max Prepared Spells" [&PrepStyle]][F::[&FontSize]][b][&PrepTotal][/b][/F][/td][td title="Settings" width=30px]&nbsp;&nbsp;[F::20][rbutton][&SettingsIcon]::SettingsCard;0[/rbutton][/F][/td][/tr][/t]
   --?"[&ActionToggle]" -eq "yes" -or "[&BonusToggle]" -eq "yes" -or "[&ReactionToggle]" -eq "yes"|&Header$$$+[t width=100% style="text-align: center"][tr][td][&ActionTitle][&ActionImage]&nbsp;&nbsp;[&BonusTitle][&BonusImage]&nbsp;&nbsp;[&ReactionTitle][&ReactionImage][/td][/tr][/t]
   --+|[&Header]
   --#parameterDelimiter|;
@@ -214,7 +214,7 @@
   --/| SPELL LEVEL HEADER OUTPUT
   --&SpellOutput|[t width=100% [&LevelBackground]][tr][td width=30 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]][&SpellLevelOutput][/#][/b][/F][/td][td width=80 [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td [&SlotStyle] width=140][&SlotDisplay][/td][td width=70 [&ArrowStyle] title="Show or Hide All Spells"][F::20][b][l][&PlusSlot][/l][/b][&PrepShow][/F][/td][/tr][/t]
   --?"[&SlotsTotal]" -gt "4"|[
-    --&SpellOutput|+[t width=110% [&LevelBackground]][tr][td width=30 height=40 [&LevelStyle]][br][F::20][b]W[/b][/F][/td][td width=80 [&MinusStyle]][/td][td width=140][&WarlockSlots][/td][td width=70][/td][/tr][/t]
+    --&SpellOutput|+[t width=110% [&LevelBackground]][tr][td width=30 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]W[/#][/b][/F][/td][td width=80 [&MinusStyle]][/td][td width=140][&WarlockSlots][/td][td width=70][/td][/tr][/t]
   --]|
 
   --&SpellOutput|+[t width=100% style="position: relative ; left: -10px ;"]
@@ -333,6 +333,10 @@
   --h:ImageDB("chloromancy")|https://files.d20.io/images/451082984/NpySiXC_jRd7ZjkkPw4TYw/original.webp
   --h:ImageDB("bloodwake")|https://files.d20.io/images/451147803/zm8LwFMAdiGtcnHa2KFqPg/original.webp
   --h:ImageDB("neon_tides")|https://files.d20.io/images/451149468/8DWWc4U8Sg1kTcjEunQGLQ/original.webp
+  --h:ImageDB("whisperveil")|https://files.d20.io/images/459761436/ggXlv7FDl_MpvXKHPEoYmQ/original.webp
+  --h:ImageDB("sanctum_aureum")|https://files.d20.io/images/459809418/f82c4-QQSD5TQY0GcsiOqg/original.webp
+  --h:ImageDB("verdant_veil")|https://files.d20.io/images/459939017/30UZVKRE7HOb6afUb-yxDQ/original.webp
+  --h:ImageDB("amber_hollow")|https://files.d20.io/images/459940875/eLQJkK2WcelGT2q14YcDDQ/original.webp
 
   --/| ADD UI HEADER IMAGES TO THE HASH TABLE
   --h:ImageDB("UI_dnd5e")|https://files.d20.io/images/450559935/u5eIBjrmDj3lTMWxppChYA/original.webp
@@ -347,6 +351,10 @@
   --h:ImageDB("UI_chloromancy")|https://files.d20.io/images/451147052/fWt_Y72_c7_7AKn-8QOOsQ/original.webp
   --h:ImageDB("UI_bloodwake")|https://files.d20.io/images/451152042/HcSJn7tY7wIE684mD6qMZQ/original.webp
   --h:ImageDB("UI_neon_tides")|https://files.d20.io/images/451151576/DAhrzCMJnmuaCeeTYl5XPA/original.webp
+  --h:ImageDB("UI_whisperveil")|https://files.d20.io/images/459766138/mYetWR35jFad91FNwtjszQ/original.webp
+  --h:ImageDB("UI_sanctum_aureum")|https://files.d20.io/images/459810533/UqzpFBxcPJXfOB29NBRktA/original.webp
+  --h:ImageDB("UI_verdant_veil")|https://files.d20.io/images/459940225/fPkmVF8OGGozVI9R9hBiLg/original.webp
+  --h:ImageDB("UI_amber_hollow")|https://files.d20.io/images/459940225/fPkmVF8OGGozVI9R9hBiLg/original.webp
 
   --/| ADD UI SPELL HEADER IMAGES TO THE HASH TABLE
   --h:ImageDB("UI_spell_dnd5e")|https://files.d20.io/images/450554788/nh4hybJS9-nejMG2Sa5NpA/original.webp
@@ -361,6 +369,10 @@
   --h:ImageDB("UI_spell_chloromancy")|https://files.d20.io/images/451147053/h61VLLAItdWZ3FCW6MHN6A/original.webp
   --h:ImageDB("UI_spell_bloodwake")|https://files.d20.io/images/451152041/l773ue7fLTObeRv6zkAGrg/original.webp
   --h:ImageDB("UI_spell_neon_tides")|https://files.d20.io/images/451151577/MCK8zmGJD6qZfE5-LKhXuw/original.webp
+  --h:ImageDB("UI_spell_whisperveil")|https://files.d20.io/images/459766011/lQsiJ7spVl-5XGs6v7n4ng/original.webp
+  --h:ImageDB("UI_spell_sanctum_aureum")|https://files.d20.io/images/459810532/FpDbxBG-HgUG7TIi8xQI8w/original.webp
+  --h:ImageDB("UI_spell_verdant_veil")|https://files.d20.io/images/459940226/Oo5nlVHjAEb7HJz3bAhmYg/original.webp
+  --h:ImageDB("UI_spell_amber_hollow")|https://files.d20.io/images/459940226/Oo5nlVHjAEb7HJz3bAhmYg/original.webp
 
   --/| ADD SPELL SLOT COLORS TO HASH TABLE
   --h:ImageDB("slot_default")|https://files.d20.io/images/450522298/64BSHbeFMBOEyHr4scG0Vg/original.webp
@@ -373,13 +385,13 @@
   --h:ImageDB("slot_pink")|https://files.d20.io/images/450522303/YWhi_Ya-XstU77ZVWD3mvQ/original.webp
 
   --&Pages|[&reentryval]
-  --?"[&Pages]" -ne "0" -and "[&Pages]" -ne "4" -and "[&Pages]" -ne "8"|&Pages;0|&Pages;[&reentryval]
-  --~|array;define;ThemeChoice;dnd5e;abyssal_ink;astral_void;dark_arcane;ember_core;gilded_vine;celestial_veil;stormcaller;sacred_rose;chloromancy;bloodwake;neon_tides
+  --?"[&Pages]" -ne "0" -and "[&Pages]" -ne "4" -and "[&Pages]" -ne "8" -and "[&Pages]" -ne "12"|&Pages;0|&Pages;[&reentryval]
+  --~|array;define;ThemeChoice;dnd5e;abyssal_ink;astral_void;dark_arcane;ember_core;gilded_vine;celestial_veil;stormcaller;sacred_rose;chloromancy;bloodwake;neon_tides;whisperveil;sanctum_aureum;verdant_veil;amber_hollow
   --#whisper|self
   --&ThemePerRow|2
   --&ThemeCounter|0
   --&ArrayCounter|[= [&Pages] +3]
-  --c[&Pages]|0:&PageNum;1|4:&PageNum;2|8:&PageNum;3
+  --c[&Pages]|0:&PageNum;1|4:&PageNum;2|8:&PageNum;3|12:&PageNum;4
   --#title|[&CharName]'s Spell Book Settings Page [&PageNum]
   --&ThemeOutput|[br][t width=98% [&Darkbg] border=1][tr]
   --%ThemeLoop|[&Pages];[&ArrayCounter]
@@ -404,7 +416,7 @@
     --&UIThemeName|[&CurrentUI(replace,_, )]
     --+|[t width=100% style="background-image: url([:ImageDB("UI_spell_[&CurrentUI]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 98% ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; [&ChosenUI]"][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]&nbsp;1[/#][/b][/F][/td][td width=90 [&MinusStyle]][b][F::30][#[&IconColor]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotStyle]][F::14][rbutton][#[&SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&CurrentUI][/rbutton][/F][/td][td width=40 [&PlusStyle] title="Show or Hide All Spells"][b][F::20][#[&IconColor]][l]+[/l][/#][/F][/b][/td][/tr][/t]
   --%|
-  --+|[br][c][rbutton][b]Page 1[/b]::SettingsCard;0[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 2[/b]::SettingsCard;4[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 3[/b]::SettingsCard;8[/rbutton][/c][br]
+  --+|[br][c][rbutton][b]Page 1[/b]::SettingsCard;0[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 2[/b]::SettingsCard;4[/rbutton]&nbsp;|&nbsp;[rbutton][b]Page 3[/b]::SettingsCard;8[/rbutton]|&nbsp;[rbutton][b]Page 4[/b]::SettingsCard;12[/rbutton][/c][br]
   --+|[t width=90% border=1][tr][td width=70% height=30px][c][b][#[&SpellColor]]Spell Color #[&SpellColor][/#][/b][/c][/td][td [&DetailStyle] width=10 title="Change Spell Font Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]spell[/rbutton][/c][/td][td title="Reset to Theme Font Color" width=10][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]spell[/rbutton][/c][/td][/tr][/t]
   --+|[t width=90% border=1][tr][td width=70% height=30px][c][b][#[&IconColor]]Icon Color #[&IconColor][/#][/b][/c][/td][td [&DetailStyle] title="Change Icon Color"][c][rbutton]&#x1F3A8;::ChangeColor;[*S:tmpChosen]icon[/rbutton][/c][/td][td title="Reset to Theme Icon Color"][c][rbutton]&#x21BB;::ResetColor;[*S:tmpChosen]icon[/rbutton][/c][/td][/tr][/t]
   --~|array;define;ActionArray;action;bonus;reaction
@@ -532,6 +544,55 @@
   --^RestartBook|
 --X|
 
+--:SCAChoice|
+  --#title|Change [&CharName]'s Spellcasting Ability
+  --~|array;define;AbilityArray;Intelligence;Wisdom;Charisma;Strength;Dexterity;Constitution
+  -->MapClass|[&ClassName];&ClassAbil
+  --?"[*S:multiclass1_flag]" -eq "1"|>MapClass;[*S:multiclass1];&M1ClassAbil
+  --?"[*S:multiclass2_flag]" -eq "1"|>MapClass;[*S:multiclass2];&M2ClassAbil
+  --?"[*S:multiclass3_flag]" -eq "1"|>MapClass;[*S:multiclass3];&M3ClassAbil
+  --&AbilityOutput|[br][t width=100% style="position: relative ; left: -15px ; text-align: right ; "]
+  --%AbilityLoop|foreach;AbilityArray
+    --&UnderText|
+    --#parameterDelimiter|$$$
+    --?"[&ClassAbil]" -eq "[&AbilityLoop]"|&UnderText$$$+&nbsp;[&ClassName]
+    --&Separator|&nbsp;
+    --?"[&M1ClassAbil]" -eq "[&AbilityLoop]" -and "[&M1ClassAbil]" -eq "[&ClassAbil]"|&Separator$$$,&nbsp;
+    --?"[&M1ClassAbil]" -eq "[&AbilityLoop]"|&UnderText$$$+[&Separator][*S:multiclass1]
+    --&Separator|&nbsp;
+    --?"[&M2ClassAbil]" -eq "[&AbilityLoop]" -and "[&M2ClassAbil]" -eq "[&M1ClassAbil]"|&Separator$$$,&nbsp;
+    --?"[&M2ClassAbil]" -eq "[&AbilityLoop]"|&UnderText$$$+[&Separator][*S:multiclass2]
+    --&Separator|&nbsp;
+    --?"[&M3ClassAbil]" -eq "[&AbilityLoop]" -and "[&M3ClassAbil]" -eq "[&M2ClassAbil]"|&Separator$$$,&nbsp;
+    --?"[&M3ClassAbil]" -eq "[&AbilityLoop]"|&UnderText$$$+[&Separator][*S:multiclass3]
+    --#parameterDelimiter|;
+    --&AbilityOutput|+[tr][td [&ButtonStyle]][rbutton][&AbilityLoop]::WriteSCA;[&AbilityLoop][/rbutton][/td][td width=60% style="text-align: left ; vertical-align: middle ; line-height: 1em ; "][b][&UnderText][/b][/td][/tr]
+  --%|
+  --&AbilityOutput|+[/t]
+  --+|[&AbilityOutput]
+--X|
+
+--:MapClass|
+  --?"[%1%]" -eq "Artificer" -or "[%1%]" -eq "Wizard" -or "[%1%]" -eq "Rogue" -or "[%1%]" -eq "Fighter"|[%2%];Intelligence
+  --?"[%1%]" -eq "Bard" -or "[%1%]" -eq "Paladin" -or "[%1%]" -eq "Sorcerer" -or "[%1%]" -eq "Warlock"|[%2%];Charisma
+  --?"[%1%]" -eq "Cleric" -or "[%1%]" -eq "Druid" -or "[%1%]" -eq "Ranger"|[%2%];Wisdom
+--<|
+
+--:WriteSCA|
+  --&AT|@
+  --!a:[&CharID]|!spellcasting_ability:[&AT]{[&reentryval(tolowercase)]_mod}+
+  --&SAB|[= [*S:pb] + @{selected|spellcasting_ability}]
+  --&SpellDC|[= 8 + [&SAB]]
+  --!a:[&CharID]|!spell_attack_bonus:[&SAB]
+  --!a:[&CharID]|!spell_save_dc:[&aSpellDC]
+  --^Delay|
+--X|
+
+--:Delay|
+  --#title|
+  --+|[t width=90% style="text-align: center;"][tr][br][td [&ButtonStyle]][rbutton]SpellBook::RestartBook[/rbutton][/td][/t]
+--X|
+
 --:TemplateChange|
   --?"[&FirstRun]" -eq 1|[
     --&tmpWrite|https://files.d20.io/images/450434072/VB4ntueH7mdD-5IGXyT_mg/original.webp
@@ -561,20 +622,20 @@
     --!a:[&CharID]|!tmpChosen:[&tmpChoice]
     --!a:[&CharID]|!tmpUI:[:ImageDB("UI_[&tmpChoice]")]
     --!a:[&CharID]|!tmpSpellUI:[:ImageDB("UI_spell_[&tmpChoice]")]
-    --?";dnd5e;chloromancy;bloodwake;" -inc ";[&tmpChoice];"|&Stretch;100%|&Stretch;auto
-    --?";dnd5e;chloromancy;bloodwake;" -inc ";[&tmpChoice];"|&Repeat;no-repeat|&Repeat;repeat-y
+    --?";dnd5e;chloromancy;bloodwake;whisperveil;verdant_veil;amber_hollow;" -inc ";[&tmpChoice];"|&Stretch;100%|&Stretch;auto
+    --?";dnd5e;chloromancy;bloodwake;verdant_veil;amber_hollow" -inc ";[&tmpChoice];"|&Repeat;no-repeat|&Repeat;repeat-y
     --&tmpWrite|[:ImageDB("[&tmpChoice]")]
     --?"[*S:spellcolor]" -ninc "custom"|[
-      --c[&tmpChoice]|dnd5e:&SpellColor;000|abyssal_ink:&SpellColor;CCF2FF|astral_void:&SpellColor;D6FCFF|dark_arcane:&SpellColor;D0F0C0|ember_core:&SpellColor;9CA298|gilded_vine:&SpellColor;DAD4C8|celestial_veil:&SpellColor;F5F5DC|stormcaller:&SpellColor;DBE9F1|sacred_rose:&SpellColor;C2A3AD|chloromancy:&SpellColor;C8A2C8|bloodwake:&SpellColor;FFE4E1|neon_tides:&SpellColor;A8FFB0
+      --c[&tmpChoice]|dnd5e:&SpellColor;000|abyssal_ink:&SpellColor;CCF2FF|astral_void:&SpellColor;D6FCFF|dark_arcane:&SpellColor;D0F0C0|ember_core:&SpellColor;9CA298|gilded_vine:&SpellColor;DAD4C8|celestial_veil:&SpellColor;F5F5DC|stormcaller:&SpellColor;DBE9F1|sacred_rose:&SpellColor;C2A3AD|chloromancy:&SpellColor;C8A2C8|bloodwake:&SpellColor;FFE4E1|neon_tides:&SpellColor;A8FFB0|whisperveil:&SpellColor;2B223A|sanctum_aureum:&SpellColor;2A2E3B|verdant_veil:&SpellColor;DDECCF|amber_hollow:&SpellColor;DDECCF
       --!a:[&CharID]|!spellcolor:[&SpellColor]
     --]|
     --?"[*S:iconcolor]" -ninc "custom"|[
     --&SpellColor|[&SpellColor(replace,custom,)]
-      --c[&tmpChoice]|dnd5e:&IconColor;611b1c|abyssal_ink:&IconColor;D8B4F8|astral_void:&IconColor;FFD6EC|dark_arcane:&IconColor;B89B72|ember_core:&IconColor;897A4C|gilded_vine:&IconColor;B48C53|celestial_veil:&IconColor;B87333|stormcaller:&IconColor;5A9FCF|sacred_rose:&IconColor;A18F5F|chloromancy:&IconColor;2E8B8B|bloodwake:&IconColor;DC143C|neon_tides:&IconColor;1E90FF
+      --c[&tmpChoice]|dnd5e:&IconColor;611b1c|abyssal_ink:&IconColor;D8B4F8|astral_void:&IconColor;FFD6EC|dark_arcane:&IconColor;B89B72|ember_core:&IconColor;897A4C|gilded_vine:&IconColor;B48C53|celestial_veil:&IconColor;B87333|stormcaller:&IconColor;5A9FCF|sacred_rose:&IconColor;A18F5F|chloromancy:&IconColor;2E8B8B|bloodwake:&IconColor;DC143C|neon_tides:&IconColor;1E90FF|whisperveil:&IconColor;5e2fe2|sanctum_aureum:&IconColor;1A3E7A|verdant_veil:&IconColor;B8C86B|amber_hollow:&IconColor;B8C86B
       --!a:[&CharID]|!iconcolor:[&IconColor]
     --]|
     --&IconColor|[&IconColor(replace,custom,)]
-    --?";abyssal_ink;astral_void;dark_arcane;stormcaller;neon_tides;bloodwake;chloromancy;" -inc ";[&tmpChoice];"|&BarURL;https://files.d20.io/images/451067259/0DVQGmoTgKlvLw17RBYm6w/original.webp
+    --?";abyssal_ink;astral_void;dark_arcane;stormcaller;neon_tides;bloodwake;chloromancy;whisperveil;sanctum_aureum;verdant_veil;" -inc ";[&tmpChoice];"|&BarURL;https://files.d20.io/images/451067259/0DVQGmoTgKlvLw17RBYm6w/original.webp
     --?";ember_core;gilded_vine;celestial_veil;sacred_rose;" -inc ";[&tmpChoice];"|&BarURL;https://files.d20.io/images/451067246/vh7nlY8sMJ8QeeA_lxm7aw/original.webp
     --?"[&tmpChoice]" -eq "dnd5e"|&BarURL;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png
     --&Obrac|\\[
