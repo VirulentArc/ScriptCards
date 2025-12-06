@@ -1,0 +1,367 @@
+!scriptcard  {{
+  --/|Script Name : Balder's Gate 3 Skills and Checks for D&D 2014 Character sheet for Roll20
+  --/|Version     : 2.0.0
+  --/|Author      : Timothy Beasley
+
+  --/|Description : This script rolls a D20(or two in the case of advantage/disadvantage) in the style of Baldur's Gate 3.
+  --/|              It adds the appropriate modifiers as per the selected token's associated character sheet. It includes many 
+  --/|              passive modifiers; proficiency bonus and expertise, as well as class traits; Jack-of-All-Traits and Reliable Talent.
+  --/|              It will also detect any checked Skill or Save global modifiers on the sheet and add them to the roll.
+  --/|
+  --/|Installation: This script is for the 2014 edition of the official D&D 5E Character Sheet by Roll20 and requires the
+  --/|              installation of the ScriptCards MOD using a pro account with API access. 
+  --/|              To install the Mod, first create a character named ScriptCards_TemplateMule exactly as shown.
+  --/|              Run the script the first time and it will install the Baldurs' Gate Theme the Mod uses.
+  --/|              Run the script any subsequent time to roll a check.
+
+  --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
+  --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
+  --?"[*[&TemplateMuleID]:character_name]" -eq ""|[
+    -->InstallFormat|
+    --#title|ERROR: Template Mule Missing
+    --+|[c]Please make sure you've created a character called[/c]
+    --+|[c][b]ScriptCards_TemplateMule[/b][/c]
+    --+|[c]in your game journal.[/c]
+    --+|[c]It has to be exactly this name and is case sensitive.[/c]
+    --X|
+  --]|
+
+  --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
+  --~IsTemplate|system;findability;ScriptCards_TemplateMule;baldursgate3
+  --?"[&IsTemplate]" -eq "AbilityNotFound"|[
+    -->InstallFormat|
+    --#title|Baldur's Gate 3 Dice Roller Installation
+    --+|[c][b]First Run Detected!!![/b][/c]
+    --+|[c][b]Installing Baldur's Gate 3 Dice Roller[/b][/c]
+    --&BG3|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/460075805/u9YRFIMGQGwVty9z0VqBVQ/original.png&quot;) ; background-size: 298px auto ; width: 120% ; background-position: center top; background-repeat: no-repeat ; background-color: #0e0906 ; display: block ; text-align: center ; color: Silver ; font-size: 14px ; font-family: &quot;AlegreyaSans&quot; , serif ; white-space: pre-wrap ; font-style: normal ; position: relative ; left: -40px ; border-left: 1em solid #0e0906 ;'}||titlecode::{div style='width: 100% ; margin: 0.3em 0em 0em 0em ; font-size: 28px ; font-family: &quot;Alegreya&quot; , serif ; color: Silver ; display: block ; font-weight: normal ; font-style: normal ; text-align: center ; vertical-align: top ; position: relative ; top: 10px'}||textcode::{/div}{div}{div style='font-family: &quot;Alegreya Sans&quot;, &quot;Trebuchet MS&quot;, Helvetica, Arial, sans-serif ; font-weight: normal; vertical-align: top ; display: block; margin: 0em 0em 0em 0em;'}||buttonwrapper::{div style='display: inline-block ;'}||buttonstyle::style='background-color: transparent ; display: inline-flex ;  color: silver ; text-align: center ; vertical-align: middle ; border: none ;'||footer::
+    --!ob:StyleSaveResult:[&TemplateMuleID]:baldursgate3:0|[&BG3]
+    --+|[br]
+    --+|[c][b]...Script Installed![/b][/c]
+    --+|[br]
+    --+|[c][b]Run the Dice Roller Again to Make a Roll![/b][/c]
+    --@sc-reloadtemplates|
+    --X|
+  --]|
+
+  --#sourceToken|@{selected|token_id}
+  --&diceSound|
+
+  --/|Formatting
+  --#debug|0
+  --#reentrant|BG3- @{selected|character_id}
+  --#overridetemplate|baldursgate3
+  --&CharName|[*S:character_name]
+  --&FontType|Alegreya
+  --&CharID|[*S:character_id]
+  --&diceColor|[*S:dice_set]
+
+  --?"[&diceColor]" -eq "undefined"|[
+    --&diceColor|Default
+    --!a:[&CharID]|!dice_set:Default
+  --]|
+
+  --/|STRING CACHING
+  --&PB|[*S:pb]
+  --&StrengthURL|[img width=60 height=60]https://files.d20.io/images/460075818/ao80Fa1WuxKKoPWk0Hi4fw/original.webp[/img]
+  --&DexterityURL|[img width=60 height=60]https://files.d20.io/images/460075790/pjgpjsR-Gz0FcpnjOTkTkQ/original.webp[/img]
+  --&ConstitutionURL|[img width=60 height=60]https://files.d20.io/images/460075788/PFjTtVCbqdr9d-v74qd-Hw/original.webp[/img]
+  --&IntelligenceURL|[img width=60 height=60]https://files.d20.io/images/460075799/frPTyMqSJN1UWpvKctlk0g/original.webp[/img]
+  --&WisdomURL|[img width=60 height=60]https://files.d20.io/images/460075821/oNnu-sOWjacKMeSbe8UNyg/original.webp[/img]
+  --&CharismaURL|[img width=60 height=60]https://files.d20.io/images/460075787/8RLmb5wH1HfTaH8SybPIyg/original.webp[/img]
+  --&ProficiencyURL|[img width=60 height=60]https://files.d20.io/images/460075810/uWy46PETne7Aa34FUUkVnA/original.webp[/img]
+  --&ExpertiseURL|[img width=60 height=60]https://files.d20.io/images/460075789/VPM1M8UyRJPs5sCI44-CaA/original.webp[/img]
+  --&JackOfAllTradesURL|[img width=60 height=60]https://files.d20.io/images/460075800/h0gOqj5Vl-ruDMLQ62-oTg/original.webp[/img]
+  --&ReliableTalentURL|[img width=60 height=60]https://files.d20.io/images/460075811/Q3RcL5k5fgmOoyGfvdRNiQ/original.webp[/img]
+  --&AlertURL|[img width=60 height=60]https://files.d20.io/images/460075820/ANaTswKbGJ-4U9tFBRYJNQ/original.webp[/img]
+  --&RemarkableAthleteURL|[img width=60 height=60]https://files.d20.io/images/460075813/LKg-6stfgZN-8vGFhZz9rg/original.webp[/img]
+  --&SilverTongueURL|[img width=60 height=60]https://files.d20.io/images/460075817/3j3o3vFvsoKFH3DE9sjfmw/original.webp[/img]
+  --&DieSelector|[img]https://files.d20.io/images/460656223/XLRUeWfJ2aYXrCoSUuQpLg/original.webp[/img]
+  --&Button_BG|style="background-image: url(https://files.d20.io/images/460304036/HsGsAzMkzFuTneaxThlDeA/original.webp); width: 100px !important; height: 26px !important; background-repeat: no-repeat; background-size: 100px 26px ; background-position: center ; display: flex; align-items: center; justify-content: center; vertical-align: middle; padding: 0; margin: 0; text-shadow: 0 0 4px #000, 0 0 8px rgba(0,0,0,0.95); white-space: nowrap; max-width: 100px ;"
+  --&ButtonADV_BG|style="background-image: url(https://files.d20.io/images/460304040/MUxM17gj_Ce6e69srWKhXw/original.webp); width: 35px !important;height: 26px !important; background-repeat: no-repeat; background-size: 35px 26px ; background-position: center ; display: flex; align-items: center; justify-content: center; vertical-align: middle; padding: 0 3px 0 0; margin: 0; text-shadow: 0 0 4px #000, 0 0 8px rgba(0,0,0,0.95);"
+  --&ButtonDADV_BG|style="background-image: url(https://files.d20.io/images/460304037/O8JvSGQt0Q-Fb5SLRAHA3A/original.webp); width: 35px !important;height: 26px !important; background-repeat: no-repeat; background-size: 35px 26px ; background-position: center ; display: flex; align-items: center; justify-content: center; vertical-align: middle; padding: 0 0 0 3px; margin: 0; text-shadow: 0 0 4px #000, 0 0 8px rgba(0,0,0,0.95);"
+  --&Bonus_Background|width=100% style="background-image: url(https://files.d20.io/images/460075830/cXYQIMFGFpzFzco0pWv4bQ/original.webp) ; background-repeat: no-repeat ; background-size: 80px ; background-position: center ; display: inline-block ; margin-left: auto ; margin-right: auto ; margin-top: 45px ; width: 75px ;"
+  --&DieFormat|width=100% height=115 style="display: inline-block ; margin-left: auto ; margin-right: auto ; margin-top: 45px ; width: 100% ; height: 65px ;"
+  --&DoubleDieFormat|width=100% height=115 style="display: inline-block ; margin-left: auto ; margin-right: auto ; margin-top: 45px ; width: 100% ; height: 65px ;"
+  --&DieTotalFormat|width=80 height=80 style="display: inline-block ; margin-left: auto ; margin-right: auto ; margin-top: 20px ; width: 80px ; height: 90px ;"
+
+  -->SelectRoll|
+--X|
+
+--:InstallFormat|
+  --#titleFontFace|"Alegreya", Georgia, "Times New Roman", serif;
+  --#titleFontLineHeight|2em
+  --#titleFontSize|1.2em
+  --#LineHeight|150%
+  --#titleFontColor|rgb(212, 175, 55)
+  --#titleCardBackgroundImage|linear-gradient(180deg, rgb(60,10,10) 0%, rgb(20,5,5) 100%);
+  --#bodyFontFace|"Alegreya", Georgia, "Times New Roman", serif;
+  --#evenRowBackground|rgb(55, 55, 65)
+  --#oddRowBackground|rgb(35, 35, 45)
+  --#evenRowFontColor|rgb(210, 200, 180)
+  --#oddRowFontColor|rgb(210, 200, 180)
+--<|
+
+--:SelectRoll|
+  --#title|
+  --#Whisper|self
+  --#emoteText|[&CharName]'s Roll
+  --#emoteBackground|rgb(30, 35, 45)
+  --#emoteFontColor|rgb(212,175,55)
+  --/| GET LIST OF TRAITS FROM CHAR SHEET(SEPARATED BY ;)
+  --~|array;fromrepeatingsection;TraitsArray;[&CharID];repeating_traits;name
+  --~TraitsData|array;stringify;TraitsArray
+  --~|array;define;SkillArray;acrobatics_bonus;animal_handling_bonus;arcana_bonus;athletics_bonus;deception_bonus;history_bonus;insight_bonus;intimidation_bonus;investigation_bonus;medicine_bonus;nature_bonus;perception_bonus;performance_bonus;persuasion_bonus;religion_bonus;sleight_of_hand_bonus;stealth;survival_bonus
+  --~|array;define;SaveArray;strength_save_bonus;dexterity_save_bonus;constitution_save_bonus;intelligence_save_bonus;wisdom_save_bonus;charisma_save_bonus
+  --~|array;define;StatArray;strength_mod;dexterity_mod;constitution_mod;intelligence_mod;wisdom_mod;charisma_mod
+  --&RollPick|[t style="text-align: center ; width: 100% ; display: flex ; background-color: #0e0906 ; "][tr][td][t style="position: relative ; left: 70px ; "][tr][td width=56px [&ButtonDADV_BG]][rbutton][b]D[/b]::PrepareRoll;initiative_bonus_disadvantage[/rbutton][/td][td [&Button_BG]][rbutton][b]Initiative[/b]::PrepareRoll;initiative_bonus_normal[/rbutton][/td][td width=56px [&ButtonADV_BG]][rbutton][b]A[/b]::PrepareRoll;initiative_bonus_advantage[/rbutton][/td][/tr][/t][/td][td][t][tr][td][rbutton][&DieSelector]::ChangeDice[/rbutton][/td][/tr][/t][/td][/tr][/t]
+  --&RollPick|+[t width=100%][tr][td [&Button_BG]][rbutton][b]Skills[/b]::SkillRoll;skill[/rbutton][/td][/tr][tr][td [&Button_BG]][rbutton][b]Saves[/b]::SkillRoll;save[/rbutton][/td][/tr][tr][td [&Button_BG]][rbutton][b]Stats[/b]::SkillRoll;stat[/rbutton][/td][/tr][/t]
+  --+|[&RollPick]
+--X|
+
+--:SkillRoll|
+  --&RollType|[&reentryval]
+  --#Whisper|self
+  --#emoteText|[&CharName]'s [&RollType(totitlecase)]s
+  --&ButtonsPerRow|2
+  --&ButtonsCounter|0
+  --?"[&RollType]" -eq "skill"|[
+    --&ButtonTitle|Skill Check
+    --&SkillCategoryArray|SkillArray
+  --]|
+  --?"[&RollType]" -eq "save"|[
+    --&ButtonTitle|Savings Throw
+    --&SkillCategoryArray|SaveArray
+  --]|
+  --?"[&RollType]" -eq "stat"|[
+    --&ButtonTitle|Ability Check
+    --&SkillCategoryArray|StatArray
+  --]|
+  --&RollName|[&CharName]'s [&ButtonTitle]
+  --&SkillOutput|[t width=100% style="position: relative ; left: -12px ; "][tr]
+  --%SkillLoop|foreach;[&SkillCategoryArray]
+    --?"[&RollType]" -eq "save"|&SkillName;[&SkillLoop(replace,_save_bonus,)]
+    --?"[&RollType]" -eq "skill"|&SkillName;[&SkillLoop(replace,_bonus,)]
+    --?"[&RollType]" -eq "stat"|&SkillName;[&SkillLoop(replace,_mod,)]
+    --?"[&SkillName]" -eq "animal_handling"|&SkillName;Anml Hndlng
+    --?"[&SkillName]" -eq "sleight_of_hand"|&SkillName;Slght of Hnd
+    --&SkillName|[&SkillName(replaceall,_,&nbsp;)]
+    --&SkillName|[&SkillName(totitlecase)]
+    --?[= [&ButtonsCounter] % [&ButtonsPerRow] ] -eq 0|&SkillOutput;+[/tr][tr]
+    --&SkillOutput|+[td title="Disadvantage" [&ButtonDADV_BG]][rbutton][b]D[/b]::PrepareRoll;[&SkillLoop]_disadvantage[/rbutton][/td][td [&Button_BG]][rbutton][b][&SkillName][/b]::PrepareRoll;[&SkillLoop]_normal[/rbutton][/td][td title="Advantage" [&ButtonADV_BG]][rbutton][b]A[/b]::PrepareRoll;[&SkillLoop]_advantage[/rbutton][/td]
+    --&ButtonsCounter|[= [&ButtonsCounter] + 1 ]
+  --%|
+  --&SkillOutput|+[/t]
+  --+|[&SkillOutput]
+--X|
+
+--:PrepareRoll|
+  --#Whisper|
+  --&SkillType|[&reentryval]
+  --?"[&SkillType]" -inc "advantage"|=SkillRoll;2d20kh1
+  --?"[&SkillType]" -inc "normal"|=SkillRoll;1d20
+  --?"[&SkillType]" -inc "disadvantage"|=SkillRoll;2d20kl1
+  --&FinalRoll|[$SkillRoll.Raw]
+  --&SkillType|[&SkillType(replace,_normal,)]
+  --&SkillType|[&SkillType(replace,_advantage,)]
+  --&SkillType|[&SkillType(replace,_disadvantage,)]
+
+  --?"[&SkillType]" -eq "initiative_bonus"|[
+    --#emoteText|[*S:character_name] Initiative Check
+  --]|[
+    --#emoteText|[&RollName]
+  --]|
+
+  --=SkillBonus|[*S:[&SkillType]]
+
+  --c[&SkillType]|strength_save_bonus:&SkillMod;Strength|athletics_bonus:&SkillMod;Strength|strength_mod:&SkillMod;Strength|stealth_bonus:&SkillMod;Dexterity|sleight_of_hand_bonus:&SkillMod;Dexterity|dexterity_save_bonus:&SkillMod;Dexterity|acrobatics_bonus:&SkillMod;Dexterity|dexterity_mod:&SkillMod;Dexterity|initiative_bonus:&SkillMod;Dexterity|constitution_save_bonus:&SkillMod;Constitution|constitution_mod:&SkillMod;Constitution|arcana_bonus:&SkillMod;Intelligence|intelligence_save_bonus:&SkillMod;Intelligence|religion_bonus:&SkillMod;Intelligence|history_bonus:&SkillMod;Intelligence|investigation_bonus:&SkillMod;Intelligence|nature_bonus:&SkillMod;Intelligence|intelligence_mod:&SkillMod;Intelligence|animal_handling_bonus:&SkillMod;Wisdom|wisdom_save_bonus:&SkillMod;Wisdom|perception_bonus:&SkillMod;Wisdom|insight_bonus:&SkillMod;Wisdom|survival_bonus:&SkillMod;Wisdom|medicine_bonus:&SkillMod;Wisdom|wisdom_mod:&SkillMod;Wisdom|deception_bonus:&SkillMod;Charisma|intimidation_bonus:&SkillMod;Charisma|performance_bonus:&SkillMod;Charisma|charisma_save_bonus:&SkillMod;Charisma|persuasion_bonus:&SkillMod;Charisma|charisma_mod:&SkillMod;Charisma
+  
+  --&SkillLow|[*S:[&SkillMod(tolowercase)]_mod]
+  --?"[&SkillLow]" -gt 0|&PlusMinus;++
+  --?"[&SkillLow]" -ne ""|&AbilityBonus; [br][&PlusMinus] [&SkillLow][br][&[&SkillMod]URL][br][#8f6239][&SkillMod][br]Bonus[/#]
+
+  --?";strength;dexterity;constitution;intelligence;wisdom;charisma;" -inc "[&SkillType]"|MakeRoll
+
+  --?"[&SkillType]" -inc "initiative"|&ProfType;[&SkillType]|&ProfType;[&SkillType(replace,_bonus,_prof)]
+  --?"[&ProfType]" -inc "_prof"|&ProficiencyAttr;[*S:[&ProfType]]|&ProficiencyAttr;0
+  --&ExpertiseTypeAttr|[&SkillType(replace,_bonus,_type)]
+
+  --?"[&SkillType]" -ninc "initiative"|[
+    --?"[&ProficiencyAttr]" -inc "pb"|&ProfBonus; [br]+ [&PB][&ProficiencyURL][#8f6239]Proficiency Bonus[/#]
+    --?"[&SkillType]" -inc "_save"|MakeRoll
+    --?"[*S:[&ExpertiseTypeAttr]]" -eq "2"|&ExpertBonus; [br]+ [&PB][br][&ExpertiseURL][br][#8f6239]Expertise[br]Bonus[/#]
+  --]|
+
+  --:MakeRoll|
+  --?"[&SkillType]" -eq ""|[
+    --#title|Skill Check
+  --]|[
+    --&SkillTitle|[&SkillType(replace,_mod,)]
+    --&SkillTitle|[&SkillTitle(replace,_bonus,)]
+    --&SkillTitle|[&SkillTitle(replace,_, )]
+    --#title|[&SkillTitle(totitlecase)] Check
+  --]|
+    
+  --?"[&SkillType]" -inc "save"|>GetGlobalModifiers;repeating_savemod;GlobalModHash|>GetGlobalModifiers;repeating_skillmod;GlobalModHash
+  --&LiveGlobalMsg|
+  --=LiveGlobalTotal|
+  --~|array;fromkeys;GlobalModKeys;GlobalModHash
+  --?[@GlobalModKeys(length)] -gt 0|[
+    --&LiveGlobalMsg|[t width=100%][tr]
+    --%ModifierName|foreach;GlobalModKeys
+      --=LiveGlobalTotal|[$LiveGlobalTotal] + [:GlobalModHash("[&ModifierName]")]
+      --?"[&ModifierName]" -eqi "guidance"|&GlobalURL;[img width=40]https://files.d20.io/images/460075797/iU9KDUeq3RsW6GArlTNbAQ/original.webp[/img]
+      --?"[&ModifierName]" -eqi "bless"|&GlobalURL;[img width=40]https://files.d20.io/images/460075828/2l6zrhvt93XuGzjHZYWhvg/original.webp[/img]
+      --?"[&ModifierName]" -eqi "bardic inspiration"|&GlobalURL;[img width=40]https://files.d20.io/images/460075822/uM3hBrC8PqxIrNYdQpFGFw/original.webp[/img]
+      --?"[&ModifierName]" -inc "pass" -or "[&ModifierName]" -inc "trace"|&GlobalURL;[img width=40]https://files.d20.io/images/460075808/5_l5IPwTL4vpTUwM3XAzrQ/original.webp[/img]
+      --?"[&ModifierName]" -inc "friends" -or "[&ModifierName]" -inc "emboldening"|&GlobalURL;[img width=40]https://files.d20.io/images/461150581/Zph-XSYGBX1bJEWtXtmy8w/original.webp[/img]
+      --?"[&ModifierName]" -inc "enhance"|&GlobalURL;[img width=40]https://files.d20.io/images/461157768/0FJwLSKSJqjb13PUUJZZtw/original.webp[/img]
+      --?"[&ModifierName]" -inc "genius" -or "[&ModifierName]" -inc "flash"|&GlobalURL;[img width=40]https://files.d20.io/images/461160393/6i4oIMX4alSCI19HEvYeng/original.webp[/img]
+      --?"[&ModifierName]" -inc "bend" -or "[&ModifierName]" -inc "luck"|&GlobalURL;[img width=40]https://files.d20.io/images/461161641/fKk4iPQu1KllSPIsNVxwOA/original.webp[/img]
+      --?";guidance;bless;bardic inspiration;pass without trace;friends;enhance;emboldening;flash;genius;bend;luck;" -ninc "[&ModifierName]"|&GlobalURL;[img width=40]https://files.d20.io/images/460075798/cM1Se3JXPLhLYwtZ1dVoaA/original.webp[/img]
+      --&LiveGlobalMsg|+[td width=80]+ [:GlobalModHash("[&ModifierName]")][br][&GlobalURL][br][#8f6239][&ModifierName][/#][/td]
+    --%|
+    --&LiveGlobalMsg|+[/tr][/t]
+  --]|
+
+  --?"[&TraitsData]" -inc "Remarkable Athlete"|=RemAth;[&PB] / 2 {CEIL}|=RemAth;0
+
+  --?"[&TraitsData]" -inc "Alert" -and "[&SkillType]" -eq "initiative_bonus"|[
+    --=Alert|5
+    --&AlertBonus|[&AlertURL][br][#8f6239]Alert[br]Bonus[/#]
+    --&AlertMarker|[ALERT]
+  --]|
+
+  -->CalculateJoATBonus|[&SkillType];[&ProfType]
+  -->ApplySilverTongue|
+  -->ApplyReliableTalent|
+
+  --?[$RemAth] -ne 0 -and "[&ProficiencyAttr]" -ninc "pb" -and ";Strength;Dexterity;Constitution;" -inc "[&SkillMod]" -and "[&SkillType]" -ninc "_save" -or "[&SkillType]" -eq "initiative"|&RemAthBonus; [br]+ [$RemAth][&RemarkableAthleteURL][br][#8f6239]Remarkable[br]Athlete[/#]
+
+  --=RollTotal|[&FinalRoll] [ROLL] + [$SkillBonus] [BONUSES] + [$LiveGlobalTotal] [GLOBALMODS] + [&JoATVal] + [$Alert] [&AlertMarker] [$RemAth]
+
+  --?"[&SkillType]" -eq "initiative_bonus"|[
+    --~|turnorder;replacetoken;@{selected|token_id};[$RollTotal]
+  --]|
+
+  --&SkillRollURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&diceColor]/d20_[$SkillRoll.Raw].webp?raw=true#.png[/img]
+  --&SkillRollTotalURL|[img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&diceColor]/d20_[$RollTotal.Raw].webp?raw=true#.png[/img]
+  --&SkillRollKeptURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&diceColor]/d20_[$SkillRoll.KeptDice(1)].webp?raw=true#.png[/img]
+  --&SkillRollDroppedURL|[img width=60 height=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&diceColor]/d20_[$SkillRoll.DroppedDice(1)].webp?raw=true#.png[/img]
+  --&BottomFrame|[img width=300]https://files.d20.io/images/460075795/kK6CTXF5GFllNJICXWuL1g/original.webp[/img]
+
+  --#parameterDelimiter|$$$
+  --?"[&AbilityBonus]" -inc "Bonus"|&TDA$$$[td [&Bonus_Background]]
+  --?"[&AbilityBonus]" -inc "Bonus"|&TDAC$$$[/td]
+  --?"[&ProfBonus]" -inc "Bonus"|&TDP$$$[td [&Bonus_Background]]
+  --?"[&ProfBonus]" -inc "Bonus"|&TDPC$$$[/td]
+  --?"[&ExpertBonus]" -inc "Bonus"|&TDE$$$[td [&Bonus_Background]]
+  --?"[&ExpertBonus]" -inc "Bonus"|&TDEC$$$[/td]
+  --?"[&ReliableTalentBonus]" -inc "Talent"|&TDR$$$[td [&Bonus_Background]]
+  --?"[&ReliableTalentBonus]" -inc "Talent"|&TDRC$$$[/td]
+  --?"[&AlertBonus]" -inc "Bonus"|&TDAL$$$[td [&Bonus_Background]]
+  --?"[&AlertBonus]" -inc "Bonus"|&TDALC$$$[/td]
+  --?"[&RemAthBonus]" -inc "Athlete"|&TDRA$$$[td [&Bonus_Background]]
+  --?"[&RemAthBonus]" -inc "Athlete"|&TDRAC$$$[/td]
+  --?"[&SilverTongueBonus]" -inc "Tongue"|&TDS$$$[td [&Bonus_Background]]
+  --?"[&SilverTongueBonus]" -inc "Tongue"|&TDSC$$$[/td]
+  --?"[&JackBonus]" -inc "J-o-A-T"|&TDJ$$$[td [&Bonus_Background]]
+  --?"[&JackBonus]" -inc "J-o-A-T"|&TDJC$$$[/td]
+  --#parameterDelimiter|;
+
+  --?"[&diceSound]" -ne ""|[
+    --a|[&diceSound]
+  --]|
+
+  --?[$SkillRoll.Total] -eq 20|[
+    --&RollOutput|CRITICAL[br]SUCCESS
+    --&RollStyle|style="color: #FFFAE4; text-shadow: 0 0 4px #FFD700, 0 0 8px #FFA500;"
+  --]|[
+    --&RollOutput|ROLL[br]TOTAL
+    --&RollStyle|
+  --]|
+  --?[$SkillRoll.Total] -eq 1|[
+    --&RollOutput|CRITICAL[br]FAILURE
+    --&RollStyle|style="color: #e8325f; text-shadow: 0 0 4px #FF0000, 0 0 8px #B22222;"
+  --]|
+
+  --?"[$SkillRoll.RollText]" -eq "1d20"|[
+    --+|[c][t width=100% height=60][tr][td [&DieFormat]][&SkillRollURL][/td][/tr][/t][/c][c][t width=100% height=80 title="[$RollTotal.Text]"][tr][td [&DieTotalFormat]][&SkillRollTotalURL][/td][/tr][tr][td [&RollStyle]][F:[&FontType]:30][&RollOutput][/F][/td][/tr][/t][/c][c][F:[&FontType]:14][t width=100%][tr][&TDA][&AbilityBonus][&TDAC][&TDP][&ProfBonus][&TDPC][&TDE][&ExpertBonus][&TDEC][&TDR][&ReliableTalentBonus][&TDRC][&TDAL][&AlertBonus][&TDALC][&TDRA][&RemAthBonus][&TDRAC][&TDS][&SilverTongueBonus][&TDSC][&TDJ][&JackBonus][&TDJC][/t][/F][/c][c][&LiveGlobalMsg][/c][c][t width=100%][tr][td][&BottomFrame][/td][/tr][/t][/c]
+  --]|[
+    --+|[c][t width=100% height=60][tr][td [&DoubleDieFormat]][&SkillRollKeptURL]&nbsp;&nbsp;[&SkillRollDroppedURL][/td][/tr][/t][/c][c][t width=100% height=80 title="[$RollTotal.Text]"][tr][td [&DieTotalFormat]][&SkillRollTotalURL][/td][/tr][tr][td [&RollStyle]][F:[&FontType]:30][&RollOutput][/F][/td][/tr][/t][/c][c][F:[&FontType]:14][t width=100%][tr][&TDA][&AbilityBonus][&TDAC][&TDP][&ProfBonus][&TDPC][&TDE][&ExpertBonus][&TDEC][&TDR][&ReliableTalentBonus][&TDRC][&TDAL][&AlertBonus][&TDALC][&TDRA][&RemAthBonus][&TDRAC][&TDS][&SilverTongueBonus][&TDSC][&TDJ][&JackBonus][&TDJC][/t][/F][/c][c][&LiveGlobalMsg][/c][c][t width=100%][tr][td][&BottomFrame][/td][/tr][/t][/c]
+  --]|
+
+--X|
+
+--:CalculateJoATBonus|
+  --&JoATVal|
+  --&JackBonus|
+  --?"[&TraitsData]" -inc "Jack of All Trades" -and "[%1%]" -ninc "_save"|[
+    --?"[%1%]" -inc "_mod"|&JoATVal;[*S:jack_bonus] [JoAT]
+    --?"[%1%]" -eq "initiative_bonus" -or "[%1%]" -inc "_mod" -or "[*S:[%2%]]" -eq 0 -and "[*S:jack_bonus]X" -ne "X"|&JackBonus; [br][*S:jack_bonus][br][&JackOfAllTradesURL][br][#8f6239]J-o-A-T[br]Bonus[/#]
+  --]|
+--<|
+
+--:ApplySilverTongue|
+  --?"[&TraitsData]" -inc "Silver Tongue" -and "[$SkillRoll]" -lt "10" -and ";persuasion;deception;" -inc "[&SkillType]"|[
+    --&SilverTongueBonus| [br]10[br][&SilverTongueURL][br][#8f6239]Silver[br]Tongue[/#]
+    --&FinalRoll|10
+  --]|
+--<|
+
+--:ApplyReliableTalent|
+--?"[&TraitsData]" -inc "Reliable Talent" -and "[&ProficiencyAttr]" -ne "0" -and "[&SkillType]" -ninc "_save" -and "[&SkillType]" -ne "initiative_bonus"|[
+  --?"[$SkillRoll.RollText]" -eq "1d20" -and "[$SkillRoll]" -lt "10"|[
+    --&ReliableTalentBonus| [br]10[br][&ReliableTalentURL][br][#8f6239]Reliable[br]Talent[/#]
+    --&FinalRoll|10
+  --]|
+  --?"[$SkillRoll.RollText]" -eq "2d20kh1" -and "[$SkillRoll.KeptDice(1)]" -lt "10" -and "[$SkillRoll.DroppedDice(1)]" -lt "10"|[
+    --&ReliableTalentBonus| [br]10[br][&ReliableTalentURL][br][#8f6239]Reliable[br]Talent[/#]
+    --&FinalRoll|10
+  --]|
+  --?"[$SkillRoll.RollText]" -eq "2d20kl1" -and "[$SkillRoll.KeptDice(1)]" -lt "10" -or "[$SkillRoll.DroppedDice(1)]" -lt "10"|[
+    --&ReliableTalentBonus| [br]10[br][&ReliableTalentURL][br][#8f6239]Reliable[br]Talent[/#]
+    --&FinalRoll|10
+  --]|
+--]|
+--<|
+
+--:GetGlobalModifiers|GlobalRepeatingSectionName;HashName
+  --?"[%1%]" -eq "repeating_savemod"|&_ggmPrefix;global_save|&_ggmPrefix;global_skill
+  --~|hash;set;[%2%]
+  --Rfirst|[*S:character_id];[%1%]
+  --?"[*R:[&_ggmPrefix]_active_flag]" -eq "NoRepeatingAttributeLoaded"|ENDGGM
+  --:_ggmLoop|
+  --?"[*R:[&_ggmPrefix]_active_flag]" -eq "1"|[
+     --=_ggmTmpRoll|[*R:[&_ggmPrefix]_roll]
+     --h:[%2%]("[*R:[&_ggmPrefix]_name]")|[$_ggmTmpRoll.Total]
+  --]|
+  --Rnext|
+  --?"[*R:global_save_name]" -ne "NoRepeatingAttributeLoaded"|_ggmLoop
+  --:ENDGGM|
+--<|
+
+--:ChangeDice|
+  --#title|Choose Dice Set
+  --#whisper|self
+  --#emoteState|0
+  --~|array;define;DiceSets;Default;Dragon_Flame;Behir_Blue;Illithid_Purple;Shining_Honour;Dark_Urge;Underdark;Blue_Crystal;Nebula;Eilistraee;Rosymorn;Steampunk;Dark_Justicar;Blue_Silk;Clouds;Happy_Face;Wyvern_Black;Wyvern_Green;Purple_Hearts;Dwarven_Stone;Golden_Skull;Rose;Sapphire;Ruby;Psychic_Power;Classic_Gold;Classic_Silver;Classic_White;Druid;Paladin;Pink_Gold;Shield;Loviatar
+  --&DicePerRow|3
+  --&DieCounter|1
+  --&AllDice|[br][br][t width=100% style="position: relative ; left: -12px ; "][tr]
+  --%loop|foreach;DiceSets
+    --~DiceTitle|string;replaceall;_; ;[&loop]
+    --&AllDice|+[td][rbutton][img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&loop]/d20_10.webp?raw=true#.png[/img]::WriteDice;[&loop][/rbutton][br][&DiceTitle][/td]
+    --?[= [&DieCounter] % [&DicePerRow] ] -eq 0|&AllDice;+[/tr][tr]
+    --&DieCounter|[= [&DieCounter] + 1 ]
+  --%|
+  --&AllDice|+[/tr][/t]
+  --+|[&AllDice]
+--X|
+
+--:WriteDice|
+  --!a:[&CharID]|!dice_set:[&reentryval]
+  --~DiceR|string;replaceall;_; ;[&reentryval]
+  --+|[c][t width=100% height=60][tr][td [&DieFormat]][img width=60]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&reentryval]/d20_10.webp?raw=true#.png[/img][/td][/tr][/t][/c][c][t width=100% height=80][tr][td [&DieTotalFormat]][img width=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&reentryval]/d20_20.webp?raw=true#.png[/img][/td][/tr][tr][td][F:[&FontType]:30][&RollOutput][/F][/td][/tr][/t][/c][c][t width=100%][tr][td][&BottomFrame][/td][/tr][/t][/c][br][br][br][F:[&FontType]:30][c][t width=100%][tr][td]Dice Set changed to[br][br][&DiceR]![/td][/tr][/t][/c][/F]
+--X|
+
+}}
