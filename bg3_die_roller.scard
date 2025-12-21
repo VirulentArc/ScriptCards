@@ -1,6 +1,6 @@
 !scriptcard  {{
   --/|Script Name : Balder's Gate 3 Die Roller for D&D 2014 Character sheet for Roll20
-  --/|Version     : 2.0.1
+  --/|Version     : 2.1.0
   --/|Author      : Timothy Beasley
 
   --/|Description : This script rolls a D20(or two in the case of advantage/disadvantage) in the style of Baldur's Gate 3.
@@ -14,23 +14,54 @@
   --/|              Run the script the first time and it will install the Baldurs' Gate Theme the Mod uses.
   --/|              Run the script any subsequent time to roll a check.
 
+  --:RestartMod|
+
+  --/|Add your jukebox sound here
+  --&diceSound|
+
+  --/|Formatting
+  --#debug|0
+  --#titleFontFace|"Alegreya", Georgia, "Times New Roman", serif;
+  --#titleFontLineHeight|2em
+  --#titleFontSize|1.2em
+  --#LineHeight|150%
+  --#titleFontColor|#FFFDD0
+  --#titleCardBackgroundImage|url('https://files.d20.io/images/468280321/Qwqd5gXSPrk0KkODXZwG7g/original.webp');background-size: 100% 35px; background-repeat: no-repeat; vertical-align: middle;
+  --#bodyBackgroundImage|url('https://files.d20.io/images/468340999/Kx1UXVX7h0kCwiN8sYEJ-w/original.webp'); background-size: 100% 100%; background-repeat: no-repeat;
+  --#titleCardBackground|rgb(35, 35, 45)
+  --#bodyFontFace|"Alegreya", Georgia, "Times New Roman", serif;
+  --#evenRowBackground|transparent
+  --#oddRowBackground|transparent
+  --#evenRowFontColor|rgb(210, 200, 180)
+  --#oddRowFontColor|rgb(210, 200, 180)
+  --#emoteState|0
+  --#buttonBackground|transparent
+  --#buttonBorderColor|transparent
+  --#buttonFontSize|14px
+  --#buttonTextColor|rgb(210, 200, 180)
+  --#tableBGcolor|transparent
+  --#tableShadow|0px
+  --#tableBorder|0px
+  --#tableBorderRadius|0px
+
   --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
   --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
   --?"[*[&TemplateMuleID]:character_name]" -eq ""|[
-    -->InstallFormat|
     --#title|ERROR: Template Mule Missing
-    --+|[c]Please make sure you've created a character called[/c]
+    --+|[br]
+    --+|[c]Please make sure you've[br]created a character called[/c]
     --+|[c][b]ScriptCards_TemplateMule[/b][/c]
     --+|[c]in your game journal.[/c]
-    --+|[c]It has to be exactly this name and is case sensitive.[/c]
+    --+|[c]It has to be exactly this[br]name and is case sensitive.[/c]
+    --+|[br]
     --X|
   --]|
 
   --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
   --~IsTemplate|system;findability;ScriptCards_TemplateMule;baldursgate3
   --?"[&IsTemplate]" -eq "AbilityNotFound"|[
-    -->InstallFormat|
     --#title|Baldur's Gate 3 Dice Roller Installation
+    --+|[br]
     --+|[c][b]First Run Detected!!![/b][/c]
     --+|[c][b]Installing Baldur's Gate 3 Dice Roller[/b][/c]
     --&BG3|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/460075805/u9YRFIMGQGwVty9z0VqBVQ/original.png&quot;) ; background-size: 298px auto ; width: 120% ; background-position: center top; background-repeat: no-repeat ; background-color: #0e0906 ; display: block ; text-align: center ; color: Silver ; font-size: 14px ; font-family: &quot;AlegreyaSans&quot; , serif ; white-space: pre-wrap ; font-style: normal ; position: relative ; left: -40px ; border-left: 1em solid #0e0906 ;'}||titlecode::{div style='width: 100% ; margin: 0.3em 0em 0em 0em ; font-size: 28px ; font-family: &quot;Alegreya&quot; , serif ; color: Silver ; display: block ; font-weight: normal ; font-style: normal ; text-align: center ; vertical-align: top ; position: relative ; top: 10px'}||textcode::{/div}{div}{div style='font-family: &quot;Alegreya Sans&quot;, &quot;Trebuchet MS&quot;, Helvetica, Arial, sans-serif ; font-weight: normal; vertical-align: top ; display: block; margin: 0em 0em 0em 0em;'}||buttonwrapper::{div style='display: inline-block ;'}||buttonstyle::style='background-color: transparent ; display: inline-flex ;  color: silver ; text-align: center ; vertical-align: middle ; border: none ;'||footer::
@@ -39,18 +70,13 @@
     --+|[c][b]...Script Installed![/b][/c]
     --+|[br]
     --+|[c][b]Run the Dice Roller Again to Make a Roll![/b][/c]
+    --+|[br]
     --@sc-reloadtemplates|
     --X|
   --]|
 
-  --:RestartMod|
   --#sourceToken|@{selected|token_id}
-  --&diceSound|
-
-  --/|Formatting
-  --#debug|0
   --#reentrant|BG3- @{selected|character_id}
-  --#overridetemplate|baldursgate3
   --&CharName|[*S:character_name]
   --&FontType|Alegreya
   --&CharID|[*S:character_id]
@@ -77,9 +103,9 @@
   --&RemarkableAthleteURL|[img width=60 height=60]https://files.d20.io/images/460075813/LKg-6stfgZN-8vGFhZz9rg/original.webp[/img]
   --&SilverTongueURL|[img width=60 height=60]https://files.d20.io/images/460075817/3j3o3vFvsoKFH3DE9sjfmw/original.webp[/img]
   --&DieSelector|[img]https://files.d20.io/images/460656223/XLRUeWfJ2aYXrCoSUuQpLg/original.webp[/img]
-  --&Button_BG|style="background-image: url(https://files.d20.io/images/460304036/HsGsAzMkzFuTneaxThlDeA/original.webp); width: 100px !important; height: 26px !important; background-repeat: no-repeat; background-size: 100px 26px ; background-position: center ; display: flex; align-items: center; justify-content: center; vertical-align: middle; padding: 0; margin: 0; text-shadow: 0 0 4px #000, 0 0 8px rgba(0,0,0,0.95); white-space: nowrap; max-width: 100px ;"
-  --&ButtonADV_BG|style="background-image: url(https://files.d20.io/images/460304040/MUxM17gj_Ce6e69srWKhXw/original.webp); width: 35px !important;height: 26px !important; background-repeat: no-repeat; background-size: 35px 26px ; background-position: center ; display: flex; align-items: center; justify-content: center; vertical-align: middle; padding: 0 3px 0 0; margin: 0; text-shadow: 0 0 4px #000, 0 0 8px rgba(0,0,0,0.95);"
-  --&ButtonDADV_BG|style="background-image: url(https://files.d20.io/images/460304037/O8JvSGQt0Q-Fb5SLRAHA3A/original.webp); width: 35px !important;height: 26px !important; background-repeat: no-repeat; background-size: 35px 26px ; background-position: center ; display: flex; align-items: center; justify-content: center; vertical-align: middle; padding: 0 0 0 3px; margin: 0; text-shadow: 0 0 4px #000, 0 0 8px rgba(0,0,0,0.95);"
+  --&Button_BG|style="background-image: url(https://files.d20.io/images/460304036/HsGsAzMkzFuTneaxThlDeA/original.webp); width: 85px !important; height: 30px !important; background-repeat: no-repeat; background-size: 85px 30px ; background-position: center ; display: flex; align-items: center; justify-content: center; vertical-align: middle; margin: 0; text-shadow: 0 0 4px #000, 0 0 8px rgba(0,0,0,0.95); white-space: nowrap; max-width: 85px ;"
+  --&ButtonADV_BG|title="Advantage" style="background-image: url(https://files.d20.io/images/460304040/MUxM17gj_Ce6e69srWKhXw/original.webp); width: 35px !important; height: 30px !important; background-repeat: no-repeat; background-size: 35px 30px ; background-position: center ; display: flex; align-items: center; justify-content: center; vertical-align: middle; margin: 0; text-shadow: 0 0 4px #000, 0 0 8px rgba(0,0,0,0.95);"
+  --&ButtonDADV_BG|title="Disadvantage" style="background-image: url(https://files.d20.io/images/460304037/O8JvSGQt0Q-Fb5SLRAHA3A/original.webp); width: 35px !important; height: 30px !important; background-repeat: no-repeat; background-size: 35px 30px ; background-position: center ; display: flex; align-items: center; justify-content: center; vertical-align: middle; margin: 0; text-shadow: 0 0 4px #000, 0 0 8px rgba(0,0,0,0.95);"
   --&Bonus_Background|width=100% style="background-image: url(https://files.d20.io/images/460075830/cXYQIMFGFpzFzco0pWv4bQ/original.webp) ; background-repeat: no-repeat ; background-size: 80px ; background-position: center ; display: inline-block ; margin-left: auto ; margin-right: auto ; margin-top: 45px ; width: 75px ;"
   --&DieFormat|width=100% height=115 style="display: inline-block ; margin-left: auto ; margin-right: auto ; margin-top: 45px ; width: 100% ; height: 65px ;"
   --&DoubleDieFormat|width=100% height=115 style="display: inline-block ; margin-left: auto ; margin-right: auto ; margin-top: 45px ; width: 100% ; height: 65px ;"
@@ -88,24 +114,9 @@
   -->SelectRoll|
 --X|
 
---:InstallFormat|
-  --#titleFontFace|"Alegreya", Georgia, "Times New Roman", serif;
-  --#titleFontLineHeight|2em
-  --#titleFontSize|1.2em
-  --#LineHeight|150%
-  --#titleFontColor|rgb(212, 175, 55)
-  --#titleCardBackgroundImage|linear-gradient(180deg, rgb(60,10,10) 0%, rgb(20,5,5) 100%);
-  --#bodyFontFace|"Alegreya", Georgia, "Times New Roman", serif;
-  --#evenRowBackground|rgb(55, 55, 65)
-  --#oddRowBackground|rgb(35, 35, 45)
-  --#evenRowFontColor|rgb(210, 200, 180)
-  --#oddRowFontColor|rgb(210, 200, 180)
---<|
-
 --:SelectRoll|
-  --#title|
+  --#title|[&CharName]'s Roll
   --#Whisper|self
-  --#emoteText|[&CharName]'s Roll
   --#emoteBackground|rgb(30, 35, 45)
   --#emoteFontColor|rgb(212,175,55)
   --/| GET LIST OF TRAITS FROM CHAR SHEET(SEPARATED BY ;)
@@ -114,15 +125,26 @@
   --~|array;define;SkillArray;acrobatics_bonus;animal_handling_bonus;arcana_bonus;athletics_bonus;deception_bonus;history_bonus;insight_bonus;intimidation_bonus;investigation_bonus;medicine_bonus;nature_bonus;perception_bonus;performance_bonus;persuasion_bonus;religion_bonus;sleight_of_hand_bonus;stealth;survival_bonus
   --~|array;define;SaveArray;strength_save_bonus;dexterity_save_bonus;constitution_save_bonus;intelligence_save_bonus;wisdom_save_bonus;charisma_save_bonus
   --~|array;define;StatArray;strength_mod;dexterity_mod;constitution_mod;intelligence_mod;wisdom_mod;charisma_mod
-  --&RollPick|[t style="text-align: center ; width: 100% ; display: flex ; background-color: #0e0906 ; "][tr][td][t style="position: relative ; left: 70px ; "][tr][td width=56px [&ButtonDADV_BG]][rbutton][b]D[/b]::PrepareRoll;initiative_bonus_disadvantage[/rbutton][/td][td [&Button_BG]][rbutton][b]Initiative[/b]::PrepareRoll;initiative_bonus_normal[/rbutton][/td][td width=56px [&ButtonADV_BG]][rbutton][b]A[/b]::PrepareRoll;initiative_bonus_advantage[/rbutton][/td][/tr][/t][/td][td][t][tr][td][rbutton][&DieSelector]::ChangeDice[/rbutton][/td][/tr][/t][/td][/tr][/t]
-  --&RollPick|+[t width=100%][tr][td [&Button_BG]][rbutton][b]Skills[/b]::SkillRoll;skill[/rbutton][/td][/tr][tr][td [&Button_BG]][rbutton][b]Saves[/b]::SkillRoll;save[/rbutton][/td][/tr][tr][td [&Button_BG]][rbutton][b]Stats[/b]::SkillRoll;stat[/rbutton][/td][/tr][/t]
-  --+|[&RollPick]
+  --~|array;define;PassButton;skill;save;stat
+  --&RollPick|[t style="text-align: center ; width: 100% ; display: flex ; margin-top: 20px ; margin-bottom: -13px ; "][tr][td][t style="position: relative ; left: 55px ; "][tr][td [&ButtonDADV_BG]][rbutton][b]D[/b]::PrepareRoll;initiative_bonus_disadvantage[/rbutton][/td][td [&Button_BG]][rbutton][b]Initiative[/b]::PrepareRoll;initiative_bonus_normal[/rbutton][/td][td [&ButtonADV_BG]][rbutton][b]A[/b]::PrepareRoll;initiative_bonus_advantage[/rbutton][/td][/tr][/t][/td][td][t][tr][td][rbutton][&DieSelector]::ChangeDice[/rbutton][/td][/tr][/t][/td][/tr][/t]
+  --&RollPick|+[t style="width: 100% ; display: flex ; "]
+  --%ButtonLoop|foreach;PassButton
+    --&ButtonName|[&ButtonLoop(totitlecase)]
+    --&RollPick|+[t style="text-align: center ; position: relative ; left: 55px ; margin-bottom: -8px ; "][tr][td [&ButtonDADV_BG]][rbutton][b]D[/b]::SkillRoll;[&ButtonLoop]_disadvantage[/rbutton][/td][td [&Button_BG]][rbutton][b][&ButtonName]s[/b]::SkillRoll;[&ButtonLoop]_normal[/rbutton][/td][td [&ButtonADV_BG]][rbutton][b]A[/b]::SkillRoll;[&ButtonLoop]_advantage[/rbutton][/tr][/t]
+  --%|
+  --|+[/t]
+  --+|[&RollPick][br]
 --X|
 
 --:SkillRoll|
-  --&RollType|[&reentryval]
+  --&WhatRoll|[&reentryval]
+  --&IsAdv|[&WhatRoll(after,_)]
+  --?"[&IsAdv]" -eq "normal"|=SkillRoll;1d20
+  --?"[&IsAdv]" -eq "advantage"|=SkillRoll;2d20kh1
+  --?"[&IsAdv]" -eq "disadvantage"|=SkillRoll;2d20kl1
+  --&RollType|[&WhatRoll(before,_)]
   --#Whisper|self
-  --#emoteText|[&CharName]'s [&RollType(totitlecase)]s
+  --#emoteState|0
   --&ButtonsPerRow|2
   --&ButtonsCounter|0
   --?"[&RollType]" -eq "skill"|[
@@ -138,17 +160,30 @@
     --&SkillCategoryArray|StatArray
   --]|
   --&RollName|[&CharName]'s [&ButtonTitle]
-  --&SkillOutput|[t width=100% style="position: relative ; left: -12px ; "][tr]
+  --&SkillOutput|[t width=90% style="text-align: center ; margin-top: 20px ; margin-bottom: 20px ; margin-left: 13px ; "][tr]
   --%SkillLoop|foreach;[&SkillCategoryArray]
-    --?"[&RollType]" -eq "save"|&SkillName;[&SkillLoop(replace,_save_bonus,)]
-    --?"[&RollType]" -eq "skill"|&SkillName;[&SkillLoop(replace,_bonus,)]
-    --?"[&RollType]" -eq "stat"|&SkillName;[&SkillLoop(replace,_mod,)]
-    --?"[&SkillName]" -eq "animal_handling"|&SkillName;Anml Hndlng
-    --?"[&SkillName]" -eq "sleight_of_hand"|&SkillName;Slght of Hnd
-    --&SkillName|[&SkillName(replaceall,_,&nbsp;)]
-    --&SkillName|[&SkillName(totitlecase)]
+    --&CurrentItem|[&SkillLoop]
+    --?"[&RollType]" -eq "skill"|[
+      --&CleanName|[&CurrentItem(replace,_bonus,)]
+      --&ProfAttr|[*S:[&CleanName]_prof]
+    --]|
+    --?"[&RollType]" -eq "save"|[
+      --&CleanName|[&CurrentItem(replace,_save_bonus,)]
+      --&ProfAttr|[*S:[&CleanName]_save_prof]
+    --]|
+    --?"[&RollType]" -eq "stat"|[
+      --&CleanName|[&CurrentItem(replace,_mod,)]
+      --&ProfAttr|none
+    --]|
+    --&ButtonColor|https://files.d20.io/images/468410568/yNcaQokpxUmUys4AUjCnfg/original.webp
+    --?"[&ProfAttr]" -inc "pb" -or "[&RollType]" -eq "stat"|[
+      --&ButtonColor|https://files.d20.io/images/468366061/mdIpkeS8-JPqlGl3OWCgyQ/original.webp
+    --]|
+    --&Skill_Button_BG|style="background-image: url([&ButtonColor]); width: 120px !important; height: 30px !important; background-repeat: no-repeat; background-size: 120px 30px ; background-position: center ; display: flex; align-items: center; justify-content: center; vertical-align: middle; text-shadow: 0 0 4px #000, 0 0 8px rgba(0,0,0,0.95); white-space: nowrap; max-width: 120px ;"
+    --&DispName|[&CleanName(replaceall,_,&nbsp;)]
+    --&DispName|[&DispName(totitlecase)]
     --?[= [&ButtonsCounter] % [&ButtonsPerRow] ] -eq 0|&SkillOutput;+[/tr][tr]
-    --&SkillOutput|+[td title="Disadvantage" [&ButtonDADV_BG]][rbutton][b]D[/b]::PrepareRoll;[&SkillLoop]_disadvantage[/rbutton][/td][td [&Button_BG]][rbutton][b][&SkillName][/b]::PrepareRoll;[&SkillLoop]_normal[/rbutton][/td][td title="Advantage" [&ButtonADV_BG]][rbutton][b]A[/b]::PrepareRoll;[&SkillLoop]_advantage[/rbutton][/td]
+    --&SkillOutput|+[td [&Skill_Button_BG]][rbutton][b][&DispName][/b]::PrepareRoll;[&CurrentItem][/rbutton][/td]
     --&ButtonsCounter|[= [&ButtonsCounter] + 1 ]
   --%|
   --&SkillOutput|+[/t]
@@ -156,21 +191,21 @@
 --X|
 
 --:PrepareRoll|
+  --#emoteState|visible
   --#Whisper|
   --&SkillType|[&reentryval]
-  --?"[&SkillType]" -inc "advantage"|=SkillRoll;2d20kh1
-  --?"[&SkillType]" -inc "normal"|=SkillRoll;1d20
-  --?"[&SkillType]" -inc "disadvantage"|=SkillRoll;2d20kl1
-  --&FinalRoll|[$SkillRoll.Raw]
-  --&SkillType|[&SkillType(replace,_normal,)]
-  --&SkillType|[&SkillType(replace,_advantage,)]
-  --&SkillType|[&SkillType(replace,_disadvantage,)]
-
-  --?"[&SkillType]" -eq "initiative_bonus"|[
+  --?"[&SkillType]" -inc "initiative"|[
     --#emoteText|[*S:character_name] Initiative Check
+    --?"[&SkillType]" -inc "advantage"|=SkillRoll;2d20kh1
+    --?"[&SkillType]" -inc "normal"|=SkillRoll;1d20
+    --?"[&SkillType]" -inc "disadvantage"|=SkillRoll;2d20kl1
+    --&SkillType|[&SkillType(replace,_normal,)]
+    --&SkillType|[&SkillType(replace,_advantage,)]
+    --&SkillType|[&SkillType(replace,_disadvantage,)]
   --]|[
     --#emoteText|[&RollName]
   --]|
+  --&FinalRoll|[$SkillRoll.Raw]
 
   --=SkillBonus|[*S:[&SkillType]]
 
@@ -195,6 +230,7 @@
   --]|
 
   --:MakeRoll|
+  --#overridetemplate|baldursgate3
   --?"[&SkillType]" -eq ""|[
     --#title|Skill Check
   --]|[
@@ -236,7 +272,7 @@
 
   -->CalculateJoATBonus|[&SkillType];[&ProfType]
   -->ApplySilverTongue|
-  -->ApplyReliableTalent|
+  --?"[&TraitsData]" -inc "Reliable Talent"|>ApplyReliableTalent
 
   --?[$RemAth] -ne 0 -and "[&ProficiencyAttr]" -ninc "pb" -and ";Strength;Dexterity;Constitution;" -inc "[&SkillMod]" -and "[&SkillType]" -ninc "_save" -or "[&SkillType]" -eq "initiative"|&RemAthBonus; [br]+ [$RemAth][&RemarkableAthleteURL][br][#8f6239]Remarkable[br]Athlete[/#]
 
@@ -288,9 +324,9 @@
   --]|
 
   --?"[$SkillRoll.RollText]" -eq "1d20"|[
-    --+|[c][t width=100% height=60][tr][td [&DieFormat]][&SkillRollURL][/td][/tr][/t][/c][c][t width=100% height=80 title="[$RollTotal.Text]"][tr][td [&DieTotalFormat]][&SkillRollTotalURL][/td][/tr][tr][td [&RollStyle]][F:[&FontType]:30][&RollOutput][/F][/td][/tr][/t][/c][c][F:[&FontType]:14][t width=100%][tr][&TDA][&AbilityBonus][&TDAC][&TDP][&ProfBonus][&TDPC][&TDE][&ExpertBonus][&TDEC][&TDR][&ReliableTalentBonus][&TDRC][&TDAL][&AlertBonus][&TDALC][&TDRA][&RemAthBonus][&TDRAC][&TDS][&SilverTongueBonus][&TDSC][&TDJ][&JackBonus][&TDJC][/t][/F][/c][c][&LiveGlobalMsg][/c][c][t width=100%][tr][td][&BottomFrame][/td][/tr][/t][/c]
+    --+|[t width=100% height=60][tr][td [&DieFormat]][&SkillRollURL][/td][/tr][/t][t width=100% height=80 title="[$RollTotal.Text]"][tr][td [&DieTotalFormat]][&SkillRollTotalURL][/td][/tr][tr][td [&RollStyle]][F:[&FontType]:30][&RollOutput][/F][/td][/tr][/t][F:[&FontType]:14][t width=100%][tr][&TDA][&AbilityBonus][&TDAC][&TDP][&ProfBonus][&TDPC][&TDE][&ExpertBonus][&TDEC][&TDR][&ReliableTalentBonus][&TDRC][&TDAL][&AlertBonus][&TDALC][&TDRA][&RemAthBonus][&TDRAC][&TDS][&SilverTongueBonus][&TDSC][&TDJ][&JackBonus][&TDJC][/t][/F][&LiveGlobalMsg][t width=100%][tr][td][&BottomFrame][/td][/tr][/t]
   --]|[
-    --+|[c][t width=100% height=60][tr][td [&DoubleDieFormat]][&SkillRollKeptURL]&nbsp;&nbsp;[&SkillRollDroppedURL][/td][/tr][/t][/c][c][t width=100% height=80 title="[$RollTotal.Text]"][tr][td [&DieTotalFormat]][&SkillRollTotalURL][/td][/tr][tr][td [&RollStyle]][F:[&FontType]:30][&RollOutput][/F][/td][/tr][/t][/c][c][F:[&FontType]:14][t width=100%][tr][&TDA][&AbilityBonus][&TDAC][&TDP][&ProfBonus][&TDPC][&TDE][&ExpertBonus][&TDEC][&TDR][&ReliableTalentBonus][&TDRC][&TDAL][&AlertBonus][&TDALC][&TDRA][&RemAthBonus][&TDRAC][&TDS][&SilverTongueBonus][&TDSC][&TDJ][&JackBonus][&TDJC][/t][/F][/c][c][&LiveGlobalMsg][/c][c][t width=100%][tr][td][&BottomFrame][/td][/tr][/t][/c]
+    --+|[t width=100% height=60][tr][td [&DoubleDieFormat]][&SkillRollKeptURL]&nbsp;&nbsp;[&SkillRollDroppedURL][/td][/tr][/t][t width=100% height=80 title="[$RollTotal.Text]"][tr][td [&DieTotalFormat]][&SkillRollTotalURL][/td][/tr][tr][td [&RollStyle]][F:[&FontType]:30][&RollOutput][/F][/td][/tr][/t][F:[&FontType]:14][t width=100%][tr][&TDA][&AbilityBonus][&TDAC][&TDP][&ProfBonus][&TDPC][&TDE][&ExpertBonus][&TDEC][&TDR][&ReliableTalentBonus][&TDRC][&TDAL][&AlertBonus][&TDALC][&TDRA][&RemAthBonus][&TDRAC][&TDS][&SilverTongueBonus][&TDSC][&TDJ][&JackBonus][&TDJC][/t][/F][&LiveGlobalMsg][t width=100%][tr][td][&BottomFrame][/td][/tr][/t]
   --]|
 
 --X|
@@ -313,16 +349,12 @@
 --<|
 
 --:ApplyReliableTalent|
---?"[&TraitsData]" -inc "Reliable Talent" -and "[&ProficiencyAttr]" -ne "0" -and "[&SkillType]" -ninc "_save" -and "[&SkillType]" -ne "initiative_bonus"|[
+--?"[&ProficiencyAttr]" -ne "0" -and "[&SkillType]" -ninc "_save" -and "[&SkillType]" -ne "initiative_bonus"|[
   --?"[$SkillRoll.RollText]" -eq "1d20" -and "[$SkillRoll]" -lt "10"|[
     --&ReliableTalentBonus| [br]10[br][&ReliableTalentURL][br][#8f6239]Reliable[br]Talent[/#]
     --&FinalRoll|10
   --]|
-  --?"[$SkillRoll.RollText]" -eq "2d20kh1" -and "[$SkillRoll.KeptDice(1)]" -lt "10" -and "[$SkillRoll.DroppedDice(1)]" -lt "10"|[
-    --&ReliableTalentBonus| [br]10[br][&ReliableTalentURL][br][#8f6239]Reliable[br]Talent[/#]
-    --&FinalRoll|10
-  --]|
-  --?"[$SkillRoll.RollText]" -eq "2d20kl1" -and "[$SkillRoll.KeptDice(1)]" -lt "10" -or "[$SkillRoll.DroppedDice(1)]" -lt "10"|[
+  --?"[$SkillRoll.RollText]" -eq "2d20kh1" -and "[$SkillRoll.KeptDice(1)]" -lt "10" -or "[$SkillRoll.RollText]" -eq "2d20kl1" -and "[$SkillRoll.KeptDice(1)]" -lt "10"|[
     --&ReliableTalentBonus| [br]10[br][&ReliableTalentURL][br][#8f6239]Reliable[br]Talent[/#]
     --&FinalRoll|10
   --]|
@@ -351,14 +383,14 @@
   --~|array;define;DiceSets;Default;Dragon_Flame;Behir_Blue;Illithid_Purple;Shining_Honour;Dark_Urge;Underdark;Blue_Crystal;Nebula;Eilistraee;Rosymorn;Steampunk;Dark_Justicar;Blue_Silk;Clouds;Happy_Face;Wyvern_Black;Wyvern_Green;Purple_Hearts;Dwarven_Stone;Golden_Skull;Rose;Sapphire;Ruby;Psychic_Power;Classic_Gold;Classic_Silver;Classic_White;Druid;Paladin;Pink_Gold;Shield;Loviatar
   --&DicePerRow|3
   --&DieCounter|1
-  --&AllDice|[br][br][t width=100% style="position: relative ; left: -12px ; "][tr]
+  --&AllDice|[br][t width=100% style="text-align: center ; "][tr]
   --%loop|foreach;DiceSets
     --~DiceTitle|string;replaceall;_; ;[&loop]
-    --&AllDice|+[td][rbutton][img width=80 height=80]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&loop]/d20_10.webp?raw=true#.png[/img]::WriteDice;[&loop][/rbutton][br][&DiceTitle][/td]
+    --&AllDice|+[td][rbutton][img width=70 height=70]https://github.com/VirulentArc/Resources/blob/main/d20/bg3/Dice_Sets/[&loop]/d20_10.webp?raw=true#.png[/img]::WriteDice;[&loop][/rbutton][br][&DiceTitle][/td]
     --?[= [&DieCounter] % [&DicePerRow] ] -eq 0|&AllDice;+[/tr][tr]
     --&DieCounter|[= [&DieCounter] + 1 ]
   --%|
-  --&AllDice|+[/tr][/t]
+  --&AllDice|+[/tr][/t][br]
   --+|[&AllDice]
 --X|
 
