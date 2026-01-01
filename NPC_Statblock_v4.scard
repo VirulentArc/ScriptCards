@@ -179,7 +179,6 @@
       --#parameterDelimiter|;
       --&Name|[*R:name]
       --&Description|[*R:description]
-      --?"[&Description]" -eq ""|&Description;|&Description;[&Description(replaceall,>,)]
       --&AttackType|[*R:attack_type]
       --?"[&AttackType]" -inc "ranged"|&RangeType;range|&RangeType;reach
       --&AttDesc|
@@ -187,11 +186,15 @@
       --?"[&Description]" -eq ""|[
           --&ToHitText|[&AttackType] Weapon Attack:
           --&AttDesc|++[*R:attack_tohit] to hit, [&RangeType] [*R:attack_range], [*R:attack_target]. [*R:attack_onhit].
+      --]|[
+        --~Description|string;striplinefeeds;[&Description]
+        --~Description|string;replaceall;>;;[&Description]
+        --~Description|string;replaceall;<br;;[&Description]
+        --~Description|string;replaceall;[;;[&Description]
+        --~Description|string;replaceall;];;[&Description]
+        --~Description|string;replaceall;*;;[&Description]
       --]|
-      --~Description|string;replaceall;[;;[&Description]
-      --~Description|string;replaceall;];;[&Description]
-      --~Description|string;replaceall;*;;[&Description]
-      --&ToolTip|[&Name]&nbsp;&#x2666;&nbsp;[&Description(replaceall,<br,&nbsp;)][&ToHitText] [&AttDesc]
+      --&ToolTip|[&Name]&nbsp;&#x2666;&nbsp;[&Description][&ToHitText] [&AttDesc]
       --?"[&Name]X" -ne "X"|[
         --&ActionOutput|+[tr title="[&ToolTip]"][td style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][b][i][&Name].[/i][/b] [&Description][i][&ToHitText][/i] [&AttDesc][/td][td style="width: 1%; text-align: right; white-space: nowrap; background-color: #faf5e6; border-radius: 4px; box-shadow: 0px 1px 2px rgba(0,0,0,0.3), inset 0px 1px 1px rgba(0,0,0,0.1), inset 0px -1px 1px rgba(0,0,0,0.1); padding: 0px 4px;"][F::[&ButtonSize]][sheetbutton][&ButtonEmote]::@{selected|character_name}::[&ButtonURL][/sheetbutton][/F][/td][/tr]
        --]|
