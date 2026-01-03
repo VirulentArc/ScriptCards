@@ -70,7 +70,7 @@
   --&LevelBackground|style="background-image: url([*S:tmpSpellUI]) ; background-repeat: no-repeat ; background-size: 98% 40px ; display: inline-block ; width: 100% ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; "
   --&RollImage|[d20]1[/d20]
   --#diceFontColor|[&IconColor]
-  --&SpellStyle|style="color: #[&SpellColor] ; display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom  ; "
+  --&SpellStyle|style="color: #[&SpellColor] ; display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom  ; pointer-events: auto ; cursor: help ; "
   --&Infinity|&#x221E;
   --&BookImage|&#x1F56E;
   --&BlueDot|&#x1F535;
