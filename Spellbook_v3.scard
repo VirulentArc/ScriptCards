@@ -1,6 +1,6 @@
 !script {{
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 3.4.0
+  --/|Version     : 3.4.1
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -151,6 +151,7 @@
 
 --:ProcessSpellLevel|
   --&SpellLevel|[%1%]
+  --&SpellOutput|
 
   --/| HANDLE CANTRIPS FIRST (SKIP SLOT CALCULATIONS)
   --&ArrowStyle|
@@ -207,7 +208,6 @@
     --~|array;add;lvl[&SpellLevel]Spellnames;[&CurrentSpellName]
     --%FieldIndex|0;[@SpellPropsArray(maxindex)];1
       --h:lvl[&SpellLevel]Hash("[&CurrentSpellName]-[@SpellPropsArray([&FieldIndex])]")|[&SpellLoop(split,%%%,[&FieldIndex])]
-      --~|hash;clear;lvl[= [&SpellLevel] - 1]Hash
     --%|
   --%|
 
@@ -302,16 +302,10 @@
     --#parameterDelimiter|;
 
     --/| WHEN TO DISPLAY SPELL
-    --?"[&SpellLevel]" -inc "cantrip"|>DisplaySpell
-    --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName];"|>DisplaySpell
-    --?"[&PrepToggle]" -eq "1"|>DisplaySpell
-    --?"[&SpellPrepared]" -eq "1"|>DisplaySpell
-    --^NextSpell|
+    --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName];" -or "[&SpellPrepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip" -or "[&PrepToggle]" -eq "1"|[
+        --&SpellOutput|+[tr][td width=5px title="[&SpellSchool(totitlecase)]" style="text-align: center ; "][F::18][#[&IconColor]][&SchoolIcon];[/#][/F][/td][td width=215px height=17px [&SpellStyle] [&ToolTip] ][b][&SpellName][/b][&CastingTime][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=34 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td title="Spell Details" [&DetailStyle]][F::16][&SpellDetail][/F][/td][/tr]
+    --]|
 
-    --/| SPELL OUTPUT LINE
-    --:DisplaySpell|
-    --&SpellOutput|+[tr][td width=5px title="[&SpellSchool(totitlecase)]" style="text-align: center ; "][F::18][#[&IconColor]][&SchoolIcon];[/#][/F][/td][td width=215px height=17px [&SpellStyle] [&ToolTip] ][b][&SpellName][/b][&CastingTime][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=34 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td title="Spell Details" [&DetailStyle]][F::16][&SpellDetail][/F][/td][/tr]
-    --:NextSpell|
     --&SpellIndex|[= [&SpellIndex] + 1 ]
   --%|
 
@@ -643,7 +637,6 @@
     --!ability:[&CurrentTemplate]|action:boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% [&Obrac]&Stretch] ; width: 120% ; height: 100% ; background-repeat: [&Obrac]&Repeat] ; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: .5em ; position: relative ; left: -40px'}[&Vbar]titlecode::{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 100% 4px ; width:101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div style='margin: 0em .25em 0em .25em ; font-size: 18px ; font-variant: small-caps ; font-family: serif ; color: #[&Obrac]&IconColor] ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; text-align: center ; line-height: .75em ; '}[&Vbar]textcode::{/div}{div}{div style='width: 100% ; color: #[&Obrac]&SpellColor] ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&Vbar]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 100% 4px ; width: 101% ; height:4px; display: block ; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&Vbar]buttonstyle::style='color: #[&Obrac]&IconColor] ; background-color: transparent ; padding: 2px ; border: none'[&Vbar]footer::
     --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]Click on the SPELLBOOK button above to run the Spellbook with the new template.[/td][/tr][/t]
   --:EndFirstRun|
-  --~|hash;clear;ImageDB
   --@sc-reloadtemplates|
 --X|
 }}
