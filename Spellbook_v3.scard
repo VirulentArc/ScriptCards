@@ -130,7 +130,7 @@
   --/| DISPLAY HEADER
   --&Title|[t width=100% [&TitleTable]][tr][td][&CharName]'s Spell Book[/td][/tr][/t]
   --&Header|[t width=100% [&HeaderImage]][tr][td title="Spellcasting Ability: Click to Change" width=70px][b][F::18][#[&IconColor]]&#x272F;[/F][/#][F::18][rbutton][#[&SpellColor]][&SCA(touppercase)][/#]::SCAChoice[/rbutton][/F][/b][/td][td title="Spell Save DC" width=70px]&nbsp;[#[&IconColor]][F::18]&#x26E8;[/#][/F][b]&nbsp;[F::20][#[&SpellColor]][*S:spell_save_dc][/#][/F][/b][/td][td title="Spellcasting Bonus" width=35px [&RollStyle]][F::7][&RollImage]&nbsp;[/F][/td][td width=35px [&PrepStyle] title="Spellcasting Bonus"][F::20][#[&SpellColor]][b][*S:spell_attack_bonus][/b][/#][/F][/td][td width=35px [&ClassStyle] title="[&ClassName]: [*S:subclass]"][F::20][#[&IconColor]][&ClassImage][/#][/F][/td][td width=35px title="Max Prepared Spells" [&PrepStyle]][F::[&FontSize]][#[&SpellColor]][b][&PrepTotal][/b][/#][/F][/td][td title="Settings" width=30px ]&nbsp;&nbsp;[F::20][rbutton][#[&IconColor]][&SettingsIcon][/#]::SettingsCard;0[/rbutton][/F][/td][/tr][/t]
-  --?"[&ActionToggle]" -eq "yes" -or "[&BonusToggle]" -eq "yes" -or "[&ReactionToggle]" -eq "yes"|&Header$$$+[t width=100% style="text-align: center"][tr][td][&ActionTitle][&ActionImage]&nbsp;&nbsp;[&BonusTitle][&BonusImage]&nbsp;&nbsp;[&ReactionTitle][&ReactionImage][/td][/tr][/t]
+  --?"[&ActionToggle]" -eq "yes" -or "[&BonusToggle]" -eq "yes" -or "[&ReactionToggle]" -eq "yes"|&Header$$$+[t width=100% style="text-align: center"][tr][td][#[&SpellColor]][&ActionTitle][/#][&ActionImage]&nbsp;&nbsp;[#[&SpellColor]][&BonusTitle][/#][&BonusImage]&nbsp;&nbsp;[#[&SpellColor]][&ReactionTitle][/#][&ReactionImage][/td][/tr][/t]
   --+|[&Title]
   --+|[&Header]
   --#parameterDelimiter|;
