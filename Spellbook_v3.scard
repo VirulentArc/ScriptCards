@@ -140,6 +140,7 @@
 --:ProcessSpellLevel|
   --&SpellLevel|[%1%]
   --&SpellOutput|
+  --&SlotsTotal|
   --/| HANDLE CANTRIPS FIRST (SKIP SLOT CALCULATIONS)
   --&ArrowTd_CSS|
   --&PrepShow|
