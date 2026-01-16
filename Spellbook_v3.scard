@@ -1,6 +1,6 @@
 !script {{
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 3.5.1
+  --/|Version     : 3.5.2
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -34,65 +34,60 @@
   --#debug|0
   --#functionbenchmarking|0
   --/| CACHE CHARACTER DATA
-  --&CharID|[*S:character_id]
-  --&CharName|[*S:character_name]
-  --&ClassName|[*S:class]
-  --&SubClass|[*S:subclass]
-  --&CasterLevel|[*S:caster_level]
-  --&SCA|[*S:spellcasting_ability]
-  --~SCA|string;substring;3;3;[&SCA]
-  --&PB|[*S:pb]
-  --&PrepToggle|[*S:preptoggle]
-  --&tmpChosen|[*S:tmpChosen]
-  --&SpellColor|[*S:spellcolor]
-  --&IconColor|[*S:iconcolor]
-  --&ActionToggle|[*S:actiontoggle]
-  --&BonusToggle|[*S:bonustoggle]
-  --&ReactionToggle|[*S:reactiontoggle]
-  --&ActionColor|[*S:actionColor]
-  --&BonusColor|[*S:bonusColor]
-  --&ReactionColor|[*S:reactioncolor]
+  --&CharId_Attr|[*S:character_id]
+  --&CharName_Attr|[*S:character_name]
+  --?"[&CharName_Attr(-1,1)]" -eqi "s"|&Owner;'|&Owner;'s
+  --&ClassName_Attr|[*S:class]
+  --&SubClass_Attr|[*S:subclass]
+  --?"[&SubClass_Attr]" -eq ""|&SubClass_Attr;No Subclass
+  --&CasterLevel_Attr|[*S:caster_level]
+  --&SCA_Attr|[*S:spellcasting_ability]
+  --~SCA_Attr|string;substring;3;3;[&SCA_Attr]
+  --&SCAbility_Attr|[= @{selected|spellcasting_ability}]
+  --&PrepToggle_Attr|[*S:preptoggle]
+  --&ActionToggle_Attr|[*S:actiontoggle]
+  --&BonusToggle_Attr|[*S:bonustoggle]
+  --&ReactionToggle_Attr|[*S:reactiontoggle]
+  --&ActionColor_Attr|[*S:actionColor]
+  --&BonusColor_Attr|[*S:bonusColor]
+  --&ReactionColor_Attr|[*S:reactioncolor]
+  --&SpellColor_Attr|[*S:spellcolor]
+  --&IconColor_Attr|[*S:iconcolor]
   --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
-  --~CurrentTemplate|system;findability;ScriptCards_TemplateMule;Spellbook[&CharID]
+  --~CurrentTemplate|system;findability;ScriptCards_TemplateMule;Spellbook[&CharId_Attr]
   --?"[&CurrentTemplate]" -eq "AbilityNotFound"|[
     --&FirstRun|1
     --^TemplateChange|
   --]|
-  --#overridetemplate|Spellbook[&CharID]
-  --/| STYLING INFO
+  --#overridetemplate|Spellbook[&CharId_Attr]
+  --/| SET STYLING CSS INFO
   --#title|
-  --&TitleTable|style="width: 100% ; margin: 0em .25em 0em .25em ; font-size: 18px ; font-family: serif ; font-variant: small-caps ; font-weight: bold ; color: #[&IconColor] ; line-height: .8em ; text-align: center ; position: relative ; top: 2px ; left: -15px ; "
-  --&HeaderImage|style="background-image: url([*S:tmpUI]) ; background-repeat: no-repeat ; background-size: 285px 30px ; background-position: left ; display: block ; width: 100% ; height: 100% ; line-height: 40px ; text-align: center ; position: relative ; left: -10px ; "
-  --&LevelBackground|style="background-image: url([*S:tmpSpellUI]) ; background-repeat: no-repeat ; background-size: 98% 40px ; display: inline-block ; width: 100% ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; "
-  --&RollImage|[d20]1[/d20]
-  --#diceFontColor|[&IconColor]
-  --&SpellStyle|style="color: #[&SpellColor] ; display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 17px; vertical-align: bottom  ; pointer-events: auto ; cursor: help ; "
-  --&Infinity|&#x221E;
-  --&BookImage|&#x1F56E;
-  --&BlueDot|&#x1F535;
-  --&BlankDot|&#x1F518;
-  --&SettingsIcon|&#x2699;
+  --&TtlTbl_CSS|style="width: 100% ; margin: 0em .25em 0em .25em ; font-size: 18px ; font-family: 'Palatino Linotype', 'Book Antiqua', serif ; font-variant: small-caps ; letter-spacing: 0.02em ; font-weight: bold ; line-height: 1em ; text-align: center ; position: relative ; left: -18px ; "
+  --&HdrTbl_CSS|style="font-family: 'Palatino Linotype', 'Book Antiqua', serif ; margin: 0em auto .3em; ; color: #[&SpellColor_Attr] ; table-layout: fixed ; background-image: url([*S:tmpUI]) ; background-repeat: no-repeat ; background-size: 285px 30px ; background-position: left ; display: block ; width: 100% ; height: 100% ; line-height: 30px ; text-align: center ; position: relative ; left: -10px ; "
+  --&HdrTd_CSS|style="width: 70px ; font-size: 18px ; font-weight: bold ; "
+  --&HdrTdL_CSS|style="width: 35px ; font-size: 18px ; font-weight: bold ; position: relative ; top: 4px ; left: 6px ; "
+  --&HdrTdR_CSS|style="width: 35px ; font-size: 18px ; font-weight: bold ; position: relative ; right: 6px ; "
+  --&LvlTbl_CSS|style="background-image: url([*S:tmpSpellUI]) ; background-repeat: no-repeat ; background-size: 98% 40px ; display: inline-block ; width: 100% ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; "
+  --&LvlTd_CSS|style="position: relative ; top: -3px ; left: 2px ; text-weight: bold ; "
+  --&DarkTd_CSS|style="background-color: rgba(0, 0, 0, 0.5) ; text-align: center ; text-shadow: 0 1px 1px rgba(0,0,0,0) ; position: relative ; left: -12px ; "
+  --&SlotTbl_CSS|style="background-color: rgba(0, 0, 0, 0.5) ; padding: .5em ; border: 1px ; text-align: center ; text-shadow: 0 1px 1px rgba(0,0,0,0) ; position: relative ; left: -6px ; "
+  --&MinusTd_CSS|style="position: relative ; top: -4px ; "
   --&EmptySlot|[img width=30]https://files.d20.io/images/450522306/RyehAXy6s1QIFid2UYRBoQ/original.webp[/img]
   --&MissingSlot|[img width=30]https://files.d20.io/images/450522300/P-PGyu9BUz3bPQF7eWYe5A/original.webp[/img]
   --&FullSlot|[img width=30][*S:SlotStyle][/img]
-  --&ButtonStyle|style="align-self: center; background-color: transparent; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: #[&IconColor]; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
-  --&Darkbg|style="background-color: rgba(0, 0, 0, 0.5) ; text-align: center ; position: relative ; left: -12px ; "
-  --&Slotbg|style="background-color: rgba(0, 0, 0, 0.5) ; padding: .5em ; border: 1px ; text-align: center ; position: relative ; left: -6px ; "
-  --&ClassStyle|style="font-family: 'Segoe UI Symbol', 'Arial Unicode MS', monospace; font-size: 2em; position: relative ; top: -3px ; left: 8px ; "
-  --&DetailStyle|style="font-family: 'Segoe UI Symbol', 'Arial Unicode MS', monospace; position: relative ; right: 4px ; "
-  --&PrepStyle|style="position: relative ; right: 4px ; "
-  --&RollStyle|style="position: relative ; top: 3px ; left: 10px ; "
-  --&LevelStyle|style="position: relative ; top: -3px ; left: 2px ; "
-  --&MinusStyle|style="position: relative ; top: -4px ; "
-  --&SpellCastAbil|[= @{selected|spellcasting_ability}]
+  --/| SET HTML SYMBOLS
+  --&RollImage|[d20]1[/d20]
+  --#diceFontColor|[&IconColor_Attr]
+  --&Infinity|&#x221E;
+  --&BookImage|&#x1F56E;
+  --&BlueDot|&#x25C9;
+  --&BlankDot|&#x25CB;
+  --&SettingsIcon|&#x2699;
   --/| PREPARED SPELLS CALCULATION FOR CLASSES
-  --&PrepMod|
-  --c[&ClassName]|Wizard:&PrepMod;1|Cleric:&PrepMod;1|Druid:&PrepMod;1|Paladin:&PrepMod;0.5|Artificer:&PrepMod;0.5
-  --=PrepTotal|[&CasterLevel] * [&PrepMod] + [&SpellCastAbil] {FLOOR}
-  --&PrepTotal|[$PrepTotal.Total]
+  --=PrepTotal|[&CasterLevel_Attr] + [&SCAbility_Attr] {FLOOR}
   --/| SUBCLASS ICON MAPPING
   --&ClassImage|
-  --~SubClassKey|string;tolowercase;[&SubClass]
+  --~SubClassKey|string;tolowercase;[&SubClass_Attr]
   --~SubClassKey|string;replace;way of the;;[&SubClassKey]
   --~SubClassKey|string;replace;oath of the;;[&SubClassKey]
   --~SubClassKey|string;replace;circle of the;;[&SubClassKey]
@@ -110,27 +105,26 @@
   --&BonusImage|
   --&ReactionTitle|
   --&ReactionImage|
-  --?"[&ActionToggle]" -eq "yes"|[
+  --?"[&ActionToggle_Attr]" -eq "yes"|[
     --&ActionTitle|Action&nbsp;-&nbsp; 
-    --&ActionImage|[F::20][#[&ActionColor]]&#x25A0;[/#][/F]
+    --&ActionImage|[F::20][#[&ActionColor_Attr]]&#x25A0;[/#][/F]
   --]|
-  --?"[&BonusToggle]" -eq "yes"|[
+  --?"[&BonusToggle_Attr]" -eq "yes"|[
     --&BonusTitle|Bonus&nbsp;-&nbsp; 
-    --&BonusImage|[F::18][#[&BonusColor]]&#x25C6;[/#][/F]
+    --&BonusImage|[F::18][#[&BonusColor_Attr]]&#x25C6;[/#][/F]
   --]|
-  --?"[&ReactionToggle]" -eq "yes"|[
+  --?"[&ReactionToggle_Attr]" -eq "yes"|[
     --&ReactionTitle|Reaction&nbsp;-&nbsp; 
-    --&ReactionImage|[F::18][#[&ReactionColor]]&#x2B22;[/#][/F]
+    --&ReactionImage|[F::18][#[&ReactionColor_Attr]]&#x2B22;[/#][/F]
   --]|
   --/| HANDLE PREPARED CALC
   --#parameterDelimiter|$$$
-  --?"[&ClassImage]" -ne ""|&ClassImage$$$&#x[&ClassImage];|&ClassImage$$$&#x1F56E;
-  --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName];"|&PrepTotal$$$[&Infinity]|&PrepTotal$$$[$PrepTotal.Raw]
-  --?"[&PrepTotal]" -eq "[&Infinity]"|&FontSize$$$30|&FontSize$$$20
+  --?"[&ClassImage]" -ne ""|&ClassImage$$$&#x[&ClassImage];|&ClassImage$$$&#x1F703;
+  --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName_Attr];"|&PrepTotal$$$&nbsp;[F:Gabriola:30][&Infinity][/F]|&PrepTotal$$$&nbsp;[F::20][$PrepTotal.Raw][/F]
   --/| DISPLAY HEADER
-  --&Title|[t width=100% [&TitleTable]][tr][td][&CharName]'s Spell Book[/td][/tr][/t]
-  --&Header|[t width=100% [&HeaderImage]][tr][td title="Spellcasting Ability: Click to Change" width=70px][b][F::18][#[&IconColor]]&#x272F;[/F][/#][F::18][rbutton][#[&SpellColor]][&SCA(touppercase)][/#]::SCAChoice[/rbutton][/F][/b][/td][td title="Spell Save DC" width=70px]&nbsp;[#[&IconColor]][F::18]&#x26E8;[/#][/F][b]&nbsp;[F::20][#[&SpellColor]][*S:spell_save_dc][/#][/F][/b][/td][td title="Spellcasting Bonus" width=35px [&RollStyle]][F::7][&RollImage]&nbsp;[/F][/td][td width=35px [&PrepStyle] title="Spellcasting Bonus"][F::20][#[&SpellColor]][b][*S:spell_attack_bonus][/b][/#][/F][/td][td width=35px [&ClassStyle] title="[&ClassName]: [*S:subclass]"][F::20][#[&IconColor]][&ClassImage][/#][/F][/td][td width=35px title="Max Prepared Spells" [&PrepStyle]][F::[&FontSize]][#[&SpellColor]][b][&PrepTotal][/b][/#][/F][/td][td title="Settings" width=30px ]&nbsp;&nbsp;[F::20][rbutton][#[&IconColor]][&SettingsIcon][/#]::SettingsCard;0[/rbutton][/F][/td][/tr][/t]
-  --?"[&ActionToggle]" -eq "yes" -or "[&BonusToggle]" -eq "yes" -or "[&ReactionToggle]" -eq "yes"|&Header$$$+[t width=100% style="text-align: center"][tr][td][#[&SpellColor]][&ActionTitle][/#][&ActionImage]&nbsp;&nbsp;[#[&SpellColor]][&BonusTitle][/#][&BonusImage]&nbsp;&nbsp;[#[&SpellColor]][&ReactionTitle][/#][&ReactionImage][/td][/tr][/t]
+  --&Title|[t width=100% [&TtlTbl_CSS]][tr][td][#[&IconColor_Attr]][&CharName_Attr][&Owner] Spell Book[/#][/td][/tr][/t]
+  --&Header|[t width=100% [&HdrTbl_CSS]][tr][td title="Spellcasting Ability: Click to Change" [&HdrTd_CSS]][#[&IconColor_Attr]]&#x272F;[/#][rbutton][F::16][#[&SpellColor_Attr]][&SCA_Attr(touppercase)][/#][/F]::SCAChoice[/rbutton][/td][td title="Spell Save DC" [&HdrTd_CSS]]&nbsp;[#[&IconColor_Attr]]&#x26E8;[/#][*S:spell_save_dc][/td][td title="Spellcasting Bonus" [&HdrTdL_CSS]][F::7]&nbsp;&nbsp;&nbsp;[&RollImage][/F][/td][td title="Spellcasting Bonus" [&HdrTdR_CSS]][*S:spell_attack_bonus][/td][td [&HdrTd_CSS] title="[&ClassName_Attr]: [&SubClass_Attr] &#x2666; Max Prepared Spells"][F:Segoe UI Symbol:20][#[&IconColor_Attr]]&nbsp;[&ClassImage][/#][/F][&PrepTotal][/td][td title="Settings" width=30px ]&nbsp;&nbsp;[F::20][rbutton][#[&IconColor_Attr]][&SettingsIcon][/#]::SettingsCard;0[/rbutton][/F][/td][/tr][/t]
+  --?"[&ActionToggle_Attr]" -eq "yes" -or "[&BonusToggle_Attr]" -eq "yes" -or "[&ReactionToggle_Attr]" -eq "yes"|&Header$$$+[t width=100% style="text-align: center"][tr][td style='text-shadow: 0 1px 1px rgba(0,0,0,0) ; '][#[&SpellColor_Attr]][&ActionTitle][/#][&ActionImage]&nbsp;&nbsp;[#[&SpellColor_Attr]][&BonusTitle][/#][&BonusImage]&nbsp;&nbsp;[#[&SpellColor_Attr]][&ReactionTitle][/#][&ReactionImage][/td][/tr][/t]
   --+|[&Title]
   --+|[&Header]
   --#parameterDelimiter|;
@@ -139,30 +133,28 @@
   --~SpellPropsList|array;stringify;SpellPropsArray;:
   --~|array;define;spellLevels;cantrip;1;2;3;4;5;6;7;8;9
   --%levelLoop|foreach;spellLevels
-    --Rfirst|[&CharID];repeating_spell-[&levelLoop];spellname
+    --Rfirst|[&CharId_Attr];repeating_spell-[&levelLoop];spellname
     --?"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"|>ProcessSpellLevel;[&levelLoop]
   --%|
 --X|
 --:ProcessSpellLevel|
   --&SpellLevel|[%1%]
   --&SpellOutput|
-  --&SlotsTotal|
-  --&MAX_SLOTS_PER_LEVEL|4
   --/| HANDLE CANTRIPS FIRST (SKIP SLOT CALCULATIONS)
-  --&ArrowStyle|
+  --&ArrowTd_CSS|
   --&PrepShow|
-  --&SlotStyle|
+  --&SlotTd_CSS|
   --?"[&SpellLevel]" -eq "cantrip"|[
-    --&SlotDisplay|[F::46][#[&IconColor]][&Infinity][/#][/F]
+    --&SlotDisplay|[F:Gabriola:46][#[&IconColor_Attr]][&Infinity][/#][/F]
     --&PlusSlot|
     --&MinusSlot|
     --&SpellLevelOutput|C
-    --&SlotStyle|style="position: relative ; top: 2px ; "
+    --&SlotTd_CSS|style="position: relative ; top: 2px ; "
     --#parameterDelimiter|$$$
-    --?"[&PrepToggle]" -eq "0"|&PrepShow$$$[rbutton][#[&IconColor]]&#x2B9F;[/#]::ToggleShow;1[/rbutton]|&PrepShow$$$[rbutton][#[&IconColor]]&#x2B9D;[/#]::ToggleShow;0[/rbutton]
+    --?"[&PrepToggle_Attr]" -eq "0"|&PrepShow$$$[rbutton][#[&IconColor_Attr]]&#x2B9F;[/#]::ToggleShow;1[/rbutton]|&PrepShow$$$[rbutton][#[&IconColor_Attr]]&#x2B9D;[/#]::ToggleShow;0[/rbutton]
     --#parameterDelimiter|;
-    --?";sorcerer;warlock;fighter;rogue;bard;" -inc ";[&ClassName];"|&PrepShow;
-    --&ArrowStyle|style="position: relative ; right: 8px ; "
+    --?";sorcerer;warlock;fighter;rogue;bard;" -inc ";[&ClassName_Attr];"|&PrepShow;
+    --&ArrowTd_CSS|style="position: relative ; right: 12px ; "
     --^SkipSlotCalc|
   --]|
   --/| DETERMINE SLOTS AND DISPLAY
@@ -170,13 +162,13 @@
   --&SlotsTotal|[*S:lvl[&SpellLevel]_slots_total]
   --&SlotDisplay|
   --&WarlockSlots|
-  --%slotPosition|1;[&MAX_SLOTS_PER_LEVEL]]
+  --%slotPosition|1;4
     --?"[&slotPosition]" -le "[&SlotsTotal]" -and "[&slotPosition]" -gt "[&SlotsExpended]"|&SlotDisplay;+[&EmptySlot]
     --?"[&slotPosition]" -le "[&SlotsTotal]" -and "[&slotPosition]" -le "[&SlotsExpended]"|&SlotDisplay;+[&FullSlot]
     --?"[&slotPosition]" -gt "[&SlotsTotal]"|&SlotDisplay;+[&MissingSlot]
   --%|
 
-  --?"[&SlotsTotal]" -gt "[&MAX_SLOTS_PER_LEVEL]]"|[
+  --?"[&SlotsTotal]" -gt "4"|[
     --%slotPosition|5;8
       --?"[&slotPosition]" -le "[&SlotsTotal]" -and "[&slotPosition]" -gt "[&SlotsExpended]"|&WarlockSlots;+[&EmptySlot]
       --?"[&slotPosition]" -le "[&SlotsTotal]" -and "[&slotPosition]" -le "[&SlotsExpended]"|&WarlockSlots;+[&FullSlot]
@@ -185,15 +177,15 @@
   --]|
   --/| DEFINE PLUS AND MINUS SLOT BUTTONS
   --#parameterDelimiter|$$$
-  --?"[&SlotsTotal]" -eq "[&SlotsExpended]"|&PlusSlot$$$|&PlusSlot$$$[rbutton][#[&IconColor]]+[/#]::ModifySlot;[&SpellLevel]plus[/rbutton]
-  --?"[&SlotsExpended]" -eq "0"|&MinusSlot$$$|&MinusSlot$$$[rbutton][#[&IconColor]]-[/#]::ModifySlot;[&SpellLevel][/rbutton]
+  --?"[&SlotsTotal]" -eq "[&SlotsExpended]"|&PlusSlot$$$|&PlusSlot$$$[rbutton][#[&IconColor_Attr]]+[/#]::ModifySlot;[&SpellLevel]plus[/rbutton]
+  --?"[&SlotsExpended]" -eq "0"|&MinusSlot$$$|&MinusSlot$$$[rbutton][#[&IconColor_Attr]]-[/#]::ModifySlot;[&SpellLevel][/rbutton]
   --#parameterDelimiter|;
   --&SpellLevelOutput|[&SpellLevel]
   --:SkipSlotCalc|
   --/| SPELL LEVEL HEADERS
-  --&LevelHeader|[t width=100% [&LevelBackground]][tr][td width=30 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]][&SpellLevelOutput][/#][/b][/F][/td][td width=80 [&MinusStyle]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td [&SlotStyle] width=140][&SlotDisplay][/td][td width=70 [&ArrowStyle] title="Show or Hide All Spells"][F::20][b][l][&PlusSlot][/l][/b][&PrepShow][/F][/td][/tr][/t]
-  --?"[&SlotsTotal]" -gt "[&MAX_SLOTS_PER_LEVEL]]"|[
-    --&LevelHeader|+[t width=110% [&LevelBackground]][tr][td width=30 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]W[/#][/b][/F][/td][td width=80 [&MinusStyle]][/td][td width=140][&WarlockSlots][/td][td width=70][/td][/tr][/t]
+  --&LevelHeader|[t width=100% [&LvlTbl_CSS]][tr][td width=30 height=40 [&LvlTd_CSS]][br][F::20][b][#[&IconColor_Attr]][&SpellLevelOutput][/#][/b][/F][/td][td width=80 [&MinusTd_CSS]][b][F::30][r][&MinusSlot][/r][/F][/b][/td][td [&SlotTd_CSS] width=140][&SlotDisplay][/td][td width=70 [&ArrowTd_CSS] title="Show or Hide Unprepared Spells"][F::20][b][l][&PlusSlot][/l][/b][&PrepShow][/F][/td][/tr][/t]
+  --?"[&SlotsTotal]" -gt "4"|[
+    --&LevelHeader|+[t width=110% [&LvlTbl_CSS]][tr][td width=30 height=40 [&LvlTd_CSS]][br][F::20][b][#[&IconColor_Attr]]W[/#][/b][/F][/td][td width=80 [&MinusTd_CSS]][/td][td width=140][&WarlockSlots][/td][td width=70][/td][/tr][/t]
   --]|
   --/| RETRIEVE SPELL INFORMATION
   --&CacheKey|TIMSPELLBOOK_CACHE_
@@ -210,7 +202,7 @@
   --+|[&LevelHeader][&SpellOutput]
 --<|
 --:BuildAndCacheLevel|
-  --~|array;fullrepeatingsection;lvlSpells;[&CharID];repeating_spell-[&SpellLevel];[&SpellPropsList];%%%
+  --~|array;fullrepeatingsection;lvlSpells;[&CharId_Attr];repeating_spell-[&SpellLevel];[&SpellPropsList];%%%
   --~|array;define;lvl[&SpellLevel]Spellnames
   --%SpellLoop|foreach;lvlSpells
     --&CurrentSpellName|[&SpellLoop(split,%%%,0)]
@@ -219,11 +211,17 @@
       --h:lvl[&SpellLevel]Hash("[&CurrentSpellName]-[@SpellPropsArray([&FieldIndex])]")|[&SpellLoop(split,%%%,[&FieldIndex])]
     --%|
   --%|
-  --&SpellOutput|+[t width=100% style="position: relative ; left: -10px ;"]
+  --/| SPELL ROW STYLE INFORMATION
+  --&SpellTbl_CSS|style="position: relative ; left: -10px ; table-layout: fixed ; "
+  --&SpellTd_CSS|style="width: 220px ; font-family: 'Palatino Linotype', 'Book Antiqua', serif ; letter-spacing: 0.01em ; font-weight: bold ; color: #[&SpellColor_Attr] ; display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 16px ; pointer-events: auto ; cursor: help ; "
+  --&SchlTd_CSS|style="width: 20px ; text-align: center ; font-family: 'Segoe UI Symbol', 'DejaVu Sans', Arial, monospace ;"
+  --&RollTd_CSS|style="width:22px ; position: relative ; top: 4px ; border-right: 1px solid #[&SpellColor_Attr] ; "
+  --&PrepTd_CSS|style="width: 22px ; text-align: center ; border-right: 1px solid #[&SpellColor_Attr] ; "
+  --&BookTD_CSS|style="width: 22px ; text-align: center ;"
+  --&SpellOutput|+[t width=96% [&SpellTbl_CSS]]
   --&SpellIndex|0
   --%SpellName|foreach;lvl[&SpellLevel]Spellnames
     --/| Field assignments FROM HASH TABLE:
-    --&SpellName|[&SpellName]
     --&SpellRitual|[:lvl[&SpellLevel]Hash("[&SpellName]-spellritual")]
     --&SpellPrepared|[:lvl[&SpellLevel]Hash("[&SpellName]-spellprepared")]
     --&SpellConcentration|[:lvl[&SpellLevel]Hash("[&SpellName]-spellconcentration")]
@@ -243,26 +241,28 @@
     --&SpellSchool|[:lvl[&SpellLevel]Hash("[&SpellName]-spellschool")]
     --?"[&Innate]" -eq "undefined"|&Innate;
     --~MacroName|string;replaceall; ;-;[&SpellName]
-    --~MacroButton|system;findability;[&CharName];[&MacroName]
+    --~MacroButton|system;findability;[&CharName_Attr];[&MacroName]
     --?"[&MacroButton]" -ne "AbilityNotFound"|[
-      --&SpellRoll|[F::6][button][&RollImage]::~[&CharName]|[&MacroButton][/button][/F]
-      --&SpellDetail|[button][&BookImage]::~[&CharName]|[&MacroButton][/button]
+      --&SpellRoll|[F::6][button][&RollImage]::~[&CharName_Attr]|[&MacroButton][/button][/F]
+      --&SpellDetail|[button][&BookImage]::~[&CharName_Attr]|[&MacroButton][/button]
     --]|[
       --?"[&SpellOutputType]" -inc "ATTACK"|[
-        --&SpellRoll|[F::6][sheetbutton][&RollImage]::[*S:character_name]::&#37;{selected|repeating_spell-[&SpellLevel]_$[&SpellIndex]_spell}[/sheetbutton][/F]
+        --&SpellRoll|[F::6][sheetbutton][&RollImage]::[&CharName_Attr]::&#37;{selected|repeating_spell-[&SpellLevel]_$[&SpellIndex]_spell}[/sheetbutton][/F]
       --]|
       --?"[&SpellOutputType]" -inc "SPELLCARD"|[
         --&SpellRoll|
       --]|
-      --&SpellDetail|[sheetbutton][#[&IconColor]][&BookImage][/#]::[*S:character_name]::&#37;{selected|repeating_spell-[&SpellLevel]_$[&SpellIndex]_output}[/sheetbutton]
+      --&SpellDetail|[sheetbutton][#[&IconColor_Attr]][&BookImage][/#]::[&CharName_Attr]::&#37;{selected|repeating_spell-[&SpellLevel]_$[&SpellIndex]_output}[/sheetbutton]
     --]|
     --&SpellData|[&SpellName][&SpellLevel]
     --/| MAP SPELL SCHOOL ICON
     --c[&SpellSchool]|Abjuration:&SchoolIcon;&#x26E8|Conjuration:&SchoolIcon;&#x169B9|Divination:&SchoolIcon;&#x2135|Enchantment:&SchoolIcon;&#x272F|Evocation:&SchoolIcon;&#x2739|Illusion:&SchoolIcon;&#x1F441|Necromancy:&SchoolIcon;&#x2620|Transmutation:&SchoolIcon;&#x21BB
+    --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName_Attr];" -or "[&SpellPrepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip"|&PrepareSize;20|&PrepareSize;26
     --#parameterDelimiter|$$$
     --?"[&SpellSchool]" -eq "undefined"|&SchoolIcon$$$&#x2370;|&SchoolIcon$$$[&SchoolIcon]
+    --&SchoolIcon|+;
     --/| DISPLAY SPELL AS PREPARED/NOT PREPARED
-    --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName];" -or "[&SpellPrepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip"|&Prepared$$$[rbutton][&BlueDot]::PrepareToggle;[&SpellData][/rbutton]|&Prepared$$$[rbutton][&BlankDot]::PrepareToggle;[&SpellData][/rbutton]
+    --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName_Attr];" -or "[&SpellPrepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip"|&Prepared$$$[rbutton][#[&IconColor_Attr]][&BlueDot][/#]::PrepareToggle;[&SpellData][/rbutton]|&Prepared$$$[rbutton][#[&IconColor_Attr]][&BlankDot][/#]::PrepareToggle;[&SpellData][/rbutton]
     --/| OUTPUT TOOLTIP WHICH DISPLAYS ALL SPELL INFO
     --&ToolTip|title="
     --&ToolTip|+[&SpellSchool(totitlecase)]
@@ -294,8 +294,8 @@
     --?"[&SpellCastingTime]" -inc "reaction"|&CastingTime$$$[&ReactionImage]
     --#parameterDelimiter|;
     --/| WHEN TO DISPLAY SPELL AND THEN DISPLAY
-    --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName];" -or "[&SpellPrepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip" -or "[&PrepToggle]" -eq "1"|[
-        --&SpellOutput|+[tr][td width=5px title="[&SpellSchool(totitlecase)]" style="text-align: center ; "][F::18][#[&IconColor]][&SchoolIcon];[/#][/F][/td][td width=215px height=17px [&SpellStyle] [&ToolTip] ][b][&SpellName][/b][&CastingTime][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td title="Cast Spell" style="position: relative ; top: 4px ; "][&SpellRoll][/td][td width=34 title="Prepared"]|[F::15][&Prepared][/F]|[/td][td title="Spell Details" [&DetailStyle]][F::16][&SpellDetail][/F][/td][/tr]
+    --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName_Attr];" -or "[&SpellPrepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip" -or "[&PrepToggle_Attr]" -eq "1"|[
+        --&SpellOutput|+[tr][td title="[&SpellSchool(totitlecase)]" [&SchlTd_CSS]][F::18][#[&IconColor_Attr]][&SchoolIcon][/#][/F][/td][td [&SpellTd_CSS] [&ToolTip] ][i][&SpellName][/i][&CastingTime][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td title="Cast Spell" [&RollTd_CSS]][&SpellRoll][/td][td title="Prepared" [&PrepTd_CSS]][F::[&PrepareSize]][&Prepared][/F][/td][td title="Spell Details" [&BookTD_CSS]][F::16][&SpellDetail][/F][/td][/tr]
     --]|
     --&SpellIndex|[= [&SpellIndex] + 1 ]
   --%|
@@ -305,7 +305,7 @@
   --&CacheSave|[&CacheSave(replaceall,;,!$!)]
   --&CacheSave|[&CacheSave(replaceall,|,!@!)]
   --&CacheSave|[&CacheSave(replaceall,",!QUOTE!)]
-  --!a:[&CharID]|![&CacheKey]:[&CacheSave]
+  --!a:[&CharId_Attr]|![&CacheKey]:[&CacheSave]
 --<|
 --:SettingsCard|
   --/| ADD THEME BACKGROUNDS TO HASH TABLE
@@ -325,6 +325,10 @@
   --h:ImageDB("sanctum_aureum")|https://files.d20.io/images/459809418/f82c4-QQSD5TQY0GcsiOqg/original.webp
   --h:ImageDB("verdant_veil")|https://files.d20.io/images/459939017/30UZVKRE7HOb6afUb-yxDQ/original.webp
   --h:ImageDB("amber_hollow")|https://files.d20.io/images/459940875/eLQJkK2WcelGT2q14YcDDQ/original.webp
+  --h:ImageDB("golden_quarry")|https://files.d20.io/images/471619838/9MPh5Lk07SFnyZR34AxlDQ/original.webp
+  --h:ImageDB("stonecut_vault")|https://files.d20.io/images/471618874/owXNxUQjFPuHPQu4WAsXaA/original.webp
+  --h:ImageDB("feymist_bloom")|https://files.d20.io/images/471656132/cUABhO5JnSHfsvxzauliAg/original.webp
+  --h:ImageDB("circuit_tree")|https://files.d20.io/images/471665602/Kr0vh-kLAkNNed4cS3S92w/original.webp
   --/| ADD UI HEADER IMAGES TO THE HASH TABLE
   --h:ImageDB("UI_dnd5e")|https://files.d20.io/images/450559935/u5eIBjrmDj3lTMWxppChYA/original.webp
   --h:ImageDB("UI_abyssal_ink")|https://files.d20.io/images/450559808/mPJIa0Ii2_c8R4Y-30yQjg/original.webp
@@ -342,6 +346,10 @@
   --h:ImageDB("UI_sanctum_aureum")|https://files.d20.io/images/459810533/UqzpFBxcPJXfOB29NBRktA/original.webp
   --h:ImageDB("UI_verdant_veil")|https://files.d20.io/images/459940225/fPkmVF8OGGozVI9R9hBiLg/original.webp
   --h:ImageDB("UI_amber_hollow")|https://files.d20.io/images/459940225/fPkmVF8OGGozVI9R9hBiLg/original.webp
+  --h:ImageDB("UI_golden_quarry")|https://files.d20.io/images/450562190/CkyI46tjWXAZN8kyKN4qjw/original.webp
+  --h:ImageDB("UI_stonecut_vault")|https://files.d20.io/images/450562493/4y0IeLBH1SaHLP7wonvx7A/original.webp
+  --h:ImageDB("UI_feymist_bloom")|https://files.d20.io/images/451152042/HcSJn7tY7wIE684mD6qMZQ/original.webp
+  --h:ImageDB("UI_circuit_tree")|https://files.d20.io/images/450561295/lb-skmgZ6psQ2ZADr9zMhA/original.webp
   --/| ADD UI SPELL HEADER IMAGES TO THE HASH TABLE
   --h:ImageDB("UI_spell_dnd5e")|https://files.d20.io/images/450554788/nh4hybJS9-nejMG2Sa5NpA/original.webp
   --h:ImageDB("UI_spell_abyssal_ink")|https://files.d20.io/images/450556695/6haCM_Bu4WyJx4RWMEQk9Q/original.webp
@@ -359,6 +367,10 @@
   --h:ImageDB("UI_spell_sanctum_aureum")|https://files.d20.io/images/459810532/FpDbxBG-HgUG7TIi8xQI8w/original.webp
   --h:ImageDB("UI_spell_verdant_veil")|https://files.d20.io/images/459940226/Oo5nlVHjAEb7HJz3bAhmYg/original.webp
   --h:ImageDB("UI_spell_amber_hollow")|https://files.d20.io/images/459940226/Oo5nlVHjAEb7HJz3bAhmYg/original.webp
+  --h:ImageDB("UI_spell_golden_quarry")|https://files.d20.io/images/450562276/GloMRJOuggSTYkOjYn0BMA/original.webp
+  --h:ImageDB("UI_spell_stonecut_vault")|https://files.d20.io/images/450562669/CAqhvDCapPVfTAdPxa9hSg/original.webp
+  --h:ImageDB("UI_spell_feymist_bloom")|https://files.d20.io/images/451152041/l773ue7fLTObeRv6zkAGrg/original.webp
+  --h:ImageDB("UI_spell_circuit_tree")|https://files.d20.io/images/450561392/J6nDzCBEBWHB9iZalpczog/original.webp
   --/| ADD SPELL SLOT COLORS TO HASH TABLE
   --h:ImageDB("slot_default")|https://files.d20.io/images/450522298/64BSHbeFMBOEyHr4scG0Vg/original.webp
   --h:ImageDB("slot_red")|https://files.d20.io/images/450522305/QuTbu_tFFpdQj64sfREMiA/original.webp
@@ -368,22 +380,32 @@
   --h:ImageDB("slot_blue")|https://files.d20.io/images/450522297/aeMdts5aErkugLwq2e2RGA/original.webp
   --h:ImageDB("slot_purple")|https://files.d20.io/images/450522304/1XS2up9_jyQ-KT4fs4If_Q/original.webp
   --h:ImageDB("slot_pink")|https://files.d20.io/images/450522303/YWhi_Ya-XstU77ZVWD3mvQ/original.webp
-  --&Pages|[&reentryval]
-  --?"[&Pages]" -ne "0" -and "[&Pages]" -ne "4" -and "[&Pages]" -ne "8" -and "[&Pages]" -ne "12"|&Pages;0|&Pages;[&reentryval]
-  --~|array;define;ThemeChoice;dnd5e;abyssal_ink;astral_void;dark_arcane;ember_core;gilded_vine;celestial_veil;stormcaller;sacred_rose;chloromancy;bloodwake;neon_tides;whisperveil;sanctum_aureum;verdant_veil;amber_hollow
   --#whisper|self
+  --/| SET SETTINGS PAGE STYLE
+  --&Stngs_SpellColor|[*S:spellcolor]
+  --&Stngs_IconColor[*S:iconcolor]
+  --&CacheTbl_CSS|style="position: relative; left: -12px ; text-align: center ; "
+  --&CacheTd_CSS|style="width: 85% ; height: 30px ; line-height: 1em ; padding: 2px ; font-weight: bold ; text-shadow: 0 1px 1px rgba(0,0,0,0) ; "
+  --&PagesTbl_CSS|style="margin: .5em auto .5em ; color: #[&Stngs_SpellColor] ; font-weight: bold ; text-align: center ; position: relative ; left: -12px ; "
+  --&PagesTd_CSS|style="border-right: 1px solid #[&Stngs_IconColor] ; "
+  --&BttnTd_CSS|style="align-self: center; background-color: transparent; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: #[*S:iconcolor]; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
+  --/| DISPLAY SETTINGS PAGE
+  --&Pages|[&reentryval]
+  --?"[&Pages]" -ne "0" -and "[&Pages]" -ne "4" -and "[&Pages]" -ne "8" -and "[&Pages]" -ne "12" -and "[&Pages]" -ne "16"|&Pages;0|&Pages;[&reentryval]
+  --~|array;define;ThemeChoice;dnd5e;abyssal_ink;astral_void;dark_arcane;ember_core;gilded_vine;celestial_veil;stormcaller;sacred_rose;chloromancy;bloodwake;neon_tides;whisperveil;sanctum_aureum;verdant_veil;amber_hollow;golden_quarry;stonecut_vault;feymist_bloom;circuit_tree
+  --&tmpChosen_Attr|[*S:tmpChosen]
   --&ThemePerRow|2
   --&ThemeCounter|0
   --&ArrayCounter|[= [&Pages] +3]
-  --c[&Pages]|0:&PageNum;1|4:&PageNum;2|8:&PageNum;3|12:&PageNum;4
-  --+|[t width=100%][tr][td [&TitleTable]][&CharName]'s Spell Book Settings Page [&PageNum][/td][/tr][/t]
-  --+|[br][t width=98% border=1 style="position: relative; left: -12px ; "][tr][td width=85% height=30px style="line-height: 1em ; padding: 2px ; font-weight: bold ; "][#[&SpellColor]]Click button if you are missing spells or if you have just leveled your character.[/#][/td][td title="Clear Spellbook Cache" style="text-align: center ; "][F::18][rbutton][#[&IconColor]]&#9851;[/#]::ClearCache;restart[/rbutton][/F][/td][/tr][/t]
-  --&ThemeOutput|[br][t width=98% [&Darkbg] border=1][tr]
+  --c[&Pages]|0:&PageNum;1|4:&PageNum;2|8:&PageNum;3|12:&PageNum;4|16:&PageNum;5
+  --+|[t width=100% [&TtlTbl_CSS]][tr][td][#[*S:iconcolor]][&CharName_Attr][&Owner] Spell Book Settings Page [&PageNum][/#][/td][/tr][/t]
+  --+|[t width=98% border=1 [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&Stngs_SpellColor]]This Button rebuilds stored spell data from the character sheet. Use if spells are missing or out of date.[/#][/td][td title="Clear Spellbook Cache"][F::18][rbutton][#[&IconColor_Attr]]&#9851;[/#]::ClearCache;restart[/rbutton][/F][/td][/tr][/t]
+  --&ThemeOutput|[br][t width=98% [&DarkTd_CSS] border=1][tr]
   --%ThemeLoop|[&Pages];[&ArrayCounter]
+    --&ChosenTheme|style="text-shadow: 0 1px 1px rgba(0,0,0,0) ; "
     --&ThemeChosen|[@ThemeChoice([&ThemeLoop])]
-    --&ChosenTheme|
-    --?"[&ThemeChosen]" -eq "[&tmpChosen]"|[
-      --&ChosenTheme|style="border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8); text-align: center ; "
+    --?"[&ThemeChosen]" -eq "[&tmpChosen_Attr]"|[
+      --&ChosenTheme|style="border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8); text-align: center ; text-shadow: 0 1px 1px rgba(0,0,0,0) ; "
     --]|
     --?"[= [&ThemeCounter] % [&ThemePerRow] ]" -eq "0" -and "[&ThemeCounter]" -ne "0"|&ThemeOutput;+[/tr][tr]
     --&ThemeName|[&ThemeChosen(replace,_, )]
@@ -399,11 +421,11 @@
       --&ChosenUI|border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8);
     --]|
     --&UIThemeName|[&CurrentUI(replace,_, )]
-    --+|[t width=100% style="background-image: url([:ImageDB("UI_spell_[&CurrentUI]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 98% ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; [&ChosenUI]"][tr][td width=25 height=40 [&LevelStyle]][br][F::20][b][#[&IconColor]]&nbsp;1[/#][/b][/F][/td][td width=90 [&MinusStyle]][b][F::30][#[&IconColor]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotStyle]][F::14][rbutton][#[&SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&CurrentUI][/rbutton][/F][/td][td width=40 [&PlusStyle] title="Show or Hide All Spells"][b][F::20][#[&IconColor]][l]+[/l][/#][/F][/b][/td][/tr][/t]
+	--&UITbl_CSS|style="background-image: url([:ImageDB("UI_spell_[&CurrentUI]")]) ; background-repeat: no-repeat ; background-size: 100% 40px ; display: inline-block ; width: 98% ; height: 100% ; text-align: center ; font-weight:bold ; vertical-align: middle ; text-shadow: 0 1px 1px rgba(0,0,0,0) ; position: relative ; left: -10px ; [&ChosenUI]"
+    --+|[t width=100% [&UITbl_CSS]][tr][td width=25 height=40 [&LvlTd_CSS]][br][F::20][b][#[&IconColor_Attr]]&nbsp;1[/#][/b][/F][/td][td width=90 [&MinusTd_CSS]][b][F::30][#[&IconColor_Attr]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotTd_CSS]][F::14][rbutton][#[&Stngs_SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&CurrentUI][/rbutton][/F][/td][td width=40 title="Show or Hide All Spells"][b][F::20][#[&IconColor_Attr]][l]+[/l][/#][/F][/b][/td][/tr][/t]
   --%|
-  --+|[br][c][rbutton][#[&SpellColor]][b]Page 1[/b][/#]::SettingsCard;0[/rbutton]&nbsp;[#[&SpellColor]]|[/#]&nbsp;[rbutton][#[&SpellColor]][b]Page 2[/b][/#]::SettingsCard;4[/rbutton]&nbsp;[#[&SpellColor]]|[/#]&nbsp;[rbutton][#[&SpellColor]][b]Page 3[/b][/#]::SettingsCard;8[/rbutton]&nbsp;[#[&SpellColor]]|[/#]&nbsp;[rbutton][#[&SpellColor]][b]Page 4[/b][/#]::SettingsCard;12[/rbutton][/c][br]
-  --+|[t width=90% border=1][tr][td width=70% height=30px][c][b][#[*S:spellcolor]]Spell Color #[*S:spellcolor][/#][/b][/c][/td][td [&DetailStyle] width=10px title="Change Spell Font Color"][c][rbutton][#[&IconColor]]&#x1F3A8;[/#]::UpdateColor;[&tmpChosen]%%%spell%%%custom[/rbutton][/c][/td][td title="Reset to Current Theme Font Color" width=10px][c][rbutton][#[&IconColor]]&#x21BB;[/#]::UpdateColor;[&tmpChosen]%%%spell%%%reset[/rbutton][/c][/td][/tr][/t]
-  --+|[t width=90% border=1][tr][td width=70% height=30px][c][b][#[*S:iconcolor]]Icon Color #[*S:iconcolor][/#][/b][/c][/td][td [&DetailStyle] title="Change Icon Color"][c][rbutton][#[&IconColor]]&#x1F3A8;[/#]::UpdateColor;[&tmpChosen]%%%icon%%%custom[/rbutton][/c][/td][td title="Reset to Theme Icon Color"][c][rbutton][#[&IconColor]]&#x21BB;[/#]::UpdateColor;[&tmpChosen]%%%icon%%%reset[/rbutton][/c][/td][/tr][/t]
+  --+|[t width=100% [&PagesTbl_CSS]][tr][td [&PagesTd_CSS]][rbutton][#[&Stngs_SpellColor]]Page 1[/#]::SettingsCard;0[/rbutton][/td][td [&PagesTd_CSS]][rbutton][#[&Stngs_SpellColor]]Page 2[/#]::SettingsCard;4[/rbutton][/td][td [&PagesTd_CSS]][rbutton][#[&Stngs_SpellColor]]Page 3[/#]::SettingsCard;8[/rbutton][/td][td [&PagesTd_CSS]][rbutton][#[&Stngs_SpellColor]]Page 4[/#]::SettingsCard;12[/rbutton][/td][td][rbutton][#[&Stngs_SpellColor]]Page 5[/#]::SettingsCard;16[/rbutton][/td]
+  --+|[t width=90% border=1 style="text-shadow: 0 1px 1px rgba(0,0,0,0)"][tr][td width=90px height=30px][c][b][#[&Stngs_SpellColor]]Spell Color #[&Stngs_SpellColor][/#][/b][/c][/td][td width=10px title="Change Spell Font Color"][c][rbutton][F:Segoe UI Symbol:][#[&IconColor_Attr]]&#x1F3A8;[/#][/F]::UpdateColor;[&tmpChosen_Attr]%%%spell%%%custom[/rbutton][/c][/td][td title="Reset to Current Theme Font Color" width=10px][c][rbutton][#[&IconColor_Attr]]&#x21BB;[/#]::UpdateColor;[&tmpChosen_Attr]%%%spell%%%reset[/rbutton][/c][/td][/tr][tr][td width=90px height=30px][c][b][#[*S:iconcolor]]Icon Color #[*S:iconcolor][/#][/b][/c][/td][td width=10px title="Change Icon Color"][c][rbutton][F:Segoe UI Symbol:][#[&IconColor_Attr]]&#x1F3A8;[/#][/F]::UpdateColor;[&tmpChosen_Attr]%%%icon%%%custom[/rbutton][/c][/td] [td title="Reset to Theme Icon Color" width=10px][c][rbutton][#[&IconColor_Attr]]&#x21BB;[/#]::UpdateColor;[&tmpChosen_Attr]%%%icon%%%reset[/rbutton][/c][/td][/tr][/t]
   --~|array;define;ActionArray;action;bonus;reaction
   --%ActionLoop|foreach;ActionArray
   --&ActionType|[&ActionLoop(totitlecase)]
@@ -411,29 +433,28 @@
     --c[&ActionLoop]|action:&ActionsImage;&#x25A0|bonus:&ActionsImage;&#x25C6|reaction:&ActionsImage;&#x2B22
     --?"[&ActionLoop]" -eq "action"|&ActionFontSize;22|&ActionFontSize;18
     --?"[*S:[&ActionLoop]toggle]" -eq "no"|&Toggle;&#x2610|&Toggle;&#x2611
-    --+|[t width=90% border=1 style="text-align: center ; "][tr][td width=55% height=30][r][b][#[&SpellColor]][&ActionType] #[&ColorAction]&nbsp;-&nbsp;[/#][#[&ColorAction]][F::[&ActionFontSize]][&ActionsImage];&nbsp;[/F][/#][/b][/r][/td][td][rbutton][F::18][#[&IconColor]][&Toggle];[/#][/F]::ActionToggle;[&ActionLoop]toggle[/rbutton][/td][td [&DetailStyle] title="Change To Custom Color"][c][rbutton][#[&IconColor]]&#x1F3A8;[/#]::UpdateColor;[&tmpChosen]%%%[&ActionLoop]%%%custom[/rbutton][/c][/td][td title="Reset to Default Color"][c][rbutton][#[&IconColor]]&#x21BB;[/#]::UpdateColor;[&tmpChosen]%%%[&ActionLoop]%%%reset[/rbutton][/c][/td][/tr][/t]
+    --+|[t width=90% border=1 style="text-align: center ; text-shadow: 0 1px 1px rgba(0,0,0,0) ; "][tr][td width=69px height=30][r][b][#[&Stngs_SpellColor]][&ActionType] #[&ColorAction]&nbsp;-&nbsp;[/#][#[&ColorAction]][F::[&ActionFontSize]][&ActionsImage];&nbsp;[/F][/#][/b][/r][/td][td width=10px][rbutton][F::18][#[&IconColor_Attr]][&Toggle];[/#][/F]::ActionToggle;[&ActionLoop]toggle[/rbutton][/td][td title="Change To Custom Color" width=10px][c][rbutton][F:Segoe UI Symbol:][#[&IconColor_Attr]]&#x1F3A8;[/#][/F]::UpdateColor;[&tmpChosen_Attr]%%%[&ActionLoop]%%%custom[/rbutton][/c][/td][td title="Reset to Default Color" width=10px][c][rbutton][#[&IconColor_Attr]]&#x21BB;[/#]::UpdateColor;[&tmpChosen_Attr]%%%[&ActionLoop]%%%reset[/rbutton][/c][/td][/tr][/t]
   --%|
    --~|array;define;SlotChoice;default;red;orange;yellow;green;blue;purple;pink
   --&SlotsPerRow|4
   --&SlotsCounter|1
-  --&SlotOutput|[br][br][t width=95% border=1 [&Slotbg]][tr]
+  --&SlotOutput|[br][br][t width=95% border=1 [&SlotTbl_CSS]][tr]
   --%SlotLoop|foreach;SlotChoice
-    --&ChosenStyle|
-    --&ChosenSlot|
+    --&SttngSlotTd_CSS|
     --?"[:ImageDB("slot_[&SlotLoop]")]" -eq "[*S:SlotStyle]"|[
-      --&ChosenSlot|style="border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8); text-align: center ; "
+      --&SttngSlotTd_CSS|style="border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8); text-align: center ; "
     --]|
-    --&SlotOutput|+[td width=25% height=50px [&ChosenSlot]][rbutton][img width=30][:ImageDB("slot_[&SlotLoop]")][/img]::WriteSlot;[&SlotLoop][/rbutton][br][b][&SlotLoop(totitlecase)][/b][/td]
+    --&SlotOutput|+[td width=25% height=50px [&SttngSlotTd_CSS]][rbutton][img width=30][:ImageDB("slot_[&SlotLoop]")][/img]::WriteSlot;[&SlotLoop][/rbutton][br][b][&SlotLoop(totitlecase)][/b][/td]
     --?[= [&SlotsCounter] % [&SlotsPerRow] ] -eq 0|&SlotOutput;+[/tr][tr]
     --&SlotsCounter|[= [&SlotsCounter] + 1 ]
   --%|
   --&SlotOutput|+[/tr][/t]
   --+|[&SlotOutput]
-  --+|[t width=90% style="text-align: center;"][tr][br][td [&ButtonStyle]][rbutton][#[&SpellColor]]SpellBook[/#]::RestartBook[/rbutton][/td][/t]
+  --+|[t width=90% style="text-align: center;"][tr][br][td [&BttnTd_CSS]][rbutton][#[&Stngs_SpellColor]]SpellBook[/#]::RestartBook[/rbutton][/td][/t]
 --X|
 --:UpdateColor|
   --~tmpChoice|string;split;%%%;[&reentryval]
-  --&tmpChosen|[&tmpChoice1]
+  --&tmpChosen_Attr|[&tmpChoice1]
   --&fontTarget|[&tmpChoice2]
   --&colorMode|[&tmpChoice3]
   --?"[&colorMode]" -eq "custom"|[
@@ -443,33 +464,34 @@
     --c[&fontTarget]|action:&UpdateColor;00FF00|bonus:&UpdateColor;0000FF|reaction:&UpdateColor;FF0000
   --]|
   --?"[&fontTarget]" -eq "spell" -and "[&colorMode]" -eq "reset"|[
-    --c[&tmpChosen]|dnd5e:&UpdateColor;000|abyssal_ink:&UpdateColor;CCF2FF|astral_void:&UpdateColor;D6FCFF|dark_arcane:&UpdateColor;D0F0C0|ember_core:&UpdateColor;9CA298|gilded_vine:&UpdateColor;DAD4C8|celestial_veil:&UpdateColor;F5F5DC|stormcaller:&UpdateColor;DBE9F1|sacred_rose:&UpdateColor;C2A3AD|chloromancy:&UpdateColor;C8A2C8|bloodwake:&UpdateColor;FFE4E1|neon_tides:&UpdateColor;A8FFB0|whisperveil:&UpdateColor;2B223A|sanctum_aureum:&UpdateColor;2A2E3B|verdant_veil:&UpdateColor;DDECCF|amber_hollow:&UpdateColor;DDECCF
+    --c[&tmpChosen_Attr]|dnd5e:&UpdateColor;000|abyssal_ink:&UpdateColor;CCF2FF|astral_void:&UpdateColor;D6FCFF|dark_arcane:&UpdateColor;D0F0C0|ember_core:&UpdateColor;9CA298|gilded_vine:&UpdateColor;DAD4C8|celestial_veil:&UpdateColor;F5F5DC|stormcaller:&UpdateColor;DBE9F1|sacred_rose:&UpdateColor;C2A3AD|chloromancy:&UpdateColor;C8A2C8|bloodwake:&UpdateColor;FFE4E1|neon_tides:&UpdateColor;A8FFB0|whisperveil:&UpdateColor;2B223A|sanctum_aureum:&UpdateColor;2A2E3B|verdant_veil:&UpdateColor;DDECCF|amber_hollow:&UpdateColor;DDECCF|golden_quarry:&UpdateColor;FFFFF0|stonecut_vault:&UpdateColor;C7D0D8|feymist_bloom:&UpdateColor;3B364A|circuit_tree:&UpdateColor;E8F0FF
   --]|
   --?"[&fontTarget]" -eq "icon" -and "[&colorMode]" -eq "reset"|[
-    --c[&tmpChosen]|dnd5e:&UpdateColor;611b1c|abyssal_ink:&UpdateColor;D8B4F8|astral_void:&UpdateColor;FFD6EC|dark_arcane:&UpdateColor;B89B72|ember_core:&UpdateColor;897A4C|gilded_vine:&UpdateColor;B48C53|celestial_veil:&UpdateColor;B87333|stormcaller:&UpdateColor;5A9FCF|sacred_rose:&UpdateColor;A18F5F|chloromancy:&UpdateColor;2E8B8B|bloodwake:&UpdateColor;DC143C|neon_tides:&UpdateColor;1E90FF|whisperveil:&UpdateColor;5e2fe2|sanctum_aureum:&UpdateColor;1A3E7A|verdant_veil:&UpdateColor;B8C86B|amber_hollow:&UpdateColor;B8C86B
+    --c[&tmpChosen_Attr]|dnd5e:&UpdateColor;611b1c|abyssal_ink:&UpdateColor;D8B4F8|astral_void:&UpdateColor;FFD6EC|dark_arcane:&UpdateColor;B89B72|ember_core:&UpdateColor;897A4C|gilded_vine:&UpdateColor;B48C53|celestial_veil:&UpdateColor;B87333|stormcaller:&UpdateColor;5A9FCF|sacred_rose:&UpdateColor;A18F5F|chloromancy:&UpdateColor;2E8B8B|bloodwake:&UpdateColor;DC143C|neon_tides:&UpdateColor;1E90FF|whisperveil:&UpdateColor;5e2fe2|sanctum_aureum:&UpdateColor;1A3E7A|verdant_veil:&UpdateColor;B8C86B|amber_hollow:&UpdateColor;B8C86B|golden_quarry:&UpdateColor;E0A458|stonecut_vault:&UpdateColor;A9C8E2|feymist_bloom:&UpdateColor;6B1F45|circuit_tree:&UpdateColor;B89B72
   --]|
   --?"[&UpdateColor]" -ne ""|[
-    --!a:[&CharID]|![&fontTarget]color:[&UpdateColor]
+    --&UpdateColor|[&UpdateColor(replace,#,)]
+    --!a:[&CharId_Attr]|![&fontTarget]color:[&UpdateColor]
   --]|
   -->ClearCache|
   --^SettingsCard|
 --X|
 --:ActionToggle|
   --?"[*S:[&reentryval]]" -inc "no"|&UpdateToggle;yes|&UpdateToggle;no
-  --!a:[&CharID]|![&reentryval]:[&UpdateToggle]
+  --!a:[&CharId_Attr]|![&reentryval]:[&UpdateToggle]
   -->ClearCache|
   --^SettingsCard|
 --X|
 --:UIChoice|
   --&UISelect|[:ImageDB("UI_[&reentryval]")]
   --&UISpellSelect|[:ImageDB("UI_spell_[&reentryval]")]
-  --!a:[&CharID]|!tmpUI:[&UISelect]
-  --!a:[&CharID]|!tmpSpellUI:[&UISpellSelect]
+  --!a:[&CharId_Attr]|!tmpUI:[&UISelect]
+  --!a:[&CharId_Attr]|!tmpSpellUI:[&UISpellSelect]
   --^SettingsCard|
 --X|
 --:WriteSlot|
   --&SlotSelect|[:ImageDB("slot_[&reentryval]")]
-  --!a:[&CharID]|!SlotStyle:[&SlotSelect]
+  --!a:[&CharId_Attr]|!SlotStyle:[&SlotSelect]
   --^SettingsCard|
 --X|
 --:ModifySlot|
@@ -478,38 +500,40 @@
   --?"[&SlotCalc]" -eq "plus"|&Adjustment;1|&Adjustment;-1
   --&SlotsExpended|[*S:lvl[&SlotLevel]_slots_expended]
   --=SlotsLeft|[&SlotsExpended] + [&Adjustment]
-  --!a:[&CharID]|lvl[&SlotLevel]_slots_expended:[$SlotsLeft]
+  --!a:[&CharId_Attr]|lvl[&SlotLevel]_slots_expended:[$SlotsLeft]
   --^RestartBook|
 --X|
 --:PrepareToggle|
-  --?"[&PrepToggle]" -eq "0"|>RestartBook
+  --?"[&PrepToggle_Attr]" -eq "0"|>RestartBook
   --~SpellLetters|string;nonumbers;[&reentryval]
   --~SpellLevel|string;onlynumbers;[&reentryval]
-  --Rfind|[&CharID];[&SpellLetters];repeating_spell-[&SpellLevel];spellname
+  --Rfind|[&CharId_Attr];[&SpellLetters];repeating_spell-[&SpellLevel];spellname
   --&CurrentState|[*R:spellprepared]
   --?"[&CurrentState]" -eq "1"|&NewState;0|&NewState;1
-  --!a:[&CharID]|[*R>spellprepared]:[&NewState]
+  --!a:[&CharId_Attr]|[*R>spellprepared]:[&NewState]
   --?"[&SpellLevel]" -eq "cantrip"|&CacheKey;TIMSPELLBOOK_CACHE_Cantrips|&CacheKey;TIMSPELLBOOK_CACHE_Level[&SpellLevel]
-  --!a:[&CharID]|![&CacheKey]:
+  --!a:[&CharId_Attr]|![&CacheKey]:
   --^RestartBook|
 --X|
 --:ToggleShow|
   --&PrepState|[&reentryval]
-  --!a:[&CharID]|!preptoggle:[&PrepState]
+  --!a:[&CharId_Attr]|!preptoggle:[&PrepState]
   -->ClearCache|
   --^RestartBook|
 --X|
 --:ClearCache|
-  --!a:[&CharID]|!TIMSPELLBOOK_CACHE_Cantrips:
+  --/| CLEAR SPELL ATTRIBUTES; ONCE EMPTY CACHE WILL FILL IN ON NEXT RUN
+  --!a:[&CharId_Attr]|!TIMSPELLBOOK_CACHE_Cantrips:
   --%LevelLoop|1;9;1
-    --!a:[&CharID]|!TIMSPELLBOOK_CACHE_Level[&LevelLoop]:
+    --!a:[&CharId_Attr]|!TIMSPELLBOOK_CACHE_Level[&LevelLoop]:
   --%|
   --?"[&reentryval]" -eq "restart"|>RestartBook
 --<|
 --:SCAChoice|
-  --#title|Change [&CharName]'s Spellcasting Ability
+  --/| DISPLAY SPELLCASTING ABILTY OPTIONS AND WHICH ARE RELEVANT TO CHARACTER
+  --+|[t width=100%][tr][td [&TtlTbl_CSS]][#[*S:iconcolor]][&CharName_Attr][&Owner] Spellcasting Ability[/#][/td][/tr][/t]
   --~|array;define;AbilityArray;Intelligence;Wisdom;Charisma;Strength;Dexterity;Constitution
-  -->MapClass|[&ClassName];&ClassAbil
+  -->MapClass|[&ClassName_Attr];&ClassAbil
   --?"[*S:multiclass1_flag]" -eq "1"|>MapClass;[*S:multiclass1];&M1ClassAbil
   --?"[*S:multiclass2_flag]" -eq "1"|>MapClass;[*S:multiclass2];&M2ClassAbil
   --?"[*S:multiclass3_flag]" -eq "1"|>MapClass;[*S:multiclass3];&M3ClassAbil
@@ -517,7 +541,7 @@
   --%AbilityLoop|foreach;AbilityArray
     --&UnderText|
     --#parameterDelimiter|$$$
-    --?"[&ClassAbil]" -eq "[&AbilityLoop]"|&UnderText$$$+&nbsp;[&ClassName]
+    --?"[&ClassAbil]" -eq "[&AbilityLoop]"|&UnderText$$$+&nbsp;[&ClassName_Attr]
     --&Separator|&nbsp;
     --?"[&M1ClassAbil]" -eq "[&AbilityLoop]" -and "[&M1ClassAbil]" -eq "[&ClassAbil]"|&Separator$$$,&nbsp;
     --?"[&M1ClassAbil]" -eq "[&AbilityLoop]"|&UnderText$$$+[&Separator][*S:multiclass1]
@@ -528,71 +552,74 @@
     --?"[&M3ClassAbil]" -eq "[&AbilityLoop]" -and "[&M3ClassAbil]" -eq "[&M2ClassAbil]"|&Separator$$$,&nbsp;
     --?"[&M3ClassAbil]" -eq "[&AbilityLoop]"|&UnderText$$$+[&Separator][*S:multiclass3]
     --#parameterDelimiter|;
-    --&AbilityOutput|+[tr][td [&ButtonStyle]][rbutton][&AbilityLoop]::WriteSCA;[&AbilityLoop][/rbutton][/td][td width=60% style="text-align: left ; vertical-align: middle ; line-height: 1em ; "][b][&UnderText][/b][/td][/tr]
+    --&AbilityOutput|+[tr][td [&BttnTd_CSS]][rbutton][#[&SpellColor_Attr]][&AbilityLoop][/#]::WriteSCA;[&AbilityLoop][/rbutton][/td][td width=60% style="text-align: left ; vertical-align: middle ; line-height: 1em ; "][b][&UnderText][/b][/td][/tr]
   --%|
   --&AbilityOutput|+[/t]
   --+|[&AbilityOutput]
 --X|
 --:MapClass|
+  --/| DYNAMIC CONDITIONALS FOR SCACHOICE
   --?"[%1%]" -eq "Artificer" -or "[%1%]" -eq "Wizard" -or "[%1%]" -eq "Rogue" -or "[%1%]" -eq "Fighter"|[%2%];Intelligence
   --?"[%1%]" -eq "Bard" -or "[%1%]" -eq "Paladin" -or "[%1%]" -eq "Sorcerer" -or "[%1%]" -eq "Warlock"|[%2%];Charisma
   --?"[%1%]" -eq "Cleric" -or "[%1%]" -eq "Druid" -or "[%1%]" -eq "Ranger"|[%2%];Wisdom
 --<|
 --:WriteSCA|
+  --/| CHANGE THE SPELLCASTING ABILITY ON THE CHARACTER SHEET
   --&AT|@
-  --!a:[&CharID]|!spellcasting_ability:[&AT]{[&reentryval(tolowercase)]_mod}+
+  --!a:[&CharId_Attr]|!spellcasting_ability:[&AT]{[&reentryval(tolowercase)]_mod}+
   --&SAB|[= [*S:pb] + @{selected|spellcasting_ability}]
   --&SpellDC|[= 8 + [&SAB]]
-  --!a:[&CharID]|!spell_attack_bonus:[&SAB]
-  --!a:[&CharID]|!spell_save_dc:[&aSpellDC]
-  --^Delay|
---X|
---:Delay|
-  --#title|
-  --+|[t width=90% style="text-align: center;"][tr][br][td [&ButtonStyle]][rbutton]SpellBook::RestartBook[/rbutton][/td][/t]
+  --!a:[&CharId_Attr]|!spell_attack_bonus:[&SAB]
+  --!a:[&CharId_Attr]|!spell_save_dc:[&aSpellDC]
+  --+|[t width=90% style="text-align: center;"][tr][br][td [&BttnTd_CSS]][rbutton][#[&SpellColor_Attr]]SpellBook[/#]::RestartBook[/rbutton][/td][/t]
 --X|
 --:TemplateChange|
+  --/| WRITE FIRST RUN TEMPLATE INFORMATION TO TEMPLATE MULE
   --?"[&FirstRun]" -eq "1"|[
     --&tmpWrite|https://files.d20.io/images/450434072/VB4ntueH7mdD-5IGXyT_mg/original.webp
-    --!a:[&CharID]|!tmpChosen:dnd5e
-    --!a:[&CharID]|!spellcolor:000000
-    --!a:[&CharID]|!iconcolor:611b1c
-    --?";sorcerer;warlock;fighter;rogue;artificer;bard;cleric;druid;" -inc ";[&ClassName];"|&PrepWrite;0
-    --!a:[&CharID]|!preptoggle:[&PrepWrite]
-    --!a:[&CharID]|!tmpUI:https://files.d20.io/images/450559935/u5eIBjrmDj3lTMWxppChYA/original.webp
-    --!a:[&CharID]|!tmpSpellUI:https://files.d20.io/images/450554788/nh4hybJS9-nejMG2Sa5NpA/original.webp
-    --!a:[&CharID]|!SlotStyle:https://files.d20.io/images/450522298/64BSHbeFMBOEyHr4scG0Vg/original.webp
-    --!a:[&CharID]|!actiontoggle:no
-    --!a:[&CharID]|!bonustoggle:no
-    --!a:[&CharID]|!reactiontoggle:no
-    --!a:[&CharID]|!actioncolor:00FF00
-    --!a:[&CharID]|!bonuscolor:0000FF
-    --!a:[&CharID]|!reactioncolor:FF0000
+    --!a:[&CharId_Attr]|!tmpChosen:dnd5e
+    --!a:[&CharId_Attr]|!spellcolor:000000
+    --!a:[&CharId_Attr]|!iconcolor:611b1c
+    --?";sorcerer;warlock;fighter;rogue;artificer;bard;cleric;druid;" -inc ";[&ClassName_Attr];"|&PrepWrite;0
+    --!a:[&CharId_Attr]|!preptoggle:[&PrepWrite]
+    --!a:[&CharId_Attr]|!tmpUI:https://files.d20.io/images/450559935/u5eIBjrmDj3lTMWxppChYA/original.webp
+    --!a:[&CharId_Attr]|!tmpSpellUI:https://files.d20.io/images/450554788/nh4hybJS9-nejMG2Sa5NpA/original.webp
+    --!a:[&CharId_Attr]|!SlotStyle:https://files.d20.io/images/450522298/64BSHbeFMBOEyHr4scG0Vg/original.webp
+    --!a:[&CharId_Attr]|!actiontoggle:no
+    --!a:[&CharId_Attr]|!bonustoggle:no
+    --!a:[&CharId_Attr]|!reactiontoggle:no
+    --!a:[&CharId_Attr]|!actioncolor:00FF00
+    --!a:[&CharId_Attr]|!bonuscolor:0000FF
+    --!a:[&CharId_Attr]|!reactioncolor:FF0000
     --&Obrac|\\[
     --&Vbar|||
-    --&defaultTemplate|boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% 100% ; width: 120% ; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: .5em ; position: relative ; left: -40px'}[&Vbar]titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) ; background-size: 100% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div style='margin: 0em .25em 0em .25em ; font-size: 18px ; font-variant: small-caps ; font-family: serif ; color: #6e2425 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; text-align: center ; line-height: .75em ; '}[&Vbar]textcode::{/div}{div}{div style='width: 100% ; color: #000000 ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&Vbar]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) ; background-size: 100% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&Vbar]buttonstyle::style='color: #611b1c ; background-color: transparent ; padding: 2px ; border: none'[&Vbar]footer::
-    --!ob:StyleSaveResult:[&TemplateMuleID]:Spellbook[&CharID]:0|[&defaultTemplate]
+    --&defaultTemplate|boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% 100% ; width: 315px ; height: 100% ; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: 0.5em ; position: relative ; left: -40px'}[&Vbar]titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) ; background-size: 100% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div}[&Vbar]textcode::{/div}{div}{div style='width: 100% ; color: #000000 ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&Vbar]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) ; background-size: 100% 4px ; width: 101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&Vbar]buttonstyle::style='color: #611b1c ; background-color: transparent ; padding: 2px ; border: none'[&Vbar]footer::
+    --!ob:StyleSaveResult:[&TemplateMuleID]:Spellbook[&CharId_Attr]:0|[&defaultTemplate]
     --+|Default Style information has been written, please run the Spellbook again.
     --^EndFirstRun|
   --]|
+    --/| PLAYER TEMPLATE CHOICE WRITE
     --&tmpChoice|[&reentryval]
-    --!a:[&CharID]|!tmpChosen:[&tmpChoice]
-    --!a:[&CharID]|!tmpUI:[:ImageDB("UI_[&tmpChoice]")]
-    --!a:[&CharID]|!tmpSpellUI:[:ImageDB("UI_spell_[&tmpChoice]")]
-    --c[&tmpChoice]|dnd5e:&SpellColor;000|abyssal_ink:&SpellColor;CCF2FF|astral_void:&SpellColor;D6FCFF|dark_arcane:&SpellColor;D0F0C0|ember_core:&SpellColor;9CA298|gilded_vine:&SpellColor;DAD4C8|celestial_veil:&SpellColor;F5F5DC|stormcaller:&SpellColor;DBE9F1|sacred_rose:&SpellColor;C2A3AD|chloromancy:&SpellColor;C8A2C8|bloodwake:&SpellColor;FFE4E1|neon_tides:&SpellColor;A8FFB0|whisperveil:&SpellColor;2B223A|sanctum_aureum:&SpellColor;2A2E3B|verdant_veil:&SpellColor;DDECCF|amber_hollow:&SpellColor;DDECCF
-    --c[&tmpChoice]|dnd5e:&IconColor;611b1c|abyssal_ink:&IconColor;D8B4F8|astral_void:&IconColor;FFD6EC|dark_arcane:&IconColor;B89B72|ember_core:&IconColor;897A4C|gilded_vine:&IconColor;B48C53|celestial_veil:&IconColor;B87333|stormcaller:&IconColor;5A9FCF|sacred_rose:&IconColor;A18F5F|chloromancy:&IconColor;2E8B8B|bloodwake:&IconColor;DC143C|neon_tides:&IconColor;1E90FF|whisperveil:&IconColor;5e2fe2|sanctum_aureum:&IconColor;1A3E7A|verdant_veil:&IconColor;B8C86B|amber_hollow:&IconColor;B8C86B
-    --!a:[&CharID]|!spellcolor:[&SpellColor]
-    --!a:[&CharID]|!iconcolor:[&IconColor]
+    --&SettingsColor|[&SpellColor_Attr]
+    --&SetBorderColor|[&IconColor_Attr]
+    --&SttngTd_CSS|style="align-self: center; background-color: transparent; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: #[*S:IconColor]; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
+    --!a:[&CharId_Attr]|!tmpChosen:[&tmpChoice]
+    --!a:[&CharId_Attr]|!tmpUI:[:ImageDB("UI_[&tmpChoice]")]
+    --!a:[&CharId_Attr]|!tmpSpellUI:[:ImageDB("UI_spell_[&tmpChoice]")]
+    --c[&tmpChoice]|dnd5e:&SpellColor_Attr;000|abyssal_ink:&SpellColor_Attr;CCF2FF|astral_void:&SpellColor_Attr;D6FCFF|dark_arcane:&SpellColor_Attr;D0F0C0|ember_core:&SpellColor_Attr;9CA298|gilded_vine:&SpellColor_Attr;DAD4C8|celestial_veil:&SpellColor_Attr;F5F5DC|stormcaller:&SpellColor_Attr;DBE9F1|sacred_rose:&SpellColor_Attr;C2A3AD|chloromancy:&SpellColor_Attr;C8A2C8|bloodwake:&SpellColor_Attr;FFE4E1|neon_tides:&SpellColor_Attr;A8FFB0|whisperveil:&SpellColor_Attr;2B223A|sanctum_aureum:&SpellColor_Attr;2A2E3B|verdant_veil:&SpellColor_Attr;DDECCF|amber_hollow:&SpellColor_Attr;DDECCF|golden_quarry:&SpellColor_Attr;FFFFF0|stonecut_vault:&SpellColor_Attr;C7D0D8|feymist_bloom:&SpellColor_Attr;3B364A|circuit_tree:&SpellColor_Attr;E8F0FF
+    --c[&tmpChoice]|dnd5e:&IconColor_Attr;611b1c|abyssal_ink:&IconColor_Attr;D8B4F8|astral_void:&IconColor_Attr;FFD6EC|dark_arcane:&IconColor_Attr;B89B72|ember_core:&IconColor_Attr;897A4C|gilded_vine:&IconColor_Attr;B48C53|celestial_veil:&IconColor_Attr;B87333|stormcaller:&IconColor_Attr;5A9FCF|sacred_rose:&IconColor_Attr;A18F5F|chloromancy:&IconColor_Attr;2E8B8B|bloodwake:&IconColor_Attr;DC143C|neon_tides:&IconColor_Attr;1E90FF|whisperveil:&IconColor_Attr;5e2fe2|sanctum_aureum:&IconColor_Attr;1A3E7A|verdant_veil:&IconColor_Attr;B8C86B|amber_hollow:&IconColor_Attr;B8C86B|golden_quarry:&IconColor_Attr;E0A458|stonecut_vault:&IconColor_Attr;A9C8E2|feymist_bloom:&IconColor_Attr;6B1F45|circuit_tree:&IconColor_Attr;B89B72
+    --c[&tmpChoice]|dnd5e:&ShadowColor;0 1px 1px rgba(0,0,0,0.3)|abyssal_ink:&ShadowColor;1px 1px 3px rgba(255,255,255,0.8)|astral_void:&ShadowColor;1px 1px 3px rgba(255,255,255,0.6)|dark_arcane:&ShadowColor;1px 1px 3px rgba(255,255,255,0.4)|ember_core:&ShadowColor;1px 1px 3px rgba(255,150,100,0.6)|gilded_vine:&ShadowColor;1px 1px 3px rgba(255,255,255,0.4)|celestial_veil:&ShadowColor;1px 1px 3px rgba(255,255,255,0.4)|stormcaller:&ShadowColor;1px 1px 3px rgba(255,255,255,0.6)|sacred_rose:&ShadowColor;1px 1px 3px rgba(255,255,255,0.4)|chloromancy:&ShadowColor;1px 1px 3px rgba(255,255,255,0.4)|bloodwake:&ShadowColor;1px 1px 3px rgba(255,255,255,0.5)|neon_tides:&ShadowColor;1px 1px 3px rgba(255,255,255,0.6)|whisperveil:&ShadowColor;1px 1px 2px rgba(0,0,0,0.4)|sanctum_aureum:&ShadowColor;1px 1px 2px rgba(0,0,0,0.4)|verdant_veil:&ShadowColor;1px 1px 3px rgba(255,255,255,0.5)|amber_hollow:&ShadowColor;1px 1px 3px rgba(255,255,255,0.6)|golden_quarry:&ShadowColor;0 1px 1px rgba(0,0,0,0.6)|stonecut_vault:&ShadowColor;1px 1px 3px rgba(255,255,255,0.6)|feymist_bloom:&ShadowColor;0 1px 1px rgba(0,0,0,0.4)|circuit_tree:&ShadowColor;1px 1px 3px rgba(255,255,255,0.5)
+    --!a:[&CharId_Attr]|!spellcolor:[&SpellColor_Attr]
+    --!a:[&CharId_Attr]|!iconcolor:[&IconColor_Attr]
     --?";dnd5e;chloromancy;bloodwake;whisperveil;verdant_veil;amber_hollow;" -inc ";[&tmpChoice];"|&Stretch;100%|&Stretch;auto
     --?";dnd5e;chloromancy;bloodwake;verdant_veil;amber_hollow" -inc ";[&tmpChoice];"|&Repeat;no-repeat|&Repeat;repeat-y
     --&tmpWrite|[:ImageDB("[&tmpChoice]")]
-    --?";abyssal_ink;astral_void;dark_arcane;stormcaller;neon_tides;bloodwake;chloromancy;whisperveil;sanctum_aureum;verdant_veil;" -inc ";[&tmpChoice];"|&BarURL;https://files.d20.io/images/451067259/0DVQGmoTgKlvLw17RBYm6w/original.webp
-    --?";ember_core;gilded_vine;celestial_veil;sacred_rose;" -inc ";[&tmpChoice];"|&BarURL;https://files.d20.io/images/451067246/vh7nlY8sMJ8QeeA_lxm7aw/original.webp
+    --?";dark_arcane;ember_core;gilded_vine;celestial_veil;sacred_rose;golden_quarry;circuit_tree;sanctum_aureum;verdant_veil;amber_hollow;" -inc ";[&tmpChoice];"|&BarURL;https://files.d20.io/images/451067246/vh7nlY8sMJ8QeeA_lxm7aw/original.webp|&BarURL;https://files.d20.io/images/451067259/0DVQGmoTgKlvLw17RBYm6w/original.webp
     --?"[&tmpChoice]" -eq "dnd5e"|&BarURL;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png
     --&Obrac|\\[
     --&Vbar|\\\\|\\\\|
-    --!ability:[&CurrentTemplate]|action:boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% [&Obrac]&Stretch] ; width: 120% ; height: 100% ; background-repeat: [&Obrac]&Repeat] ; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: .5em ; position: relative ; left: -40px'}[&Vbar]titlecode::{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 100% 4px ; width:101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -15px ; left: -3px'}{/div}{div}[&Vbar]textcode::{/div}{div}{div style='width: 100% ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&Vbar]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 100% 4px ; width: 101% ; height:4px; display: block ; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&Vbar]buttonstyle::style='background-color: transparent ; padding: 2px ; border: none'[&Vbar]footer::
-    --+|[t width=90% style="text-align: center;"][tr][br][td [&ButtonStyle]][rbutton]SpellBook::RestartBook[/rbutton][/td][td [&ButtonStyle]][rbutton]Settings::SettingsCard[/rbutton][/td][/t]
+    --!ability:[&CurrentTemplate]|action:boxcode::{div style='background-image: url(&quot;[&Obrac]&tmpWrite]&quot;) ; background-size: 100% [&Obrac]&Stretch] ; width: 315px ; height: 100% ; background-repeat: [&Obrac]&Repeat] ; display: block ; text-align: left ; font-size: 14px ; padding-top: 1em ; font-family: serif ;  font-style: normal ; line-height: 0.5em ; position: relative ; left: -40px ; '}[&Vbar]titlecode::{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 100% 4px ; width:101% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: top ; position: relative ; top: -15px ; left: -3px'}{/div}{div}[&Vbar]textcode::{/div}{div style='text-shadow: [&ShadowColor] ;'}{div style='width: 100% ; font-weight: normal; display: block; margin: 0 1em 0 1em; vertical-align: top ; position: relative ; top: -10px ; '}[&Vbar]buttonwrapper::{div style='display: block ;'}{div style='background-image: url(&quot;[&Obrac]&BarURL]&quot;) ; background-size: 100% 4px ; width: 101% ; height:4px; display: block ; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -10px ; left: -16px ;'}{/div}[&Vbar]buttonstyle::style='background-color: transparent ; padding: 2px ; border: none'[&Vbar]footer::
+    --+|[t width=90% style="text-align: center;"][tr][br][td [&SttngTd_CSS]][rbutton][#[&SettingsColor]]Settings[/#]::SettingsCard;[&Pages][/rbutton][/td][/t]
     -->ClearCache|
   --:EndFirstRun|
   --@sc-reloadtemplates|
