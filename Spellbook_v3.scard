@@ -1,6 +1,6 @@
 !script {{
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 3.5.2
+  --/|Version     : 3.5.3
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -62,11 +62,13 @@
   --#overridetemplate|Spellbook[&CharId_Attr]
   --/| SET STYLING CSS INFO
   --#title|
-  --&TtlTbl_CSS|style="width: 100% ; margin: 0em .25em 0em .25em ; font-size: 18px ; font-family: 'Palatino Linotype', 'Book Antiqua', serif ; font-variant: small-caps ; letter-spacing: 0.02em ; font-weight: bold ; line-height: 1em ; text-align: center ; position: relative ; left: -18px ; "
-  --&HdrTbl_CSS|style="font-family: 'Palatino Linotype', 'Book Antiqua', serif ; margin: 0em auto .3em; ; color: #[&SpellColor_Attr] ; table-layout: fixed ; background-image: url([*S:tmpUI]) ; background-repeat: no-repeat ; background-size: 285px 30px ; background-position: left ; display: block ; width: 100% ; height: 100% ; line-height: 30px ; text-align: center ; position: relative ; left: -10px ; "
-  --&HdrTd_CSS|style="width: 70px ; font-size: 18px ; font-weight: bold ; "
-  --&HdrTdL_CSS|style="width: 35px ; font-size: 18px ; font-weight: bold ; position: relative ; top: 4px ; left: 6px ; "
-  --&HdrTdR_CSS|style="width: 35px ; font-size: 18px ; font-weight: bold ; position: relative ; right: 6px ; "
+  --&TtlTbl_CSS|style="width: 100% ; margin: 0em .25em 0em .25em ; font-size: font-family: 'Palatino Linotype', 'FreeSerif', serif ; font-variant: small-caps ; letter-spacing: 0.02em ; font-size: 18px ; font-weight: bold ; line-height: 1em ; text-align: center ; position: relative ; left: -18px ; "
+  --&HdrTbl_CSS|style="font-family: 'Palatino Linotype', 'Book Antiqua', serif ; margin: 0em auto .3em ; color: #[&SpellColor_Attr] ; font-size: 18px ; table-layout: fixed ; background-image: url([*S:tmpUI]) ; background-repeat: no-repeat ; background-size: 288px 30px ; background-position: left ; display: inline-block ; width: 310px ; height: 30px ; line-height: 18px ; position: relative ; left: -10px ; "
+  --&HdrTd_CSS|style="width: 80px ; height: 30px ; font-weight: bold ; text-align: center ; line-height: 18px ; "
+  --&HdrTdR_CSS|style="width: 40px ; height: 30px ; font-weight: bold ; text-align: left ; line-height: 18px ; "
+  --&HdrTdL_CSS|style=" width: 40px ; height: 30px ; font-family: 'Segoe UI Symbol', 'Noto Emoji' ; font-weight: bold ; text-align: right ; line-height: 18px ; "
+  --&HdrTdRoll_CSS|style="width: 40px ; height: 30px ; font-family: 'dicefontd20' ; font-weight: bold ; text-align: right ;  color: #[&IconColor_Attr] ; text-shadow: 0.6px 0 0 currentColor, -0.6px 0 0 currentColor ; line-height: 18px ; padding: 0px 1px 0 0em ; "
+  --&HdrTdClass_CSS|style="width: 40px ;height: 30px ; font-family: 'Segoe UI Symbol', 'Noto Emoji' ; font-size: 18px ; font-weight: bold ; text-align: right ; color: #[&IconColor_Attr] ; vertical-align: middle ; line-height: 16px ; "
   --&LvlTbl_CSS|style="background-image: url([*S:tmpSpellUI]) ; background-repeat: no-repeat ; background-size: 98% 40px ; display: inline-block ; width: 100% ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: -10px ; "
   --&LvlTd_CSS|style="position: relative ; top: -3px ; left: 2px ; text-weight: bold ; "
   --&DarkTd_CSS|style="background-color: rgba(0, 0, 0, 0.5) ; text-align: center ; text-shadow: 0 1px 1px rgba(0,0,0,0) ; position: relative ; left: -12px ; "
@@ -76,8 +78,7 @@
   --&MissingSlot|[img width=30]https://files.d20.io/images/450522300/P-PGyu9BUz3bPQF7eWYe5A/original.webp[/img]
   --&FullSlot|[img width=30][*S:SlotStyle][/img]
   --/| SET HTML SYMBOLS
-  --&RollImage|[d20]1[/d20]
-  --#diceFontColor|[&IconColor_Attr]
+  --&RollImage|t
   --&Infinity|&#x221E;
   --&BookImage|&#x1F56E;
   --&BlueDot|&#x25C9;
@@ -106,7 +107,7 @@
   --&ReactionTitle|
   --&ReactionImage|
   --?"[&ActionToggle_Attr]" -eq "yes"|[
-    --&ActionTitle|Action&nbsp;-&nbsp; 
+    --&ActionTitle|Action&nbsp;-&nbsp;
     --&ActionImage|[F::20][#[&ActionColor_Attr]]&#x25A0;[/#][/F]
   --]|
   --?"[&BonusToggle_Attr]" -eq "yes"|[
@@ -120,10 +121,10 @@
   --/| HANDLE PREPARED CALC
   --#parameterDelimiter|$$$
   --?"[&ClassImage]" -ne ""|&ClassImage$$$&#x[&ClassImage];|&ClassImage$$$&#x1F703;
-  --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName_Attr];"|&PrepTotal$$$&nbsp;[F:Gabriola:30][&Infinity][/F]|&PrepTotal$$$&nbsp;[F::20][$PrepTotal.Raw][/F]
+  --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName_Attr];"|&PrepTotal$$$[F:Gabriola:30][&Infinity][/F]|&PrepTotal$$$[$PrepTotal.Raw]
   --/| DISPLAY HEADER
   --&Title|[t width=100% [&TtlTbl_CSS]][tr][td][#[&IconColor_Attr]][&CharName_Attr][&Owner] Spell Book[/#][/td][/tr][/t]
-  --&Header|[t width=100% [&HdrTbl_CSS]][tr][td title="Spellcasting Ability: Click to Change" [&HdrTd_CSS]][#[&IconColor_Attr]]&#x272F;[/#][rbutton][F::16][#[&SpellColor_Attr]][&SCA_Attr(touppercase)][/#][/F]::SCAChoice[/rbutton][/td][td title="Spell Save DC" [&HdrTd_CSS]]&nbsp;[#[&IconColor_Attr]]&#x26E8;[/#][*S:spell_save_dc][/td][td title="Spellcasting Bonus" [&HdrTdL_CSS]][F::7]&nbsp;&nbsp;&nbsp;[&RollImage][/F][/td][td title="Spellcasting Bonus" [&HdrTdR_CSS]][*S:spell_attack_bonus][/td][td [&HdrTd_CSS] title="[&ClassName_Attr]: [&SubClass_Attr] &#x2666; Max Prepared Spells"][F:Segoe UI Symbol:20][#[&IconColor_Attr]]&nbsp;[&ClassImage][/#][/F][&PrepTotal][/td][td title="Settings" width=30px ]&nbsp;&nbsp;[F::20][rbutton][#[&IconColor_Attr]][&SettingsIcon][/#]::SettingsCard;0[/rbutton][/F][/td][/tr][/t]
+  --&Header|[t [&HdrTbl_CSS]][tr][td title="Spellcasting Ability: Click to Change" [&HdrTd_CSS]][#[&IconColor_Attr]]&#x272F;[/#][rbutton][F::16][#[&SpellColor_Attr]][&SCA_Attr(touppercase)][/#][/F]::SCAChoice[/rbutton][/td][td title="Spell Save DC" [&HdrTdL_CSS]][#[&IconColor_Attr]]&#x26E8;[/#][/td][td title="Spell Save DC" [&HdrTdR_CSS]][*S:spell_save_dc][/td][td title="Spellcasting Bonus" [&HdrTdRoll_CSS]][&RollImage][/td][td title="Spellcasting Bonus" [&HdrTdR_CSS]][*S:spell_attack_bonus][/td][td [&HdrTdClass_CSS] title="[&ClassName_Attr]: [&SubClass_Attr] &#x2666; Max Prepared Spells"][&ClassImage][/td][td [&HdrTdR_CSS] title="[&ClassName_Attr]: [&SubClass_Attr] &#x2666; Max Prepared Spells"][&PrepTotal][/td][td title="Settings"][F::20][rbutton][#[&IconColor_Attr]][&SettingsIcon][/#]::SettingsCard;0[/rbutton][/F][/td][/tr][/t]
   --?"[&ActionToggle_Attr]" -eq "yes" -or "[&BonusToggle_Attr]" -eq "yes" -or "[&ReactionToggle_Attr]" -eq "yes"|&Header$$$+[t width=100% style="text-align: center"][tr][td style='text-shadow: 0 1px 1px rgba(0,0,0,0) ; '][#[&SpellColor_Attr]][&ActionTitle][/#][&ActionImage]&nbsp;&nbsp;[#[&SpellColor_Attr]][&BonusTitle][/#][&BonusImage]&nbsp;&nbsp;[#[&SpellColor_Attr]][&ReactionTitle][/#][&ReactionImage][/td][/tr][/t]
   --+|[&Title]
   --+|[&Header]
@@ -214,11 +215,11 @@
   --%|
   --/| SPELL ROW STYLE INFORMATION
   --&SpellTbl_CSS|style="position: relative ; left: -10px ; table-layout: fixed ; "
-  --&SpellTd_CSS|style="width: 220px ; font-family: 'Palatino Linotype', 'Book Antiqua', serif ; letter-spacing: 0.01em ; font-weight: bold ; color: #[&SpellColor_Attr] ; display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 16px ; pointer-events: auto ; cursor: help ; "
-  --&SchlTd_CSS|style="width: 20px ; text-align: center ; font-family: 'Segoe UI Symbol', 'DejaVu Sans', Arial, monospace ;"
-  --&RollTd_CSS|style="width:22px ; position: relative ; top: 4px ; border-right: 1px solid #[&SpellColor_Attr] ; "
-  --&PrepTd_CSS|style="width: 22px ; text-align: center ; border-right: 1px solid #[&SpellColor_Attr] ; "
-  --&BookTD_CSS|style="width: 22px ; text-align: center ;"
+  --&SpellTd_CSS|style="width: 210px ; font-family: 'Palatino Linotype', 'Book Antiqua', 'FreeSerif', serif ; letter-spacing: 0.01em ; font-weight: bold ; color: #[&SpellColor_Attr] ; display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 16px ; pointer-events: auto ; cursor: help ; "
+  --&SchlTd_CSS|style="width: 20px ; text-align: center ; font-family: 'Segoe UI Symbol', 'DejaVu Sans', Arial, monospace ; font-size: 18px ; color: #[&IconColor_Attr] ; "
+  --&RollTd_CSS|style="font-family: 'dicefontd20' ; width:22px ; border-right: 1px solid #[&SpellColor_Attr] ; font-size: 18px ; font-weight: bold ; text-shadow: 0.6px 0 0 currentColor, -0.6px 0 0 currentColor ; "
+  --&PrepTd_CSS|style="width: 22px ; text-align: center ; "
+  --&BookTD_CSS|style="width: 22px ; text-align: center ; border-left: 1px solid #[&SpellColor_Attr] ; "
   --&SpellOutput|+[t width=96% [&SpellTbl_CSS]]
   --&SpellIndex|0
   --%SpellName|foreach;lvl[&SpellLevel]Spellnames
@@ -244,11 +245,11 @@
     --~MacroName|string;replaceall; ;-;[&SpellName]
     --~MacroButton|system;findability;[&CharName_Attr];[&MacroName]
     --?"[&MacroButton]" -ne "AbilityNotFound"|[
-      --&SpellRoll|[F::6][button][&RollImage]::~[&CharName_Attr]|[&MacroButton][/button][/F]
+      --&SpellRoll|[button][#[&IconColor_Attr]][&RollImage][/#]::~[&CharName_Attr]|[&MacroButton][/button]
       --&SpellDetail|[button][&BookImage]::~[&CharName_Attr]|[&MacroButton][/button]
     --]|[
       --?"[&SpellOutputType]" -inc "ATTACK"|[
-        --&SpellRoll|[F::6][sheetbutton][&RollImage]::[&CharName_Attr]::&#37;{selected|repeating_spell-[&SpellLevel]_$[&SpellIndex]_spell}[/sheetbutton][/F]
+        --&SpellRoll|[sheetbutton][#[&IconColor_Attr]][&RollImage][/#]::[&CharName_Attr]::&#37;{selected|repeating_spell-[&SpellLevel]_$[&SpellIndex]_spell}[/sheetbutton]
       --]|
       --?"[&SpellOutputType]" -inc "SPELLCARD"|[
         --&SpellRoll|
@@ -258,7 +259,6 @@
     --&SpellData|[&SpellName][&SpellLevel]
     --/| MAP SPELL SCHOOL ICON
     --c[&SpellSchool]|Abjuration:&SchoolIcon;&#x26E8|Conjuration:&SchoolIcon;&#x169B9|Divination:&SchoolIcon;&#x2135|Enchantment:&SchoolIcon;&#x272F|Evocation:&SchoolIcon;&#x2739|Illusion:&SchoolIcon;&#x1F441|Necromancy:&SchoolIcon;&#x2620|Transmutation:&SchoolIcon;&#x21BB
-    --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName_Attr];" -or "[&SpellPrepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip"|&PrepareSize;20|&PrepareSize;26
     --#parameterDelimiter|$$$
     --?"[&SpellSchool]" -eq "undefined"|&SchoolIcon$$$&#x2370;|&SchoolIcon$$$[&SchoolIcon]
     --&SchoolIcon|+;
@@ -282,7 +282,7 @@
     --&Concentration|
     --?"[&SpellConcentration]" -inc "1"|[
       --&Concentration|(c)
-      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Concentration]split
+      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Concentration]
     --]|
     --&ToolTip|+&nbsp;&#x2666;&nbsp;DURATION:&nbsp;[&SpellDuration]
     --?"[&Innate]" -ne ""|&ToolTip$$$+&nbsp;&#x2666;&nbsp;[&Innate]
@@ -296,7 +296,7 @@
     --#parameterDelimiter|;
     --/| WHEN TO DISPLAY SPELL AND THEN DISPLAY
     --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName_Attr];" -or "[&SpellPrepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip" -or "[&PrepToggle_Attr]" -eq "1"|[
-        --&SpellOutput|+[tr][td title="[&SpellSchool(totitlecase)]" [&SchlTd_CSS]][F::18][#[&IconColor_Attr]][&SchoolIcon][/#][/F][/td][td [&SpellTd_CSS] [&ToolTip] ][i][&SpellName][/i][&CastingTime][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td title="Cast Spell" [&RollTd_CSS]][&SpellRoll][/td][td title="Prepared" [&PrepTd_CSS]][F::[&PrepareSize]][&Prepared][/F][/td][td title="Spell Details" [&BookTD_CSS]][F::16][&SpellDetail][/F][/td][/tr]
+      --&SpellOutput|+[tr][td title="[&SpellSchool(totitlecase)]" [&SchlTd_CSS]][&SchoolIcon][/td][td [&SpellTd_CSS] [&ToolTip] ][i][&SpellName][/i][&CastingTime][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td title="Cast Spell" [&RollTd_CSS]][&SpellRoll][/td][td title="Prepared" [&PrepTd_CSS]][F::20][&Prepared][/F][/td][td title="Spell Details" [&BookTD_CSS]][F::16][&SpellDetail][/F][/td][/tr]
     --]|
     --&SpellIndex|[= [&SpellIndex] + 1 ]
   --%|
@@ -426,7 +426,7 @@
     --+|[t width=100% [&UITbl_CSS]][tr][td width=25 height=40 [&LvlTd_CSS]][br][F::20][b][#[&IconColor_Attr]]&nbsp;1[/#][/b][/F][/td][td width=90 [&MinusTd_CSS]][b][F::30][#[&IconColor_Attr]][r]-[/r][/#][/F][/b][/td][td width=135 [&SlotTd_CSS]][F::14][rbutton][#[&Stngs_SpellColor]][&UIThemeName(totitlecase)][/#]::UIChoice;[&CurrentUI][/rbutton][/F][/td][td width=40 title="Show or Hide All Spells"][b][F::20][#[&IconColor_Attr]][l]+[/l][/#][/F][/b][/td][/tr][/t]
   --%|
   --+|[t width=100% [&PagesTbl_CSS]][tr][td [&PagesTd_CSS]][rbutton][#[&Stngs_SpellColor]]Page 1[/#]::SettingsCard;0[/rbutton][/td][td [&PagesTd_CSS]][rbutton][#[&Stngs_SpellColor]]Page 2[/#]::SettingsCard;4[/rbutton][/td][td [&PagesTd_CSS]][rbutton][#[&Stngs_SpellColor]]Page 3[/#]::SettingsCard;8[/rbutton][/td][td [&PagesTd_CSS]][rbutton][#[&Stngs_SpellColor]]Page 4[/#]::SettingsCard;12[/rbutton][/td][td][rbutton][#[&Stngs_SpellColor]]Page 5[/#]::SettingsCard;16[/rbutton][/td]
-  --+|[t width=90% border=1 style="text-shadow: 0 1px 1px rgba(0,0,0,0)"][tr][td width=90px height=30px][c][b][#[&Stngs_SpellColor]]Spell Color #[&Stngs_SpellColor][/#][/b][/c][/td][td width=10px title="Change Spell Font Color"][c][rbutton][F:Segoe UI Symbol:][#[&IconColor_Attr]]&#x1F3A8;[/#][/F]::UpdateColor;[&tmpChosen_Attr]%%%spell%%%custom[/rbutton][/c][/td][td title="Reset to Current Theme Font Color" width=10px][c][rbutton][#[&IconColor_Attr]]&#x21BB;[/#]::UpdateColor;[&tmpChosen_Attr]%%%spell%%%reset[/rbutton][/c][/td][/tr][tr][td width=90px height=30px][c][b][#[*S:iconcolor]]Icon Color #[*S:iconcolor][/#][/b][/c][/td][td width=10px title="Change Icon Color"][c][rbutton][F:Segoe UI Symbol:][#[&IconColor_Attr]]&#x1F3A8;[/#][/F]::UpdateColor;[&tmpChosen_Attr]%%%icon%%%custom[/rbutton][/c][/td] [td title="Reset to Theme Icon Color" width=10px][c][rbutton][#[&IconColor_Attr]]&#x21BB;[/#]::UpdateColor;[&tmpChosen_Attr]%%%icon%%%reset[/rbutton][/c][/td][/tr][/t]
+  --+|[t width=90% border=1 style="text-shadow: 0 1px 1px rgba(0,0,0,0)"][tr][td width=90px height=30px][c][b][#[&Stngs_SpellColor]]Spell Color #[&Stngs_SpellColor][/#][/b][/c][/td][td width=10px title="Change Spell Font Color" style="font-family: 'Segoe UI Symbol', 'Noto Emoji' ; "][c][rbutton][#[&IconColor_Attr]]&#x1F3A8;[/#]::UpdateColor;[&tmpChosen_Attr]%%%spell%%%custom[/rbutton][/c][/td][td title="Reset to Current Theme Font Color" width=10px][c][rbutton][#[&IconColor_Attr]]&#x21BB;[/#]::UpdateColor;[&tmpChosen_Attr]%%%spell%%%reset[/rbutton][/c][/td][/tr][tr][td width=90px height=30px][c][b][#[*S:iconcolor]]Icon Color #[*S:iconcolor][/#][/b][/c][/td][td width=10px title="Change Icon Color" style="font-family: 'Segoe UI Symbol', 'Noto Emoji' ; "][c][rbutton][#[&IconColor_Attr]]&#x1F3A8;[/#]::UpdateColor;[&tmpChosen_Attr]%%%icon%%%custom[/rbutton][/c][/td] [td title="Reset to Theme Icon Color" width=10px][c][rbutton][#[&IconColor_Attr]]&#x21BB;[/#]::UpdateColor;[&tmpChosen_Attr]%%%icon%%%reset[/rbutton][/c][/td][/tr][/t]
   --~|array;define;ActionArray;action;bonus;reaction
   --%ActionLoop|foreach;ActionArray
   --&ActionType|[&ActionLoop(totitlecase)]
@@ -434,7 +434,7 @@
     --c[&ActionLoop]|action:&ActionsImage;&#x25A0|bonus:&ActionsImage;&#x25C6|reaction:&ActionsImage;&#x2B22
     --?"[&ActionLoop]" -eq "action"|&ActionFontSize;22|&ActionFontSize;18
     --?"[*S:[&ActionLoop]toggle]" -eq "no"|&Toggle;&#x2610|&Toggle;&#x2611
-    --+|[t width=90% border=1 style="text-align: center ; text-shadow: 0 1px 1px rgba(0,0,0,0) ; "][tr][td width=69px height=30][r][b][#[&Stngs_SpellColor]][&ActionType] #[&ColorAction]&nbsp;-&nbsp;[/#][#[&ColorAction]][F::[&ActionFontSize]][&ActionsImage];&nbsp;[/F][/#][/b][/r][/td][td width=10px][rbutton][F::18][#[&IconColor_Attr]][&Toggle];[/#][/F]::ActionToggle;[&ActionLoop]toggle[/rbutton][/td][td title="Change To Custom Color" width=10px][c][rbutton][F:Segoe UI Symbol:][#[&IconColor_Attr]]&#x1F3A8;[/#][/F]::UpdateColor;[&tmpChosen_Attr]%%%[&ActionLoop]%%%custom[/rbutton][/c][/td][td title="Reset to Default Color" width=10px][c][rbutton][#[&IconColor_Attr]]&#x21BB;[/#]::UpdateColor;[&tmpChosen_Attr]%%%[&ActionLoop]%%%reset[/rbutton][/c][/td][/tr][/t]
+    --+|[t width=90% border=1 style="text-align: center ; text-shadow: 0 1px 1px rgba(0,0,0,0) ; "][tr][td width=69px height=30][r][b][#[&Stngs_SpellColor]][&ActionType] #[&ColorAction]&nbsp;-&nbsp;[/#][#[&ColorAction]][F::[&ActionFontSize]][&ActionsImage];&nbsp;[/F][/#][/b][/r][/td][td width=10px][rbutton][F::18][#[&IconColor_Attr]][&Toggle];[/#][/F]::ActionToggle;[&ActionLoop]toggle[/rbutton][/td][td title="Change To Custom Color" width=10px style="font-family: 'Segoe UI Symbol', 'Noto Emoji' ; "][c][rbutton][#[&IconColor_Attr]]&#x1F3A8;[/#]::UpdateColor;[&tmpChosen_Attr]%%%[&ActionLoop]%%%custom[/rbutton][/c][/td][td title="Reset to Default Color" width=10px][c][rbutton][#[&IconColor_Attr]]&#x21BB;[/#]::UpdateColor;[&tmpChosen_Attr]%%%[&ActionLoop]%%%reset[/rbutton][/c][/td][/tr][/t]
   --%|
    --~|array;define;SlotChoice;default;red;orange;yellow;green;blue;purple;pink
   --&SlotsPerRow|4
