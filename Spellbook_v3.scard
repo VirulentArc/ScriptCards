@@ -215,7 +215,7 @@
   --%|
   --/| SPELL ROW STYLE INFORMATION
   --&SpellTbl_CSS|style="position: relative ; left: -10px ; table-layout: fixed ; "
-  --&SpellTd_CSS|style="width: 210px ; font-family: 'Palatino Linotype', 'Book Antiqua', 'FreeSerif', serif ; letter-spacing: 0.01em ; font-weight: bold ; color: #[&SpellColor_Attr] ; display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 16px ; pointer-events: auto ; cursor: help ; "
+  --&SpellTd_CSS|style="width: 210px ; font-family: 'Palatino Linotype', 'Book Antiqua', 'FreeSerif', serif ; letter-spacing: 0.01em ; color: #[&SpellColor_Attr] ; display: inline-block ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 16px ; pointer-events: auto ; cursor: help ; "
   --&SchlTd_CSS|style="width: 20px ; text-align: center ; font-family: 'Segoe UI Symbol', 'DejaVu Sans', Arial, monospace ; font-size: 18px ; color: #[&IconColor_Attr] ; "
   --&RollTd_CSS|style="font-family: 'dicefontd20' ; width:22px ; border-right: 1px solid #[&SpellColor_Attr] ; font-size: 18px ; font-weight: bold ; text-shadow: 0.6px 0 0 currentColor, -0.6px 0 0 currentColor ; "
   --&PrepTd_CSS|style="width: 22px ; text-align: center ; "
@@ -296,7 +296,7 @@
     --#parameterDelimiter|;
     --/| WHEN TO DISPLAY SPELL AND THEN DISPLAY
     --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName_Attr];" -or "[&SpellPrepared]" -eq 1 -or "[&SpellLevel]" -inc "cantrip" -or "[&PrepToggle_Attr]" -eq "1"|[
-      --&SpellOutput|+[tr][td title="[&SpellSchool(totitlecase)]" [&SchlTd_CSS]][&SchoolIcon][/td][td [&SpellTd_CSS] [&ToolTip] ][i][&SpellName][/i][&CastingTime][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td title="Cast Spell" [&RollTd_CSS]][&SpellRoll][/td][td title="Prepared" [&PrepTd_CSS]][F::20][&Prepared][/F][/td][td title="Spell Details" [&BookTD_CSS]][F::16][&SpellDetail][/F][/td][/tr]
+      --&SpellOutput|+[tr][td title="[&SpellSchool(totitlecase)]" [&SchlTd_CSS]][&SchoolIcon][/td][td [&SpellTd_CSS] [&ToolTip] ][b][i][&SpellName][/i][/b][&CastingTime][i]&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[F::12][&Innate][/F][/i][/td][td title="Cast Spell" [&RollTd_CSS]][&SpellRoll][/td][td title="Prepared" [&PrepTd_CSS]][F::20][&Prepared][/F][/td][td title="Spell Details" [&BookTD_CSS]][F::16][&SpellDetail][/F][/td][/tr]
     --]|
     --&SpellIndex|[= [&SpellIndex] + 1 ]
   --%|
