@@ -1,7 +1,7 @@
 !Script{{
 
   --/|Script Name : Tim's NPC Stat Block Mod v4 (Scriptcards) for D&D 5E 2014
-  --/|Version     : 4.1
+  --/|Version     : 4.1.1
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays an NPC stat block that mimics the 2014 Monster Manual in chat that has buttons for all 
@@ -16,10 +16,9 @@
   --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
   --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
   --?"[*[&TemplateMuleID]:character_name]" -eq ""|[
-    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the Spellbook mod will be kept.[/td][/tr][/t]
+    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the NPC Stat Block Mod will be kept.[/td][/tr][/t]
     --X|
   --]|
-
   --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
   --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4
   --?"[&IsTemplate]" -eq "AbilityNotFound"|[
@@ -29,7 +28,7 @@
     --@sc-reloadtemplates|
     --X|
   --]|
-
+  --/| SET PARAMETERS
   --#Debug|0
   --#reentrant|NPCBlock- @{selected|character_id}
   --#overridetemplate|statblockv4
@@ -38,7 +37,7 @@
   --&CharID|[*S:character_id]
   --#title|[*S:npc_name]
   --#emoteState|0
-
+  --/| CACHE ATTRIBUTES IN STRING VARIABLES
   --&NPC_actype|[*S:npc_actype]
   --&HP|[*S:hp]
   --?"[&NPC_actype]" -ne ""|&NPCactype;([&NPC_actype])
@@ -51,14 +50,12 @@
   --&NPC_lang|[*S:npc_languages]
   --&NPC_chall|[*S:npc_challenge]
   --&NPC_pb|[*S:npc_pb]
-
+  --/| START OUTPUT
   --&Divider|[t][tr][td height=5px][/td][/tr][/t][t][tr][td width=100% style="border: none; border-top: 0.10em solid transparent; border-bottom: 0.25em solid transparent; border-left: 16em solid #910900; line-height: 1.25em; font-size: 1.4em; display: block; pointer-events: none;"][/td][/tr][/t][t][tr][td height=5px][/td][/tr][/t]
-
-  --&HeaderBlock|[t width=100%][tr][td][F::12][#000][i][*S:npc_type]&nbsp;[/i][/#][/F][/td][/tr][tr][td][&Divider][/td][/tr][tr][td][F::12][b]Armor&nbsp;Class[/b]&nbsp;[*S:npc_ac]&nbsp;[&NPCactype][br][b]Hit&nbsp;Points[/b][&BaseHP]&nbsp;[*S:hp^]&nbsp;([*S:npc_hpformula])[br][b]Speed[/b]&nbsp;[*S:npc_speed][/F][/td][/tr][/t]
+  --&HeaderBlock|[t width=100% style="width:100% ; font-size: 12px ; "][tr][td][#000][i][*S:npc_type]&nbsp;[/i][/#][/td][/tr][tr][td][&Divider][/td][/tr][tr][td][b]Armor&nbsp;Class[/b]&nbsp;[*S:npc_ac]&nbsp;[&NPCactype][br][b]Hit&nbsp;Points[/b][&BaseHP]&nbsp;[*S:hp^]&nbsp;([*S:npc_hpformula])[br][b]Speed[/b]&nbsp;[*S:npc_speed][/td][/tr][/t]
   --+|[&HeaderBlock]
   --+|[&Divider]
-
---~|array;define;StatArray;strength;dexterity;constitution;intelligence;wisdom;charisma
+  --~|array;define;StatArray;strength;dexterity;constitution;intelligence;wisdom;charisma
   --&StatsPerRow|3
   --&StatsCounter|0
   --&StatsBlock|[t width=100% style="text-align: center; border-collapse: collapse;"][tr]
@@ -93,9 +90,7 @@
   --%|
   --&StatsBlock|+[/tr][/t]
   --+|[&StatsBlock]
-
   --+|[&Divider]
-  
   --&SecondBlock|[t width=100%][tr][td style="width: 260px ; display: block ; font-size: 12px ; "]
   --~|array;define;SaveArray;str;dex;con;int;wis;cha
   --%SaveLoop|foreach;SaveArray
@@ -126,83 +121,79 @@
   --+|[&ThirdBlock]
   --#parameterDelimiter|$$$
   --&FourthBlock|[t width=100%]
-  --?"[&NPC_vuln]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Damage&nbsp;Vulnerabilities[/b]&nbsp;[&NPC_vuln][/F][br][/td][/tr]
-  --?"[&NPC_res]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Damage&nbsp;Resistances[/b]&nbsp;[&NPC_res][/F][br][/td][/tr]
-  --?"[&NPC_imm]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Damage&nbsp;Immunities[/b]&nbsp;[&NPC_imm][/F][br][/td][/tr]
-  --?"[&NPC_cond]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Conditions&nbsp;Immunities[/b]&nbsp;[&NPC_cond][/F][br][/td][/tr]
-  --?"[&NPC_senses]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Senses[/b]&nbsp;[&NPC_senses][/F][br][/td][/tr]
-  --?"[&NPC_lang]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Languages[/b]&nbsp;[&NPC_lang][/F][br][/td][/tr]
-  --?"[&NPC_chall]" -ne ""|&FourthBlock$$$+[tr][td][F::12][b]Challenge[/b]&nbsp;[&NPC_chall]&nbsp;([*S:npc_xp]xp)[/F][br][/td][/tr]
-  --?"[&NPC_pb]" -ne 0|&FourthBlock$$$+[tr][td][F::12][b]Proficiency Bonus[/b]&nbsp;[&NPC_pb][/F][br][/td][/tr]
+  --?"[&NPC_vuln]" -ne ""|&FourthBlock$$$+[tr][td style="font-size: 12px ; "][b]Damage&nbsp;Vulnerabilities[/b]&nbsp;[&NPC_vuln][/td][/tr]
+  --?"[&NPC_res]" -ne ""|&FourthBlock$$$+[tr][td style="font-size: 12px ; "][b]Damage&nbsp;Resistances[/b]&nbsp;[&NPC_res][/td][/tr]
+  --?"[&NPC_imm]" -ne ""|&FourthBlock$$$+[tr][td style="font-size: 12px ; "][b]Damage&nbsp;Immunities[/b]&nbsp;[&NPC_imm][/td][/tr]
+  --?"[&NPC_cond]" -ne ""|&FourthBlock$$$+[tr][td style="font-size: 12px ; "][b]Conditions&nbsp;Immunities[/b]&nbsp;[&NPC_cond][/td][/tr]
+  --?"[&NPC_senses]" -ne ""|&FourthBlock$$$+[tr][td style="font-size: 12px ; "][b]Senses[/b]&nbsp;[&NPC_senses][/td][/tr]
+  --?"[&NPC_lang]" -ne ""|&FourthBlock$$$+[tr][td style="font-size: 12px ; "][b]Languages[/b]&nbsp;[&NPC_lang][/td][/tr]
+  --?"[&NPC_chall]" -ne ""|&FourthBlock$$$+[tr][td style="font-size: 12px ; "][b]Challenge[/b]&nbsp;[&NPC_chall]&nbsp;([*S:npc_xp]xp)[/td][/tr]
+  --?"[&NPC_pb]" -ne 0|&FourthBlock$$$+[tr][td style="font-size: 12px ; "][b]Proficiency Bonus[/b]&nbsp;[&NPC_pb][/td][/tr]
   --#parameterDelimiter|;
   --&FourthBlock|+[/t]
   --+|[&FourthBlock]
   --+|[&Divider]
-
   --~|array;define;SectionTypes;trait;action;bonusaction;reaction;action-l;action-m
   --%SectionLoop|foreach;SectionTypes
     --Rfirst|[&CharID];repeating_npc[&SectionLoop]
     --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|>ActionLoop;[&SectionLoop]
   --%|
-
   --+|[t width=100%][tr][td style="line-height:6px;"]&nbsp;[/td][/tr][tr][td style="background-image:linear-gradient(#7A2008,#7A2008);background-size:100% 2px;background-repeat:no-repeat;background-position:bottom;line-height:2px;height:2px;"]&nbsp;[/td][/tr][tr][td style="line-height:4px;"]&nbsp;[/td][/tr][/t]
   --&SkillOutput|[t style="width: 100%; word-spacing: -2px; text-align: center; font-size: 13px ;"][tr][td][button]Acrobatics::~selected|npc_Acrobatics[/button]&nbsp;|&nbsp;[button]Animal Handling::~selected|npc_Animal_Handling[/button]&nbsp;|&nbsp;[button]Arcana::~selected|npc_Arcana[/button][/td][/tr][tr][td][button]Athletics::~selected|npc_Athletics[/button]&nbsp;|&nbsp;[button]History::~selected|npc_History[/button]&nbsp;|&nbsp;[button]Insight::~selected|npc_Insight[/button]&nbsp;|&nbsp;[button]Intimidation::~selected|npc_intimidation[/button][/td][/tr][tr][td][button]Investigation::~selected|npc_Investigation[/button]&nbsp;|&nbsp;[button]Medicine::~selected|npc_Medicine[/button]&nbsp;|&nbsp;[button]Nature::~selected|npc_Nature[/button]&nbsp;|&nbsp;[button]Perception::~selected|npc_Perception[/button][/td][/tr][tr][td][button]Performance::~selected|npc_Performance[/button]&nbsp;|&nbsp;[button]Persuasion::~selected|npc_Persuasion[/button]&nbsp;|&nbsp;[button]Religion::~selected|npc_Religion[/button][/td][/tr][tr][td][button]Sleight of Hand::~selected|npc_Sleight_of_Hand[/button]&nbsp;|&nbsp;[button]Stealth::~selected|npc_Stealth[/button]&nbsp;|&nbsp;[button]Survival::~selected|npc_Survival[/button][/td][/tr][/t]
   --+|[&SkillOutput]
 --X|
-
-  --:ActionLoop|
-    --&Action|[%1%]
-    --?"[&Action]" -eq "action-l"|&ActionName;[F::20]L[/F][F::15]EGENDARY[/F] [F::20]A[/F][F::15]CTIONS[/F]|&ActionName;[F::20]A[/F][F::15]CTIONS[/F]
-    --?"[&Action]" -eq "action-m"|&ActionName;[F::20]M[/F][F::15]YTHIC[/F] [F::20]A[/F][F::15]CTIONS[/F]
-    --?"[&Action]" -eq "bonusaction"|&ActionName;[F::20]B[/F][F::15]ONUS[/F] [F::20]A[/F][F::15]CTIONS[/F]
-    --?"[&Action]" -eq "reaction"|&ActionName;[F::20]R[/F][F::15]EACTIONS[/F]
-    --&ActionName|[&ActionName(touppercase)]
-    --&ActionOutput|[t width=100% style="line-height: 1.1em;"]
+--:ActionLoop|
+  --&Action|[%1%]
+  --?"[&Action]" -eq "action-l"|&ActionName;[F::20]L[/F][F::15]EGENDARY[/F] [F::20]A[/F][F::15]CTIONS[/F]|&ActionName;[F::20]A[/F][F::15]CTIONS[/F]
+  --?"[&Action]" -eq "action-m"|&ActionName;[F::20]M[/F][F::15]YTHIC[/F] [F::20]A[/F][F::15]CTIONS[/F]
+  --?"[&Action]" -eq "bonusaction"|&ActionName;[F::20]B[/F][F::15]ONUS[/F] [F::20]A[/F][F::15]CTIONS[/F]
+  --?"[&Action]" -eq "reaction"|&ActionName;[F::20]R[/F][F::15]EACTIONS[/F]
+  --&ActionName|[&ActionName(touppercase)]
+  --&ActionOutput|[t width=100% style="line-height: 1.1em;"]
+  --#parameterDelimiter|$$$
+  --?"[&Action]" -ne "trait"|&ActionOutput$$$+[tr][td style="line-height:4px;"]&nbsp;[/td][/tr][tr][td colspan=100% style="background-image:linear-gradient(#7A2008,#7A2008);background-size:100% 2px;background-repeat:no-repeat;background-position:bottom;padding-bottom:2px; letter-spacing: .8px; text-shadow: 0.6px 0 0 currentColor;"][&ActionName][/td][/tr][tr][td style="line-height:4px;"]&nbsp;[/td][/tr]
+  --#parameterDelimiter|;
+  --?"[&Action]" -eq "action-l"|[
+    --&LegDesc|[*S:npc_legendary_actions_desc]
+    --&ActionOutput|+[tr][td colspan=100% style="font-size: 12px ; color: #000 ; "][&LegDesc][/td][/tr]
+  --]|
+  --?"[&Action]" -eq "action-m"|[
+    --&MythDesc|[*S:npc_mythic_actions_desc]
+    --&ActionOutput|+[tr][td colspan=100% style="font-size: 12px ; color: #000 ; "][&MythDesc][/td][/tr]
+  --]|
+  --~|array;fromrepeatingsection;actionarray;[&CharID];repeating_npc[&Action];name
+  --%ActionLoop|foreach;actionarray
+    --Rfind|[&CharID];[&ActionLoop];repeating_npc[&Action];name
+    --?"[&Action]" -eq "reaction" -or "[&Action]" -eq "trait"|&ButtonURL;[*R>npc_roll_output]|&ButtonURL;[*R>npc_action]
     --#parameterDelimiter|$$$
-    --?"[&Action]" -ne "trait"|&ActionOutput$$$+[tr][td style="line-height:4px;"]&nbsp;[/td][/tr][tr][td colspan=100% style="background-image:linear-gradient(#7A2008,#7A2008);background-size:100% 2px;background-repeat:no-repeat;background-position:bottom;padding-bottom:2px; letter-spacing: .8px; text-shadow: 0.6px 0 0 currentColor;"][&ActionName][/td][/tr][tr][td style="line-height:4px;"]&nbsp;[/td][/tr]
+    --?"[&Action]" -eq "trait"|&ButtonEmote$$$&#128220;&#65038;|&ButtonEmote$$$&#x2694;
+    --?"[&Action]" -eq "trait"|&ButtonSize$$$14|&ButtonSize$$$16
     --#parameterDelimiter|;
-    --?"[&Action]" -inc "action-l"|[
-      --&LegDesc|[*S:npc_legendary_actions_desc]
-      --&ActionOutput|+[tr][td colspan=100%][F::12][#000][&LegDesc][/#][/F][/td][/tr]
+    --&Name|[*R:name]
+    --&Description|[*R:description]
+    --&AttackType|[*R:attack_type]
+    --?"[&AttackType]" -inc "ranged"|&RangeType;range|&RangeType;reach
+    --&AttDesc|
+    --&ToHitText|
+    --?"[&Description]" -eq ""|[
+        --&ToHitText|[&AttackType] Weapon Attack:
+        --&AttDesc|++[*R:attack_tohit] to hit, [&RangeType] [*R:attack_range], [*R:attack_target]. [*R:attack_onhit].
+    --]|[
+      --~Description|string;striplinefeeds;[&Description]
+      --~Description|string;replaceall;>;;[&Description]
+      --~Description|string;replaceall;<br;;[&Description]
+      --~Description|string;replaceall;[;;[&Description]
+      --~Description|string;replaceall;];;[&Description]
+      --~Description|string;replaceall;*;;[&Description]
+      --&Description|[&Description(replaceall,',&#39;)]
     --]|
-    --?"[&Action]" -inc "action-m"|[
-      --&MythDesc|[*S:npc_mythic_actions_desc]
-      --&ActionOutput|+[tr][td colspan=100%][F::12][#000][&MythDesc][/#][/F][/td][/tr]
-    --]|
-    --~|array;fromrepeatingsection;actionarray;[&CharID];repeating_npc[&Action];name
-    --%ActionLoop|foreach;actionarray
-      --Rfind|[&CharID];[&ActionLoop];repeating_npc[&Action];name
-      --?"[&Action]" -eq "reaction" -or "[&Action]" -eq "trait"|&ButtonURL;[*R>npc_roll_output]|&ButtonURL;[*R>npc_action]
-      --#parameterDelimiter|$$$
-      --?"[&Action]" -eq "trait"|&ButtonEmote$$$&#128220;&#65038;|&ButtonEmote$$$&#x2694;
-      --?"[&Action]" -eq "trait"|&ButtonSize$$$14|&ButtonSize$$$16
-      --#parameterDelimiter|;
-      --&Name|[*R:name]
-      --&Description|[*R:description]
-      --&AttackType|[*R:attack_type]
-      --?"[&AttackType]" -inc "ranged"|&RangeType;range|&RangeType;reach
-      --&AttDesc|
-      --&ToHitText|
-      --?"[&Description]" -eq ""|[
-          --&ToHitText|[&AttackType] Weapon Attack:
-          --&AttDesc|++[*R:attack_tohit] to hit, [&RangeType] [*R:attack_range], [*R:attack_target]. [*R:attack_onhit].
-      --]|[
-        --~Description|string;striplinefeeds;[&Description]
-        --~Description|string;replaceall;>;;[&Description]
-        --~Description|string;replaceall;<br;;[&Description]
-        --~Description|string;replaceall;[;;[&Description]
-        --~Description|string;replaceall;];;[&Description]
-        --~Description|string;replaceall;*;;[&Description]
-      --]|
-      --&ToolTip|[&Name]&nbsp;&#x2666;&nbsp;[&Description][&ToHitText] [&AttDesc]
-      --?"[&Name]X" -ne "X"|[
-        --&ActionOutput|+[tr title="[&ToolTip]"][td style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][b][i][&Name].[/i][/b] [&Description][i][&ToHitText][/i] [&AttDesc][/td][td style="width: 1%; text-align: right; white-space: nowrap; background-color: #faf5e6; border-radius: 4px; box-shadow: 0px 1px 2px rgba(0,0,0,0.3), inset 0px 1px 1px rgba(0,0,0,0.1), inset 0px -1px 1px rgba(0,0,0,0.1); padding: 0px 4px;"][F::[&ButtonSize]][sheetbutton][&ButtonEmote]::@{selected|character_name}::[&ButtonURL][/sheetbutton][/F][/td][/tr]
-       --]|
-    --%|
-    --&ActionOutput|+[/t]
-    --+|[&ActionOutput]
-  --<|
-
+    --&ToolTip|[&Name]&nbsp;&#x2666;&nbsp;[&Description][&ToHitText] [&AttDesc]
+    --?"[&Name]X" -ne "X"|[
+      --&ActionOutput|+[tr title="[&ToolTip]"][td style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][b][i][&Name].[/i][/b] [&Description][i][&ToHitText][/i] [&AttDesc][/td][td style="width: 1%; text-align: right; white-space: nowrap; background-color: #faf5e6; border-radius: 4px; box-shadow: 0px 1px 2px rgba(0,0,0,0.3), inset 0px 1px 1px rgba(0,0,0,0.1), inset 0px -1px 1px rgba(0,0,0,0.1); padding: 0px 4px ; "][F::[&ButtonSize]][sheetbutton][&ButtonEmote]::@{selected|character_name}::[&ButtonURL][/sheetbutton][/F][/td][/tr]
+     --]|
+  --%|
+  --&ActionOutput|+[/t]
+  --+|[&ActionOutput]
+--<|
 --X|
-
 }}
