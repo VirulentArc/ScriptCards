@@ -10,6 +10,8 @@
 --#debug|0
 --#functionbenchmarking|0
 
+--~|array;objects:character;AllComms;comms
+
 --?[&SendingPlayerIsGM] -eq 1|GMPanel
 --+|[rbutton]Contacts::ContactsList[/rbutton]
 --+|[rbutton]Messages::MessagesList[/rbutton]
@@ -18,14 +20,22 @@
 
 --X|
 --:GMPanel|
-  --~|array;objects:character;CharList;comms
+  --#title|GM Settings Panel
+  --&CommsID|
   --+|Select a Player's Communicator
-  --%CharLoop|foreach;CharList
+  --%CharLoop|foreach;AllComms
     --&CharName|[*[&CharLoop]:character_name]
     --+|[rbutton][&CharName(replace,comms-,)]::CharSettings;[&CharLoop][/rbutton]
   --%|
+  --&BtnColor|
+  --?"[*[&CharLoop]:emergtoggle]" -eq 1|[
+    --&BtnColor|style="background-color:#228B22;"
+  --]|
   --+|[t style="width: 100% ; text-align: center ; font-weight: bold ; "][tr][td colspan=100%]Universal Settings[/td][/tr][/t]
-  --+|[t width=100%][tr][td][rbutton]Set Emergency Message::SetEmergencyMessage[/rbutton][/td][td][rbutton]On/Off::SetAttr;emergtoggle[/rbutton][/td][td][rbutton]Apps::SelectApps[/rbutton][/td][tr][/t]
+  --+|[t width=100%][tr][td][rbutton]Set Emergency Message::SetEmergencyMessage[/rbutton][/td][td [&BtnColor]][rbutton]On/Off::SetAttr;emergtoggle[/rbutton][/td][td][rbutton]Reset Emergency Message::ResetVar;emergency[/rbutton][/td][/tr][/t]
+  --+|[t style="width: 100% ; text-align: center ; "][tr][td title="current sound message"][rbutton]Set Sound Message::SetAlertMessage;sound[/rbutton][/td][td title="current vibrate message"][rbutton]Set Vibrate Message::SetAlertMessage;vibrate[/rbutton][/td][td title="current none message"][rbutton]Set Silent Message::SetAlertMessage;silent[/rbutton][/td][/tr][/t]
+  --+|[t style="width: 100% ; text-align: center ; "][tr][td title="Reset Sound Message"][rbutton]Reset::ResetVar;sound[/rbutton][/td][td title="Reset Vibrate Message"][rbutton]Reset::ResetVar;vibrate[/rbutton][/td][td title="Reset Silent Message"][rbutton]Reset::ResetVar;silent[/rbutton][/td][/tr][/t]
+  --+|[t width=100%][tr][td][rbutton]Set Active Apps::SelectApps[/rbutton][/td][/tr][/t]
 --X|
 --:CharSettings|
   --&CommsID|[&reentryval]
@@ -49,8 +59,6 @@
   --&AlertRow|+[/tr][/t]
   --+|[t style="width: 100% ; text-align: center ; font-weight: bold ; "][tr][td colspan=100%]Alert Mode[/td][/tr][/t]
   --+|[&AlertRow]
-  --+|[t style="width: 100% ; text-align: center ; "][tr][td title="current sound message"][rbutton]Set Sound Message::setmessage;sound[/rbutton][/td][td title="current vibrate message"][rbutton]Set Vibrate Message::setmessage;vibrate[/rbutton][/td][td title="current none message"][rbutton]Set none Message::setmessage;none[/rbutton][/td][/tr][/t]
-  --+|[t style="width: 100% ; text-align: center ; "][tr][td title="ResetSoundMessage"][rbutton]Reset::setmessage;reset!#!sound[/rbutton][/td][td title="Reset Vibrate Message"][rbutton]Reset::setmessage;reset!#!vibrate[/rbutton][/td][td title="Reset None Message"][rbutton]Reset::setmessage;reset!#!none[/rbutton][/td][/tr][/t]
   --~|array;define;SigArray;strong;weak;none
   --&SigRow|[t style="width: 100% ; text-align: center ; "][tr]
   --%Strength|foreach;SigArray
@@ -125,11 +133,11 @@
     --~|array;objects:character;AllComms;comms
     --%ThisComm|foreach;AllComms
       --&CurrentState|[*[&ThisComm]:emergtoggle]
-      --?"[&CurrentState]" -eq "1"|&EmergToggle;0|&EmergToggle;1
+      --?"[&CurrentState]" -eq "0"|&EmergToggle;1|&EmergToggle;0
       --!a:[&ThisComm]|!emergtoggle:[&EmergToggle]
-      --^GMPanel|
     --%|
   --]|
+  --?"[&Setting]" -eq "emergtoggle"|GMPanel
   --^BacktoSettings|
 --X|
 --:WriteContacts|
@@ -146,12 +154,38 @@
 --X|
 --:SetEmergencyMessage|
   --I. ;Click to Input Emergency Message|q;EMessage;What is the emergency message?
-  --~|array;objects:character;AllComms;comms
   --%ThisComm|foreach;AllComms
     --!a:[&ThisComm]|!emergency_msg:[&EMessage]
   --%|
   --^GMPanel|
 --X|
+--:SetAlertMessage|
+  --&WhichMsg|[&reentryval]
+  --&AlertMsg|[&WhichMsg(totitlecase)]
+  --I. ;Click to Input [&AlertMsg] Message|q;AMessage;What is the [&WhichMsg] message?
+  --%ThisComm|foreach;AllComms
+    --!a:[&ThisComm]|![&WhichMsg]_msg:[&AMessage]
+  --%|
+  --^GMPanel|
+--X|
+
+--:ResetVar|
+  --&Reset|[&reentryval]
+  --+|[&Reset]
+  --?"[&Reset]" -eq "emergency"|[
+    --%ThisComm|foreach;AllComms
+      --!a:[&ThisComm]|!emergency_msg:
+      --!a:[&ThisComm]|!emergtoggle:0
+    --%|
+  --]|
+  --?"[&Reset]" -eq "sound" -or "[&Reset]" -eq "vibrate" -or "[&Reset]" -eq "silent"|[
+    --%ThisComm|foreach;AllComms
+      --!a:[&ThisComm]|![&Reset]_msg:
+    --%|
+  --]|
+  --^GMPanel|
+--X|
+
 --:ContactsList|
 
 --X|
