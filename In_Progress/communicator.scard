@@ -1,0 +1,159 @@
+!script {{
+--&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
+--?"[*[&TemplateMuleID]:character_name]" -eq ""|[
+  --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the Spellbook mod will be kept.[/td][/tr][/t]
+--X|
+--]|
+
+--#Whisper|self
+--#emoteState|0
+--#debug|0
+--#functionbenchmarking|0
+
+--?[&SendingPlayerIsGM] -eq 1|GMPanel
+--+|[rbutton]Contacts::ContactsList[/rbutton]
+--+|[rbutton]Messages::MessagesList[/rbutton]
+--+|Place new message notifications here.
+--+|[rbutton]Missed Calls::ContactsList[/rbutton]
+
+--X|
+--:GMPanel|
+  --~|array;objects:character;CharList;comms
+  --+|Select a Player's Communicator
+  --%CharLoop|foreach;CharList
+    --&CharName|[*[&CharLoop]:character_name]
+    --+|[rbutton][&CharName(replace,comms-,)]::CharSettings;[&CharLoop][/rbutton]
+  --%|
+  --+|[t style="width: 100% ; text-align: center ; font-weight: bold ; "][tr][td colspan=100%]Universal Settings[/td][/tr][/t]
+  --+|[t width=100%][tr][td][rbutton]Set Emergency Message::SetEmergencyMessage[/rbutton][/td][td][rbutton]On/Off::SetAttr;emergtoggle[/rbutton][/td][td][rbutton]Apps::SelectApps[/rbutton][/td][tr][/t]
+--X|
+--:CharSettings|
+  --&CommsID|[&reentryval]
+  --:BacktoSettings|
+  --&AlertMode|[*[&CommsID]:alertsound]
+  --&Signal|[*[&CommsID]:signal]
+  --&Comms|[*[&CommsID]:character_name]
+  --&CommsName|[&Comms(replace,comms-,)]
+  --#title|[&CommsName]'s Comm Settings
+  --+|[rbutton]Back::GMPanel[/rbutton]
+  --+|[rbutton]Assign Contacts::AssignContacts;[&CommsID][/rbutton]
+  --~|array;define;AlertArray;sound;vibrate;silent
+  --&AlertRow|[t style="width: 100% ; text-align: center ; "][tr]
+  --%AMode|foreach;AlertArray
+    --&BtnColor|
+    --?"[&AMode]" -eq "[&AlertMode]"|[
+       --&BtnColor|style="background-color:#228B22;"
+    --]|
+    --&AlertRow|+[td [&BtnColor]][rbutton][&AMode(totitlecase)]::SetAttr;[&AMode][/rbutton][/td]
+  --%|
+  --&AlertRow|+[/tr][/t]
+  --+|[t style="width: 100% ; text-align: center ; font-weight: bold ; "][tr][td colspan=100%]Alert Mode[/td][/tr][/t]
+  --+|[&AlertRow]
+  --+|[t style="width: 100% ; text-align: center ; "][tr][td title="current sound message"][rbutton]Set Sound Message::setmessage;sound[/rbutton][/td][td title="current vibrate message"][rbutton]Set Vibrate Message::setmessage;vibrate[/rbutton][/td][td title="current none message"][rbutton]Set none Message::setmessage;none[/rbutton][/td][/tr][/t]
+  --+|[t style="width: 100% ; text-align: center ; "][tr][td title="ResetSoundMessage"][rbutton]Reset::setmessage;reset!#!sound[/rbutton][/td][td title="Reset Vibrate Message"][rbutton]Reset::setmessage;reset!#!vibrate[/rbutton][/td][td title="Reset None Message"][rbutton]Reset::setmessage;reset!#!none[/rbutton][/td][/tr][/t]
+  --~|array;define;SigArray;strong;weak;none
+  --&SigRow|[t style="width: 100% ; text-align: center ; "][tr]
+  --%Strength|foreach;SigArray
+    --&BtnColor|
+    --?"[&Strength]" -eq "[&Signal]"|[
+      --&BtnColor|style="background-color:#228B22;"
+    --]|
+    --&SigRow|+[td [&BtnColor]][rbutton][&Strength(totitlecase)]::SetAttr;[&Strength][/rbutton][/td]
+  --%|
+  --&SigRow|+[/tr][/t]
+  --+|[t style="width: 100% ; text-align: center ; font-weight: bold ; "][tr][td colspan=100%]Signal Strength[/td][/tr][/t]
+  --+|[&SigRow]
+  --X|
+--:AssignContacts|
+  --&CommsID|[&reentryval]
+  --:BacktoContacts|
+  --&Comms|[*[&CommsID]:character_name]
+  --&CommsName|[&Comms(replace,comms-,)]
+  --&StoredList|[*[&CommsID]:contact_list]
+  --#title|[&CommsName]'s Contacts
+  --~|array;define;PlayerArray
+  --~|array;define;NPCArray
+  --~|array;objects:character;RawList
+  --%CharLoop|foreach;RawList
+    --&FullCharName|[*[&CharLoop]:character_name]
+    --&IsControlled|[*O:[&CharLoop]:character:controlledby]
+    --?"[&CharLoop]" -ne "[&CommsID]" -and "[&FullCharName]" -inc "comms"|[
+      --&CleanName|[&FullCharName(replace,comms-,)]
+      --&PlayerArray([@PlayerArray(length)])|[&CleanName]|[&CharLoop]
+    --]|
+    --?"[&FullCharName]" -ninc "comms" -and "[&IsControlled]" -eq ""|[
+      --&NPCArray([@NPCArray(length)])|[&FullCharName]|[&CharLoop]
+    --]|
+  --%|
+  --~|array;sort;PlayerArray
+  --~|array;sort;NPCArray
+  --+|[rbutton]back::BacktoSettings[/rbutton]
+  --+|Player Contacts
+  --&PBtnDisplay|[t width=100%]
+  --%PDisplay|foreach;PlayerArray
+    --&BtnColor|
+    --&thisID|[&PDisplay(after,|)]
+    --?"[&StoredList]" -inc "[&thisID]"|[
+      --&BtnColor|style="background-color:#228B22;"
+    --]|
+    --&PBtnDisplay|+[tr][td [&BtnColor]][rbutton][&PDisplay(before,|)]::WriteContacts;[&PDisplay(after,|)][/rbutton][/td][/tr]
+  --%|
+  --&PBtnDisplay|+[/t]
+  --+|[&PBtnDisplay]
+  --+|NPC Contacts
+  --&NBtnDisplay|[t width=100%]
+  --%NDisplay|foreach;NPCArray
+    --&BtnColor|
+    --&thisID|[&NDisplay(after,|)]
+    --?"[&StoredList]" -inc "[&thisID]"|[
+      --&BtnColor|style="background-color:#228B22;"
+    --]|
+    --&NBtnDisplay|+[tr][td [&BtnColor]][rbutton][&NDisplay(before,|)]::WriteContacts;[&NDisplay(after,|)][/rbutton][/td][/tr]
+  --%|
+  --&NBtnDisplay|+[/t]
+  --+|[&NBtnDisplay]
+--X|
+--:SetAttr|
+  --&Setting|[&reentryval]
+  --?"[&Setting]" -eq "sound" -or "[&Setting]" -eq "vibrate" -or "[&Setting]" -eq "silent"|[
+    --!a:[&CommsID]|!alertsound:[&Setting]
+  --]|
+  --?"[&Setting]" -eq "strong" -or "[&Setting]" -eq "weak" -or "[&Setting]" -eq "none"|[
+    --!a:[&CommsID]|!signal:[&Setting]
+  --]|
+  --?"[&Setting]" -eq "emergtoggle"|[
+    --~|array;objects:character;AllComms;comms
+    --%ThisComm|foreach;AllComms
+      --&CurrentState|[*[&ThisComm]:emergtoggle]
+      --?"[&CurrentState]" -eq "1"|&EmergToggle;0|&EmergToggle;1
+      --!a:[&ThisComm]|!emergtoggle:[&EmergToggle]
+      --^GMPanel|
+    --%|
+  --]|
+  --^BacktoSettings|
+--X|
+--:WriteContacts|
+  --&ContactID|[&reentryval]
+  --&CurrentList|[*[&CommsID]:contact_list]
+  --?"[&CurrentList]" -inc "[&ContactID]"|[
+    --&NewList|[&CurrentList(replace,[&ContactID]!#!,)]
+  --]|[
+    --&NewList|[&CurrentList][&ContactID]!#!
+  --]|
+  --&NewList|[&NewList(replaceall,undefined,)]
+  --!a:[&CommsID]|!contact_list:[&NewList]
+  --^BacktoContacts|
+--X|
+--:SetEmergencyMessage|
+  --I. ;Click to Input Emergency Message|q;EMessage;What is the emergency message?
+  --~|array;objects:character;AllComms;comms
+  --%ThisComm|foreach;AllComms
+    --!a:[&ThisComm]|!emergency_msg:[&EMessage]
+  --%|
+  --^GMPanel|
+--X|
+--:ContactsList|
+
+--X|
+
+}}
