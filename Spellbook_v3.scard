@@ -1,6 +1,6 @@
 !script {{
   --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 3.5.3
+  --/|Version     : 3.5.4
   --/|Author      : Timothy Beasley
 
   --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
@@ -249,12 +249,12 @@
       --&SpellDetail|[button][&BookImage]::~[&CharName_Attr]|[&MacroButton][/button]
     --]|[
       --?"[&SpellOutputType]" -inc "ATTACK"|[
-        --&SpellRoll|[sheetbutton][#[&IconColor_Attr]][&RollImage][/#]::[&CharName_Attr]::&#37;{selected|repeating_spell-[&SpellLevel]_$[&SpellIndex]_spell}[/sheetbutton]
+        --&SpellRoll|[sheetbutton][#[&IconColor_Attr]][&RollImage][/#]::[&CharName_Attr]::repeating_spell-[&SpellLevel]_$[&SpellIndex]_spell}[/sheetbutton]
       --]|
       --?"[&SpellOutputType]" -inc "SPELLCARD"|[
         --&SpellRoll|
       --]|
-      --&SpellDetail|[sheetbutton][#[&IconColor_Attr]][&BookImage][/#]::[&CharName_Attr]::&#37;{selected|repeating_spell-[&SpellLevel]_$[&SpellIndex]_output}[/sheetbutton]
+      --&SpellDetail|[sheetbutton][#[&IconColor_Attr]][&BookImage][/#]::[&CharName_Attr]::repeating_spell-[&SpellLevel]_$[&SpellIndex]_output}[/sheetbutton]
     --]|
     --&SpellData|[&SpellName][&SpellLevel]
     --/| MAP SPELL SCHOOL ICON
