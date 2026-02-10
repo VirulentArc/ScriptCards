@@ -249,12 +249,12 @@
       --&SpellDetail|[button][&BookImage]::~[&CharName_Attr]|[&MacroButton][/button]
     --]|[
       --?"[&SpellOutputType]" -inc "ATTACK"|[
-        --&SpellRoll|[sheetbutton][#[&IconColor_Attr]][&RollImage][/#]::[&CharName_Attr]::repeating_spell-[&SpellLevel]_$[&SpellIndex]_spell}[/sheetbutton]
+        --&SpellRoll|[sheetbutton][#[&IconColor_Attr]][&RollImage][/#]::[&CharName_Attr]::repeating_spell-[&SpellLevel]_$[&SpellIndex]_spell[/sheetbutton]
       --]|
       --?"[&SpellOutputType]" -inc "SPELLCARD"|[
         --&SpellRoll|
       --]|
-      --&SpellDetail|[sheetbutton][#[&IconColor_Attr]][&BookImage][/#]::[&CharName_Attr]::repeating_spell-[&SpellLevel]_$[&SpellIndex]_output}[/sheetbutton]
+      --&SpellDetail|[sheetbutton][#[&IconColor_Attr]][&BookImage][/#]::[&CharName_Attr]::repeating_spell-[&SpellLevel]_$[&SpellIndex]_output[/sheetbutton]
     --]|
     --&SpellData|[&SpellName][&SpellLevel]
     --/| MAP SPELL SCHOOL ICON
