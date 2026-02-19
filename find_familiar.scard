@@ -1,332 +1,300 @@
 !scriptcards {{ 
 
   --/|Script Name : Tim's Find Familiar Mod for D&D 5E 2014
-  --/|Version     : v3.1.1
+  --/|Version     : v3.2.0
   --/|Author      : Timothy Beasley
   --/|API MODs    : ScriptCards
 
-  --/|Description : This Mod will display(to the caster) the spell Find Familiar and ask if it is being cast as a ritual, if "no" it will 
-  --/|              ask you at what level you are casting the spell and remove the appropriate spell slot. If cast as a ritual it will skip this step.
-  --/|              It will then ask if the Familiar being summoned is a Celestial, Fey, or Fiend; and will finally ask which Familiar
+  --/|Description : This Mod will display(to the caster) the spell Find Familiar spell with a cast button.
+  --/|              Clicking the cast button will then ask if the Familiar being summoned is a Celestial, Fey, or Fiend; and will finally ask which Familiar
   --/|              you are summoning from a list provided. It will then Spawn the token beside the Summoner.
   --/|              The Mod also has a "settings" feature, accessed by clicking the cog wheel, which will allow you to add custom tokens and a custom name.
   --/|
   --/|Installation: This script is for the 2014 edition of the official D&D 5E Character Sheet by Roll20 and requires the
   --/|              installation of the ScriptCards MOD using a pro account with API access. 
-  --/|              This script also requires the installation of a custom ScriptCards template. Instructions for installing 
-  --/|              a custom style template can be found on the Roll20 wiki page for ScriptCards. The code for the scriptcard
-  --/|              template can be found in the post associated with this Script on the Roll20 forums below;
-  --/|              https://app.roll20.net/forum/post/12285368/tims-spellbook-mod-scriptcards-d-and-d-5e-2014
-  --/|              or on my GitHub below as statblock.css;
-  --/|              https://github.com/VirulentArc/ScriptCards
-  --/|              Make sure the template "macro" name is statblock or change #overridetemplate to whatever name you'd prefer
-  --/|              it to have.
-  --/|              This script requires First create a new NPC character and call it FindFamiliar. The name is case sensative with no spaces.
-  --/|              Set the "Can be Edited & Controlled By" permission to the player character. I don't suggest adding it to the Player's journal as that kind of defeats the purpose.
+  --/|              First create a character named exactly ScriptCards_TemplateMule.
+  --/|              Second create a new NPC character named exactly FindFamiliar and set the character's "Can be Edited & Controlled By" to the character's player.
+  --/|              I don't suggest adding it to the Player's journal as that kind of defeats the purpose.
+  --/|              Third copy and paste this to the caster's character sheet as a macro under Attributes & Abilities as an Ability.
+  --/|              Fourth run the macro for the first time and it will write the template information to the template mule.
+  --/|              You can now run the macro at any time for the Find Familiar spell.
   --/|              Token Actions are created for Skills, Saves and Attribute rolls. I've included them for convenience, but would instead recommend my NPC Statblock Mod
   --/|              that can also be found on my github.
 
-
-  --:DoFormatting|
-    --#overridetemplate|statblock
-    --&FindFamiliar|@{FindFamiliar|character_id}
-    --#sourceToken|@{selected|token_id}
-    --&SoundEffectTrack|
-    --&SpellLevel|1
-    --&SpellName|Find Familiar
-    --#whisper|self
-    --#Debug|0
-    --#emoteState|0
-    --#emoteBackground|#f1e5c9
-    --#emoteFontColor|#6e2425
-
+  --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
+  --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
+  --?"[*[&TemplateMuleID]:character_name]" -eq ""|[
+    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the Find Familiar will be kept.[/td][/tr][/t]
+    --X|
+  --]|
+  --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
+  --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4public
+  --?"[&IsTemplate]" -eq "AbilityNotFound"|[
+    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]The style information has been written, please run the Mod again.[/td][/tr][/t]
+    --&StatBlock|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; position: relative ; left: -30px ;'}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --!ob:StyleSaveResult:[&TemplateMuleID]:statblockv4:0|[&StatBlock]
+    --&StatBlockPublic|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 100% ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; '}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 101%; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 115% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --!ob:StyleSaveResult:[&TemplateMuleID]:statblockv4public:0|[&StatBlockPublic]
+    --@sc-reloadtemplates|
+    --X|
+  --]|
+  --#overridetemplate|statblockv4
+  --#sourceToken|@{selected|token_id}
+  --#whisper|self
+  --#Debug|0
+  --#emoteState|0
+  --#emoteBackground|#f1e5c9
+  --#emoteFontColor|#6e2425
+  --&FindFamiliar|@{FindFamiliar|character_id}
+  --&SoundEffectTrack|
+  --&BodyStyle|font-size: 12px ; letter-spacing: 0.01em ; line-height: 18px
   --/|Token Image Variables
-
-    --&BatToken|https://files.d20.io/images/407846117/a4ZJKr0ySyLpeDUmM1FGsw/original.png?1725295994
-    --&CatToken|https://files.d20.io/images/407846114/yY73RMgm6_BCLaNg2rxBzQ/original.png?1725295994
-    --&CrabToken|https://files.d20.io/images/407846115/T0Rit7tcKGuc4SNVemTqKA/original.png?1725295994
-    --&FrogToken|https://files.d20.io/images/407846109/-ucSpgR6y7RVeYmRiWgkEg/original.png?1725295994
-    --&HawkToken|https://files.d20.io/images/407846111/Zz5F5aLNGYDV-xRvSV0YfA/original.png?1725295994
-    --&LizardToken|https://files.d20.io/images/407846118/Kz43LZmtfCe_GFS6eS9uQg/original.png?1725295994
-    --&OctopusToken|https://files.d20.io/images/407846110/DIhTiq0_8EKqt_67ST9GYg/original.png?1725295994
-    --&OwlToken|https://files.d20.io/images/407846113/Thqe3vXwntNMdFeAms5zYQ/original.png?1725295994
-    --&SnakeToken|https://files.d20.io/images/407855134/bk8CwwNUm8rkReiyEBqJgQ/original.png?1725300053
-    --&QuipperToken|https://files.d20.io/images/407846108/FHRYjGLbhUYoth-8OP490g/original.png?1725295994
-    --&RatToken|https://files.d20.io/images/407846107/Uby34hjIEFwETxKo3gXzCA/original.png?1725295994
-    --&RavenToken|https://files.d20.io/images/407846112/8Bt_Off5cwk0xEfUlkcRyw/original.png?1725295994
-    --&SeahorseToken|https://files.d20.io/images/407846104/PaAX9a0fqWOAGSey_WtiOQ/original.png?1725295994
-    --&SpiderToken|https://files.d20.io/images/407846105/ww3DHHb5YLDZo6qyFdLQsw/original.png?1725295994
-    --&WeaselToken|https://files.d20.io/images/407846106/JvvrVk9bNm4zG7QcrKzZuA/original.png?1725295994
-    --&BackgroundImage|width=100% style="background-image: url(https://files.d20.io/images/431269924/wXGXxCLvc_js7eWmz5NQkw/original.png) ; background-repeat: no-repeat ; background-size: 85px 100px ; background-position: center ; display: inline-block ; bottom: 0;  margin-left: auto ; margin-right: auto ; width: 33% ; text-align: center ; white-space: nowrap ; "
-    --&SettingsBackground|width=100% style="background-image: url(https://files.d20.io/images/431269924/wXGXxCLvc_js7eWmz5NQkw/original.png) ; background-repeat: no-repeat ; background-size: 85px 85px ; background-position: center ; display: inline-block ; bottom: 0;  margin-left: auto ; margin-right: auto ; width: 33% ; text-align: center ; white-space: nowrap ;"
-
-
+  --&BatToken|https://files.d20.io/images/407846117/a4ZJKr0ySyLpeDUmM1FGsw/original.png?1725295994
+  --&CatToken|https://files.d20.io/images/407846114/yY73RMgm6_BCLaNg2rxBzQ/original.png?1725295994
+  --&CrabToken|https://files.d20.io/images/407846115/T0Rit7tcKGuc4SNVemTqKA/original.png?1725295994
+  --&FrogToken|https://files.d20.io/images/407846109/-ucSpgR6y7RVeYmRiWgkEg/original.png?1725295994
+  --&HawkToken|https://files.d20.io/images/407846111/Zz5F5aLNGYDV-xRvSV0YfA/original.png?1725295994
+  --&LizardToken|https://files.d20.io/images/407846118/Kz43LZmtfCe_GFS6eS9uQg/original.png?1725295994
+  --&OctopusToken|https://files.d20.io/images/407846110/DIhTiq0_8EKqt_67ST9GYg/original.png?1725295994
+  --&OwlToken|https://files.d20.io/images/407846113/Thqe3vXwntNMdFeAms5zYQ/original.png?1725295994
+  --&SnakeToken|https://files.d20.io/images/407855134/bk8CwwNUm8rkReiyEBqJgQ/original.png?1725300053
+  --&QuipperToken|https://files.d20.io/images/407846108/FHRYjGLbhUYoth-8OP490g/original.png?1725295994
+  --&RatToken|https://files.d20.io/images/407846107/Uby34hjIEFwETxKo3gXzCA/original.png?1725295994
+  --&RavenToken|https://files.d20.io/images/407846112/8Bt_Off5cwk0xEfUlkcRyw/original.png?1725295994
+  --&SeahorseToken|https://files.d20.io/images/407846104/PaAX9a0fqWOAGSey_WtiOQ/original.png?1725295994
+  --&SpiderToken|https://files.d20.io/images/407846105/ww3DHHb5YLDZo6qyFdLQsw/original.png?1725295994
+  --&WeaselToken|https://files.d20.io/images/407846106/JvvrVk9bNm4zG7QcrKzZuA/original.png?1725295994
+  --&BackgroundImage|width=100% style="background-image: url(https://files.d20.io/images/431269924/wXGXxCLvc_js7eWmz5NQkw/original.png) ; background-repeat: no-repeat ; background-size: 105px 100px ; background-position: center ; display: inline-block ; margin-left: auto ; margin-right: auto ; width: 33% ; text-align: center ; white-space: nowrap ; "
   --:RestartMod|
-
-  --:DoesCharacterExist|
-	--?"[*[&FindFamiliar]:character_name]" -eq ""|NoCharacter|SpellInfo
-  --X|
-
+  --?"[*[&FindFamiliar]:character_name]" -eq ""|NoCharacter|SpellInfo
 --X|
-
-  --:SpellInfo|
-  
-    --#emoteState|0
-    --#emoteText|
-    --#whisper|self
-
-    --~MacroButton|system;findability;[*[&FindFamiliar]:character_name];Ink-Cloud
-
-    --Rfind|@{selected|character_id};[&SpellName];repeating_spell-[&SpellLevel];spellname
-
-    --?"[&MacroButton]" -eq "AbilityNotFound"|[
-      --!or:[&FindFamiliar]:npcaction|name:Bite|attack_flag:on|attack_type:melee|attack_target:one target|attack_range:5 ft.|attack_tohit:1|attack_damage:1|attack_damagetype:piercing|attack_tohitrange:+5, Reach 5ft., one target|attack_onhit:1 (1d4 + 3) piercing damage|attack_crit:1d4
-      --!or:[&FindFamiliar]:npcaction|name:Ink-Cloud|attack_flag:off|description:(Recharges after a Short or Long Rest). A 5-foot-radius cloud of ink extends all around the octopus if it is underwater. The area is heavily obscured for 1 minute, although a significant current can disperse the ink. After releasing the ink, the octopus can use the Dash action as a bonus action.
-      --!or:[&FindFamiliar]:npctrait|name:Temp|description:Temp
-      --!or:[&FindFamiliar]:npctrait|name:Temp1|description:Temp1
-      --!or:[&FindFamiliar]:npctrait|name:Temp2|description:Temp2
-      --&obrac|{
-      --&cbrac|}
-      --&perc|%
-      --!ob:AbilID:[&FindFamiliar]:Bite:y|[&perc][&obrac]FindFamiliar|repeating_npcaction_$0_npc_action[&cbrac]
-      --!ob:AbilID2:[&FindFamiliar]:Ink-Cloud:n|@[&obrac]FindFamiliar|@[&obrac]FindFamiliar|wtype[&cbrac]&[&obrac]template:npcaction[&cbrac] @[&obrac]Octopus|npc_name_flag[&cbrac] [&obrac][&obrac]rname=Ink Cloud (Recharges after a Short or Long Rest)[&cbrac][&cbrac] [&obrac][&obrac]description=A 5-foot-radius cloud of ink extends all around the octopus if it is underwater. The area is heavily obscured for 1 minute, although a significant current can disperse the ink. After releasing the ink, the octopus can use the Dash action as a bonus action.[&cbrac][&cbrac] @[&obrac]Octopus|charname_output[&cbrac]
-      --!ob:AbilID3:[&FindFamiliar]:Skills:y|&[&obrac]template:npcaction[&cbrac][&obrac][&obrac]name=[&cbrac][&cbrac][&obrac][&obrac]rname=Familiar Skills[&cbrac][&cbrac][&obrac][&obrac]description=Select your skill check:[Acrobatics](~FindFamiliar|acrobatics)[Animal Handl.](~FindFamiliar|animalhandling)[Arcana](~FindFamiliar|arcana)[Athletics](~FindFamiliar|athletics)[Deception](~FindFamiliar|deception)[History](~FindFamiliar|history)[Insight](~FindFamiliar|insight)[Intimidation](~FindFamiliar|intimidation)[Investigation](~FindFamiliar|investigation)[Medicine](~FindFamiliar|medicine)[Nature](~FindFamiliar|nature)[Perception](~FindFamiliar|Perception)[Performance](~FindFamiliar|performance)[Persuasion](~FindFamiliar|persuasion)[Religion](~FindFamiliar|religion)[Sleight Of Hand](~FindFamiliar|sleightofhand)[Stealth](~FindFamiliar|stealth)[Survival](~FindFamiliar|survival)[&cbrac][&cbrac]
-      --!ob:AbilID4:[&FindFamiliar]:Saves & Attributes:y|&[&obrac]template:npcaction[&cbrac][&obrac][&obrac]name=[&cbrac][&cbrac][&obrac][&obrac]rname=Familiar Saving Throws and Attributes[&cbrac][&cbrac][&obrac][&obrac]description=Select your Save or Ability Roll:[STR Save](~FindFamiliar|strength_save)[DEX Save](~FindFamiliar|dexterity_save)[CON Save](~FindFamiliar|constitution_save)[INT Save](~FindFamiliar|intelligence_save)[WIS Save](~FindFamiliar|wisdom_save)[CHA Save](~FindFamiliar|charisma_save)[&perc]NEWLINE[&perc][&perc]NEWLINE[&perc][Strength](~FindFamiliar|strength)[Dexterity](~FindFamiliar|dexterity)[Constitution](~FindFamiliar|constitution)[Intelligence](~FindFamiliar|intelligence)[Wisdom](~FindFamiliar|wisdom)[Charisma](~FindFamiliar|charisma)[&cbrac][&cbrac]
-      --!a:[&FindFamiliar]|!custom_name:0
-      --!a:[&FindFamiliar]|!Bat:0|!Cat:0|!Crab:0|!Frog:0|!Hawk:0|!Lizard:0|!Octopus:0|!Owl:0|!Snake:0|!Quipper:0|!Rat:0|!Raven:0|!Seahorse:0|!Spider:0|!Weasel:0
-    --]|
-
-    --#title|[*R:spellname]
-    --?[*R:spelllevel] -eq cantrip|&spllvl;cantrip|&spllvl;[*R:spelllevel]
-    --?[&spllvl] -eq 1|&lvlsuffix;st
-    --?[&spllvl] -eq 2|&lvlsuffix;nd
-    --?[&spllvl] -eq 3|&lvlsuffix;rd
-    --?[&spllvl] -ge 4|&lvlsuffix;th
-
-    --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal;
-    --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic;S|&Somatic;
-    --?"[*R:spellcomp_m]" -inc "m=1"|[
-      --&Components|M
-      --&Materials|([*R:spellcomp_materials])
-    --]|
-    --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
-
-    --&SpellDesc|[*R:spelldescription]
-    --=SpellDescCalc|[&SpellDesc(length)] - 1024
-
-  --/|Output
-
-    --&SpellStats|[t width=240px style="margin-bottom: 5px ; "][tr][td][i][&spllvl][&lvlsuffix]-Level [*R:spellschool][/i][/td][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td style="text-align: right ; font-size: 18px ;"][rbutton]⚙::Settings[/rbutton][/td][/tr][/t]
-    --&SpellStats|+[t width=240px][tr][td][b]Casting Time:[/b]&nbsp;[*R:spellcastingtime][/td][/tr]
-    --&SpellStats|+[tr][td][b]Range:[/b]&nbsp;[*R:spellrange][/td][/tr]
-    --&SpellStats|+[tr][td][b]Target:[/b]&nbsp;[*R:spelltarget][/td][/tr]
-    --&SpellStats|+[tr][td][b]Components:[/b]&nbsp;[&Verbal][&Somatic][&Components] [&Materials][/td][/tr]
-    --&SpellStats|+[tr][td][b]Duration:[/b]&nbsp;[&Concentration]&nbsp;[*R:spellduration][/td][/tr]
-    --&SpellStats|+[tr][td][b]Classes:[/b]&nbsp;Wizard[/td][/tr][/t]
-    --&SpellStats|+[t width=240px title="[&SpellDesc([$SpellDescCalc.Raw],[&SpellDesc(length)])]"][tr][td style="margin-bottom: 5px ; "][&SpellDesc(0,[$SpellDescCalc.Raw])]...[/td][/tr][/t]
-    --&SpellStats|+[br]
-    --&SpellStats|+[t width=240px style="text-align: center ; "][tr][td][b][rbutton]Cast Spell::WhatBeast[/rbutton][/b][/td][/tr][/t]
-    --&SpellStats|+[br]
-    --+|[&SpellStats]
-  --X|
-
-  --:WhatBeast|
-    --#whisper|self
-    --#emoteState|visible
-    --#emoteText|Choose Familiar Type
-    --#title|
-    --&Realm|[t width=240px style="font-weight: bold ; text-align: center ; "]
-    --&Realm|+[tr style="font-size: 15px ; height: 50px ; "][td style="text-align: right ; "][b][rbutton]Celestial::GetFamiliar;Celestial[/rbutton]
-    --&Realm|+[td style="text-align: center ; "]&nbsp;|&nbsp;&nbsp;&nbsp;[rbutton]Fey::GetFamiliar;Fey[/rbutton]&nbsp;&nbsp;&nbsp;|&nbsp;[/td]
-    --&Realm|+[td style="text-align: left ; "][rbutton]Fiend::GetFamiliar;Fiend[/rbutton][/b]&nbsp;&nbsp;[/td][/tr][/t]
-    --+|[&Realm]
-  --X|
-
-  --:GetFamiliar|
-    --&Realm|[&reentryval]
-    --#emoteState|visible
-    --#emoteText|Choose Familiar Form
-    --#title|
-    --#whisper|self
-    --~|array;define;FamiliarToken;Bat;Cat;Crab;Frog;Hawk;Lizard;Octopus;Owl;Snake;Quipper;Rat;Raven;Seahorse;Spider;Weasel
-    --&TokensPerRow|3
-    --&TokenCounter|1
-    --&AllTokens|[t width=240px][tr][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td width=30 style="text-align: right ; font-size: 18px ;"][rbutton]⚙::Settings[/rbutton][/td][/tr][/t][t width=112% style="position: relative ; left: -13px ; "][tr]
-    --%TokenLoop|foreach;FamiliarToken
-      --?"[*[&FindFamiliar]:[&TokenLoop]]" -ne "0"|&FinalToken;[*[&FindFamiliar]:[&TokenLoop]]|&FinalToken;[&[&TokenLoop]Token]
-      --c[&TokenLoop]|Bat:&DisplayName;Bat|Cat:&DisplayName;Cat|Crab:&DisplayName;Crab|Frog:&DisplayName;Frog(Toad)|Hawk:&DisplayName;Hawk|Lizard:&DisplayName;Lizard|Octopus:&DisplayName;Octopus|Owl:&DisplayName;Owl|Snake:&DisplayName;Poisonous Snake|Quipper:&DisplayName;Quipper (Fish)|Rat:&DisplayName;Rat|Raven:&DisplayName;Raven|Seahorse:&DisplayName;Sea Horse|Spider:&DisplayName;Spider|Weasel:&DisplayName;Weasel
-      --&AllTokens|+[td [&BackgroundImage]][rbutton][img width=70][&FinalToken][/img][br]::Familiar;[&TokenLoop][/rbutton][br][b][&DisplayName][/b][br][br][/td]
-      --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
-      -->IncrementCounter|TokenCounter
-    --%|
-    --&AllTokens|+[/tr][/t]
-    --+|[&AllTokens]
-  --X|
-
-  --:Familiar|
-    --#whisper|
-    --#emoteState|visible
-    --#title|
-    --&FamiliarType|[&reentryval]
-    --c[&FamiliarType]|Bat:&TokenSide;1|Cat:&TokenSide;2|Crab:&TokenSide;3|Frog:&TokenSide;4|Hawk:&TokenSide;5|Lizard:&TokenSide;6|Octopus:&TokenSide;7|Owl:&TokenSide;8|Snake:&TokenSide;9|Quipper:&TokenSide;10|Rat:&TokenSide;11|Raven:&TokenSide;12|Seahorse:&TokenSide;13|Spider:&TokenSide;14|Weasel:&TokenSide;15
-    --c[&FamiliarType]|Bat:&FamAC;12|Cat:&FamAC;12|Crab:&FamAC;11|Frog:&FamAC;11|Hawk:&FamAC;13|Lizard:&FamAC;10|Octopus:&FamAC;12|Owl:&FamAC;11|Snake:&FamAC;13|Quipper:&FamAC;13|Rat:&FamAC;10|Raven:&FamAC;12|Seahorse:&FamAC;11|Spider:&FamAC;12|Weasel:&FamAC;13
-    --c[&FamiliarType]|Bat:&ACType;|Cat:&ACType;|Crab:&ACType;Natural Armor|Frog:&ACType;|Hawk:&ACType;|Lizard:&ACType;|Octopus:&ACType;|Owl:&ACType;|Snake:&ACType;|Quipper:&ACType;|Rat:&ACType;|Raven:&ACType;|Seahorse:&ACType;|Spider:&ACType;|Weasel:&ACType;
-    --c[&FamiliarType]|Bat:&HP;1|Cat:&HP;2|Crab:&HP;2|Frog:&HP;1|Hawk:&HP;1|Lizard:&HP;2|Octopus:&HP;3|Owl:&HP;1|Snake:&HP;2|Quipper:&HP;1|Rat:&HP;1|Raven:&HP;1|Seahorse:&HP;1|Spider:&HP;1|Weasel:&HP;1
-    --c[&FamiliarType]|Bat:&HPMax;1|Cat:&HPMax;2|Crab:&HPMax;2|Frog:&HPMax;1|Hawk:&HPMax;1|Lizard:&HPMax;2|Octopus:&HPMax;3|Owl:&HPMax;1|Snake:&HPMax;2|Quipper:&HPMax;1|Rat:&HPMax;1|Raven:&HPMax;1|Seahorse:&HPMax;1|Spider:&HPMax;1|Weasel:&HPMax;1
-    --c[&FamiliarType]|Bat:&HPForm;1d4 - 1|Cat:&HPForm;1d4|Crab:&HPForm;1d4|Frog:&HPForm;1d4 - 1|Hawk:&HPForm;1d4 - 1|Lizard:&HPForm;1d4|Octopus:&HPForm;1d6|Owl:&HPForm;1d4 - 1|Snake:&HPForm;1d4|Quipper:&HPForm;1d4 - 1|Rat:&HPForm;1d4 - 1|Raven:&HPForm;1d4 - 1|Seahorse:&HPForm;1d4 - 1|Spider:&HPForm;1d4 - 1|Weasel:&HPForm;1d4 - 1
-    --c[&FamiliarType]|Bat:&STR;2|Cat:&STR;3|Crab:&STR;2|Frog:&STR;1|Hawk:&STR;5|Lizard:&STR;2|Octopus:&STR;4|Owl:&STR;3|Snake:&STR;2|Quipper:&STR;2|Rat:&STR;2|Raven:&STR;2|Seahorse:&STR;1|Spider:&STR;2|Weasel:&STR;3
-    --c[&FamiliarType]|Bat:&DEX;15|Cat:&DEX;15|Crab:&DEX;11|Frog:&DEX;13|Hawk:&DEX;16|Lizard:&DEX;11|Octopus:&DEX;15|Owl:&DEX;13|Snake:&DEX;16|Quipper:&DEX;16|Rat:&DEX;11|Raven:&DEX;14|Seahorse:&DEX;12|Spider:&DEX;14|Weasel:&DEX;16
-    --c[&FamiliarType]|Bat:&CON;8|Cat:&CON;10|Crab:&CON;10|Frog:&CON;8|Hawk:&CON;8|Lizard:&CON;10|Octopus:&CON;11|Owl:&CON;8|Snake:&CON;11|Quipper:&CON;9|Rat:&CON;9|Raven:&CON;8|Seahorse:&CON;8|Spider:&CON;8|Weasel:&CON;8
-    --c[&FamiliarType]|Bat:&INT;2|Cat:&INT;3|Crab:&INT;1|Frog:&INT;1|Hawk:&INT;2|Lizard:&INT;1|Octopus:&INT;3|Owl:&INT;2|Snake:&INT;1|Quipper:&INT;1|Rat:&INT;2|Raven:&INT;2|Seahorse:&INT;1|Spider:&INT;1|Weasel:&INT;2
-    --c[&FamiliarType]|Bat:&WIS;12|Cat:&WIS;12|Crab:&WIS;8|Frog:&WIS;8|Hawk:&WIS;14|Lizard:&WIS;8|Octopus:&WIS;10|Owl:&WIS;12|Snake:&WIS;10|Quipper:&WIS;7|Rat:&WIS;10|Raven:&WIS;12|Seahorse:&WIS;10|Spider:&WIS;10|Weasel:&WIS;12
-    --c[&FamiliarType]|Bat:&CHA;4|Cat:&CHA;7|Crab:&CHA;2|Frog:&CHA;3|Hawk:&CHA;6|Lizard:&CHA;3|Octopus:&CHA;4|Owl:&CHA;7|Snake:&CHA;3|Quipper:&CHA;2|Rat:&CHA;4|Raven:&CHA;6|Seahorse:&CHA;2|Spider:&CHA;2|Weasel:&CHA;3
-    --c[&FamiliarType]|Bat:&Speed;5 ft., fly 30 ft.|Cat:&Speed;40 ft., climb 30 ft.|Crab:&Speed;20 ft., swim 20 ft.|Frog:&Speed;20 ft., swim 20 ft.|Hawk:&Speed;10 ft., fly 60 ft.|Lizard:&Speed;20 ft., climb 20 ft.|Octopus:&Speed;5 ft., swim 30 ft.|Owl:&Speed;5 ft., fly 60 ft.|Snake:&Speed;30 ft., swim 30 ft.|Quipper:&Speed;0 ft., swim 30 ft.|Rat:&Speed;20 ft.|Raven:&Speed;10 ft., fly 50 ft.|Seahorse:&Speed;0 ft., swim 20 ft.|Spider:&Speed;20 ft., climb 20 ft.|Weasel:&Speed;30 ft.
-    --c[&FamiliarType]|Bat:&INIT;2|Cat:&INIT;2|Crab:&INIT;2|Frog:&INIT;1|Hawk:&INIT;3|Lizard:&INIT;0|Octopus:&INIT;2|Owl:&INIT;1|Snake:&INIT;3|Quipper:&INIT;3|Rat:&INIT;0|Raven:&INIT;2|Seahorse:&INIT;1|Spider:&INIT;2|Weasel:&INIT;3
-    --c[&FamiliarType]|Bat:&Senses;blindsight 60 ft., Passive Perception 11|Cat:&Senses;Passive Perception 13|Crab:&Senses;blindsight 30 ft., Passive Perception 9|Frog:&Senses;Darkvision 30 ft., Passive Perception 11|Hawk:&Senses;Passive Perception 14|Lizard:&Senses;Passive Perception 9|Octopus:&Senses;Darkvision 30 ft., Passive Perception 12|Owl:&Senses;Darkvision 120 ft., Passive Perception 13|Snake:&Senses;blindsight 10 ft., Passive Perception 10|Quipper:&Senses;Darkvision 60 ft., Passive Perception 8|Rat:&Senses;darkvision 30 ft., Passive Perception 10|Raven:&Senses;Passive Perception 13|Seahorse:&Senses;Passive Perception 10|Spider:&Senses;Darkvision 30 ft., Passive Perception 10|Weasel:&Senses;Passive Perception 13
-    --c[&FamiliarType]|Bat:&NightDistance;60|Cat:&NightDistance;0|Crab:&NightDistance;30|Frog:&NightDistance;30|Hawk:&NightDistance;0|Lizard:&NightDistance;0|Octopus:&NightDistance;30|Owl:&NightDistance;120|Snake:&NightDistance;10|Quipper:&NightDistance;60|Rat:&NightDistance;30|Raven:&NightDistance;0|Seahorse:&NightDistance;0|Spider:&NightDistance;30|Weasel:&NightDistance;0
-    --c[&FamiliarType]|Bat:&TraitOne;Echolocation|Cat:&TraitOne;Keen Smell|Crab:&TraitOne;Amphibious|Frog:&TraitOne;Amphibious|Hawk:&TraitOne;Keen Sight|Lizard:&TraitOne;|Octopus:&TraitOne;Hold Breath|Owl:&TraitOne;Flyby|Snake:&TraitOne;|Quipper:&TraitOne;Blood Frenzy|Rat:&TraitOne;Keen Smell|Raven:&TraitOne;Mimicry|Seahorse:&TraitOne;Water Breathing|Spider:&TraitOne;Spider Climb|Weasel:&TraitOne;Keen Hearing and Smell
-    --c[&FamiliarType]|Bat:&TraitOneDesc;The bat can't use its blindsight while deafened.|Cat:&TraitOneDesc;The cat has advantage on Wisdom (Perception) checks that rely on smell.|Crab:&TraitOneDesc;The crab can breathe air and water.|Frog:&TraitOneDesc;The frog can breathe air and water.|Hawk:&TraitOneDesc;The hawk has advantage on Wisdom (Perception) checks that rely on sight.|Lizard:&TraitOneDesc;|Octopus:&TraitOneDesc;While out of water, the octopus can hold its breath for 30 minutes.|Owl:&TraitOneDesc;The owl doesn't provoke opportunity attacks when it flies out of an enemy's reach.|Snake:&TraitOneDesc;|Quipper:&TraitOneDesc;The quipper has advantage on melee attack rolls against any creature that doesn't have all its hit points.|Rat:&TraitOneDesc;The rat has advantage on Wisdom (Perception) checks that rely on smell.|Raven:&TraitOneDesc;The raven can mimic simple sounds it has heard, such as a person whispering, a baby crying, or an animal chittering. A creature that hears the sounds can tell they are imitations with a successful DC 10 Wisdom (Insight) check.|Seahorse:&TraitOneDesc;The Seahorse can breathe only underwater.|Spider:&TraitOneDesc;The spider can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check.|Weasel:&TraitOneDesc;The weasel has advantage on Wisdom (Perception) checks that rely on hearing or smell.
-    --c[&FamiliarType]|Bat:&TraitTwo;Keen Hearing|Cat:&TraitTwo;|Crab:&TraitTwo;|Frog:&TraitTwo;Standing Leap|Hawk:&TraitTwo;|Lizard:&TraitTwo;|Octopus:&TraitTwo;Underwater Camouflage|Owl:&TraitTwo;Keen Hearing and Sight|Snake:&TraitTwo;|Quipper:&TraitTwo;Water Breathing|Rat:&TraitTwo;|Raven:&TraitTwo;|Seahorse:&TraitTwo;|Spider:&TraitTwo;Web Sense|Weasel:&TraitTwo;
-    --c[&FamiliarType]|Bat:&TraitTwoDesc;The bat has advantage on Wisdom (Perception) checks that rely on hearing.|Cat:&TraitTwoDesc;|Crab:&TraitTwoDesc;|Frog:&TraitTwoDesc;The frog's long jump is up to 10 feet and its high jump is up to 5 feet, with or without a running start.|Hawk:&TraitTwoDesc;|Lizard:&TraitTwoDesc;|Octopus:&TraitTwoDesc;The octopus has advantage on Dexterity (Stealth) checks made while underwater.|Owl:&TraitTwoDesc;The owl has advantage on Wisdom (Perception) checks that rely on hearing or sight.|Snake:&TraitTwoDesc;|Quipper:&TraitTwoDesc;The quipper can breathe only underwater.|Rat:&TraitTwoDesc;|Raven:&TraitTwoDesc;|Seahorse:&TraitTwoDesc;|Spider:&TraitTwoDesc;While in contact with a web, the spider knows the exact location of any other creature in contact with the same web.|Weasel:&TraitTwoDesc;
-    --c[&FamiliarType]|Bat:&TraitThree;|Cat:&TraitThree;|Crab:&TraitThree;|Frog:&TraitThree;|Hawk:&TraitThree;|Lizard:&TraitThree;|Octopus:&TraitThree;Water Breathing|Owl:&TraitThree;|Snake:&TraitThree;|Quipper:&TraitThree;|Rat:&TraitThree;|Raven:&TraitThree;|Seahorse:&TraitThree;|Spider:&TraitThree;Web Walker|Weasel:&TraitThree;
-    --c[&FamiliarType]|Bat:&TraitThreeDesc;|Cat:&TraitThreeDesc;|Crab:&TraitThreeDesc;|Frog:&TraitThreeDesc;|Hawk:&TraitThreeDesc;|Lizard:&TraitThreeDesc;|Octopus:&TraitThreeDesc;The octopus can breathe only underwater.|Owl:&TraitThreeDesc;|Snake:&TraitThreeDesc;|Quipper:&TraitThreeDesc;|Rat:&TraitThreeDesc;|Raven:&TraitThreeDesc;|Seahorse:&TraitThreeDesc;|Spider:&TraitThreeDesc;The spider ignores movement restrictions caused by webbing.|Weasel:&TraitThreeDesc;
-    --c[&FamiliarType]|Bat:&AttackOne;Bite|Cat:&AttackOne;Claws|Crab:&AttackOne;Claw|Frog:&AttackOne;|Hawk:&AttackOne;Talons|Lizard:&AttackOne;Bite|Octopus:&AttackOne;Tentacles|Owl:&AttackOne;Talons|Snake:&AttackOne;Bite|Quipper:&AttackOne;Bite|Rat:&AttackOne;Bite|Raven:&AttackOne;Beak|Seahorse:&AttackOne;|Spider:&AttackOne;Bite|Weasel:&AttackOne;Bite
-    --c[&FamiliarType]|Bat:&ToHitOne;+0|Cat:&ToHitOne;+0|Crab:&ToHitOne;+0|Frog:&ToHitOne;|Hawk:&ToHitOne;+5|Lizard:&ToHitOne;+0|Octopus:&ToHitOne;+4|Owl:&ToHitOne;+3|Snake:&ToHitOne;+5|Quipper:&ToHitOne;+5|Rat:&ToHitOne;+0|Raven:&ToHitOne;+4|Seahorse:&ToHitOne;|Spider:&ToHitOne;+4|Weasel:&ToHitOne;+5
-    --?";Cat;Crab;Frog;Octopus;Owl;Spider;Weasel;" -inc ";[&FamiliarType];"|&StealthFlag;2|&StealthFlag;
-    --c[&FamiliarType]|Bat:&StealthBase;|Cat:&StealthBase;+4|Crab:&StealthBase;+2|Frog:&StealthBase;+3|Hawk:&StealthBase;|Lizard:&StealthBase;|Octopus:&StealthBase;+4|Owl:&StealthBase;+3|Snake:&StealthBase;|Quipper:&StealthBase;|Rat:&StealthBase;|Raven:&StealthBase;|Seahorse:&StealthBase;|Spider:&StealthBase;+4|Weasel:&StealthBase;+5
-    --c[&FamiliarType]|Bat:&Stealth;|Cat:&Stealth;4|Crab:&Stealth;2|Frog:&Stealth;3|Hawk:&Stealth;|Lizard:&Stealth;|Octopus:&Stealth;4|Owl:&Stealth;3|Snake:&Stealth;|Quipper:&Stealth;|Rat:&Stealth;|Raven:&Stealth;|Seahorse:&Stealth;|Spider:&Stealth;4|Weasel:&Stealth;5
-    --?";Cat;Frog;Octopus;Hawk;Owl;Weasel;" -inc ";[&FamiliarType];"|&PercFlag;1
-    --c[&FamiliarType]|Bat:&PercBase;|Cat:&PercBase;+3|Crab:&PercBase;|Frog:&PercBase;+1|Hawk:&PercBase;+4|Lizard:&PercBase;|Octopus:&PercBase;+2|Owl:&PercBase;+3|Snake:&PercBase;|Quipper:&PercBase;|Rat:&PercBase;|Raven:&PercBase;+3|Seahorse:&PercBase;|Spider:&PercBase;|Weasel:&PercBase;+3
-    --c[&FamiliarType]|Bat:&Perc;|Cat:&Perc;3|Crab:&Perc;|Frog:&Perc;1|Hawk:&Perc;4|Lizard:&Perc;|Octopus:&Perc;2|Owl:&Perc;3|Snake:&Perc;|Quipper:&Perc;|Rat:&Perc;|Raven:&Perc;3|Seahorse:&Perc;|Spider:&Perc;|Weasel:&Perc;3
-    --?"[&FamiliarType]" -inc "Snake"|&Challenge;1/8|&Challenge;0
-    --?"[&FamiliarType]" -inc "Snake"|&XP;25|&XP;10
-    --?";Lizard;Rat;" -inc ";[&FamiliarType];"|&AC;10
-    --?";Crab;Frog;Owl;Seahorse;" -inc ";[&FamiliarType];"|&AC;11
-    --?";Bat;Cat;Octopus;Raven;Spider;" -inc ";[&FamiliarType];"|&AC;12
-    --?";Snake;Quipper;Weasel;Hawk;" -inc ";[&FamiliarType];"|&AC;13
-    --?";Frog;Seahorse;" -inc ";[&FamiliarType];"|[
-      --&AttackOneFlag|off
-      --&AttackOneType|
-      --&AttackOneTarget|
-      --&AttackOneRange|
-      --&DamageOne|
-      --&DamageOneType|
-      --&OnHitOne|
-    --]|[
-      --&AttackOneFlag|on
-      --&AttackOneType|Melee
-      --&AttackOneTarget|one target
-      --&AttackOneRange|5 Ft.
-      --&DamageOne|1
-      --&OnHitOne|1
-    --]|
-    --?";Bat;Lizard;Snake;Quipper;Rat;Raven;Spider;Weasel;" -inc ";[&FamiliarType];"|&DamageOneType;piercing
-    --?";Cat;Hawk;Owl;" -inc ";[&FamiliarType];"|&DamageOneType;slashing
-    --?";Octopus;Crab;" -inc ";[&FamiliarType];"|&DamageOneType;bludgeoning
-    --?"[&FamiliarType]" -inc "Snake"|&AttackOneDesc;The target must make a DC 10 Constitution saving throw, taking 5 (2d4) poison damage on a failed save, or half as much damage on a successful one.
-    --?"[&FamiliarType]" -inc "Snake"|&DamageOneTwo;2d4
-    --?"[&FamiliarType]" -inc "Snake"|&DamageOneTypeTwo;Poison|&DamageOneTypeTwo;
-    --?"[&FamiliarType]" -inc "Spider"|&AttackOneDesc;The target must succeed on a DC 9 Constitution saving throw or take 2 (1d4) poison damage.
-    --?"[&FamiliarType]" -inc "Spider"|&DamageOneTwo;1d4
-    --?"[&FamiliarType]" -inc "Spider"|&DamageOneTypeTwo;Poison
-    --?"[&FamiliarType]" -inc "Octopus"|[
-      --&FamSize|Small
-      --&AttackTwo|Ink Cloud (Recharges after a Short or Long Rest)
-      --&AttackOneDesc|The target is grappled, escape DC 10. Until this grapple ends, the octopus can't use its tentacles on another target.
-      --&AttackTwoDesc|A 5-foot-radius cloud of ink extends all around the octopus if it is underwater. The area is heavily obscured for 1 minute, although a significant current can disperse the ink. After releasing the ink, the octopus can use the Dash action as a bonus action.
-    --]|[
-      --&FamSize|Tiny
-      --&AttackTwo|
-      --&AttackTwoDesc|
-    --]|
-    --!a:[&FindFamiliar]|!npc_name:[&FamiliarType]|!npc_type:[&FamSize] [&Realm], Unaligned|!npc_ac:[&AC]|!npc_actype:[&ACType]|!hp:[&HP]|!hp^:[&HPMax]|!npc_hpformula:[&HPForm]|!strength_base:[&STR]|!dexterity_base:[&DEX]|!constitution_base:[&CON]|!intelligence_base:[&INT]|!wisdom_base:[&WIS]|!charisma_base:[&CHA]|!npc_speed:[&Speed]|!initiative_bonus:[&INIT]|!npc_challenge:[&Challenge]|!npc_xp:[&XP]|!npc_senses:[&Senses]|!pb:2|!npc_stealth_base:[&StealthBase]|!npc_stealth_flag:[&StealthFlag]|!npc_stealth:[&Stealth]|!npc_perception_base:[&PercBase]|!npc_perception_flag:[&PercFlag]|!npc_perception:[&Perc]
-    --Rfirst|[&FindFamiliar];repeating_npctrait
-      --!a:[&FindFamiliar]|[*R>name]:[&TraitOne]|[*R>description]:[&TraitOneDesc]
-        --Rnext|
-          --!a:[&FindFamiliar]|[*R>name]:[&TraitTwo]|[*R>description]:[&TraitTwoDesc]
-            --Rnext|
-              --!a:[&FindFamiliar]|[*R>name]:[&TraitThree]|[*R>description]:[&TraitThreeDesc]
-    --Rfirst|[&FindFamiliar];repeating_npcaction
-    --~|array;objects:ability;AbilityArr;[*R:name];[&FindFamiliar]
-      --!ability:[@AbilityArr(0)]|name:[&AttackOne]|istokenaction:True
-      --!a:[&FindFamiliar]|[*R>name]:[&AttackOne]|[*R>attack_flag]:[&AttackOneFlag]|[*R>attack_type]:[&AttackOneType]|[*R>attack_target]:[&AttackOneTarget]|[R>attack_range]:[&AttackOneRange]|[*R>attack_tohit]:[&ToHitOne]|[*R>attack_damage]:[&DamageOne]|[*R>attack_damage2]:[&DamageOneTwo]|[*R>attack_damagetype]:[&DamageOneType]|[*R>attack_damagetype2]:[&DamageOneTypeTwo]|[*R>attack_tohitrange]:|[*R>attack_onhit]:[&OnHitOne]|[*R>attack_onhit2]:[&OnHitOneTwo]|[*R>description]:[&AttackOneDesc]
-        --Rnext|
-          --~|array;objects:ability;AbilArr;Ink-Cloud;[&FindFamiliar]
-          --?"[&FamiliarType]" -inc "Octopus"|[
-            --!ability:[@AbilArr(0)]|istokenaction:True
-          --]|[
-            --!ability:[@AbilArr(0)]|istokenaction:False
-          --]|
-          --!a:[&FindFamiliar]|[*R>name]:[&AttackTwo]|[*R>attack_flag]:off|[*R>description]:[&AttackTwoDesc]
-    --?"[*[&FindFamiliar]:custom_name]" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;[*[&FindFamiliar]:custom_name]
-    --?"[&UpdateName]" -eq "0"|&TokenDisplayName;[&TokenDisplayName]|&TokenDisplayName;[&UpdateName]
-    --?"[*[&FindFamiliar]:[&FamiliarType]]" -ne "0"|&TokenDisplay;[*[&FindFamiliar]:[&FamiliarType]]|&TokenDisplay;[&[&FamiliarType]Token]
-    --/|Summon The Familiar
-    --!ot:NewTID|name:"[&TokenDisplayName]"|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:[*S:t-width]|height:[*S:t-height]|imgsrc:"[&TokenDisplay]"|represents:"[&FindFamiliar]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:[&NightDistance]|night_vision_effect:Nocturnal|order:toFront|showplayers_name:1
-    --/|Add a puff of smoke where the Familiar spawns
-    --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-smoke
-    --?"[&FamiliarType]" -inc "Snake"|&DisplayName;Snake|&DisplayName;[&FamiliarType]
-    --~NameReplace|string;replaceall; ;;[&DisplayName]
-    --?"[*[&FindFamiliar]:custom_name]" -ne "0"|&FamiliarName;[&TokenDisplayName]|&FamiliarName;a [&TokenDisplayName]
-    --#emoteText|[*S:character_name] Takes 1 hour to cast [&SpellName] and summons [&FamiliarName]
-    --+|[t width=267px style="text-align: center ; "][tr][td][img width=120][&[&NameReplace]Token][/img][/td][/tr][/t]
-  --X|
-
-  --:NoCharacter|
-    --#whisper|self
-    --+|[b]Please make sure to create an NPC character named FindFamiliar, then rerun the script.[/b]
-  --X|
-
-  --:Settings|
-    --#emoteState|visible
-    --#emoteText|Custom Familiar
-    --#title|
-    --#whisper|self
-    --+|[t width=240px][tr][td]&#x2022;[b]Here you can change the tokens.[br]&#x2022;The image for the token must be in your roll20 library.[br]&#x2022;Have the URL of the image ready.[br]&#x2022;Click on the familiar you'd like to change and then follow the prompts in the chat window.[/b][/td][/tr][/t]
-    --~|array;define;FamiliarToken;Bat;Cat;Crab;Frog;Hawk;Lizard;Octopus;Owl;Snake;Quipper;Rat;Raven;Seahorse;Spider;Weasel
-    --&TokensPerRow|3
-    --&TokenCounter|1
-    --&AllTokens|[t width=112% style="position: relative ; left: -13px ; "][tr]
-    --%TokenLoop|foreach;FamiliarToken
-      --?"[*[&FindFamiliar]:[&TokenLoop]]" -ne "0"|&FinalToken;[*[&FindFamiliar]:[&TokenLoop]]|&FinalToken;[&[&TokenLoop]Token]
-      --c[&TokenLoop]|Bat:&DisplayName;Bat|Cat:&DisplayName;Cat|Crab:&DisplayName;Crab|Frog:&DisplayName;Frog(Toad)|Hawk:&DisplayName;Hawk|Lizard:&DisplayName;Lizard|Octopus:&DisplayName;Octopus|Owl:&DisplayName;Owl|Snake:&DisplayName;Poisonous Snake|Quipper:&DisplayName;Quipper (Fish)|Rat:&DisplayName;Rat|Raven:&DisplayName;Raven|Seahorse:&DisplayName;Sea Horse|Spider:&DisplayName;Spider|Weasel:&DisplayName;Weasel
-      --&AllTokens|+[td [&SettingsBackground]][rbutton][img width=70][&FinalToken][/img]::UpdateToken;[&TokenLoop][/rbutton][br][b][&DisplayName][/b][br][br][rbutton]RESET::ResetToken;[&TokenLoop][/rbutton][br][/td]
-      --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
-      -->IncrementCounter|TokenCounter
-    --%|
-    --?"[*[&FindFamiliar]:custom_name]" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;[*[&FindFamiliar]:custom_name]
-    --?"[&UpdateName]" -eq "0"|&TokenDisplayName;[&TokenDisplayName]|&TokenDisplayName;[&UpdateName]
-    --&AllTokens|+[/tr][/t][t width=235px style="border: 1mm ridge rgb(218,165,32) ; text-align: center ; "][tr][td style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][b]Custom Name[/b][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]CHANGE::UpdateName[/rbutton][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]RESET::ResetName[/rbutton][/td][/tr][tr][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][b]Current Name[/b][/td][td colspan=2 style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][&TokenDisplayName][/td][/tr][tr][td colspan=3][rbutton]EXIT::RestartMod[/rbutton][/td][/tr][/t]
-    --+|[&AllTokens]
-  --X|
-
-  --:UpdateToken|
-    --&FamUpdate|[&reentryval]
-    --I. ;Click Here to add image URL|q;UpdateToken;What Is The URL To Your Token Image? It must be an image from your Roll20 Library.
-    --!a:[&FindFamiliar]|![&FamUpdate]:[&UpdateToken]
-    -->Settings|
-  --X|
-
-  --:ResetToken|
-    --&TokenReset|[&reentryval]
-    --!a:[&FindFamiliar]|![&TokenReset]:0
-    -->Settings|
-  --X|
-
- --:UpdateName|
-    --I. ;Click Here to Change Name|q;UpdateName;What are you naming your Familiar?
-    --!a:[&FindFamiliar]|!custom_name:[&UpdateName]
-	-->Settings|
-  --X|
-
-  --:ResetName|
+--:SpellInfo|
+  --#emoteState|0
+  --#emoteText|
+  --#whisper|self
+  --~MacroButton|system;findability;[*[&FindFamiliar]:character_name];Ink-Cloud
+  --Rfind|@{selected|character_id};Find Familiar;repeating_spell-1;spellname
+  --?"[&MacroButton]" -eq "AbilityNotFound"|[
+    --!or:[&FindFamiliar]:npcaction|name:Bite|attack_flag:on|attack_type:melee|attack_target:one target|attack_range:5 ft.|attack_tohit:1|attack_damage:1|attack_damagetype:piercing|attack_tohitrange:+5, Reach 5ft., one target|attack_onhit:1 (1d4 + 3) piercing damage|attack_crit:1d4
+    --!or:[&FindFamiliar]:npcaction|name:Ink-Cloud|attack_flag:off|description:(Recharges after a Short or Long Rest). A 5-foot-radius cloud of ink extends all around the octopus if it is underwater. The area is heavily obscured for 1 minute, although a significant current can disperse the ink. After releasing the ink, the octopus can use the Dash action as a bonus action.
+    --!or:[&FindFamiliar]:npctrait|name:Temp|description:Temp
+    --!or:[&FindFamiliar]:npctrait|name:Temp1|description:Temp1
+    --!or:[&FindFamiliar]:npctrait|name:Temp2|description:Temp2
+    --&obrac|{
+    --&cbrac|}
+    --&perc|%
+    --!ob:AbilID:[&FindFamiliar]:Bite:y|[&perc][&obrac]FindFamiliar|repeating_npcaction_$0_npc_action[&cbrac]
+    --!ob:AbilID2:[&FindFamiliar]:Ink-Cloud:n|@[&obrac]FindFamiliar|@[&obrac]FindFamiliar|wtype[&cbrac]&[&obrac]template:npcaction[&cbrac] @[&obrac]Octopus|npc_name_flag[&cbrac] [&obrac][&obrac]rname=Ink Cloud (Recharges after a Short or Long Rest)[&cbrac][&cbrac] [&obrac][&obrac]description=A 5-foot-radius cloud of ink extends all around the octopus if it is underwater. The area is heavily obscured for 1 minute, although a significant current can disperse the ink. After releasing the ink, the octopus can use the Dash action as a bonus action.[&cbrac][&cbrac] @[&obrac]Octopus|charname_output[&cbrac]
+    --!ob:AbilID3:[&FindFamiliar]:Skills:y|&[&obrac]template:npcaction[&cbrac][&obrac][&obrac]name=[&cbrac][&cbrac][&obrac][&obrac]rname=Familiar Skills[&cbrac][&cbrac][&obrac][&obrac]description=Select your skill check:[Acrobatics](~FindFamiliar|acrobatics)[Animal Handl.](~FindFamiliar|animalhandling)[Arcana](~FindFamiliar|arcana)[Athletics](~FindFamiliar|athletics)[Deception](~FindFamiliar|deception)[History](~FindFamiliar|history)[Insight](~FindFamiliar|insight)[Intimidation](~FindFamiliar|intimidation)[Investigation](~FindFamiliar|investigation)[Medicine](~FindFamiliar|medicine)[Nature](~FindFamiliar|nature)[Perception](~FindFamiliar|Perception)[Performance](~FindFamiliar|performance)[Persuasion](~FindFamiliar|persuasion)[Religion](~FindFamiliar|religion)[Sleight Of Hand](~FindFamiliar|sleightofhand)[Stealth](~FindFamiliar|stealth)[Survival](~FindFamiliar|survival)[&cbrac][&cbrac]
+    --!ob:AbilID4:[&FindFamiliar]:Saves & Attributes:y|&[&obrac]template:npcaction[&cbrac][&obrac][&obrac]name=[&cbrac][&cbrac][&obrac][&obrac]rname=Familiar Saving Throws and Attributes[&cbrac][&cbrac][&obrac][&obrac]description=Select your Save or Ability Roll:[STR Save](~FindFamiliar|strength_save)[DEX Save](~FindFamiliar|dexterity_save)[CON Save](~FindFamiliar|constitution_save)[INT Save](~FindFamiliar|intelligence_save)[WIS Save](~FindFamiliar|wisdom_save)[CHA Save](~FindFamiliar|charisma_save)[&perc]NEWLINE[&perc][&perc]NEWLINE[&perc][Strength](~FindFamiliar|strength)[Dexterity](~FindFamiliar|dexterity)[Constitution](~FindFamiliar|constitution)[Intelligence](~FindFamiliar|intelligence)[Wisdom](~FindFamiliar|wisdom)[Charisma](~FindFamiliar|charisma)[&cbrac][&cbrac]
     --!a:[&FindFamiliar]|!custom_name:0
-    --&UpdateName|0
-    -->Settings|
-  --X|
-
-  --:IncrementCounter|
-    --&[%1%]|[= [&[%1%]] + 1]
-  --<|
-
+    --!a:[&FindFamiliar]|!Bat:0|!Cat:0|!Crab:0|!Frog:0|!Hawk:0|!Lizard:0|!Octopus:0|!Owl:0|!Snake:0|!Quipper:0|!Rat:0|!Raven:0|!Seahorse:0|!Spider:0|!Weasel:0
+  --]|
+  --#title|[*R:spellname]
+  --?[*R:spelllevel] -eq cantrip|&spllvl;cantrip|&spllvl;[*R:spelllevel]
+  --?[&spllvl] -eq 1|&lvlsuffix;st
+  --?[&spllvl] -eq 2|&lvlsuffix;nd
+  --?[&spllvl] -eq 3|&lvlsuffix;rd
+  --?[&spllvl] -ge 4|&lvlsuffix;th
+  --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal;
+  --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic;S|&Somatic;
+  --?"[*R:spellcomp_m]" -inc "m=1"|[
+    --&Components|M
+    --&Materials|([*R:spellcomp_materials])
+  --]|
+  --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
+  --&SpellDesc|[*R:spelldescription]
+  --&BttnTd_CSS|style="align-self: center; background-color: transparent; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: #[*S:iconcolor]; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
+  --=SpellDescCalc|[&SpellDesc(length)] - 1024
+  --/|SPELL OUTPUT
+  --&SpellStats|[t width=100% style="margin-bottom: 5px ; [&BodyStyle] ; "][tr][td][i][&spllvl][&lvlsuffix]-Level [*R:spellschool] (ritual)[/i][/td][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td style="text-align: right ; font-size: 18px ;"][rbutton]⚙::Settings[/rbutton][/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td][b]Casting Time:[/b]&nbsp;[*R:spellcastingtime][/td][/tr]
+  --&SpellStats|+[tr][td][b]Range:[/b]&nbsp;[*R:spellrange][/td][/tr]
+  --&SpellStats|+[tr][td][b]Target:[/b]&nbsp;[*R:spelltarget][/td][/tr]
+  --&SpellStats|+[tr][td][b]Components:[/b]&nbsp;[&Verbal][&Somatic][&Components] [&Materials][/td][/tr]
+  --&SpellStats|+[tr][td][b]Duration:[/b]&nbsp;[&Concentration]&nbsp;[*R:spellduration][/td][/tr]
+  --&SpellStats|+[tr][td][b]Classes:[/b]&nbsp;Wizard[/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; " title="[&SpellDesc([$SpellDescCalc.Raw],[&SpellDesc(length)])]"][tr][td style="margin-bottom: 5px ; pointer-events: auto ; cursor: help ; "][&SpellDesc(0,[$SpellDescCalc.Raw])]...[/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="text-align: center ; [&BodyStyle] ; margin: 6px 0px -10px 0px ; "][tr][td [&BttnTd_CSS]][b][rbutton]Cast Spell::WhatBeast[/rbutton][/b][/td][/tr][/t]
+  --+|[&SpellStats]
+--X|
+--:WhatBeast|
+  --#whisper|self
+  --#title|Familiar Type
+  --&Realm|[t width=100% style="font-weight: bold ; text-align: center ; "]
+  --&Realm|+[tr style="font-size: 15px ; height: 50px ; "][td style="text-align: right ; "][b][rbutton]Celestial::GetFamiliar;Celestial[/rbutton]
+  --&Realm|+[td style="text-align: center ; "]&nbsp;|&nbsp;&nbsp;&nbsp;[rbutton]Fey::GetFamiliar;Fey[/rbutton]&nbsp;&nbsp;&nbsp;|&nbsp;[/td]
+  --&Realm|+[td style="text-align: left ; "][rbutton]Fiend::GetFamiliar;Fiend[/rbutton][/b]&nbsp;&nbsp;[/td][/tr][/t]
+  --+|[&Realm]
+--X|
+--:GetFamiliar|
+  --&Realm|[&reentryval]
+  --#title|Choose Form
+  --#whisper|self
+  --~|array;define;FamiliarToken;Bat;Cat;Crab;Frog;Hawk;Lizard;Octopus;Owl;Snake;Quipper;Rat;Raven;Seahorse;Spider;Weasel
+  --&TokensPerRow|3
+  --&TokenCounter|1
+  --&AllTokens|[t width=100%][tr][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td width=30 style="text-align: right ; font-size: 18px ;"][rbutton]⚙::Settings[/rbutton][/td][/tr][/t][t width=112% style="position: relative ; left: -15px ; "][tr]
+  --%TokenLoop|foreach;FamiliarToken
+    --?"[*[&FindFamiliar]:[&TokenLoop]]" -ne "0"|&FinalToken;[*[&FindFamiliar]:[&TokenLoop]]|&FinalToken;[&[&TokenLoop]Token]
+    --c[&TokenLoop]|Bat:&DisplayName;Bat|Cat:&DisplayName;Cat|Crab:&DisplayName;Crab|Frog:&DisplayName;Frog(Toad)|Hawk:&DisplayName;Hawk|Lizard:&DisplayName;Lizard|Octopus:&DisplayName;Octopus|Owl:&DisplayName;Owl|Snake:&DisplayName;Poisonous Snake|Quipper:&DisplayName;Quipper (Fish)|Rat:&DisplayName;Rat|Raven:&DisplayName;Raven|Seahorse:&DisplayName;Sea Horse|Spider:&DisplayName;Spider|Weasel:&DisplayName;Weasel
+    --&AllTokens|+[td [&BackgroundImage]][rbutton][img width=70][&FinalToken][/img][br]::Familiar;[&TokenLoop][/rbutton][br][b][&DisplayName][/b][br][br][/td]
+    --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
+    --&TokenCounter|[= [&TokenCounter] + 1 ]
+  --%|
+  --&AllTokens|+[/tr][/t]
+  --+|[&AllTokens]
+--X|
+--:Familiar|
+  --#overridetemplate|statblockv4public
+  --#whisper|
+  --#emoteState|visible
+  --#title|
+  --&FamiliarType|[&reentryval]
+  --c[&FamiliarType]|Bat:&TokenSide;1|Cat:&TokenSide;2|Crab:&TokenSide;3|Frog:&TokenSide;4|Hawk:&TokenSide;5|Lizard:&TokenSide;6|Octopus:&TokenSide;7|Owl:&TokenSide;8|Snake:&TokenSide;9|Quipper:&TokenSide;10|Rat:&TokenSide;11|Raven:&TokenSide;12|Seahorse:&TokenSide;13|Spider:&TokenSide;14|Weasel:&TokenSide;15
+  --c[&FamiliarType]|Bat:&FamAC;12|Cat:&FamAC;12|Crab:&FamAC;11|Frog:&FamAC;11|Hawk:&FamAC;13|Lizard:&FamAC;10|Octopus:&FamAC;12|Owl:&FamAC;11|Snake:&FamAC;13|Quipper:&FamAC;13|Rat:&FamAC;10|Raven:&FamAC;12|Seahorse:&FamAC;11|Spider:&FamAC;12|Weasel:&FamAC;13
+  --c[&FamiliarType]|Bat:&ACType;|Cat:&ACType;|Crab:&ACType;Natural Armor|Frog:&ACType;|Hawk:&ACType;|Lizard:&ACType;|Octopus:&ACType;|Owl:&ACType;|Snake:&ACType;|Quipper:&ACType;|Rat:&ACType;|Raven:&ACType;|Seahorse:&ACType;|Spider:&ACType;|Weasel:&ACType;
+  --c[&FamiliarType]|Bat:&HP;1|Cat:&HP;2|Crab:&HP;2|Frog:&HP;1|Hawk:&HP;1|Lizard:&HP;2|Octopus:&HP;3|Owl:&HP;1|Snake:&HP;2|Quipper:&HP;1|Rat:&HP;1|Raven:&HP;1|Seahorse:&HP;1|Spider:&HP;1|Weasel:&HP;1
+  --c[&FamiliarType]|Bat:&HPMax;1|Cat:&HPMax;2|Crab:&HPMax;2|Frog:&HPMax;1|Hawk:&HPMax;1|Lizard:&HPMax;2|Octopus:&HPMax;3|Owl:&HPMax;1|Snake:&HPMax;2|Quipper:&HPMax;1|Rat:&HPMax;1|Raven:&HPMax;1|Seahorse:&HPMax;1|Spider:&HPMax;1|Weasel:&HPMax;1
+  --c[&FamiliarType]|Bat:&HPForm;1d4 - 1|Cat:&HPForm;1d4|Crab:&HPForm;1d4|Frog:&HPForm;1d4 - 1|Hawk:&HPForm;1d4 - 1|Lizard:&HPForm;1d4|Octopus:&HPForm;1d6|Owl:&HPForm;1d4 - 1|Snake:&HPForm;1d4|Quipper:&HPForm;1d4 - 1|Rat:&HPForm;1d4 - 1|Raven:&HPForm;1d4 - 1|Seahorse:&HPForm;1d4 - 1|Spider:&HPForm;1d4 - 1|Weasel:&HPForm;1d4 - 1
+  --c[&FamiliarType]|Bat:&STR;2|Cat:&STR;3|Crab:&STR;2|Frog:&STR;1|Hawk:&STR;5|Lizard:&STR;2|Octopus:&STR;4|Owl:&STR;3|Snake:&STR;2|Quipper:&STR;2|Rat:&STR;2|Raven:&STR;2|Seahorse:&STR;1|Spider:&STR;2|Weasel:&STR;3
+  --c[&FamiliarType]|Bat:&DEX;15|Cat:&DEX;15|Crab:&DEX;11|Frog:&DEX;13|Hawk:&DEX;16|Lizard:&DEX;11|Octopus:&DEX;15|Owl:&DEX;13|Snake:&DEX;16|Quipper:&DEX;16|Rat:&DEX;11|Raven:&DEX;14|Seahorse:&DEX;12|Spider:&DEX;14|Weasel:&DEX;16
+  --c[&FamiliarType]|Bat:&CON;8|Cat:&CON;10|Crab:&CON;10|Frog:&CON;8|Hawk:&CON;8|Lizard:&CON;10|Octopus:&CON;11|Owl:&CON;8|Snake:&CON;11|Quipper:&CON;9|Rat:&CON;9|Raven:&CON;8|Seahorse:&CON;8|Spider:&CON;8|Weasel:&CON;8
+  --c[&FamiliarType]|Bat:&INT;2|Cat:&INT;3|Crab:&INT;1|Frog:&INT;1|Hawk:&INT;2|Lizard:&INT;1|Octopus:&INT;3|Owl:&INT;2|Snake:&INT;1|Quipper:&INT;1|Rat:&INT;2|Raven:&INT;2|Seahorse:&INT;1|Spider:&INT;1|Weasel:&INT;2
+  --c[&FamiliarType]|Bat:&WIS;12|Cat:&WIS;12|Crab:&WIS;8|Frog:&WIS;8|Hawk:&WIS;14|Lizard:&WIS;8|Octopus:&WIS;10|Owl:&WIS;12|Snake:&WIS;10|Quipper:&WIS;7|Rat:&WIS;10|Raven:&WIS;12|Seahorse:&WIS;10|Spider:&WIS;10|Weasel:&WIS;12
+  --c[&FamiliarType]|Bat:&CHA;4|Cat:&CHA;7|Crab:&CHA;2|Frog:&CHA;3|Hawk:&CHA;6|Lizard:&CHA;3|Octopus:&CHA;4|Owl:&CHA;7|Snake:&CHA;3|Quipper:&CHA;2|Rat:&CHA;4|Raven:&CHA;6|Seahorse:&CHA;2|Spider:&CHA;2|Weasel:&CHA;3
+  --c[&FamiliarType]|Bat:&Speed;5 ft., fly 30 ft.|Cat:&Speed;40 ft., climb 30 ft.|Crab:&Speed;20 ft., swim 20 ft.|Frog:&Speed;20 ft., swim 20 ft.|Hawk:&Speed;10 ft., fly 60 ft.|Lizard:&Speed;20 ft., climb 20 ft.|Octopus:&Speed;5 ft., swim 30 ft.|Owl:&Speed;5 ft., fly 60 ft.|Snake:&Speed;30 ft., swim 30 ft.|Quipper:&Speed;0 ft., swim 30 ft.|Rat:&Speed;20 ft.|Raven:&Speed;10 ft., fly 50 ft.|Seahorse:&Speed;0 ft., swim 20 ft.|Spider:&Speed;20 ft., climb 20 ft.|Weasel:&Speed;30 ft.
+  --c[&FamiliarType]|Bat:&INIT;2|Cat:&INIT;2|Crab:&INIT;2|Frog:&INIT;1|Hawk:&INIT;3|Lizard:&INIT;0|Octopus:&INIT;2|Owl:&INIT;1|Snake:&INIT;3|Quipper:&INIT;3|Rat:&INIT;0|Raven:&INIT;2|Seahorse:&INIT;1|Spider:&INIT;2|Weasel:&INIT;3
+  --c[&FamiliarType]|Bat:&Senses;blindsight 60 ft., Passive Perception 11|Cat:&Senses;Passive Perception 13|Crab:&Senses;blindsight 30 ft., Passive Perception 9|Frog:&Senses;Darkvision 30 ft., Passive Perception 11|Hawk:&Senses;Passive Perception 14|Lizard:&Senses;Passive Perception 9|Octopus:&Senses;Darkvision 30 ft., Passive Perception 12|Owl:&Senses;Darkvision 120 ft., Passive Perception 13|Snake:&Senses;blindsight 10 ft., Passive Perception 10|Quipper:&Senses;Darkvision 60 ft., Passive Perception 8|Rat:&Senses;darkvision 30 ft., Passive Perception 10|Raven:&Senses;Passive Perception 13|Seahorse:&Senses;Passive Perception 10|Spider:&Senses;Darkvision 30 ft., Passive Perception 10|Weasel:&Senses;Passive Perception 13
+  --c[&FamiliarType]|Bat:&NightDistance;60|Cat:&NightDistance;0|Crab:&NightDistance;30|Frog:&NightDistance;30|Hawk:&NightDistance;0|Lizard:&NightDistance;0|Octopus:&NightDistance;30|Owl:&NightDistance;120|Snake:&NightDistance;10|Quipper:&NightDistance;60|Rat:&NightDistance;30|Raven:&NightDistance;0|Seahorse:&NightDistance;0|Spider:&NightDistance;30|Weasel:&NightDistance;0
+  --c[&FamiliarType]|Bat:&TraitOne;Echolocation|Cat:&TraitOne;Keen Smell|Crab:&TraitOne;Amphibious|Frog:&TraitOne;Amphibious|Hawk:&TraitOne;Keen Sight|Lizard:&TraitOne;|Octopus:&TraitOne;Hold Breath|Owl:&TraitOne;Flyby|Snake:&TraitOne;|Quipper:&TraitOne;Blood Frenzy|Rat:&TraitOne;Keen Smell|Raven:&TraitOne;Mimicry|Seahorse:&TraitOne;Water Breathing|Spider:&TraitOne;Spider Climb|Weasel:&TraitOne;Keen Hearing and Smell
+  --c[&FamiliarType]|Bat:&TraitOneDesc;The bat can't use its blindsight while deafened.|Cat:&TraitOneDesc;The cat has advantage on Wisdom (Perception) checks that rely on smell.|Crab:&TraitOneDesc;The crab can breathe air and water.|Frog:&TraitOneDesc;The frog can breathe air and water.|Hawk:&TraitOneDesc;The hawk has advantage on Wisdom (Perception) checks that rely on sight.|Lizard:&TraitOneDesc;|Octopus:&TraitOneDesc;While out of water, the octopus can hold its breath for 30 minutes.|Owl:&TraitOneDesc;The owl doesn't provoke opportunity attacks when it flies out of an enemy's reach.|Snake:&TraitOneDesc;|Quipper:&TraitOneDesc;The quipper has advantage on melee attack rolls against any creature that doesn't have all its hit points.|Rat:&TraitOneDesc;The rat has advantage on Wisdom (Perception) checks that rely on smell.|Raven:&TraitOneDesc;The raven can mimic simple sounds it has heard, such as a person whispering, a baby crying, or an animal chittering. A creature that hears the sounds can tell they are imitations with a successful DC 10 Wisdom (Insight) check.|Seahorse:&TraitOneDesc;The Seahorse can breathe only underwater.|Spider:&TraitOneDesc;The spider can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check.|Weasel:&TraitOneDesc;The weasel has advantage on Wisdom (Perception) checks that rely on hearing or smell.
+  --c[&FamiliarType]|Bat:&TraitTwo;Keen Hearing|Cat:&TraitTwo;|Crab:&TraitTwo;|Frog:&TraitTwo;Standing Leap|Hawk:&TraitTwo;|Lizard:&TraitTwo;|Octopus:&TraitTwo;Underwater Camouflage|Owl:&TraitTwo;Keen Hearing and Sight|Snake:&TraitTwo;|Quipper:&TraitTwo;Water Breathing|Rat:&TraitTwo;|Raven:&TraitTwo;|Seahorse:&TraitTwo;|Spider:&TraitTwo;Web Sense|Weasel:&TraitTwo;
+  --c[&FamiliarType]|Bat:&TraitTwoDesc;The bat has advantage on Wisdom (Perception) checks that rely on hearing.|Cat:&TraitTwoDesc;|Crab:&TraitTwoDesc;|Frog:&TraitTwoDesc;The frog's long jump is up to 10 feet and its high jump is up to 5 feet, with or without a running start.|Hawk:&TraitTwoDesc;|Lizard:&TraitTwoDesc;|Octopus:&TraitTwoDesc;The octopus has advantage on Dexterity (Stealth) checks made while underwater.|Owl:&TraitTwoDesc;The owl has advantage on Wisdom (Perception) checks that rely on hearing or sight.|Snake:&TraitTwoDesc;|Quipper:&TraitTwoDesc;The quipper can breathe only underwater.|Rat:&TraitTwoDesc;|Raven:&TraitTwoDesc;|Seahorse:&TraitTwoDesc;|Spider:&TraitTwoDesc;While in contact with a web, the spider knows the exact location of any other creature in contact with the same web.|Weasel:&TraitTwoDesc;
+  --c[&FamiliarType]|Bat:&TraitThree;|Cat:&TraitThree;|Crab:&TraitThree;|Frog:&TraitThree;|Hawk:&TraitThree;|Lizard:&TraitThree;|Octopus:&TraitThree;Water Breathing|Owl:&TraitThree;|Snake:&TraitThree;|Quipper:&TraitThree;|Rat:&TraitThree;|Raven:&TraitThree;|Seahorse:&TraitThree;|Spider:&TraitThree;Web Walker|Weasel:&TraitThree;
+  --c[&FamiliarType]|Bat:&TraitThreeDesc;|Cat:&TraitThreeDesc;|Crab:&TraitThreeDesc;|Frog:&TraitThreeDesc;|Hawk:&TraitThreeDesc;|Lizard:&TraitThreeDesc;|Octopus:&TraitThreeDesc;The octopus can breathe only underwater.|Owl:&TraitThreeDesc;|Snake:&TraitThreeDesc;|Quipper:&TraitThreeDesc;|Rat:&TraitThreeDesc;|Raven:&TraitThreeDesc;|Seahorse:&TraitThreeDesc;|Spider:&TraitThreeDesc;The spider ignores movement restrictions caused by webbing.|Weasel:&TraitThreeDesc;
+  --c[&FamiliarType]|Bat:&AttackOne;Bite|Cat:&AttackOne;Claws|Crab:&AttackOne;Claw|Frog:&AttackOne;|Hawk:&AttackOne;Talons|Lizard:&AttackOne;Bite|Octopus:&AttackOne;Tentacles|Owl:&AttackOne;Talons|Snake:&AttackOne;Bite|Quipper:&AttackOne;Bite|Rat:&AttackOne;Bite|Raven:&AttackOne;Beak|Seahorse:&AttackOne;|Spider:&AttackOne;Bite|Weasel:&AttackOne;Bite
+  --c[&FamiliarType]|Bat:&ToHitOne;+0|Cat:&ToHitOne;+0|Crab:&ToHitOne;+0|Frog:&ToHitOne;|Hawk:&ToHitOne;+5|Lizard:&ToHitOne;+0|Octopus:&ToHitOne;+4|Owl:&ToHitOne;+3|Snake:&ToHitOne;+5|Quipper:&ToHitOne;+5|Rat:&ToHitOne;+0|Raven:&ToHitOne;+4|Seahorse:&ToHitOne;|Spider:&ToHitOne;+4|Weasel:&ToHitOne;+5
+  --?";Cat;Crab;Frog;Octopus;Owl;Spider;Weasel;" -inc ";[&FamiliarType];"|&StealthFlag;2|&StealthFlag;
+  --c[&FamiliarType]|Bat:&StealthBase;|Cat:&StealthBase;+4|Crab:&StealthBase;+2|Frog:&StealthBase;+3|Hawk:&StealthBase;|Lizard:&StealthBase;|Octopus:&StealthBase;+4|Owl:&StealthBase;+3|Snake:&StealthBase;|Quipper:&StealthBase;|Rat:&StealthBase;|Raven:&StealthBase;|Seahorse:&StealthBase;|Spider:&StealthBase;+4|Weasel:&StealthBase;+5
+  --c[&FamiliarType]|Bat:&Stealth;|Cat:&Stealth;4|Crab:&Stealth;2|Frog:&Stealth;3|Hawk:&Stealth;|Lizard:&Stealth;|Octopus:&Stealth;4|Owl:&Stealth;3|Snake:&Stealth;|Quipper:&Stealth;|Rat:&Stealth;|Raven:&Stealth;|Seahorse:&Stealth;|Spider:&Stealth;4|Weasel:&Stealth;5
+  --?";Cat;Frog;Octopus;Hawk;Owl;Weasel;" -inc ";[&FamiliarType];"|&PercFlag;1
+  --c[&FamiliarType]|Bat:&PercBase;|Cat:&PercBase;+3|Crab:&PercBase;|Frog:&PercBase;+1|Hawk:&PercBase;+4|Lizard:&PercBase;|Octopus:&PercBase;+2|Owl:&PercBase;+3|Snake:&PercBase;|Quipper:&PercBase;|Rat:&PercBase;|Raven:&PercBase;+3|Seahorse:&PercBase;|Spider:&PercBase;|Weasel:&PercBase;+3
+  --c[&FamiliarType]|Bat:&Perc;|Cat:&Perc;3|Crab:&Perc;|Frog:&Perc;1|Hawk:&Perc;4|Lizard:&Perc;|Octopus:&Perc;2|Owl:&Perc;3|Snake:&Perc;|Quipper:&Perc;|Rat:&Perc;|Raven:&Perc;3|Seahorse:&Perc;|Spider:&Perc;|Weasel:&Perc;3
+  --?"[&FamiliarType]" -inc "Snake"|&Challenge;1/8|&Challenge;0
+  --?"[&FamiliarType]" -inc "Snake"|&XP;25|&XP;10
+  --?";Lizard;Rat;" -inc ";[&FamiliarType];"|&AC;10
+  --?";Crab;Frog;Owl;Seahorse;" -inc ";[&FamiliarType];"|&AC;11
+  --?";Bat;Cat;Octopus;Raven;Spider;" -inc ";[&FamiliarType];"|&AC;12
+  --?";Snake;Quipper;Weasel;Hawk;" -inc ";[&FamiliarType];"|&AC;13
+  --?";Frog;Seahorse;" -inc ";[&FamiliarType];"|[
+    --&AttackOneFlag|off
+    --&AttackOneType|
+    --&AttackOneTarget|
+    --&AttackOneRange|
+    --&DamageOne|
+    --&DamageOneType|
+    --&OnHitOne|
+  --]|[
+    --&AttackOneFlag|on
+    --&AttackOneType|Melee
+    --&AttackOneTarget|one target
+    --&AttackOneRange|5 Ft.
+    --&DamageOne|1
+    --&OnHitOne|1
+  --]|
+  --?";Bat;Lizard;Snake;Quipper;Rat;Raven;Spider;Weasel;" -inc ";[&FamiliarType];"|&DamageOneType;piercing
+  --?";Cat;Hawk;Owl;" -inc ";[&FamiliarType];"|&DamageOneType;slashing
+  --?";Octopus;Crab;" -inc ";[&FamiliarType];"|&DamageOneType;bludgeoning
+  --?"[&FamiliarType]" -inc "Snake"|&AttackOneDesc;The target must make a DC 10 Constitution saving throw, taking 5 (2d4) poison damage on a failed save, or half as much damage on a successful one.
+  --?"[&FamiliarType]" -inc "Snake"|&DamageOneTwo;2d4
+  --?"[&FamiliarType]" -inc "Snake"|&DamageOneTypeTwo;Poison|&DamageOneTypeTwo;
+  --?"[&FamiliarType]" -inc "Spider"|&AttackOneDesc;The target must succeed on a DC 9 Constitution saving throw or take 2 (1d4) poison damage.
+  --?"[&FamiliarType]" -inc "Spider"|&DamageOneTwo;1d4
+  --?"[&FamiliarType]" -inc "Spider"|&DamageOneTypeTwo;Poison
+  --?"[&FamiliarType]" -inc "Octopus"|[
+    --&FamSize|Small
+    --&AttackTwo|Ink Cloud (Recharges after a Short or Long Rest)
+    --&AttackOneDesc|The target is grappled, escape DC 10. Until this grapple ends, the octopus can't use its tentacles on another target.
+    --&AttackTwoDesc|A 5-foot-radius cloud of ink extends all around the octopus if it is underwater. The area is heavily obscured for 1 minute, although a significant current can disperse the ink. After releasing the ink, the octopus can use the Dash action as a bonus action.
+  --]|[
+    --&FamSize|Tiny
+    --&AttackTwo|
+    --&AttackTwoDesc|
+  --]|
+  --!a:[&FindFamiliar]|!npc_name:[&FamiliarType]|!npc_type:[&FamSize] [&Realm], Unaligned|!npc_ac:[&AC]|!npc_actype:[&ACType]|!hp:[&HP]|!hp^:[&HPMax]|!npc_hpformula:[&HPForm]|!strength_base:[&STR]|!dexterity_base:[&DEX]|!constitution_base:[&CON]|!intelligence_base:[&INT]|!wisdom_base:[&WIS]|!charisma_base:[&CHA]|!npc_speed:[&Speed]|!initiative_bonus:[&INIT]|!npc_challenge:[&Challenge]|!npc_xp:[&XP]|!npc_senses:[&Senses]|!pb:2|!npc_stealth_base:[&StealthBase]|!npc_stealth_flag:[&StealthFlag]|!npc_stealth:[&Stealth]|!npc_perception_base:[&PercBase]|!npc_perception_flag:[&PercFlag]|!npc_perception:[&Perc]
+  --Rfirst|[&FindFamiliar];repeating_npctrait
+    --!a:[&FindFamiliar]|[*R>name]:[&TraitOne]|[*R>description]:[&TraitOneDesc]
+      --Rnext|
+        --!a:[&FindFamiliar]|[*R>name]:[&TraitTwo]|[*R>description]:[&TraitTwoDesc]
+          --Rnext|
+            --!a:[&FindFamiliar]|[*R>name]:[&TraitThree]|[*R>description]:[&TraitThreeDesc]
+  --Rfirst|[&FindFamiliar];repeating_npcaction
+  --~|array;objects:ability;AbilityArr;[*R:name];[&FindFamiliar]
+    --!ability:[@AbilityArr(0)]|name:[&AttackOne]|istokenaction:True
+    --!a:[&FindFamiliar]|[*R>name]:[&AttackOne]|[*R>attack_flag]:[&AttackOneFlag]|[*R>attack_type]:[&AttackOneType]|[*R>attack_target]:[&AttackOneTarget]|[R>attack_range]:[&AttackOneRange]|[*R>attack_tohit]:[&ToHitOne]|[*R>attack_damage]:[&DamageOne]|[*R>attack_damage2]:[&DamageOneTwo]|[*R>attack_damagetype]:[&DamageOneType]|[*R>attack_damagetype2]:[&DamageOneTypeTwo]|[*R>attack_tohitrange]:|[*R>attack_onhit]:[&OnHitOne]|[*R>attack_onhit2]:[&OnHitOneTwo]|[*R>description]:[&AttackOneDesc]
+      --Rnext|
+        --~|array;objects:ability;AbilArr;Ink-Cloud;[&FindFamiliar]
+        --?"[&FamiliarType]" -inc "Octopus"|[
+          --!ability:[@AbilArr(0)]|istokenaction:True --]|[ --!ability:[@AbilArr(0)]|istokenaction:False --]|
+        --!a:[&FindFamiliar]|[*R>name]:[&AttackTwo]|[*R>attack_flag]:off|[*R>description]:[&AttackTwoDesc]
+  --?"[*[&FindFamiliar]:custom_name]" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;[*[&FindFamiliar]:custom_name]
+  --?"[&UpdateName]" -eq "0"|&TokenDisplayName;[&TokenDisplayName]|&TokenDisplayName;[&UpdateName]
+  --?"[*[&FindFamiliar]:[&FamiliarType]]" -ne "0"|&TokenDisplay;[*[&FindFamiliar]:[&FamiliarType]]|&TokenDisplay;[&[&FamiliarType]Token]
+  --/|Summon The Familiar
+  --!ot:NewTID|name:"[&TokenDisplayName]"|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:[*S:t-width]|height:[*S:t-height]|imgsrc:"[&TokenDisplay]"|represents:"[&FindFamiliar]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:[&NightDistance]|night_vision_effect:Nocturnal|order:toFront|showplayers_name:1
+  --!t:[&NewTID]|bar1_link:hp|bar2_link:npc_ac
+  --/|Add a puff of smoke where the Familiar spawns
+  --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-smoke
+  --?"[&FamiliarType]" -inc "Snake"|&DisplayName;Snake|&DisplayName;[&FamiliarType]
+  --~NameReplace|string;replaceall; ;;[&DisplayName]
+  --?"[*[&FindFamiliar]:custom_name]" -ne "0"|&FamiliarName;[&TokenDisplayName]|&FamiliarName;a [&TokenDisplayName]
+  --#emoteText|[*S:character_name] takes 1 hour to cast [&SpellName] and summons [&FamiliarName].
+  --+|[t width=100% style="text-align: center ; "][tr][td][img width=120][&[&NameReplace]Token][/img][/td][/tr][/t]
+--X|
+--:NoCharacter|
+  --#whisper|self
+  --+|[b]Please make sure to create an NPC character named FindFamiliar, then rerun the script.[/b]
+--X|
+--:Settings|
+  --#title|Custom Familiar
+  --#whisper|self
+  --+|[t width=100%][tr][td]&#x2022;[b]Here you can change the tokens.[br]&#x2022;The image for the token must be in your roll20 library.[br]&#x2022;Have the URL of the image ready.[br]&#x2022;Click on the familiar you'd like to change and then follow the prompts in the chat window.[/b][/td][/tr][/t]
+  --~|array;define;FamiliarToken;Bat;Cat;Crab;Frog;Hawk;Lizard;Octopus;Owl;Snake;Quipper;Rat;Raven;Seahorse;Spider;Weasel
+  --&TokensPerRow|3
+  --&TokenCounter|1
+  --&AllTokens|[t width=112% style="position: relative ; left: -15px ; "][tr]
+  --%TokenLoop|foreach;FamiliarToken
+    --?"[*[&FindFamiliar]:[&TokenLoop]]" -ne "0"|&FinalToken;[*[&FindFamiliar]:[&TokenLoop]]|&FinalToken;[&[&TokenLoop]Token]
+    --c[&TokenLoop]|Bat:&DisplayName;Bat|Cat:&DisplayName;Cat|Crab:&DisplayName;Crab|Frog:&DisplayName;Frog(Toad)|Hawk:&DisplayName;Hawk|Lizard:&DisplayName;Lizard|Octopus:&DisplayName;Octopus|Owl:&DisplayName;Owl|Snake:&DisplayName;Poisonous Snake|Quipper:&DisplayName;Quipper (Fish)|Rat:&DisplayName;Rat|Raven:&DisplayName;Raven|Seahorse:&DisplayName;Sea Horse|Spider:&DisplayName;Spider|Weasel:&DisplayName;Weasel
+    --&AllTokens|+[td [&BackgroundImage]][rbutton][img width=70][&FinalToken][/img]::UpdateToken;[&TokenLoop][/rbutton][br][b][&DisplayName][/b][br][br][rbutton]RESET::ResetToken;[&TokenLoop][/rbutton][br][/td]
+    --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
+    --&TokenCounter|[= [&TokenCounter] + 1 ]
+  --%|
+  --?"[*[&FindFamiliar]:custom_name]" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;[*[&FindFamiliar]:custom_name]
+  --?"[&UpdateName]" -eq "0"|&TokenDisplayName;[&TokenDisplayName]|&TokenDisplayName;[&UpdateName]
+  --&AllTokens|+[/tr][/t][t width=100% style="border: 1mm ridge rgb(218,165,32) ; text-align: center ; "][tr][td style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][b]Custom Name[/b][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]CHANGE::UpdateName[/rbutton][/td][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]RESET::ResetName[/rbutton][/td][/tr][tr][tdstyle="border: 0.5mm solid rgb(218,165,32) ; "][b]Current Name[/b][/td][td colspan=2 style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][&TokenDisplayName][/td][/tr][tr][td colspan=3][rbutton]EXIT::RestartMod[/rbutton][/td][/tr][/t]
+  --+|[&AllTokens]
+--X|
+--:UpdateToken|
+  --&FamUpdate|[&reentryval]
+  --I. ;Click Here to add image URL|q;UpdateToken;What Is The URL To Your Token Image? It must be an image from your Roll20 Library.
+  --!a:[&FindFamiliar]|![&FamUpdate]:[&UpdateToken]
+  --^Settings|
+--X|
+--:ResetToken|
+  --&TokenReset|[&reentryval]
+  --!a:[&FindFamiliar]|![&TokenReset]:0
+  --^Settings|
+--X|
+--:UpdateName|
+  --I. ;Click Here to Change Name|q;UpdateName;What are you naming your Familiar?
+  --!a:[&FindFamiliar]|!custom_name:[&UpdateName]
+  --^Settings|
+--X|
+--:ResetName|
+  --!a:[&FindFamiliar]|!custom_name:0
+  --&UpdateName|0
+  --^Settings|
+--X|
 }}
