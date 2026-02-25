@@ -1,0 +1,173 @@
+!scriptcards {{
+--/|Script Name : Tim's Animate Dead Mod for D&D 5E 2014
+--/|Version     : v2.0
+--/|Author      : Timothy Beasley
+--/|API MODs    : ScriptCards
+
+--/|Description : This Mod displays the Animate Dead spell information with an integrated upscaling system. 
+--/|              The caster selects the spell level (3rd-9th), and the script automatically calculates 
+--/|              the number of undead summoned based on the slot used. After choosing between a 
+--/|              Zombie (Corpse) or Skeleton (Bones), the script updates the central "AnimateDead" 
+--/|              NPC sheet with the appropriate stats, actions, and traits before spawning the 
+--/|              tokens in a pre-defined formation around the caster.
+--/|
+--/|Installation: This script is for the 2014 edition of the official D&D 5E Character Sheet by Roll20 
+--/|              and requires the installation of the ScriptCards API script via a Pro account. 
+--/|              1. Create a character named exactly: ScriptCards_TemplateMule.
+--/|              2. Create an NPC character named exactly: AnimateDead.
+--/|              3. Run the script for the first time to initialize the CSS styles on the TemplateMule.
+--/|              4. The script will automatically manage permissions, ensuring the caster is added 
+--/|                 to the "Controlled By" list of the AnimateDead NPC and all summoned tokens.
+
+  --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
+  --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
+  --?"[*[&TemplateMuleID]:character_name]" -eq ""|[
+    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the Find Familiar will be kept.[/td][/tr][/t]
+    --X|
+  --]|
+  --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
+  --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4public
+  --?"[&IsTemplate]" -eq "AbilityNotFound"|[
+    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]The style information has been written, please run the Mod again.[/td][/tr][/t]
+    --&StatBlock|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; position: relative ; left: -30px ;'}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --!ob:StyleSaveResult:[&TemplateMuleID]:statblockv4:0|[&StatBlock]
+    --&StatBlockPublic|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 100% ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; '}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 101%; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 115% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --!ob:StyleSaveResult:[&TemplateMuleID]:statblockv4public:0|[&StatBlockPublic]
+    --@sc-reloadtemplates|
+    --X|
+  --]|
+  --/| ADD THE NAME OF THE JUKEBOX SOUNDTRACK HERE
+  --&SoundEffectTrack|
+  --#overridetemplate|statblockv4
+  --#sourceToken|@{selected|token_id}
+  --#Debug|0
+  --#emoteState|0
+  --#whisper|self
+  --&CasterName|[*S:character_name]
+  --&AnimateDead|@{AnimateDead|character_id}
+  --&BttnTd_CSS|style="align-self: center; background-color: transparent; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
+  --&BodyStyle|font-size: 12px ; letter-spacing: 0.01em ; line-height: 18px
+  --/|Token Image Variables
+  --?"[*[&AnimateDead]:charactersheet_type]" -ne "npc"|NoCharacter|SpellInfo
+--:NoCharacter|
+  --+|[b]Please make sure to create an NPC character named AnimateDead, then rerun the script.[/b]
+--X|
+--:SpellInfo|
+  --#whisper|self
+  --?"[*[&AnimateDead]:npc_type]" -ninc "Medium"|[
+    --!a:[&AnimateDead]|!npc_name:Skeleton|!npc_type:Medium Undead, lawful evil|!npc_ac:13|!npc_actype:armor scraps|!hp:13|!hp^:13|!npc_hpformula:2d8+9|!strength:10|!strength_mod:+0|!dexterity:14|!dexterity_mod:+2|!constitution:15|!constitution_mod:+2|!intelligence:6|!intelligence_mod:-2|!wisdom:8|!wisdom_mod:-1|!charisma:5|!charisma_mod:-3|!npc_speed:30 ft.|!npc_challenge:1/4|!npc_xp:50|!npc_senses:darkvision 60 ft., passive Perception 9|!npc_languages:understands all languages it spoke in life but can't speak|!npc_immunities:poison|!npc_condition_immunities:exhaustion, poisoned|!npc_vulnerabilities:bludgeoning|!npc_wis_save_base:0
+    --!or:[&AnimateDead]:npcaction|name:Shortsword|attack_flag:on|attack_type:Melee|attack_target:one target|attack_range:5 ft.|attack_tohit:4|attack_damage:1d6 + 2|attack_damagetype:piercing|attack_tohitrange:+4, Reach 5ft., one target|attack_onhit:7 (1d6 + 2) piercing damage|attack_crit:1d6
+    --!or:[&AnimateDead]:npcaction|name:Shortbow|attack_flag:on|attack_type:Melee|attack_target:one target|attack_range:80/320 ft.|attack_tohit:4|attack_damage:1d6 + 2|attack_damagetype:piercing|attack_tohitrange:+4, Reach 80/320 ft., one target|attack_onhit:7 (1d6 + 2) piercing damage|attack_crit:1d6
+    --!or:[&AnimateDead]:npctrait|name:|description:
+  --]|
+  --Rfind|@{selected|character_id};Animate Dead;repeating_spell-3;spellname
+  --#title|[*R:spellname]
+  --?"[*R:spelllevel]" -eq "cantrip"|&spllvl;cantrip|&spllvl;[*R:spelllevel]
+  --?"[&spllvl]" -eq "3"|&lvlsuffix;rd
+  --?"[&spllvl]" -ge "4"|&lvlsuffix;th
+  --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal;
+  --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic;S|&Somatic;
+  --?"[*R:spellcomp_m]" -inc "m=1"|[
+    --&Components|M
+    --&Materials|([*R:spellcomp_materials])
+  --]|
+  --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
+  --&SpellDesc|[*R:spelldescription]
+  --=SpellDescCalc|[&SpellDesc(length)] - 1024
+  --/|Output
+  --&SpellStats|[t width=100% style="margin-bottom: 5px ; [&BodyStyle] ; "][tr][td][i][&spllvl][&lvlsuffix]-Level [*R:spellschool][/i][/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td][b]Casting Time:[/b]&nbsp;[*R:spellcastingtime][/td][/tr]
+  --&SpellStats|+[tr][td][b]Range:[/b]&nbsp;[*R:spellrange][/td][/tr]
+  --&SpellStats|+[tr][td][b]Components:[/b]&nbsp;[&Verbal][&Somatic][&Components] [&Materials][/td][/tr]
+  --&SpellStats|+[tr][td][b]Duration:[/b]&nbsp;[&Concentration]&nbsp;[*R:spellduration][/td][/tr]
+  --&SpellStats|+[tr][td][b]Classes:[/b]&nbsp;Wizard[/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; " title="[&SpellDesc([$SpellDescCalc.Raw],[&SpellDesc(length)])]"][tr][td style="margin-bottom: 5px ; pointer-events: auto ; cursor: help ; "][&SpellDesc(0,[$SpellDescCalc.Raw])]...[/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td]&nbsp;&nbsp;&nbsp;&nbsp;[b][i]At Higher Levels:[/i][/b]&nbsp;[*R:spellathigherlevels][/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; text-align: center ; font-weight: bold ; margin-top: 5px ; "][tr][td]At what level is the spell being cast?[/td][/tr][/t]
+  --&SpellStats|+[t width=110% style="[&BodyStyle] ; text-align: center ; position: relative ; left: -14px ; "][tr]
+  --%ButtonLoop|3;9;1
+    --?"[*S:lvl[&ButtonLoop]_slots_expended]" -ne "0"|[
+      --?"[&ButtonLoop]" -eq "3"|&ButtonSuffix;rd
+      --?"[&ButtonLoop]" -ge "4"|&ButtonSuffix;th
+      --&SpellStats|+[td [&BttnTd_CSS]][rbutton][&ButtonLoop][&ButtonSuffix]::DoSpell;[&ButtonLoop][/rbutton][/td]
+    --]|
+  --%|
+  --&SpellStats|+[/td][/tr]
+  --+|[&SpellStats]
+--X|
+--:DoSpell|
+  --#whisper|self
+  --=SlotLevel|[&reentryval]
+  --=SlotsTotal|0
+  --=SlotsExpended|[*S:lvl[$SlotLevel]_slots_expended]
+  --=HowManyDead|[$SlotLevel] - 3
+  --=HowManyDead|[$HowManyDead] * 2
+  --=HowManyDead|[$HowManyDead] + 1
+  --?[$SlotsExpended.Raw] -eq [$SlotsTotal.Raw]|[
+    --+|[c][b][&CasterName] has no level [$SlotLevel.Total] spell slots available.[/b][/c]
+	--]|[
+    --=SlotsLeft|[$SlotsExpended] - 1
+	  --!a:[*S:character_id]|lvl[$SlotLevel]_slots_expended:[$SlotsLeft]
+	--]|
+  --?"[$SlotLevel]" -eq "3"|&lvlsuffix;rd
+  --?"[$SlotLevel]" -ge "4"|&lvlsuffix;th
+  --+|[t width=100% style="margin-top: 5px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td]What are you casting this spell on?[/td][/tr][tr][td [&BttnTd_CSS]][rbutton]Corpse::Undead;Zombie[/rbutton][/td][td [&BttnTd_CSS]][rbutton]Bones::Undead;Skeleton[/rbutton][/td][/tr][/t]
+  --+|[t width=100% style="margin-top: 5px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td]A [$SlotLevel.Raw][&lvlsuffix] level spell slot has been removed.[br][&CasterName] has [$SlotsLeft.Raw] level [$SlotLevel.Raw] slots left.[/td][/tr][/t]
+--X|
+--:Undead|
+  --#whisper|
+  --#overridetemplate|statblockv4public
+  --&UndeadType|[&reentryval]
+  --#emoteState|visible
+  --?"[$HowManyDead.Total]" -gt "1"|&Plural;s|&Plural;
+  --#emoteBackground|#f1e5c9
+  --#emoteFontColor|#6e2425
+  --#emotetext|[&CasterName] Summoned [$HowManyDead.Raw] [&UndeadType][&Plural].
+  --~|array;define;Zombie;Medium Undead, neutral evil;8;;22;3d8+9;13;6;16;3;6;20 ft.;8;;poisoned;+0;27018610/J8JmlnbSek8oTREJSVp1vg/original.png
+  --~|array;define;Skeleton;Medium Undead, lawful evil;13;armor scraps;13;2d8+4;10;14;15;6;8;30 ft.;9;bludgeoning;exhaustion, poisoned;;26544003/resyylxkCxW5zSzMEpDvjQ/original.png
+  --!a:[&AnimateDead]|!npc_name:[&UndeadType]|!npc_type:[@[&UndeadType](0)]|!npc_ac:[@[&UndeadType](1)]|!npc_actype:[@[&UndeadType](2)]|!hp:[@[&UndeadType](3)]|!hp^:[@[&UndeadType](3)]|!npc_hpformula:[@[&UndeadType](4)]|!strength:[@[&UndeadType](5)]|!dexterity:[@[&UndeadType](6)]|!constitution:[@[&UndeadType](7)]|!intelligence:[@[&UndeadType](8)]|!wisdom:[@[&UndeadType](9)]|!npc_speed:[@[&UndeadType](10)]|!npc_senses:darkvision 60 ft., passive Perception [@[&UndeadType](11)]|!npc_condition_immunities:[@[&UndeadType](13)]|!npc_vulnerabilities:[@[&UndeadType](12)]|!npc_wis_save_base:[@[&UndeadType](14)]
+  --Rfirst|[&AnimateDead];repeating_npcaction
+  --?"[&UndeadType]" -inc "Zombie"|[
+    --!a:[&AnimateDead]|[*R>name]:Slam|[*R>attack_flag]:on|[*R>attack_type]:Melee|[*R>attack_target]:one target|[*R>attack_range]:5 ft.|[*R>attack_tohit]:3|[*R>attack_damage]:1d6 + 1|[*R>attack_damagetype]:bludgeoning|[*R>attack_onhit]:(1d6 + 1)
+  --]|[
+    --!a:[&AnimateDead]|[*R>name]:Shortsword|[*R>attack_flag]:on|[*R>attack_type]:Melee|[*R>attack_target]:one target|[*R>attack_range]:5 ft.|[*R>attack_tohit]:4|[*R>attack_damage]:1d6 + 2|[*R>attack_damagetype]:piercing|[*R>attack_onhit]:(1d6 + 2)
+  --]|
+  --Rnext|
+  --?"[&UndeadType]" -inc "Zombie"|[
+    --!a:[&AnimateDead]|[*R>name]:|[*R>attack_flag]:off|[*R>attack_type]:|[*R>attack_target]:|[*R>attack_range]:|[*R>attack_tohit]:|[*R>attack_damage]:|[*R>attack_damagetype]:|[*R>attack_tohitrange]:|[*R>attack_onhit]:
+  --]|[
+    --!a:[&AnimateDead]|[*R>name]:Shortbow|[*R>attack_flag]:on|[*R>attack_type]:Ranged|[*R>attack_target]:one target|[*R>attack_range]:80/320 ft.|[*R>attack_tohit]:4|[*R>attack_damage]:1d6 + 2|[*R>attack_damagetype]:piercing|[*R>attack_tohitrange]:|[*R>attack_onhit]:(1d6 + 2)
+  --]|
+  --Rfirst|[&AnimateDead];repeating_npctrait
+  --?"[&UndeadType]" -inc "Zombie"|[
+    --!a:[&AnimateDead]|[*R>name]:Undead Fortitude|[*R>description]:If damage reduces the zombie to 0 hit points, it must make a Constitution saving throw with a DC of 5 + the damage taken, unless the damage is radiant or from a critical hit. On a success, the zombie drops to 1 hit point instead.
+  --]|[
+    --!a:[&AnimateDead]|[*R>name]:|[*R>description]:
+  --]|
+  --?"[&SoundEffectTrack]" -ne ""|[
+    --a|[&SoundEffectTrack]
+  --]|
+  --&ExistingControl|[*[&AnimateDead]:controlledby]
+  --?"[&ExistingControl]" -eq ""|[
+    --!c:[&AnimateDead]|controlledby:[&SendingPlayerID]
+  --]|
+  --?"[&ExistingControl]" -ninc "[&SendingPlayerID]" -and "[&ExistingControl]" -ne ""|[
+    --&NewControl|[&ExistingControl],[&SendingPlayerID]
+    --!c:[&AnimateDead]|controlledby:[&NewControl]
+  --]|
+  --~|array;define;XOff;0;70;70;70;0;-70;-70;-70;-70;0;70;140;140
+  --~|array;define;YOff;-70;-70;0;70;70;70;0;-70;-140;-140;-140;-140;-70
+  --=LoopEnd|[$HowManyDead.Raw] - 1
+  --%SummonLoop|0;[$LoopEnd.Raw]
+    --&thisX|[@XOff([&SummonLoop])]
+    --&thisY|[@YOff([&SummonLoop])]
+    --&FinalLeft|[=[*S:t-left] + [&thisX]]
+    --&FinalTop|[=[*S:t-top] + [&thisY]]
+    --=VisibleNum|[&SummonLoop] + 1
+    --vpoint|[&FinalLeft] [&FinalTop] explode-death
+    --!ot:NewTID|name:"Animated [&UndeadType] [$VisibleNum]"|left:[&FinalLeft]|top:[&FinalTop]|width:[*S:t-width]|height:[*S:t-height]|imgsrc:"https://files.d20.io/images/[@[&UndeadType](15)]"|represents:"[&AnimateDead]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:60|night_vision_effect:Nocturnal|order:toFront|showplayers_name:1
+    --!t:[&NewTID]|bar1_link:hp|bar2_link:npc_ac
+  --%|
+  --+|[t width=100% style="margin-top: 5px ; margin-bottom: -15px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td][img width=100px]https://files.d20.io/images/[@[&UndeadType](15)][/img][/td][/tr][/t]
+--X|
+}}
