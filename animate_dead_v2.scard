@@ -1,24 +1,4 @@
-!scriptcards {{
---/|Script Name : Tim's Animate Dead Mod for D&D 5E 2014
---/|Version     : v2.0
---/|Author      : Timothy Beasley
---/|API MODs    : ScriptCards
-
---/|Description : This Mod displays the Animate Dead spell information with an integrated upscaling system. 
---/|              The caster selects the spell level (3rd-9th), and the script automatically calculates 
---/|              the number of undead summoned based on the slot used. After choosing between a 
---/|              Zombie (Corpse) or Skeleton (Bones), the script updates the central "AnimateDead" 
---/|              NPC sheet with the appropriate stats, actions, and traits before spawning the 
---/|              tokens in a pre-defined formation around the caster.
---/|
---/|Installation: This script is for the 2014 edition of the official D&D 5E Character Sheet by Roll20 
---/|              and requires the installation of the ScriptCards API script via a Pro account. 
---/|              1. Create a character named exactly: ScriptCards_TemplateMule.
---/|              2. Create an NPC character named exactly: AnimateDead.
---/|              3. Run the script for the first time to initialize the CSS styles on the TemplateMule.
---/|              4. The script will automatically manage permissions, ensuring the caster is added 
---/|                 to the "Controlled By" list of the AnimateDead NPC and all summoned tokens.
-
+!scriptcards {{ 
   --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
   --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
   --?"[*[&TemplateMuleID]:character_name]" -eq ""|[
@@ -47,7 +27,6 @@
   --&AnimateDead|@{AnimateDead|character_id}
   --&BttnTd_CSS|style="align-self: center; background-color: transparent; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
   --&BodyStyle|font-size: 12px ; letter-spacing: 0.01em ; line-height: 18px
-  --/|Token Image Variables
   --?"[*[&AnimateDead]:charactersheet_type]" -ne "npc"|NoCharacter|SpellInfo
 --:NoCharacter|
   --+|[b]Please make sure to create an NPC character named AnimateDead, then rerun the script.[/b]
@@ -100,15 +79,9 @@
   --=SlotLevel|[&reentryval]
   --=SlotsTotal|0
   --=SlotsExpended|[*S:lvl[$SlotLevel]_slots_expended]
-  --=HowManyDead|[$SlotLevel] - 3
-  --=HowManyDead|[$HowManyDead] * 2
-  --=HowManyDead|[$HowManyDead] + 1
-  --?[$SlotsExpended.Raw] -eq [$SlotsTotal.Raw]|[
-    --+|[c][b][&CasterName] has no level [$SlotLevel.Total] spell slots available.[/b][/c]
-	--]|[
-    --=SlotsLeft|[$SlotsExpended] - 1
-	  --!a:[*S:character_id]|lvl[$SlotLevel]_slots_expended:[$SlotsLeft]
-	--]|
+  --=HowManyDead|[$SlotLevel] - 3 * 2 + 1
+  --=SlotsLeft|[$SlotsExpended] - 1
+  --!a:[*S:character_id]|lvl[$SlotLevel]_slots_expended:[$SlotsLeft]
   --?"[$SlotLevel]" -eq "3"|&lvlsuffix;rd
   --?"[$SlotLevel]" -ge "4"|&lvlsuffix;th
   --+|[t width=100% style="margin-top: 5px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td]What are you casting this spell on?[/td][/tr][tr][td [&BttnTd_CSS]][rbutton]Corpse::Undead;Zombie[/rbutton][/td][td [&BttnTd_CSS]][rbutton]Bones::Undead;Skeleton[/rbutton][/td][/tr][/t]
