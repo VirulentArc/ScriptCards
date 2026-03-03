@@ -1,4 +1,23 @@
 !scriptcards {{ 
+--/|Script Name : Tim's Animate Dead Mod for D&D 5E 2014
+  --/|Version     : v2.0
+  --/|Author      : Timothy Beasley
+  --/|API MODs    : ScriptCards
+
+  --/|Description : This Mod automates the Animate Dead spell with a dynamic upscaling system 
+  --/|              for 3rd through 9th level spell slots. The script calculates the correct 
+  --/|              number of summons (up to 13), updates the "AnimateDead" NPC sheet with 
+  --/|              the chosen undead's stats and actions via internal arrays, and spawns 
+  --/|              the tokens in a circular formation around the caster.
+  --/|
+  --/|Installation: This script is designed for the official D&D 5E Character Sheet (2014) and 
+  --/|              requires the ScriptCards MOD via a Pro account.
+  --/|              1. Create a character named exactly: ScriptCards_TemplateMule.
+  --/|              2. Create an NPC character named exactly: AnimateDead.
+  --/|              3. Run the script once to initialize CSS styles on the TemplateMule.
+  --/|              4. Ensure the caster has "Animate Dead" on their sheet; the script 
+  --/|                 pulls spell data from the repeating spell section.
+
   --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
   --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
   --?"[*[&TemplateMuleID]:character_name]" -eq ""|[
