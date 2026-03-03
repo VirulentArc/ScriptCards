@@ -1,22 +1,23 @@
-!scriptcards {{ 
---/|Script Name : Tim's Animate Dead Mod for D&D 5E 2014
+!scriptcards {{
+--/|Script Name : Tim's Summon Beast Mod for D&D 5E 2014
   --/|Version     : v2.0
   --/|Author      : Timothy Beasley
   --/|API MODs    : ScriptCards
 
-  --/|Description : This Mod automates the Animate Dead spell with a dynamic upscaling system 
-  --/|              for 3rd through 9th level spell slots. The script calculates the correct 
-  --/|              number of summons (up to 13), updates the "AnimateDead" NPC sheet with 
-  --/|              the chosen undead's stats and actions via internal arrays, and spawns 
-  --/|              the tokens in a circular formation around the caster.
+  --/|Description : This Mod automates the Summon Beast spell from Tasha's Cauldron of Everything. 
+  --/|              The caster selects the spell level and the environment (Air, Land, or Water). 
+  --/|              The script then updates the "SummonBeast" NPC sheet with the appropriate 
+  --/|              Bestial Spirit stats, scales the HP based on the slot level, and spawns 
+  --/|              a single Small (1x1) token with the corresponding official beast art 
+  --/|              beside the caster.
   --/|
   --/|Installation: This script is designed for the official D&D 5E Character Sheet (2014) and 
-  --/|              requires the ScriptCards MOD via a Pro account.
+  --/|              requires the ScriptCards MOD.
   --/|              1. Create a character named exactly: ScriptCards_TemplateMule.
-  --/|              2. Create an NPC character named exactly: AnimateDead.
+  --/|              2. Create an NPC character named exactly: SummonBeast.
   --/|              3. Run the script once to initialize CSS styles on the TemplateMule.
-  --/|              4. Ensure the caster has "Animate Dead" on their sheet; the script 
-  --/|                 pulls spell data from the repeating spell section.
+  --/|              4. The script uses direct object property access to automatically add 
+  --/|                 the caster to the "Controlled By" field of the summoned spirit.
 
   --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
   --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
@@ -43,31 +44,36 @@
   --#emoteState|0
   --#whisper|self
   --&CasterName|[*S:character_name]
-  --&AnimateDead|@{AnimateDead|character_id}
+  --&SummonBeast|@{SummonBeast|character_id}
+  --/|Token Image Variables
   --&BttnTd_CSS|style="align-self: center; background-color: transparent; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
   --&BodyStyle|font-size: 12px ; letter-spacing: 0.01em ; line-height: 18px
-  --?"[*[&AnimateDead]:charactersheet_type]" -ne "npc"|NoCharacter|SpellInfo
+  --?"[*[&SummonBeast]:charactersheet_type]" -ne "npc"|NoCharacter|SpellInfo
 --:NoCharacter|
-  --+|[b]Please make sure to create an NPC character named AnimateDead, then rerun the script.[/b]
+  --+|[b]Please make sure to create an NPC character named SummonBeast, then rerun the script.[/b]
 --X|
 --:SpellInfo|
   --#whisper|self
-  --?"[*[&AnimateDead]:npc_type]" -ninc "Medium"|[
-    --!a:[&AnimateDead]|!npc_name:Skeleton|!npc_type:Medium Undead, lawful evil|!npc_ac:13|!npc_actype:armor scraps|!hp:13|!hp^:13|!npc_hpformula:2d8+9|!strength:10|!strength_mod:+0|!dexterity:14|!dexterity_mod:+2|!constitution:15|!constitution_mod:+2|!intelligence:6|!intelligence_mod:-2|!wisdom:8|!wisdom_mod:-1|!charisma:5|!charisma_mod:-3|!npc_speed:30 ft.|!npc_challenge:1/4|!npc_xp:50|!npc_senses:darkvision 60 ft., passive Perception 9|!npc_languages:understands all languages it spoke in life but can't speak|!npc_immunities:poison|!npc_condition_immunities:exhaustion, poisoned|!npc_vulnerabilities:bludgeoning|!npc_wis_save_base:0
-    --!or:[&AnimateDead]:npcaction|name:Shortsword|attack_flag:on|attack_type:Melee|attack_target:one target|attack_range:5 ft.|attack_tohit:4|attack_damage:1d6 + 2|attack_damagetype:piercing|attack_tohitrange:+4, Reach 5ft., one target|attack_onhit:7 (1d6 + 2) piercing damage|attack_crit:1d6
-    --!or:[&AnimateDead]:npcaction|name:Shortbow|attack_flag:on|attack_type:Melee|attack_target:one target|attack_range:80/320 ft.|attack_tohit:4|attack_damage:1d6 + 2|attack_damagetype:piercing|attack_tohitrange:+4, Reach 80/320 ft., one target|attack_onhit:7 (1d6 + 2) piercing damage|attack_crit:1d6
-    --!or:[&AnimateDead]:npctrait|name:|description:
+  --?"[*[&SummonBeast]:npc_type]" -ninc "Small Beast"|[
+  --!a:[&SummonBeast]|!npc_type:Small Beast|!npc_actype:natural armor|!strength:18|!strength_mod:4|!dexterity:11|!dexterity_mod:0|!constitution:16|!constitution_mod:3|!intelligence:4|!intelligence_mod:-3|!wisdom:14|!wisdom_mod:2|!charisma:5|!charisma_mod:-3|!initiative_bonus:0|!npc_senses:Darkvision 60 ft., Passive Perception 12|!npc_languages:Understands the languages you speak
+  --!or:[&SummonBeast]:npcaction|name:Maul|attack_flag:on|attack_type:Melee|attack_target:one target|attack_range:5 ft.|attack_tohit:[*S:spell_attack_bonus]|attack_damagetype:piercing|attack_tohitrange:|attack_range:5ft.|attack_target:one target
+  --!or:[&SummonBeast]:npcaction|name:Multiattack|attack_flag:off|description:The beast makes a number of attacks equal to half this spell’s level (rounded down).
+  --!or:[&SummonBeast]:npctrait|name:|description:
+  --!or:[&SummonBeast]:npctrait|name:|description:
+  --&obrac|{
+  --&cbrac|}
+  --&perc|%
+  --!ob:AbilID:[&SummonBeast]:Maul:y|[&perc][&obrac]SummonBeast|repeating_npcaction_$0_npc_action[&cbrac]
+  --!ob:AbilID2:[&SummonBeast]:Multiattack:y|@[&obrac]SummonBeast|wtype[&cbrac]&[&obrac]template:npcaction[&cbrac] @[&obrac]SummonBeast|npc_name_flag[&cbrac] [&obrac][&obrac]rname=Multiattack[&cbrac][&cbrac] [&obrac][&obrac]description=The beast makes a number of attacks equal to half this spell’s level (rounded down).[&cbrac][&cbrac] @[&obrac]SummonBeast|charname_output[&cbrac]
   --]|
-  --Rfind|[*S:character_id];Animate Dead;repeating_spell-3;spellname
+  --Rfind|[*S:character_id];Summon Beast;repeating_spell-2;spellname
   --#title|[*R:spellname]
   --?"[*R:spelllevel]" -eq "cantrip"|&spllvl;cantrip|&spllvl;[*R:spelllevel]
   --?"[&spllvl]" -eq "3"|&lvlsuffix;rd
   --?"[&spllvl]" -ge "4"|&lvlsuffix;th
   --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal;
-  --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic;S|&Somatic;
-  --?"[*R:spellcomp_m]" -inc "m=1"|[
-    --&Components|M
-    --&Materials|([*R:spellcomp_materials])
+  --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic; S|&Somatic;
+  --?"[*R:spellcomp_m]" -inc "m=1"|[ --&Components| M --&Materials|([*R:spellcomp_materials])
   --]|
   --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
   --&SpellDesc|[*R:spelldescription]
@@ -83,8 +89,9 @@
   --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td]&nbsp;&nbsp;&nbsp;&nbsp;[b][i]At Higher Levels:[/i][/b]&nbsp;[*R:spellathigherlevels][/td][/tr][/t]
   --&SpellStats|+[t width=100% style="[&BodyStyle] ; text-align: center ; font-weight: bold ; margin-top: 5px ; "][tr][td]At what level is the spell being cast?[/td][/tr][/t]
   --&SpellStats|+[t width=110% style="[&BodyStyle] ; text-align: center ; position: relative ; left: -14px ; "][tr]
-  --%ButtonLoop|3;9;1
+  --%ButtonLoop|2;9;1
     --?"[*S:lvl[&ButtonLoop]_slots_expended]" -ne "0"|[
+      --?"[&ButtonLoop]" -eq "2"|&ButtonSuffix;nd
       --?"[&ButtonLoop]" -eq "3"|&ButtonSuffix;rd
       --?"[&ButtonLoop]" -ge "4"|&ButtonSuffix;th
       --&SpellStats|+[td [&BttnTd_CSS]][rbutton][&ButtonLoop][&ButtonSuffix]::DoSpell;[&ButtonLoop][/rbutton][/td]
@@ -98,69 +105,56 @@
   --=SlotLevel|[&reentryval]
   --=SlotsTotal|0
   --=SlotsExpended|[*S:lvl[$SlotLevel]_slots_expended]
-  --=HowManyDead|[$SlotLevel] - 3 * 2 + 1
   --=SlotsLeft|[$SlotsExpended] - 1
   --!a:[*S:character_id]|lvl[$SlotLevel]_slots_expended:[$SlotsLeft]
   --?"[$SlotLevel]" -eq "3"|&lvlsuffix;rd
   --?"[$SlotLevel]" -ge "4"|&lvlsuffix;th
-  --+|[t width=100% style="margin-top: 5px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td]What are you casting this spell on?[/td][/tr][tr][td [&BttnTd_CSS]][rbutton]Corpse::Undead;Zombie[/rbutton][/td][td [&BttnTd_CSS]][rbutton]Bones::Undead;Skeleton[/rbutton][/td][/tr][/t]
+  --+|[t width=100% style="margin-top: 5px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td]What type of Bestial Spirit are you summoning?[/td][/tr][tr][td [&BttnTd_CSS]][rbutton]Land::Beast;Land[/rbutton][/td][td [&BttnTd_CSS]][rbutton]Air::Beast;Air[/rbutton][/td][td [&BttnTd_CSS]][rbutton]Water::Beast;Water[/rbutton][/td][/tr][/t]
   --+|[t width=100% style="margin-top: 5px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td]A [$SlotLevel.Raw][&lvlsuffix] level spell slot has been removed.[br][&CasterName] has [$SlotsLeft.Raw] level [$SlotLevel.Raw] slots left.[/td][/tr][/t]
 --X|
---:Undead|
+--:Beast|
   --#whisper|
   --#overridetemplate|statblockv4public
-  --&UndeadType|[&reentryval]
+  --&BeastType|[&reentryval]
   --#emoteState|visible
-  --?"[$HowManyDead.Total]" -gt "1"|&Plural;s|&Plural;
   --#emoteBackground|#f1e5c9
   --#emoteFontColor|#6e2425
-  --#emotetext|[&CasterName] Summoned [$HowManyDead.Raw] [&UndeadType][&Plural].
-  --~|array;define;Zombie;Medium Undead, neutral evil;8;;22;3d8+9;13;6;16;3;6;20 ft.;8;;poisoned;+0;27018610/J8JmlnbSek8oTREJSVp1vg/original.png
-  --~|array;define;Skeleton;Medium Undead, lawful evil;13;armor scraps;13;2d8+4;10;14;15;6;8;30 ft.;9;bludgeoning;exhaustion, poisoned;;26544003/resyylxkCxW5zSzMEpDvjQ/original.png
-  --!a:[&AnimateDead]|!npc_name:[&UndeadType]|!npc_type:[@[&UndeadType](0)]|!npc_ac:[@[&UndeadType](1)]|!npc_actype:[@[&UndeadType](2)]|!hp:[@[&UndeadType](3)]|!hp^:[@[&UndeadType](3)]|!npc_hpformula:[@[&UndeadType](4)]|!strength:[@[&UndeadType](5)]|!dexterity:[@[&UndeadType](6)]|!constitution:[@[&UndeadType](7)]|!intelligence:[@[&UndeadType](8)]|!wisdom:[@[&UndeadType](9)]|!npc_speed:[@[&UndeadType](10)]|!npc_senses:darkvision 60 ft., passive Perception [@[&UndeadType](11)]|!npc_condition_immunities:[@[&UndeadType](13)]|!npc_vulnerabilities:[@[&UndeadType](12)]|!npc_wis_save_base:[@[&UndeadType](14)]
-  --Rfirst|[&AnimateDead];repeating_npcaction
-  --?"[&UndeadType]" -inc "Zombie"|[
-    --!a:[&AnimateDead]|[*R>name]:Slam|[*R>attack_flag]:on|[*R>attack_type]:Melee|[*R>attack_target]:one target|[*R>attack_range]:5 ft.|[*R>attack_tohit]:3|[*R>attack_damage]:1d6 + 1|[*R>attack_damagetype]:bludgeoning|[*R>attack_onhit]:(1d6 + 1)
+  --#emotetext|[&CasterName] Summoned a Bestial [&BeastType] Spirit.
+  --c[&BeastType]|Land:&ImgToken;477291657/ohO-4QL37K2B6VmZFLu5WQ/original.png|Air:&ImgToken;478134331/nCBWw3Ojb78EHfmA3g7yIQ/original.png|Water:&ImgToken;407846110/DIhTiq0_8EKqt_67ST9GYg/original.png?1725295994
+  --c[&BeastType]|Land:&hplvl;30|Air:&hplvl;20|Water:&hplvl;30
+  --c[&BeastType]|Land:&Speed;30 ft., climb 30 ft.|Air:&Speed;30 ft., fly 60 ft.|Water:&Speed;30 ft., swim 30 ft.
+  --=ACCalc|11 + [$SlotLevel]
+  --=hptotal|5 * [= [$SlotLevel] - 2] + [&hplvl]
+  --=AttNum|[$SlotLevel] /2 {FLOOR}
+  --!a:[&SummonBeast]|!npc_name:[&BeastType] Bestial Spirit|!npc_ac:[$ACCalc]|!hp:[$hptotal]|!hp^:[$hptotal]|!npc_speed:[&Speed]|!pb:[*S:pb]|!pb_custom:[*S:pb]|!pb_type:custom
+  --Rfirst|[&SummonBeast];repeating_npctrait
+  --?"[&BeastType]" -inc "Air"|[
+    --!a:[&SummonBeast]|![*R>name]:Flyby|![*R>description]:The beast doesn’t provoke opportunity attacks when it flies out of an enemy’s reach.
   --]|[
-    --!a:[&AnimateDead]|[*R>name]:Shortsword|[*R>attack_flag]:on|[*R>attack_type]:Melee|[*R>attack_target]:one target|[*R>attack_range]:5 ft.|[*R>attack_tohit]:4|[*R>attack_damage]:1d6 + 2|[*R>attack_damagetype]:piercing|[*R>attack_onhit]:(1d6 + 2)
+    --!a:[&SummonBeast]|[*R>name]:Pack Tactics|[*R>description]:The beast has advantage on an attack roll against a creature if at least one of the beast’s allies is within 5 feet of the creature and the ally isn’t incapacitated.
   --]|
   --Rnext|
-  --?"[&UndeadType]" -inc "Zombie"|[
-    --!a:[&AnimateDead]|[*R>name]:|[*R>attack_flag]:off|[*R>attack_type]:|[*R>attack_target]:|[*R>attack_range]:|[*R>attack_tohit]:|[*R>attack_damage]:|[*R>attack_damagetype]:|[*R>attack_tohitrange]:|[*R>attack_onhit]:
+  --?"[&BeastType]" -inc "Water"|[
+    --!a:[&SummonBeast]|[*R>name]:Water Breathing|[*R>description]:The beast can breathe only underwater.
   --]|[
-    --!a:[&AnimateDead]|[*R>name]:Shortbow|[*R>attack_flag]:on|[*R>attack_type]:Ranged|[*R>attack_target]:one target|[*R>attack_range]:80/320 ft.|[*R>attack_tohit]:4|[*R>attack_damage]:1d6 + 2|[*R>attack_damagetype]:piercing|[*R>attack_tohitrange]:|[*R>attack_onhit]:(1d6 + 2)
+    --!a:[&SummonBeast]|[*R>name]:|[*R>description]:
   --]|
-  --Rfirst|[&AnimateDead];repeating_npctrait
-  --?"[&UndeadType]" -inc "Zombie"|[
-    --!a:[&AnimateDead]|[*R>name]:Undead Fortitude|[*R>description]:If damage reduces the zombie to 0 hit points, it must make a Constitution saving throw with a DC of 5 + the damage taken, unless the damage is radiant or from a critical hit. On a success, the zombie drops to 1 hit point instead.
-  --]|[
-    --!a:[&AnimateDead]|[*R>name]:|[*R>description]:
-  --]|
-  --?"[&SoundEffectTrack]" -ne ""|[
-    --a|[&SoundEffectTrack]
-  --]|
-  --&ExistingControl|[*[&AnimateDead]:controlledby]
+  --/|Rfind|[&SummonBeast];Maul;repeating_npcaction;name
+  --Rfirst|[&SummonBeast];repeating_npcaction
+  --!a:[&SummonBeast]|[*R>attack_damage]:1d8 + 4 + [$SlotLevel]|[*R>attack_onhit]:1d8 + 4 + [$SlotLevel]
+  --Rnext|
+    --!a:[&SummonBeast]|[*R>description]:The beast makes [$AttNum] attack per round(half the spell's level rounded down).
+  --&ExistingControl|[*[&SummonBeast]:controlledby]
   --?"[&ExistingControl]" -eq ""|[
-    --!c:[&AnimateDead]|controlledby:[&SendingPlayerID]
+    --!c:[&SummonBeast]|controlledby:[&SendingPlayerID]
   --]|
   --?"[&ExistingControl]" -ninc "[&SendingPlayerID]" -and "[&ExistingControl]" -ne ""|[
     --&NewControl|[&ExistingControl],[&SendingPlayerID]
-    --!c:[&AnimateDead]|controlledby:[&NewControl]
+    --!c:[&SummonBeast]|controlledby:[&NewControl]
   --]|
-  --~|array;define;XOff;0;70;70;70;0;-70;-70;-70;-70;0;70;140;140
-  --~|array;define;YOff;-70;-70;0;70;70;70;0;-70;-140;-140;-140;-140;-70
-  --=LoopEnd|[$HowManyDead.Raw] - 1
-  --%SummonLoop|0;[$LoopEnd.Raw]
-    --&thisX|[@XOff([&SummonLoop])]
-    --&thisY|[@YOff([&SummonLoop])]
-    --&FinalLeft|[=[*S:t-left] + [&thisX]]
-    --&FinalTop|[=[*S:t-top] + [&thisY]]
-    --=VisibleNum|[&SummonLoop] + 1
-    --vpoint|[&FinalLeft] [&FinalTop] explode-death
-    --!ot:NewTID|name:"Animated [&UndeadType] [$VisibleNum]"|left:[&FinalLeft]|top:[&FinalTop]|width:70|height:70|imgsrc:"https://files.d20.io/images/[@[&UndeadType](15)]"|represents:"[&AnimateDead]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:60|night_vision_effect:Nocturnal|order:toFront|showplayers_name:1
-    --!t:[&NewTID]|bar1_link:hp|bar2_link:npc_ac
-  --%|
-  --+|[t width=100% style="margin-top: 5px ; margin-bottom: -15px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td][img width=100px]https://files.d20.io/images/[@[&UndeadType](15)][/img][/td][/tr][/t]
+  --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-smoke
+  --!ot:NewTID|name:"[&BeastType] Beastial Spirit"|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:70|height:70|imgsrc:"https://files.d20.io/images/[&ImgToken]"|represents:"[&SummonBeast]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:60|night_vision_effect:Nocturnal|order:toFront|showplayers_name:1
+  --!t:[&NewTID]|bar1_link:hp|bar2_link:npc_ac
+  --+|[t width=100% style="margin-top: 5px ; margin-bottom: -15px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td][img width=100px]https://files.d20.io/images/[&ImgToken][/img][/td][/tr][/t]
 --X|
---+|[&ExistingControl]
 }}
