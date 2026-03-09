@@ -1,0 +1,14 @@
+!scriptcards {{
+  --#whisper|self
+  --#overridetemplate|statblockv4
+  --#title|@{selected|npc_name}'s Skills
+
+  --&RollOutput|[t width=100% style="color:black"]
+  --&RollOutput|+[tr][td][sheetbutton]|Acrobatics::@{selected|character_name}::{selected|npc_acrobatics}][/sheetbutton][/td][td][sheetbutton]|Athletics::@{selected|character_name}::{selected|npc_athletics}][/sheetbutton][/td][/tr]
+  --&RollOutput|+[tr][td][sheetbutton]|Stealth::@{selected|character_name}::{selected|npc_stealth}][/sheetbutton][/td][td][sheetbutton]|Sleight of Hand::@{selected|character_name}::{selected|npc_sleightofhand}][/sheetbutton][/td][/tr]
+  --&RollOutput|+[tr][td][sheetbutton]|Perception::@{selected|character_name}::{selected|npc_perception}][/sheetbutton][/td][td][sheetbutton]|Insight::@{selected|character_name}::{selected|npc_insight}][/sheetbutton][/td][/tr]
+  --&RollOutput|+[tr][td][sheetbutton]|Investigation::@{selected|character_name}::{selected|npc_investigation}][/sheetbutton][/td][td][sheetbutton]|Medicine::@{selected|character_name}::{selected|npc_medicine}][/sheetbutton][/td][/tr]
+  --&RollOutput|+[tr][td][sheetbutton]|Persuasion::@{selected|character_name}::{selected|npc_persuasion}][/sheetbutton][/td][td][sheetbutton]|Deception::@{selected|character_name}::{selected|npc_deception}][/sheetbutton][/td][/tr]
+  --&RollOutput|+[/t]
+  --+|[&RollOutput]
+}}

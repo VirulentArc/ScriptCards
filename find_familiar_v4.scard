@@ -1,0 +1,256 @@
+!scriptcards {{
+  --/|Script Name : Tim's Find Familiar Mod for D&D 5E 2014
+  --/|Version     : v4.0
+  --/|Author      : Timothy Beasley
+  --/|API MODs    : ScriptCards
+
+  --/|Description : A comprehensive automation for the Find Familiar spell. This script 
+  --/|              manages 15 distinct familiar forms with unique stats, traits, and 
+  --/|              senses (Blindsight, Keen Senses, Flyby, etc.). It features a 
+  --/|              choice of spirit type (Celestial, Fey, Fiend), automated NPC sheet 
+  --/|              updates, and a custom "Settings" menu for users to swap out token 
+  --/|              images with their own Roll20 library URLs. The caster's token must 
+  --/|              be selected to pull position data and assign permissions.
+  --/|
+  --/|Installation: 
+  --/|              1. Create a character named: ScriptCards_TemplateMule (for CSS).
+  --/|              2. Create an NPC character named: FindFamiliar.
+  --/|              3. Run the script once to initialize the StatBlockV4 templates.
+  --/|              4. Create a macro on the caster's character sheet in the 
+  --/|                 Attributes & Abilities tab and ensure "Show as Token Action" 
+  --/|                 is turned on.
+  --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
+  --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
+  --?"[*[&TemplateMuleID]:character_name]" -eq ""|[
+    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the Find Familiar will be kept.[/td][/tr][/t]
+    --X|
+  --]|
+  --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
+  --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4public
+  --?"[&IsTemplate]" -eq "AbilityNotFound"|[
+    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]The style information has been written, please run the Mod again.[/td][/tr][/t]
+    --&StatBlock|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; position: relative ; left: -30px ;'}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --!ob:StyleSaveResult:[&TemplateMuleID]:statblockv4:0|[&StatBlock]
+    --&StatBlockPublic|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; '}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --!ob:StyleSaveResult:[&TemplateMuleID]:statblockv4public:0|[&StatBlockPublic]
+    --@sc-reloadtemplates|
+    --X|
+  --]|
+  --#overridetemplate|statblockv4
+  --#sourceToken|@{selected|token_id}
+  --#whisper|self
+  --#Debug|0
+  --#emoteState|0
+  --#emoteBackground|#f1e5c9
+  --#emoteFontColor|#6e2425
+  --&FindFamiliar|@{FindFamiliar|character_id}
+  --&SoundEffectTrack|
+  --&BodyStyle|font-size: 12px ; letter-spacing: 0.01em ; line-height: 18px
+  --&TokenBGImage|style="display: inline-block; width: 28%; margin: 1%; text-align: center; background-color: transparent; border-style: solid; border-width: 2px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; vertical-align: middle;"
+  --&BttnTd_CSS|style="align-self: center; background-color: transparent; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
+  --&Divider|[t][tr][td height=5px][/td][/tr][/t][t][tr][td width=100% style="border: none; border-top: 0.10em solid transparent; border-bottom: 0.25em solid transparent; border-left: 16em solid #910900; line-height: 1.25em; font-size: 1.4em; display: block; pointer-events: none;"][/td][/tr][/t][t][tr][td height=5px][/td][/tr][/t]
+  --:RestartMod|
+  -->FamStats|
+  --?"[*[&FindFamiliar]:character_name]" -eq ""|NoCharacter|SpellInfo
+  --:NoCharacter|
+  --+|[b]Please make sure to create an NPC character named FindFamiliar, then rerun the script.[/b]
+--X|
+--:SpellInfo|
+  --#emoteState|0
+  --#emoteText|
+  --#whisper|self
+  --?"[*[&FindFamiliar]:npc_name]" -eq ""|[
+    --!or:[&FindFamiliar]:npcaction|name:Bite|attack_flag:on|attack_type:Melee|attack_target:one target|attack_range:5 ft.|attack_tohit:1|attack_damage:1|attack_damagetype:piercing|attack_tohitrange:+5, Reach 5ft., one target|attack_onhit:1 (1d4 + 3) piercing damage|attack_crit:1d4
+    --!or:[&FindFamiliar]:npcaction|name:|attack_flag:off|description:
+    --!or:[&FindFamiliar]:npcaction|name:|attack_flag:off|description:
+    --!or:[&FindFamiliar]:npcaction|name:|attack_flag:off|description:
+    --!or:[&FindFamiliar]:npctrait|name:|description:
+    --!or:[&FindFamiliar]:npctrait|name:|description:
+    --!or:[&FindFamiliar]:npctrait|name:|description:
+    --!or:[&FindFamiliar]:npctrait|name:|description:
+    --&obrac|{
+    --&cbrac|}
+    --&perc|%
+    --&pound|#
+    --&Dash|-
+    --!ob:AbilID:[&FindFamiliar]:First:n|[&perc][&obrac]FindFamiliar|repeating_npcaction_$0_npc_action[&cbrac]
+    --!ob:AbilID2:[&FindFamiliar]:Second:n|[&perc][&obrac]FindFamiliar|repeating_npcaction_$1_npc_action[&cbrac]
+    --!ob:AbilID4:[&FindFamiliar]:Third:n|[&perc][&obrac]FindFamiliar|repeating_npcaction_$2_npc_action[&cbrac]
+    --!ob:AbilID5:[&FindFamiliar]:Fourth:n|[&perc][&obrac]FindFamiliar|repeating_npcaction_$3_npc_action[&cbrac]
+    --&SkillAbil|!scriptcards [&obrac][&obrac] [&Dash][&Dash]#whisper|self [&Dash][&Dash]#overridetemplate|statblockv4 [&Dash][&Dash]#title|@[&obrac]selected|npc_name[&cbrac]'s Skills [&Dash][&Dash]+|[t width=100% style="color:black"][tr][td][sheetbutton]|Acrobatics::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_acrobatics[&cbrac][/sheetbutton][/td][td][sheetbutton]|Athletics::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_athletics[&cbrac][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Stealth::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_stealth[&cbrac][/sheetbutton][/td][td][sheetbutton]|Sleight of Hand::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_sleightofhand[&cbrac][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Perception::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_perception[&cbrac][/sheetbutton][/td][td][sheetbutton]|Insight::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_insight[&cbrac][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Investigation::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_investigation[&cbrac][/sheetbutton][/td][td][sheetbutton]|Medicine::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_medicine[&cbrac][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Persuasion::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_persuasion[&cbrac][/sheetbutton][/td][td][sheetbutton]|Deception::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_deception[&cbrac][/sheetbutton][/td][/tr][/t] [&cbrac][&cbrac]
+    --!ob:AbilID6:[&FindFamiliar]:Skills:y|[&SkillAbil]
+    --&SavesAbil|!scriptcards [&obrac][&obrac] [&Dash][&Dash]#whisper|self [&Dash][&Dash]#overridetemplate|statblockv4 [&Dash][&Dash]#title|@[&obrac]selected|npc_name[&cbrac]'s Stats [&Dash][&Dash]+|[t width=100% style="color:black"][tr][td][b]Attribute[/b][/td][td][b]Save[/b][/td][/tr][tr][td][sheetbutton]|Strength::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_str[&cbrac][/sheetbutton][/td][td][sheetbutton]|Strength Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_str_save[&cbrac]][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Dexterity::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_dex[&cbrac][/sheetbutton][/td][td][sheetbutton]|Dexterity Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_dex_save[&cbrac]][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Constitution::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_con[&cbrac][/sheetbutton][/td][td][sheetbutton]|Constitution Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_con_save[&cbrac]][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Intelligence::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_int[&cbrac][/sheetbutton][/td][td][sheetbutton]|Intelligence Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_int_save[&cbrac]][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Wisdom::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_wis[&cbrac][/sheetbutton][/td][td][sheetbutton]|Wisdom Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_wis_save[&cbrac]][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Charisma::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_cha[&cbrac][/sheetbutton][/td][td][sheetbutton]|Charisma Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_cha_save[&cbrac]][/sheetbutton][/td][/tr][/t] [&cbrac][&cbrac]
+    --!ob:AbilID7:[&FindFamiliar]:Saves & Attributes:y|[&SavesAbil]
+    --&TraitsAbil|!scriptcards [&obrac][&obrac] [&Dash][&Dash]#whisper|self [&Dash][&Dash]#overridetemplate|statblockv4 [&Dash][&Dash]#title|@[&obrac]FindFamiliar|npc_name[&cbrac]'s Traits [&Dash][&Dash]#emotestate| [&Dash][&Dash]?"@[&obrac]FindFamiliar|repeating_npctrait_$0_name[&cbrac]" [&Dash]eq "undefined" [&Dash]or "@[&obrac]FindFamiliar|repeating_npctrait_$0_name[&cbrac]" [&Dash]eq ""|Skip0 [&Dash][&Dash]+|[t width=100% style="color:black"][tr][td][b][i]@[&obrac]FindFamiliar|repeating_npctrait_$0_name[&cbrac][/i][/b] @[&obrac]FindFamiliar|repeating_npctrait_$0_description[&cbrac][hr][/td][td width=10%][sheetbutton]|&#128220;&#65038;::@[&obrac]selected|character_name[&cbrac]::[&obrac]FindFamiliar|repeating_npctrait_$0_npc_roll_output[&cbrac][/sheetbutton][/td][/tr][/t] [&Dash][&Dash]:Skip0| [&Dash][&Dash]?"@[&obrac]FindFamiliar|repeating_npctrait_$1_name[&cbrac]" [&Dash]eq "undefined" [&Dash]or "@[&obrac]FindFamiliar|repeating_npctrait_$1_name[&cbrac]" [&Dash]eq ""|Skip1 [&Dash][&Dash]+|[t width=100% style="color:black"][tr][td][b][i]@[&obrac]FindFamiliar|repeating_npctrait_$1_name[&cbrac][/i][/b] @[&obrac]FindFamiliar|repeating_npctrait_$1_description[&cbrac][hr][/td][td width=10%][sheetbutton]|&#128220;&#65038;::@[&obrac]selected|character_name[&cbrac]::[&obrac]FindFamiliar|repeating_npctrait_$1_npc_roll_output[&cbrac][/sheetbutton][/td][/tr][/t] [&Dash][&Dash]:Skip1| [&Dash][&Dash]?"@[&obrac]FindFamiliar|repeating_npctrait_$2_name[&cbrac]" [&Dash]eq "undefined" [&Dash]or "@[&obrac]FindFamiliar|repeating_npctrait_$2_name[&cbrac]" [&Dash]eq ""|Skip2 [&Dash][&Dash]+|[t width=100% style="color:black"][tr][td][b][i]@[&obrac]FindFamiliar|repeating_npctrait_$2_name[&cbrac][/i][/b] @[&obrac]FindFamiliar|repeating_npctrait_$2_description[&cbrac][hr][/td][td width=10%][sheetbutton]|&#128220;&#65038;::@[&obrac]selected|character_name[&cbrac]::[&obrac]FindFamiliar|repeating_npctrait_$2_npc_roll_output[&cbrac][/sheetbutton][/td][/tr][/t] [&Dash][&Dash]:Skip2| [&Dash][&Dash]?"@[&obrac]FindFamiliar|repeating_npctrait_$3_name[&cbrac]" [&Dash]eq "undefined" [&Dash]or "@[&obrac]FindFamiliar|repeating_npctrait_$3_name[&cbrac]" [&Dash]eq ""|Skip2 [&Dash][&Dash]+|[t width=100% style="color:black"][tr][td][b][i]@[&obrac]FindFamiliar|repeating_npctrait_$3_name[&cbrac][/i][/b] @[&obrac]FindFamiliar|repeating_npctrait_$3_description[&cbrac][hr][/td][td width=10%][sheetbutton]|&#128220;&#65038;::@[&obrac]selected|character_name[&cbrac]::[&obrac]FindFamiliar|repeating_npctrait_$3_npc_roll_output[&cbrac][/sheetbutton][/td][/tr][/t] [&Dash][&Dash]:Skip3| [&cbrac][&cbrac]
+    --!ob:AbilID8:[&FindFamiliar]:Traits:y|[&TraitsAbil]
+    --!ob:AbilID9:[&FindFamiliar]:Initiative:y|[&perc][&obrac]selected|npc_init[&cbrac]
+    --!a:[&FindFamiliar]|!custom_name:0
+    --!a:[&FindFamiliar]|!Imp:0|!Pseudodragon:0|!Quasit:0|!Sprite:0|!Baboon:0|!Badger:0|!Bat:0|!Cat:0|!Crab:0|!Deer:0|!Eagle:0|!Frog:0|!Beetle:0|!Goat:0|!Hawk:0|!Hyena:0|!Jackal:0|!Lizard:0|!Octopus:0|!Owl:0|!Snake:0|!Quipper:0|!Rat:0|!Raven:0|!Scorpion:0|!Seahorse:0|!Spider:0|!Vulture:0|!Weasel:0
+  --]|
+  --Rfind|[*S:character_id];Find Familiar;repeating_spell-1;spellname
+  --#title|[*R:spellname]
+  --?[*R:spelllevel] -eq cantrip|&spllvl;cantrip|&spllvl;[*R:spelllevel]
+  --?[&spllvl] -eq 1|&lvlsuffix;st
+  --?[&spllvl] -eq 2|&lvlsuffix;nd
+  --?[&spllvl] -eq 3|&lvlsuffix;rd
+  --?[&spllvl] -ge 4|&lvlsuffix;th
+  --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal;
+  --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic;S|&Somatic;
+  --?"[*R:spellcomp_m]" -inc "m=1"|[ --&Components|M --&Materials|([*R:spellcomp_materials]) --]|
+  --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
+  --&SpellDesc|[*R:spelldescription]
+  --=SpellDescCalc|[&SpellDesc(length)] - 1024
+  --/|SPELL OUTPUT
+  --&SpellStats|[t width=100% style="margin-bottom: 5px ; [&BodyStyle] ; "][tr][td][i][&spllvl][&lvlsuffix]-Level [*R:spellschool] (ritual)[/i][/td][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td style="text-align: right ; font-size: 18px ;"][rbutton]⚙::GetFamiliar;settings[/rbutton][/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td][b]Casting Time:[/b]&nbsp;[*R:spellcastingtime][/td][/tr]
+  --&SpellStats|+[tr][td][b]Range:[/b]&nbsp;[*R:spellrange][/td][/tr]
+  --&SpellStats|+[tr][td][b]Target:[/b]&nbsp;[*R:spelltarget][/td][/tr]
+  --&SpellStats|+[tr][td][b]Components:[/b]&nbsp;[&Verbal][&Somatic][&Components] [&Materials][/td][/tr]
+  --&SpellStats|+[tr][td][b]Duration:[/b]&nbsp;[&Concentration]&nbsp;[*R:spellduration][/td][/tr]
+  --&SpellStats|+[tr][td][b]Classes:[/b]&nbsp;Wizard[/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; " title="[&SpellDesc([$SpellDescCalc.Raw],[&SpellDesc(length)])]"][tr][td style="margin-bottom: 5px ; pointer-events: auto ; cursor: help ; "][&SpellDesc(0,[$SpellDescCalc.Raw])]...[/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="text-align: center ; [&BodyStyle] ; margin: 6px 0px -10px 0px ; "][tr][td [&BttnTd_CSS]][b][rbutton]Cast Spell::WhatBeast[/rbutton][/b][/td][/tr][/t]
+  --+|[&SpellStats]
+--X|
+--:FamStats|
+  --~|array;define;FamiliarToken;Imp;Pseudodragon;Quasit;Sprite;Baboon;Badger;Bat;Cat;Crab;Deer;Eagle;Frog;Beetle;Goat;Hawk;Hyena;Jackal;Lizard;Octopus;Owl;Snake;Quipper;Rat;Raven;Scorpion;Seahorse;Spider;Vulture;Weasel
+  --Rfind|[*S:character_id];Pact of the Chain;repeating_traits;name
+  --?"[*R:name]" -eq "NoRepeatingAttributeLoaded"|[ --~|array;removeat;FamiliarToken;0 --~|array;removeat;FamiliarToken;0 --~|array;removeat;FamiliarToken;0 --~|array;removeat;FamiliarToken;0 --]|[ --&WarlockTitle|[t][tr][td style="font-size: 18px ; "]Pact of the Chain Familiars[/td][/tr][/t] --]|
+  --&Obracket|[
+  --&Cbracket|]
+  --~|array;define;DataImp;13;;;10;3d4 + 3;6;17;13;11;12;14;20 ft., fly 40 ft.;3;cold: bludgeoning, piercing, and slashing from nonmagical attacks not made with silvered weapons;; fire, poison;poisoned;darkvision 120 ft., passive Perception 11;120;Tiny, lawful evil;200;1; Shapechanger;The imp can use its action to polymorph into a beast form that resembles a rat (speed 20 ft.), a raven (20 ft., fly 60 ft.), or a spider (20 ft., climb 20 ft.), or back into its true form. Its statistics are the same in each form, except for the speed changes noted. Any equipment it is wearing or carrying isn't transformed. It reverts to its true form if it dies.;Devil's Sight;Magical darkness doesn't impede the imp's darkvision.;Magic Resistance;The imp has advantage on saving throws against spells and other magical effects.;Variant: Familiar;The imp can enter into a contract to serve another creature as a familiar, forming a Telepathic Bond with its willing master. While the two are bonded, the master can sense what the imp senses as long as they are within 1 mile of each other. While the imp is within 10 feet of its master, the master shares the imp’s Magic Resistance trait. If its master violates the terms of the contract, the imp can end its service as a familiar, ending the Telepathic Bond.; Sting (Bite in Beast Form);true;on;Melee;5 ft.;one target;5;1d4 + 3;piercing;The target must make a DC 11 Constitution saving throw, taking 10 (or [&Obracket][&Obracket]3d6[&Cbracket][&Cbracket] (3d6)) poison damage on a failed save, or half as much damage on a successful one.;3d6;; Invisibility;true;0;Melee;;;0;;;The imp magically turns invisible until it attacks, or until its concentration ends (as if concentrating on a spell). Any equipment the imp wears or carries is invisible with it.;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; +4;1;+3;1;+5;2;;0;478874803/-xDDUCqBex75_c1zMzX20g/original.webp;;Infernal, Common
+  --~|array;define;DataPseudodragon;13;natural armor;;7;2d4 + 2;6;15;13;10;12;10;15 ft., fly 60 ft.;2;;; ;;blindsight 10 ft., darkvision 60 ft., passive Perception 13;60;Tiny, neutral good;50;1/4; Keen Senses;The pseudodragon has advantage on Wisdom (Perception) checks that rely on sight, hearing, or smell.;Magic Resistance;The pseudodragon has advantage on saving throws against spells and other magical effects.;Limited Telepathy;The pseudodragon can magically communicate simple ideas, emotions, and images telepathically with any creature within 100 ft. of it that can understand a language.;;; Bite;true;on;Melee;5 ft.;one target;4;1d4 + 2;piercing;;;; Sting;true;on;Melee;5 ft.;one creature;4;1d4 + 2;piercing;The target must succeed on a dc 11 constitution saving throw or become poisoned for 1 hour If the saving throw fails by 5 or more, the target falls unconscious for the same duration, or until it takes damage or another creature uses an action to shake it awake;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;+4;2;+3;1;478874928/PL54zRPcDCkvxvSj_ZlL0g/original.webp;;Understands Common and Draconic but can't speak them
+  --~|array;define;DataQuasit;13;;;7;3d4;5;17;10;7;10;10;40 ft.;3;cold, fire, lightning: bludgeoning, piercing, and slashing from nonmagical attacks;; poison;poisoned;darkvision 120 ft., passive Perception 10;120;Tiny, chaotic evil;200;1; Shapechanger;The quasit can use its action to polymorph into a beast form that resembles a bat (speed 10 ft. fly 40 ft.), a centipede (40 ft., climb 40 ft.), or a toad (40 ft., swim 40 ft.), or back into its true form. Its statistics are the same in each form, except for the speed changes noted. Any equipment it is wearing or carrying isn't transformed. It reverts to its true form if it dies.;Magic Resistance;The quasit has advantage on saving throws against spells and other magical effects.;Variant: Familiar;The quasit can serve another creature as a familiar, forming a telepathic bond with its willing master. While the two are bonded, the master can sense what the quasit senses as long as they are within 1 mile of each other. While the quasit is within 10 feet of its master, the master shares the quasit's Magic Resistance trait. At any time and for any reason, the quasit can end its service as a familiar, ending the telepathic bond.;;; Claw (Bite in Beast Form);true;on;Melee;5 ft.;one target;4;1d4 + 3;piercing;The target must succeed on a DC 10 Constitution saving throw or take the poison damage and become poisoned for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.;2d4;poison; Scare (1/day);true;0;Melee;;;0;;;One creature of the quasit's choice within 20 ft. of it must succeed on a DC 10 Wisdom saving throw or be frightened for 1 minute. The target can repeat the saving throw at the end of each of its turns, with disadvantage if the quasit is within line of sight, ending the effect on itself on a success.;;; Invisibility; 55:A3_TokenAction ;0;Melee;;;0;;;The quasit magically turns invisible until it attacks or uses Scare, or until its concentration ends (as if concentrating on a spell). Any equipment the quasit wears or carries is invisible with it.;;; ;false;0;Melee;;;0;;;;;; ;0;;0;+5;2;;0;478875365/xoYHRBGr-Hcv_tl3622PTw/original.webp;;Abyssal, Common
+  --~|array;define;DataSprite;15;leather armor;;2;1d4;3;18;10;14;13;11;10 ft., fly 40 ft.;4;;; ;;passive Perception 13;0;Tiny, neutral good;50;1/4; ;;;;;;;; Longsword;true;on;Melee;5 ft.;one target;2;1;slashing;;;; Shortbow;true;on;Ranged;40/160 ft.;one target;6;1d1;piercing;The target must succeed on a DC 10 constitution saving throw or become poisoned for 1 minute If its saving throw result is 5 or lower, the poisoned target falls unconscious for the same duration, or until it takes damage or another creature takes an action to shake it awake;;; Heart Sight;true;0;Melee;;;0;;;The sprite touches a creature and magically knows the creature's current emotional state. If the target fails a DC 10 Charisma saving throw, the sprite also knows the creature's alignment. Celestials, fiends, and undead automatically fail the saving throw.;;; Invisibility;true;0;Melee;;;0;;;The sprite magically turns invisible until it attacks or casts a spell, or until its concentration ends, as if concentrating on a spell. Any equipment the sprite wears or carries is invisible with it.;;; ;0;;0;+8;2;+3;1;478873041/JptJj3qjRdI5Z7IWIkT9PQ/original.webp;;Common, Elvish, Sylvan
+  --~|array;define;DataBaboon;12;;;3;1d6;8;14;11;4;12;6;30 ft., climb 30 ft.;2;;; ;;passive Perception 11;0;Small, unaligned;10;0; Pack Tactics;The baboon has advantage on an attack roll against a creature if at least one of the baboon's allies is within 5 ft. of the creature and the ally isn't incapacitated.;;;;;;; Bite;true;on;Melee;5 ft.;one target;1;1d4 - 1;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;;0;Melee;;;0;;;;;; ;0;;0;;0;;0;478495254/zShHk3Ah71F98q8fXOByqw/original.png;;
+  --~|array;define;DataBadger;10;;;3;1d4 + 1;4;11;12;2;12;5;20 ft., burrow 5 ft.;0;;; ;;darkvision 30 ft., passive Perception 11;30;Tiny, unaligned;10;0; Keen Smell;The badger has advantage on Wisdom (Perception) checks that rely on smell.;;;;;;; Bite;true;on;Melee;5 ft.;one target;2;1;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;478495364/t8INe4QJUrni3IsdipBiZw/original.png;;
+  --~|array;define;DataBat;12;;;1;1d4 - 1;2;15;8;2;12;4;5 ft., fly 30 ft.;2;;; ;;blindsight 60 ft., passive Perception 11;60;Tiny, unaligned;10;0; Echolocation;The bat can't use its blindsight while deafened.;Keen Hearing;The bat has advantage on Wisdom (Perception) checks that rely on hearing.;;;;; Bite;true;on;Melee;5 ft.;one creature;0;1;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;407846117/a4ZJKr0ySyLpeDUmM1FGsw/original.png;;
+  --~|array;define;DataCat;12;;;2;1d4;3;15;10;3;12;7;40 ft., climb 30 ft.;2;;; ;;passive Perception 13;0;Tiny, unaligned;10;0; Keen Smell;The cat has advantage on Wisdom (Perception) checks that rely on smell.;;;;;;; Claws;true;on;Melee;5 ft.;one target;0;1;slashing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;+4;2;+3;1;407846114/yY73RMgm6_BCLaNg2rxBzQ/original.png;;
+  --~|array;define;DataCrab;11;natural armor;;2;1d4;2;11;10;1;8;2;20 ft., swim 20 ft.;0;;; ;;blindsight 30 ft., passive Perception 9;30;Tiny, unaligned;10;0; Amphibious;The crab can breathe air and water.;;;;;;; Claw;true;on;Melee;5 ft.;one target;0;1;bludgeoning;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;+2;2;;0;407846115/T0Rit7tcKGuc4SNVemTqKA/original.png;;
+  --~|array;define;DataDeer;13;;;4;1d8;11;16;11;2;14;5;50 ft.;3;;; ;;passive Perception 12;0;Medium, unaligned;10;0; ;;;;;;;; Bite;true;on;Melee;5 ft.;one target;2;1d4;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;478497822/vXVC4AJTpQFSrvJ2tLnp-A/original.png;;
+  --~|array;define;DataEagle;12;;;3;1d6;6;15;10;2;14;7;10 ft., fly 60 ft.;2;;; ;;passive Perception 14;0;Small, unaligned;10;0; Keen Sight;The eagle has advantage on Wisdom (Perception) checks that rely on sight.;;;;;;; Talons;true;on;Melee;5 ft.;one target;4;1d4 + 2;slashing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;+4;2;478134331/nCBWw3Ojb78EHfmA3g7yIQ/original.png;;
+  --~|array;define;DataFrog;11;;;1;1d4 - 1;1;13;8;1;8;3;20 ft., swim 20 ft.;1;;; ;;darkvision 30 ft., passive Perception 11;30;Tiny, unaligned;10;0; Amphibious;The frog can breathe air and water.;Standing Leap;The frog's long jump is up to 10 ft. and its high jump is up to 5 ft., with or without a running start.;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;+3;2;+1;1;407846109/-ucSpgR6y7RVeYmRiWgkEg/original.png;Frog(Toad);
+  --~|array;define;DataBeetle;13;natural armor;;4;1d6 + 1;8;10;12;1;7;3;30 ft.;0;;; ;;blindsight 30 ft., passive Perception 8;30;Small, unaligned;10;0; Illumination;The beetle sheds bright light in a 10-foot radius and dim light for an additional 10 ft..;;;;;;; Bite;true;on;Melee;5 ft.;one target;1;1d6 - 1;slashing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;478498495/Bt0wE0vv89z0uEyE-KFOGA/original.png;Giant Fire Beetle;
+  --~|array;define;DataGoat;10;;;4;1d8;12;10;11;2;10;5;40 ft.;0;;; ;;passive Perception 10;0;Medium, unaligned;10;0; Charge;If the goat moves at least 20 ft. straight toward a target and then hits it with a ram attack on the same turn, the target takes an extra 2 (or [&Obracket][&Obracket]1d4[&Cbracket][&Cbracket] (1d4)) bludgeoning damage. If the target is a creature, it must succeed on a DC 10 Strength saving throw or be knocked prone.;Sure-Footed;The goat has advantage on Strength and Dexterity saving throws made against effects that would knock it prone.;;;;; Ram;true;on;Melee;5 ft.;one target;3;1d4 + 1;bludgeoning;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;478498748/9w9ukNsL58RnN8WzpmxKfw/original.png;;
+  --~|array;define;DataHawk;13;;;1;1d4 - 1;5;16;8;2;14;6;10 ft., fly 60 ft.;3;;; ;;passive Perception 14;0;Tiny, unaligned;10;0; Keen Sight;The hawk has advantage on Wisdom (Perception) checks that rely on sight.;;;;;;; Talons;true;on;Melee;5 ft.;one target;5;1;slashing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;+4;2;407846111/Zz5F5aLNGYDV-xRvSV0YfA/original.png;;
+  --~|array;define;DataHyena;11;;;5;1d8 + 1;11;13;12;2;12;5;50 ft.;1;;; ;;passive Perception 13;0;Medium, unaligned;10;0; Pack Tactics;The hyena has advantage on an attack roll against a creature if at least one of the hyena's allies is within 5 ft. of the creature and the ally isn't incapacitated.;;;;;;; Bite;true;on;Melee;5 ft.;one target;2;1d6;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;+3;2;478499218/NzyQLObxcxsqXZHVrmCaFQ/original.png;;
+  --~|array;define;DataJackal;12;;;3;1d6;8;15;11;3;12;6;40 ft.;2;;; ;;passive Perception 13;0;Small, unaligned;10;0; Keen Hearing and Smell;The jackal has advantage on Wisdom (Perception) checks that rely on hearing or smell.;Pack Tactics;The jackal has advantage on an attack roll against a creature if at least one of the jackal's allies is within 5 ft. of the creature and the ally isn't incapacitated.;;;;; Bite;true;on;Melee;5 ft.;one target;1;1d4 - 1;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;+3;2;477291657/ohO-4QL37K2B6VmZFLu5WQ/original.png;;
+  --~|array;define;DataLizard;10;;;2;1d4;2;11;10;1;8;3;20 ft., climb 20 ft.;0;;; ;;darkvision 30 ft., passive Perception 9;30;Tiny, unaligned;10;0; ;;;;;;;; Bite;true;on;Melee;5 ft.;one target;0;1;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;478499218/NzyQLObxcxsqXZHVrmCaFQ/original.png;;
+  --~|array;define;DataOctopus;12;;;3;1d6;4;15;11;3;10;4;5 ft., swim 30 ft.;2;;; ;;darkvision 30 ft., passive Perception 12;30;Small, unaligned;10;0; Hold Breath;While out of water, the octopus can hold its breath for 30 minutes.;Underwater Camouflage;The octopus has advantage on Dexterity (Stealth) checks made while underwater.;Water Breathing;The octopus can breathe only underwater.;;; Tentacles;true;on;Melee;5 ft.;one target;4;1;bludgeoning;The target is grappled, escape dc 10 Until this grapple ends, the octopus can't use its tentacles on another target;;; Ink Cloud (Recharges after a Short or Long Rest);true;0;Melee;;;0;;;A 5-foot-radius cloud of ink extends all around the octopus if it is underwater. The area is heavily obscured for 1 minute, although a significant current can disperse the ink. After releasing the ink, the octopus can use the Dash action as a bonus action.;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;+4;2;+2;1;407846110/DIhTiq0_8EKqt_67ST9GYg/original.png;;
+  --~|array;define;DataOwl;11;;;1;1d4 - 1;3;13;8;2;12;7;5 ft., fly 60 ft.;1;;; ;;darkvision 120 ft., passive Perception 13;120;Tiny, unaligned;10;0; Flyby;The owl doesn't provoke opportunity attacks when it flies out of an enemy's reach.;Keen Hearing and Sight;The owl has advantage on Wisdom (Perception) checks that rely on hearing or sight.;;;;; Talons;true;on;Melee;5 ft.;one target;3;1;slashing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;+3;2;+3;1;407846113/Thqe3vXwntNMdFeAms5zYQ/original.png;;
+  --~|array;define;DataSnake;13;;;2;1d4;2;16;11;1;10;3;30 ft., swim 30 ft.;3;;; ;;blindsight 10 ft., passive Perception 10;10;Tiny, unaligned;25;1/8; ;;;;;;;; Bite;true;on;Melee;5 ft.;one target;5;1;piercing;The target must make a DC 10 Constitution saving throw, taking 5 (or [&Obracket][&Obracket]2d4[&Cbracket][&Cbracket] (2d4)) poison damage on a failed save, or half as much damage on a successful one.;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;407855134/bk8CwwNUm8rkReiyEBqJgQ/original.png;Poisonous Snake;
+  --~|array;define;DataQuipper;13;;;1;1d4 - 1;2;16;9;1;7;2;0 ft., swim 40 ft.;3;;; ;;darkvision 60 ft., passive Perception 8;60;Tiny, unaligned;10;0; Blood Frenzy;The quipper has advantage on melee attack rolls against any creature that doesn't have all its hit points.;Water Breathing;The quipper can breathe only underwater.;;;;; Bite;true;on;Melee;5 ft.;one target;5;1;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;407846108/FHRYjGLbhUYoth-8OP490g/original.png;Quipper(Fish);
+  --~|array;define;DataRat;10;;;1;1d4 - 1;2;11;9;2;10;4;20 ft.;0;;; ;;darkvision 30 ft., passive Perception 10;30;Tiny, unaligned;10;0; Keen Smell;The rat has advantage on Wisdom (Perception) checks that rely on smell.;;;;;;; Bite;true;on;Melee;5 ft.;one target;0;1;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;407846107/Uby34hjIEFwETxKo3gXzCA/original.png;;
+  --~|array;define;DataRaven;12;;;1;1d4 - 1;2;14;8;2;12;6;10 ft., fly 50 ft.;2;;; ;;passive Perception 13;0;Tiny, unaligned;10;0; Mimicry;The raven can mimic simple sounds it has heard, such as a person whispering, a baby crying, or an animal chittering. A creature that hears the sounds can tell they are imitations with a successful DC 10 Wisdom (Insight) check.;;;;;;; Beak;true;on;Melee;5 ft.;one target;4;1;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;+3;2;407846112/8Bt_Off5cwk0xEfUlkcRyw/original.png;;
+  --~|array;define;DataSeahorse;11;;;1;1d4 - 1;1;12;8;1;10;2;0 ft., swim 20 ft.;1;;; ;;passive Perception 10;0;Tiny, unaligned;10;0; Water Breathing;The sea horse can breathe only underwater.;;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;407846104/PaAX9a0fqWOAGSey_WtiOQ/original.png;Sea Horse;
+  --~|array;define;DataScorpion;11;natural armor;;1;1d4 - 1;2;11;8;1;8;2;10 ft.;0;;; ;;blindsight 10 ft., passive Perception 9;10;Tiny, unaligned;10;0; ;;;;;;;; Sting;true;on;Melee;5 ft.;one creature;2;1;piercing;The target must make a DC 9 Constitution saving throw, taking 4 (or [&Obracket][&Obracket]1d8[&Cbracket][&Cbracket] (1d8)) poison damage on a failed save, or half as much damage on a successful one.;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;478499592/gVLa0jJgybmB-sStJOrlbQ/original.png;;
+  --~|array;define;DataSpider;12;;;1;1d4 - 1;2;14;8;1;10;2;20 ft., climb 20 ft.;2;;; ;;darkvision 30 ft., passive Perception 10;30;Tiny, unaligned;10;0; Spider Climb;The spider can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check.;Web Sense;While in contact with a web, the spider knows the exact location of any other creature in contact with the same web.;Web Walker;The spider ignores movement restrictions caused by webbing.;;; Bite;true;on;Melee;5 ft.;one creature;4;1;piercing;The target must make a DC 9 Constitution saving throw, taking the poison damage on a failed save.;1d4;poison; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;+4;2;;0;407846105/ww3DHHb5YLDZo6qyFdLQsw/original.png;;
+  --~|array;define;DataVulture;10;;;5;1d8 + 1;7;10;13;2;12;4;10 ft., fly 50 ft.;0;;; ;;passive Perception 13;0;Medium, unaligned;10;0; Keen Sight and Smell;The vulture has advantage on Wisdom (Perception) checks that rely on sight or smell.;Pack Tactics;The vulture has advantage on an attack roll against a creature if at least one of the vulture's allies is within 5 ft. of the creature and the ally isn't incapacitated.;;;;; Beak;true;on;Melee;5 ft.;one target;2;1d4;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;+3;2;478499723/7s1CsuFTINR1p8rfreubNQ/original.png;;
+  --~|array;define;DataWeasel;13;;;1;1d4 - 1;3;16;8;2;12;3;30 ft.;3;;; ;;passive Perception 13;0;Tiny, unaligned;10;0; Keen Hearing and Smell;The weasel has advantage on Wisdom (Perception) checks that rely on hearing or smell.;;;;;;; Bite;true;on;Melee;5 ft.;one creature;5;1;piercing;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;+5;2;+3;1;407846106/JvvrVk9bNm4zG7QcrKzZuA/original.png;
+--<|
+--:WhatBeast|
+  --#whisper|self
+  --#title|Familiar Type
+  --&RealmOutput|[t width=100% style="[&BodyStyle] ; text-align: center ; margin-top: 10px ; "][tr]
+  --&RealmOutput|+[td [&BttnTd_CSS]][rbutton]Celestial::GetFamiliar;Celestial[/rbutton][/td]
+  --&RealmOutput|+[td [&BttnTd_CSS]][rbutton]Fey::GetFamiliar;Fey[/rbutton][/td]
+  --&RealmOutput|+[td [&BttnTd_CSS]][rbutton]Fiend::GetFamiliar;Fiend[/rbutton][/td][/tr][/t]
+  --+|[&RealmOutput]
+--X|
+--:GetFamiliar|
+  --&CurrentMode|[&reentryval]
+  --?"[&FromSettings]" -eq "1"|&CurrentMode;settings
+  --&FromSettings|
+  --&ResetButton|
+  --&ResetName|
+  --&SettingsButtons|
+  --?"[*[&FindFamiliar]:custom_name]" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;[*[&FindFamiliar]:custom_name]
+  --?"[&UpdateName]" -eq "0"|&TokenDisplayName;[&TokenDisplayName]|&TokenDisplayName;[&UpdateName]
+  --?"[&CurrentMode]" -eq "settings"|[
+    --#title|Custom Familiar
+    --&SettingsButtons|[&Divider][t width=100%][tr][td]&#x2022;[b]Here you can change the tokens.[br]&#x2022;The image for the token must be in your roll20 library.[br]&#x2022;Have the URL of the image ready.[br]&#x2022;Click on the familiar you'd like to change and then follow the prompts in the chat window.[/b][/td][/tr][/t]
+    --&ResetName|[t width=100% style="border: 1mm ridge rgb(218,165,32) ; text-align: center ; "][tr][td style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][b]Custom Name[/b][/td][td style="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]CHANGE::ProcessUpdate[/rbutton][/td][td style="border: 0.5mm solid rgb(218,165,32) ; "][rbutton]RESET::ProcessReset[/rbutton][/td][/tr][tr][td style="border: 0.5mm solid rgb(218,165,32) ; "][b]Current Name[/b][/td][td colspan=2 style="border: 0.5mm solid rgb(218,165,32) ; padding: 6px 0 6px 0 ; "][&TokenDisplayName][/td][/tr][tr][td colspan=3][rbutton]EXIT::RestartMod[/rbutton][/td][/tr][/t]
+    --&ButtonParam|ProcessUpdate
+  --]|[
+    --#title|
+    --&SettingsButtons|[t width=100%][tr][td style="font-weight: bold ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; "]Choose Form[/td][td style="text-align: right  ; font-size: 16px ; postition relative"][sheetbutton]&#x1F56E;::@{selected|character_name}::[*R>output][/sheetbutton][/td][td width=30 style="text-align: right ; font-size: 18px ;"][rbutton]⚙::GetFamiliar;settings[/rbutton][/td][/tr][/t][&Divider]
+    --&ButtonParam|Familiar
+  --]|
+  --#whisper|self
+  --&TokensPerRow|3
+  --&TokenCounter|1
+  --&AllTokens|[&SettingsButtons][&WarlockTitle][t width=112% style="position: relative ; left: -8px ; "][tr]
+  --%TokenLoop|foreach;FamiliarToken
+    --?"[&CurrentMode]" -eq "settings"|[ --&ResetButton|[rbutton]RESET::ProcessReset;[&TokenLoop][/rbutton][br] --]|
+    --?"[*[&FindFamiliar]:[&TokenLoop]]" -ne "0"|&FinalToken;[*[&FindFamiliar]:[&TokenLoop]]|&FinalToken;https://files.d20.io/images/[@Data[&TokenLoop](86)]
+    --?"[@Data[&TokenLoop](87)]" -eq ""|&DisplayName;[&TokenLoop]|&DisplayName;[@Data[&TokenLoop](87)]
+    --&AllTokens|+[td [&TokenBGImage]][rbutton][img width=70][&FinalToken][/img]::[&ButtonParam];[&TokenLoop][/rbutton][br][b][&DisplayName][/b][br][&ResetButton][/td]
+    --?"[&TokenLoop]" -eq "Sprite"|[
+      --&TokenCounter|0
+      --&AllTokens|+[/tr][tr][td colspan="3"][&Divider][/td][/tr][tr]
+    --]|
+    --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
+    --&TokenCounter|[= [&TokenCounter] + 1 ]
+  --%|
+  --&AllTokens|+[/tr][/t][&ResetName]
+  --+|[&AllTokens]
+--X|
+--:Familiar|
+  --#overridetemplate|statblockv4public
+  --#whisper|
+  --#emoteState|visible
+  --#title|
+  --&FamiliarType|[&reentryval]
+  --&Beast|Data[&FamiliarType]
+  --?"[@[&Beast](87)]" -eq ""|&NPC_Name;[&FamiliarType]|&NPC_Name;[@[&Beast](88)]
+  --?"[&FamiliarType]" -inc "Beetle"|&ShedLight;10|&ShedLight;0
+  --&ShedDimLight|[= [&ShedLight] * 3]
+  --!a:[&FindFamiliar]|!npc_name:[&NPC_Name]|!npc_ac:[@[&Beast](0)]|!npc_actype:[@[&Beast](1)]|!hp:[@[&Beast](2)]|!hp^:[@[&Beast](3)]|!npc_hpformula:[@[&Beast](4)]|!strength:[@[&Beast](5)]|!strength_base:[@[&Beast](5)]|!dexterity_base:[@[&Beast](6)]|!dexterity:[@[&Beast](6)]|!constitution_base:[@[&Beast](7)]|!constitution:[@[&Beast](7)]|!intelligence_base:[@[&Beast](8)]|!intelligence:[@[&Beast](8)]|!wisdom_base:[@[&Beast](9)]|!wisdom:[@[&Beast](9)]|!charisma_base:[@[&Beast](10)]|!charisma:[@[&Beast](10)]|!npc_speed:[@[&Beast](11)]|!initiative_bonus:[@[&Beast](12)]|!npc_resistances:[@[&Beast](13)]|!npc_vulnerabilities:[@[&Beast](14)]|!npc_immunities:[@[&Beast](15)]|!npc_condition_immunities:[@[&Beast](16)]|!npc_senses:[@[&Beast](17)]|!npc_type:[@[&Beast](19)] [&Realm], unaligned|!npc_xp:[@[&Beast](20)]|!npc_challenge:[@[&Beast](21)]|!npc_deception_base:[@[&Beast](78)]|!npc_deception_flag:[@[&Beast](79)]|!npc_insight_base:[@[&Beast](80)]|!npc_insight_flag:[@[&Beast](81)]|!npc_stealth_base:[@[&Beast](82)]|!npc_stealth_flag:[@[&Beast](83)]|!npc_perception_base:[@[&Beast](84)]|!npc_perception_flag:[@[&Beast](85)]|!npc_languages:[@[&Beast](88)]
+  --Rfirst|[&FindFamiliar];repeating_npctrait
+  --!a:[&FindFamiliar]|[*R>name]:[@[&Beast](22)]|[*R>description]:[@[&Beast](23)]
+  --Rnext|
+  --!a:[&FindFamiliar]|[*R>name]:[@[&Beast](24)]|[*R>description]:[@[&Beast](25)]
+  --Rnext|
+  --!a:[&FindFamiliar]|[*R>name]:[@[&Beast](26)]|[*R>description]:[@[&Beast](27)]
+  --Rnext|
+  --!a:[&FindFamiliar]|[*R>name]:[@[&Beast](28)]|[*R>description]:[@[&Beast](29)]
+  --!a:[&FindFamiliar]|!npc_name:[&NPC_Name]|!npc_ac:[@[&Beast](0)]|!npc_actype:[@[&Beast](1)]|!hp:[@[&Beast](2)]|!hp^:[@[&Beast](3)]|!npc_hpformula:[@[&Beast](4)]|!strength:[@[&Beast](5)]|!strength_base:[@[&Beast](5)]|!dexterity_base:[@[&Beast](6)]|!dexterity:[@[&Beast](6)]|!constitution_base:[@[&Beast](7)]|!constitution:[@[&Beast](7)]|!intelligence_base:[@[&Beast](8)]|!intelligence:[@[&Beast](8)]|!wisdom_base:[@[&Beast](9)]|!wisdom:[@[&Beast](9)]|!charisma_base:[@[&Beast](10)]|!charisma:[@[&Beast](10)]|!npc_speed:[@[&Beast](11)]|!initiative_bonus:[@[&Beast](12)]|!npc_resistances:[@[&Beast](13)]|!npc_vulnerabilities:[@[&Beast](14)]|!npc_immunities:[@[&Beast](15)]|!npc_condition_immunities:[@[&Beast](16)]|!npc_senses:[@[&Beast](17)]|!npc_type:[@[&Beast](19)] [&Realm], unaligned|!npc_xp:[@[&Beast](20)]|!npc_challenge:[@[&Beast](21)]|!npc_deception_base:[@[&Beast](78)]|!npc_deception_flag:[@[&Beast](79)]|!npc_insight_base:[@[&Beast](80)]|!npc_insight_flag:[@[&Beast](81)]|!npc_stealth_base:[@[&Beast](82)]|!npc_stealth_flag:[@[&Beast](83)]|!npc_perception_base:[@[&Beast](84)]|!npc_perception_flag:[@[&Beast](85)]
+  --Rfirst|[&FindFamiliar];repeating_npcaction
+  --~|array;abilities;ability_list;[&FindFamiliar]
+  --!a:[&FindFamiliar]|[*R>name]:[@[&Beast](30)]|[*R>attack_flag]:[@[&Beast](32)]|[*R>attack_type]:[@[&Beast](33)]|[*R>attack_range]:[@[&Beast](34)]|[*R>attack_target]:[@[&Beast](35)]|[*R>attack_tohit]:[@[&Beast](36)]|[*R>attack_damage]:[@[&Beast](37)]|[*R>attack_damagetype]:[@[&Beast](38)]|[*R>description]:[@[&Beast](39)]|[*R>attack_damage2]:[@[&Beast](40)]|[*R>attack_damagetype2]:[@[&Beast](41)]
+  --!ability:[@ability_list(0)]|name:[@[&Beast](30)]|istokenaction:[@[&Beast](31)]
+  --Rnext|
+  --!a:[&FindFamiliar]|[*R>name]:[@[&Beast](42)]|[*R>attack_flag]:[@[&Beast](44)]|[*R>attack_type]:[@[&Beast](45)]|[*R>attack_range]:[@[&Beast](46)]|[*R>attack_target]:[@[&Beast](47)]|[*R>attack_tohit]:[@[&Beast](48)]|[*R>attack_damage]:[@[&Beast](49)]|[*R>attack_damagetype]:[@[&Beast](50)]|[*R>description]:[@[&Beast](51)]|[*R>attack_damage2]:[@[&Beast](52)]|[*R>attack_damagetype2]:[@[&Beast](53)]
+  --!ability:[@ability_list(1)]|name:[@[&Beast](42)]|istokenaction:[@[&Beast](43)]
+  --Rnext|
+  --!a:[&FindFamiliar]|[*R>name]:[@[&Beast](54)]|[*R>attack_flag]:[@[&Beast](56)]|[*R>attack_type]:[@[&Beast](57)]|[*R>attack_range]:[@[&Beast](58)]|[*R>attack_target]:[@[&Beast](59)]|[*R>attack_tohit]:[@[&Beast](60)]|[*R>attack_damage]:[@[&Beast](61)]|[*R>attack_damagetype]:[@[&Beast](62)]|[*R>description]:[@[&Beast](63)]|[*R>attack_damage2]:[@[&Beast](64)]|[*R>attack_damagetype2]:[@[&Beast](65)]
+  --!ability:[@ability_list(2)]|name:[@[&Beast](54)]|istokenaction:[@[&Beast](55)]
+  --Rnext|
+  --~|array;objects:ability;FourthAbil;[*R:name];[&FindFamiliar]
+  --!a:[&FindFamiliar]|[*R>name]:[@[&Beast](66)]|[*R>attack_flag]:[@[&Beast](68)]|[*R>attack_type]:[@[&Beast](69)]|[*R>attack_range]:[@[&Beast](70)]|[*R>attack_target]:[@[&Beast](71)]|[*R>attack_tohit]:[@[&Beast](72)]|[*R>attack_damage]:[@[&Beast](73)]|[*R>attack_damagetype]:[@[&Beast](74)]|[*R>description]:[@[&Beast](75)]|[*R>attack_damage2]:[@[&Beast](76)]|[*R>attack_damagetype2]:[@[&Beast](77)]
+  --!ability:[@ability_list(3)]|name:[@[&Beast](66)]|istokenaction:[@[&Beast](67)]
+  --?"[*[&FindFamiliar]:[&FamiliarType]]" -ne "0"|&TokenDisplay;[*[&FindFamiliar]:[&FamiliarType]]|&TokenDisplay;https://files.d20.io/images/[@[&Beast](86)]
+  --?"[*[&FindFamiliar]:custom_name]" -eq "0"|&TokenDisplayName;Familiar|&TokenDisplayName;[*[&FindFamiliar]:custom_name]
+  --?";Imp;Octopus;" -inc ";[&FamiliarType];"|&Article;an|&Article;a
+  --?"[*[&FindFamiliar]:custom_name]" -ne "0"|&FamiliarName;[&Article] [&FamiliarType] named [&TokenDisplayName]|&FamiliarName;[&Article] [&FamiliarType] [&TokenDisplayName]
+  --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-smoke
+  --!ot:NewTID|name:"[&TokenDisplayName]"|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:70|height:70|imgsrc:"[&TokenDisplay]"|represents:"[&FindFamiliar]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:[@[&Beast](14)]|night_vision_effect:Nocturnal|order:toFront|showplayers_name:1|emits_bright_light:on|bright_light_distance:[&ShedLight]|emits_low_light:on
+  --!t:[&NewTID]|bar1_link:hp|bar2_link:npc_ac|low_light_distance:[&ShedDimLight]
+  --#emoteText|[*S:character_name] takes 1 hour to cast [&SpellName] and summons [&FamiliarName].
+  --+|[t width=100% style="text-align: center ; "][tr][td][img width=120][&TokenDisplay][/img][/td][/tr][/t]
+--X|
+--:ProcessUpdate|
+  --?"[&reentryval]" -eq ""|[ --&Target|custom_name --&BtnText|Click Here to Change Name --&Prompt|What are you naming your Familiar? --]|[ --&Target|[&reentryval] --&BtnText|Click Here to add image URL --&Prompt|UpdateToken;What Is The URL To Your Token Image? It must be an image from your Roll20 Library. --]|
+  --I. ;[&BtnText]|q;UpdateToken;[&Prompt]
+  --!a:[&FindFamiliar]|![&Target]:[&UpdateToken]
+  --?"[&Target]" -eq "custom_name"|&UpdateName;[&UpdateToken]
+  --&FromSettings|1
+  --^GetFamiliar|
+--X|
+--:ProcessReset|
+  --?"[&reentryval]" -eq ""|[ --&Target|custom_name --&Value|0 --&UpdateName|0 --]|[ --&Target|[&reentryval] --&Value|0 --]|
+  --!a:[&FindFamiliar]|![&Target]:[&Value]
+  --&FromSettings|1
+  --^GetFamiliar|
+--X|
+}}
