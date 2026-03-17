@@ -1,16 +1,17 @@
 !scriptcards {{
---/|Script Name : Tim's Summon Beast Mod for D&D 5E 2014
+  --/| ==========================================================================
+  --/|Script Name : Tim's Summon Beast Mod for D&D 5E 2014
   --/|Version     : v2.0
   --/|Author      : Timothy Beasley
   --/|API MODs    : ScriptCards
-
+  --/| ==========================================================================
   --/|Description : This Mod automates the Summon Beast spell from Tasha's Cauldron of Everything. 
   --/|              The caster selects the spell level and the environment (Air, Land, or Water). 
   --/|              The script then updates the "SummonBeast" NPC sheet with the appropriate 
   --/|              Bestial Spirit stats, scales the HP based on the slot level, and spawns 
   --/|              a single Small (1x1) token with the corresponding official beast art 
   --/|              beside the caster.
-  --/|
+  --/| ==========================================================================
   --/|Installation: This script is designed for the official D&D 5E Character Sheet (2014) and 
   --/|              requires the ScriptCards MOD.
   --/|              1. Create a character named exactly: ScriptCards_TemplateMule.
@@ -18,31 +19,23 @@
   --/|              3. Run the script once to initialize CSS styles on the TemplateMule.
   --/|              4. The script uses direct object property access to automatically add 
   --/|                 the caster to the "Controlled By" field of the summoned spirit.
-
+  --/| ==========================================================================
   --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
   --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
-  --?"[*[&TemplateMuleID]:character_name]" -eq ""|[
-    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the Find Familiar will be kept.[/td][/tr][/t]
-    --X|
-  --]|
+  --?"[*[&TemplateMuleID]:character_name]" -eq ""|[ --+|[c]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the Find Familiar will be kept.[/c] --X| --]|
   --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
   --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4public
-  --?"[&IsTemplate]" -eq "AbilityNotFound"|[
-    --+|[t width=100% border=1 style="text-align: center ; line-height: 17px; vertical-align: middle ; "][tr][td]The style information has been written, please run the Mod again.[/td][/tr][/t]
+  --?"[&IsTemplate]" -eq "AbilityNotFound"|[ --+|[c]The style information has been written, please run the Mod again.[/c]
     --&StatBlock|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; position: relative ; left: -30px ;'}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
     --!ob:StyleSaveResult:[&TemplateMuleID]:statblockv4:0|[&StatBlock]
-    --&StatBlockPublic|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 100% ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; '}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 101%; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 115% ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --&StatBlockPublic|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; '}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
     --!ob:StyleSaveResult:[&TemplateMuleID]:statblockv4public:0|[&StatBlockPublic]
     --@sc-reloadtemplates|
     --X|
   --]|
   --/| ADD THE NAME OF THE JUKEBOX SOUNDTRACK HERE
   --&SoundEffectTrack|
-  --#overridetemplate|statblockv4
-  --#sourceToken|@{selected|token_id}
-  --#Debug|0
-  --#emoteState|0
-  --#whisper|self
+  --#overridetemplate|statblockv4 --#sourceToken|@{selected|token_id} --#Debug|0 --#emoteState|0 --#whisper|self
   --&CasterName|[*S:character_name]
   --&SummonBeast|@{SummonBeast|character_id}
   --/|Token Image Variables
@@ -55,30 +48,29 @@
 --:SpellInfo|
   --#whisper|self
   --?"[*[&SummonBeast]:npc_type]" -ninc "Small Beast"|[
-  --!a:[&SummonBeast]|!npc_type:Small Beast|!npc_actype:natural armor|!strength:18|!strength_mod:4|!dexterity:11|!dexterity_mod:0|!constitution:16|!constitution_mod:3|!intelligence:4|!intelligence_mod:-3|!wisdom:14|!wisdom_mod:2|!charisma:5|!charisma_mod:-3|!initiative_bonus:0|!npc_senses:Darkvision 60 ft., Passive Perception 12|!npc_languages:Understands the languages you speak
-  --!or:[&SummonBeast]:npcaction|name:Maul|attack_flag:on|attack_type:Melee|attack_target:one target|attack_range:5 ft.|attack_tohit:[*S:spell_attack_bonus]|attack_damagetype:piercing|attack_tohitrange:|attack_range:5ft.|attack_target:one target
-  --!or:[&SummonBeast]:npcaction|name:Multiattack|attack_flag:off|description:The beast makes a number of attacks equal to half this spell’s level (rounded down).
-  --!or:[&SummonBeast]:npctrait|name:|description:
-  --!or:[&SummonBeast]:npctrait|name:|description:
-  --&obrac|{
-  --&cbrac|}
-  --&perc|%
-  --!ob:AbilID:[&SummonBeast]:Maul:y|[&perc][&obrac]SummonBeast|repeating_npcaction_$0_npc_action[&cbrac]
-  --!ob:AbilID2:[&SummonBeast]:Multiattack:y|@[&obrac]SummonBeast|wtype[&cbrac]&[&obrac]template:npcaction[&cbrac] @[&obrac]SummonBeast|npc_name_flag[&cbrac] [&obrac][&obrac]rname=Multiattack[&cbrac][&cbrac] [&obrac][&obrac]description=The beast makes a number of attacks equal to half this spell’s level (rounded down).[&cbrac][&cbrac] @[&obrac]SummonBeast|charname_output[&cbrac]
+    --!a:[&SummonBeast]|!npc_type:Small Beast|!npc_actype:natural armor|!strength:18|!strength_mod:4|!dexterity:11|!dexterity_mod:0|!constitution:16|!constitution_mod:3|!intelligence:4|!intelligence_mod:-3|!wisdom:14|!wisdom_mod:2|!charisma:5|!charisma_mod:-3|!initiative_bonus:0|!npc_senses:Darkvision 60 ft., Passive Perception 12|!npc_languages:Understands the languages you speak
+    --!or:[&SummonBeast]:npcaction|name:Maul|attack_flag:on|attack_type:Melee|attack_target:one target|attack_range:5 ft.|attack_tohit:[*S:spell_attack_bonus]|attack_damagetype:piercing|attack_tohitrange:|attack_range:5ft.|attack_target:one target
+    --!or:[&SummonBeast]:npcaction|name:Multiattack|attack_flag:off|description:The beast makes a number of attacks equal to half this spell’s level (rounded down).
+    --!or:[&SummonBeast]:npctrait|name:|description:
+    --!or:[&SummonBeast]:npctrait|name:|description:
+    --&obrac|{ --&cbrac|} --&perc|% --&pound|# --&Dash|-
+    --!ob:AbilID:[&SummonBeast]:Maul:y|[&perc][&obrac]SummonBeast|repeating_npcaction_$0_npc_action[&cbrac]
+    --!ob:AbilID2:[&SummonBeast]:Multiattack:y|@[&obrac]SummonBeast|wtype[&cbrac]&[&obrac]template:npcaction[&cbrac] @[&obrac]SummonBeast|npc_name_flag[&cbrac] [&obrac][&obrac]rname=Multiattack[&cbrac][&cbrac] [&obrac][&obrac]description=The beast makes a number of attacks equal to half this spell’s level (rounded down).[&cbrac][&cbrac] @[&obrac]SummonBeast|charname_output[&cbrac]
+    --&SkillAbil|!scriptcards [&obrac][&obrac] [&Dash][&Dash]#whisper|self [&Dash][&Dash]#overridetemplate|statblockv4 [&Dash][&Dash]#title|@[&obrac]selected|npc_name[&cbrac]'s Skills [&Dash][&Dash]+|[t width=100% style="color:black"][tr][td][sheetbutton]|Acrobatics::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_acrobatics[&cbrac][/sheetbutton][/td][td][sheetbutton]|Athletics::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_athletics[&cbrac][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Stealth::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_stealth[&cbrac][/sheetbutton][/td][td][sheetbutton]|Sleight of Hand::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_sleightofhand[&cbrac][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Perception::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_perception[&cbrac][/sheetbutton][/td][td][sheetbutton]|Insight::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_insight[&cbrac][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Investigation::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_investigation[&cbrac][/sheetbutton][/td][td][sheetbutton]|Medicine::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_medicine[&cbrac][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Persuasion::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_persuasion[&cbrac][/sheetbutton][/td][td][sheetbutton]|Deception::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_deception[&cbrac][/sheetbutton][/td][/tr][/t] [&cbrac][&cbrac]
+    --!ob:AbilID3:[&SummonBeast]:Skills:y|[&SkillAbil]
+    --&SavesAbil|!scriptcards [&obrac][&obrac] [&Dash][&Dash]#whisper|self [&Dash][&Dash]#overridetemplate|statblockv4 [&Dash][&Dash]#title|@[&obrac]selected|npc_name[&cbrac]'s Stats [&Dash][&Dash]+|[t width=100% style="color:black"][tr][td][b]Attribute[/b][/td][td][b]Save[/b][/td][/tr][tr][td][sheetbutton]|Strength::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_str[&cbrac][/sheetbutton][/td][td][sheetbutton]|Strength Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_str_save[&cbrac]][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Dexterity::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_dex[&cbrac][/sheetbutton][/td][td][sheetbutton]|Dexterity Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_dex_save[&cbrac]][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Constitution::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_con[&cbrac][/sheetbutton][/td][td][sheetbutton]|Constitution Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_con_save[&cbrac]][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Intelligence::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_int[&cbrac][/sheetbutton][/td][td][sheetbutton]|Intelligence Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_int_save[&cbrac]][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Wisdom::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_wis[&cbrac][/sheetbutton][/td][td][sheetbutton]|Wisdom Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_wis_save[&cbrac]][/sheetbutton][/td][/tr][tr][td][sheetbutton]|Charisma::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_cha[&cbrac][/sheetbutton][/td][td][sheetbutton]|Charisma Save::@[&obrac]selected|character_name[&cbrac]::[&obrac]selected|npc_cha_save[&cbrac]][/sheetbutton][/td][/tr][/t] [&cbrac][&cbrac]
+    --!ob:AbilID4:[&SummonBeast]:Saves & Attributes:y|[&SavesAbil]
+    --&TraitsAbil|!scriptcards [&obrac][&obrac] [&Dash][&Dash]#whisper|self [&Dash][&Dash]#overridetemplate|statblockv4 [&Dash][&Dash]#title|@[&obrac]SummonBeast|npc_name[&cbrac]'s Traits [&Dash][&Dash]#emotestate| [&Dash][&Dash]?"@[&obrac]SummonBeast|repeating_npctrait_$0_name[&cbrac]" [&Dash]eq ""|Skip0 [&Dash][&Dash]+|[t width=100% style="color:black"][tr][td][b][i]@[&obrac]SummonBeast|repeating_npctrait_$0_name[&cbrac][/i][/b] @[&obrac]SummonBeast|repeating_npctrait_$0_description[&cbrac][hr][/td][td width=10%][sheetbutton]|&#128220;&#65038;::@[&obrac]selected|character_name[&cbrac]::[&obrac]SummonBeast|repeating_npctrait_$0_npc_roll_output[&cbrac][/sheetbutton][/td][/tr][/t] [&Dash][&Dash]:Skip0| [&Dash][&Dash]?"@[&obrac]SummonBeast|repeating_npctrait_$1_name[&cbrac]" [&Dash]eq ""|Skip1 [&Dash][&Dash]+|[t width=100% style="color:black"][tr][td][b][i]@[&obrac]SummonBeast|repeating_npctrait_$1_name[&cbrac][/i][/b] @[&obrac]SummonBeast|repeating_npctrait_$1_description[&cbrac][hr][/td][td width=10%][sheetbutton]|&#128220;&#65038;::@[&obrac]selected|character_name[&cbrac]::[&obrac]SummonBeast|repeating_npctrait_$1_npc_roll_output[&cbrac][/sheetbutton][/td][/tr][/t] [&Dash][&Dash]:Skip1| [&Dash][&Dash]X| [&cbrac][&cbrac]
+    --!ob:AbilID5:[&SummonBeast]:Traits:y|[&TraitsAbil]
+    --!ob:AbilID6:[&SummonBeast]:Initiative:y|[&perc][&obrac]selected|npc_init[&cbrac]
   --]|
   --Rfind|[*S:character_id];Summon Beast;repeating_spell-2;spellname
   --#title|[*R:spellname]
   --?"[*R:spelllevel]" -eq "cantrip"|&spllvl;cantrip|&spllvl;[*R:spelllevel]
-  --?"[&spllvl]" -eq "3"|&lvlsuffix;rd
-  --?"[&spllvl]" -ge "4"|&lvlsuffix;th
-  --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal;
-  --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic; S|&Somatic;
-  --?"[*R:spellcomp_m]" -inc "m=1"|[ --&Components| M --&Materials|([*R:spellcomp_materials])
-  --]|
-  --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
+  --?"[&spllvl]" -eq "3"|&lvlsuffix;rd --?"[&spllvl]" -ge "4"|&lvlsuffix;th
+  --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal; --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic; S|&Somatic; --?"[*R:spellcomp_m]" -inc "m=1"|[ --&Components| M --&Materials|([*R:spellcomp_materials]) --]| --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
   --&SpellDesc|[*R:spelldescription]
   --=SpellDescCalc|[&SpellDesc(length)] - 1024
-  --/|Output
   --&SpellStats|[t width=100% style="margin-bottom: 5px ; [&BodyStyle] ; "][tr][td][i][&spllvl][&lvlsuffix]-Level [*R:spellschool][/i][/td][/tr][/t]
   --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td][b]Casting Time:[/b]&nbsp;[*R:spellcastingtime][/td][/tr]
   --&SpellStats|+[tr][td][b]Range:[/b]&nbsp;[*R:spellrange][/td][/tr]
@@ -91,11 +83,7 @@
   --&SpellStats|+[t width=110% style="[&BodyStyle] ; text-align: center ; position: relative ; left: -14px ; "][tr]
   --%ButtonLoop|2;9;1
     --?"[*S:lvl[&ButtonLoop]_slots_expended]" -ne "0"|[
-      --?"[&ButtonLoop]" -eq "2"|&ButtonSuffix;nd
-      --?"[&ButtonLoop]" -eq "3"|&ButtonSuffix;rd
-      --?"[&ButtonLoop]" -ge "4"|&ButtonSuffix;th
-      --&SpellStats|+[td [&BttnTd_CSS]][rbutton][&ButtonLoop][&ButtonSuffix]::DoSpell;[&ButtonLoop][/rbutton][/td]
-    --]|
+      --?"[&ButtonLoop]" -eq "2"|&ButtonSuffix;nd --?"[&ButtonLoop]" -eq "3"|&ButtonSuffix;rd --?"[&ButtonLoop]" -ge "4"|&ButtonSuffix;th --&SpellStats|+[td [&BttnTd_CSS]][rbutton][&ButtonLoop][&ButtonSuffix]::DoSpell;[&ButtonLoop][/rbutton][/td] --]|
   --%|
   --&SpellStats|+[/td][/tr]
   --+|[&SpellStats]
@@ -107,18 +95,13 @@
   --=SlotsExpended|[*S:lvl[$SlotLevel]_slots_expended]
   --=SlotsLeft|[$SlotsExpended] - 1
   --!a:[*S:character_id]|lvl[$SlotLevel]_slots_expended:[$SlotsLeft]
-  --?"[$SlotLevel]" -eq "3"|&lvlsuffix;rd
-  --?"[$SlotLevel]" -ge "4"|&lvlsuffix;th
+  --?"[$SlotLevel]" -eq "3"|&lvlsuffix;rd --?"[$SlotLevel]" -ge "4"|&lvlsuffix;th
   --+|[t width=100% style="margin-top: 5px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td]What type of Bestial Spirit are you summoning?[/td][/tr][tr][td [&BttnTd_CSS]][rbutton]Land::Beast;Land[/rbutton][/td][td [&BttnTd_CSS]][rbutton]Air::Beast;Air[/rbutton][/td][td [&BttnTd_CSS]][rbutton]Water::Beast;Water[/rbutton][/td][/tr][/t]
   --+|[t width=100% style="margin-top: 5px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td]A [$SlotLevel.Raw][&lvlsuffix] level spell slot has been removed.[br][&CasterName] has [$SlotsLeft.Raw] level [$SlotLevel.Raw] slots left.[/td][/tr][/t]
 --X|
 --:Beast|
-  --#whisper|
-  --#overridetemplate|statblockv4public
+  --#whisper| --#overridetemplate|statblockv4public --#emoteState|visible --#emoteBackground|#f1e5c9 --#emoteFontColor|#6e2425
   --&BeastType|[&reentryval]
-  --#emoteState|visible
-  --#emoteBackground|#f1e5c9
-  --#emoteFontColor|#6e2425
   --#emotetext|[&CasterName] Summoned a Bestial [&BeastType] Spirit.
   --c[&BeastType]|Land:&ImgToken;477291657/ohO-4QL37K2B6VmZFLu5WQ/original.png|Air:&ImgToken;478134331/nCBWw3Ojb78EHfmA3g7yIQ/original.png|Water:&ImgToken;407846110/DIhTiq0_8EKqt_67ST9GYg/original.png?1725295994
   --c[&BeastType]|Land:&hplvl;30|Air:&hplvl;20|Water:&hplvl;30
@@ -128,30 +111,13 @@
   --=AttNum|[$SlotLevel] /2 {FLOOR}
   --!a:[&SummonBeast]|!npc_name:[&BeastType] Bestial Spirit|!npc_ac:[$ACCalc]|!hp:[$hptotal]|!hp^:[$hptotal]|!npc_speed:[&Speed]|!pb:[*S:pb]|!pb_custom:[*S:pb]|!pb_type:custom
   --Rfirst|[&SummonBeast];repeating_npctrait
-  --?"[&BeastType]" -inc "Air"|[
-    --!a:[&SummonBeast]|![*R>name]:Flyby|![*R>description]:The beast doesn’t provoke opportunity attacks when it flies out of an enemy’s reach.
-  --]|[
-    --!a:[&SummonBeast]|[*R>name]:Pack Tactics|[*R>description]:The beast has advantage on an attack roll against a creature if at least one of the beast’s allies is within 5 feet of the creature and the ally isn’t incapacitated.
-  --]|
-  --Rnext|
-  --?"[&BeastType]" -inc "Water"|[
-    --!a:[&SummonBeast]|[*R>name]:Water Breathing|[*R>description]:The beast can breathe only underwater.
-  --]|[
-    --!a:[&SummonBeast]|[*R>name]:|[*R>description]:
-  --]|
-  --/|Rfind|[&SummonBeast];Maul;repeating_npcaction;name
-  --Rfirst|[&SummonBeast];repeating_npcaction
-  --!a:[&SummonBeast]|[*R>attack_damage]:1d8 + 4 + [$SlotLevel]|[*R>attack_onhit]:1d8 + 4 + [$SlotLevel]
-  --Rnext|
-    --!a:[&SummonBeast]|[*R>description]:The beast makes [$AttNum] attack per round(half the spell's level rounded down).
+  --?"[&BeastType]" -inc "Air"|[ --!a:[&SummonBeast]|![*R>name]:Flyby|![*R>description]:The beast doesn’t provoke opportunity attacks when it flies out of an enemy’s reach. --]|[ --!a:[&SummonBeast]|[*R>name]:Pack Tactics|[*R>description]:The beast has advantage on an attack roll against a creature if at least one of the beast’s allies is within 5 feet of the creature and the ally isn’t incapacitated. --]|
+  --Rnext| --?"[&BeastType]" -inc "Water"|[ --!a:[&SummonBeast]|[*R>name]:Water Breathing|[*R>description]:The beast can breathe only underwater. --]|[ --!a:[&SummonBeast]|[*R>name]:|[*R>description]: --]|
+  --Rfirst|[&SummonBeast];repeating_npcaction --!a:[&SummonBeast]|[*R>attack_damage]:1d8 + 4 + [$SlotLevel]|[*R>attack_onhit]:1d8 + 4 + [$SlotLevel]
+  --Rnext| --!a:[&SummonBeast]|[*R>description]:The beast makes [$AttNum] attack per round(half the spell's level rounded down).
   --&ExistingControl|[*[&SummonBeast]:controlledby]
-  --?"[&ExistingControl]" -eq ""|[
-    --!c:[&SummonBeast]|controlledby:[&SendingPlayerID]
-  --]|
-  --?"[&ExistingControl]" -ninc "[&SendingPlayerID]" -and "[&ExistingControl]" -ne ""|[
-    --&NewControl|[&ExistingControl],[&SendingPlayerID]
-    --!c:[&SummonBeast]|controlledby:[&NewControl]
-  --]|
+  --?"[&ExistingControl]" -eq ""|[ --!c:[&SummonBeast]|controlledby:[&SendingPlayerID] --]| --?"[&ExistingControl]" -ninc "[&SendingPlayerID]" -and "[&ExistingControl]" -ne ""|[ --&NewControl|[&ExistingControl],[&SendingPlayerID] --!c:[&SummonBeast]|controlledby:[&NewControl] --]|
+  --?"[&SoundEffectTrack]" -ne ""|[ --a|[&SoundEffectTrack] --]|
   --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-smoke
   --!ot:NewTID|name:"[&BeastType] Beastial Spirit"|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:70|height:70|imgsrc:"https://files.d20.io/images/[&ImgToken]"|represents:"[&SummonBeast]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:60|night_vision_effect:Nocturnal|order:toFront|showplayers_name:1
   --!t:[&NewTID]|bar1_link:hp|bar2_link:npc_ac

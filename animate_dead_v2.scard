@@ -1,15 +1,16 @@
-!scriptcards {{ 
---/|Script Name : Tim's Animate Dead Mod for D&D 5E 2014
+!scriptcards {{
+  --/| ==========================================================================
+  --/|Script Name : Tim's Animate Dead Mod for D&D 5E 2014
   --/|Version     : v2.0
   --/|Author      : Timothy Beasley
   --/|API MODs    : ScriptCards
-
+  --/| ==========================================================================
   --/|Description : This Mod automates the Animate Dead spell with a dynamic upscaling system 
   --/|              for 3rd through 9th level spell slots. The script calculates the correct 
   --/|              number of summons (up to 13), updates the "AnimateDead" NPC sheet with 
   --/|              the chosen undead's stats and actions via internal arrays, and spawns 
   --/|              the tokens in a circular formation around the caster.
-  --/|
+  --/| ==========================================================================
   --/|Installation: This script is designed for the official D&D 5E Character Sheet (2014) and 
   --/|              requires the ScriptCards MOD via a Pro account.
   --/|              1. Create a character named exactly: ScriptCards_TemplateMule.
@@ -17,7 +18,7 @@
   --/|              3. Run the script once to initialize CSS styles on the TemplateMule.
   --/|              4. Ensure the caster has "Animate Dead" on their sheet; the script 
   --/|                 pulls spell data from the repeating spell section.
-
+  --/| ==========================================================================
   --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
   --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
   --?"[*[&TemplateMuleID]:character_name]" -eq ""|[ --+|[c]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the Find Familiar will be kept.[/c] --X| --]|
@@ -61,8 +62,10 @@
     --!ob:AbilID6:[&AnimateDead]:Initiative:y|[&perc][&obrac]selected|npc_init[&cbrac]
   --]|
   --Rfind|[*S:character_id];Animate Dead;repeating_spell-3;spellname
-  --#title|[*R:spellname]
-  --?"[*R:spelllevel]" -eq "cantrip"|&spllvl;cantrip|&spllvl;[*R:spelllevel]
+  --&SpellName|[*R:spellname]
+  --&SpellLevel|[*R:spelllevel]
+  --#title|[&SpellName]
+  --?"[&SpellLevel]" -eq "cantrip"|&spllvl;cantrip|&spllvl;[&SpellLevel]
   --?"[&spllvl]" -eq "3"|&lvlsuffix;rd
   --?"[&spllvl]" -ge "4"|&lvlsuffix;th
   --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal; --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic;S|&Somatic; --?"[*R:spellcomp_m]" -inc "m=1"|[ --&Components|M --&Materials|([*R:spellcomp_materials]) --]|
@@ -105,7 +108,7 @@
   --&UndeadType|[&reentryval]
   --&UndeadArray|Data[&UndeadType]
   --?"[$HowManyDead.Total]" -gt "1"|&Plural;s|&Plural;
-  --#emotetext|[&CasterName] Summoned [$HowManyDead.Raw] [&UndeadType][&Plural].
+  --#emotetext|[&CasterName] Casts [&SpellName] at [&SpellLevel][&lvlsuffix] Level and Summons [$HowManyDead.Raw] [&UndeadType][&Plural].
   --~|array;define;DataZombie;8;;;22;3d8 + 9;13;6;16;3;6;5;20 ft.;-2;;; poison;poisoned;darkvision 60 ft., passive Perception 8; 18:Night_Vision_Dist ;Medium undead, neutral evil;50;1/4; Undead Fortitude;If damage reduces the zombie to 0 hit points, it must make a Constitution saving throw with a DC of 5 + the damage taken, unless the damage is radiant or from a critical hit. On a success, the zombie drops to 1 hit point instead.;;;;;;; Slam;true;on;Melee;5 ft.;one target;3;1d6 + 1;bludgeoning;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;374874811/CkeFPFdmE3dnpwtFjfvGZg/original.png?1704935724;; understands all languages it spoke in life but can't speak
   --~|array;define;DataSkeleton;13;armor scraps;;13;2d8 + 4;10;14;15;6;8;5;30 ft.;2;;bludgeoning; poison;exhaustion, poisoned;darkvision 60 ft., passive Perception 9; 18:Night_Vision_Dist ;Medium undead, lawful evil;50;1/4; ;;;;;;;; Shortsword;true;on;Melee;5 ft.;one target;4;1d6 + 2;piercing;;;; Shortbow;true;on;Ranged;80/320 ft.;one target;4;1d6 + 2;piercing;;;; ;;0;Melee;;;0;;;;;; ;;0;Melee;;;0;;;;;; ;0;;0;;0;;0;374874951/YcobSDMcdzaefYw0I5rTdw/original.png?1704935780;; understands all languages it spoke in life but can't speak
   --!a:[&AnimateDead]|!npc_name:[&UndeadType]|!npc_ac:[@[&UndeadArray](0)]|!npc_actype:[@[&UndeadArray](1)]|!hp:[@[&UndeadArray](2)]|!hp^:[@[&UndeadArray](3)]|!npc_hpformula:[@[&UndeadArray](4)]|!strength:[@[&UndeadArray](5)]|!strength_base:[@[&UndeadArray](5)]|!dexterity_base:[@[&UndeadArray](6)]|!dexterity:[@[&UndeadArray](6)]|!constitution_base:[@[&UndeadArray](7)]|!constitution:[@[&UndeadArray](7)]|!intelligence_base:[@[&UndeadArray](8)]|!intelligence:[@[&UndeadArray](8)]|!wisdom_base:[@[&UndeadArray](9)]|!wisdom:[@[&UndeadArray](9)]|!charisma_base:[@[&UndeadArray](10)]|!charisma:[@[&UndeadArray](10)]|!npc_speed:[@[&UndeadArray](11)]|!initiative_bonus:[@[&UndeadArray](12)]|!npc_resistances:[@[&UndeadArray](13)]|!npc_vulnerabilities:[@[&UndeadArray](14)]|!npc_immunities:[@[&UndeadArray](15)]|!npc_condition_immunities:[@[&UndeadArray](16)]|!npc_senses:[@[&UndeadArray](17)]|!npc_type:[@[&UndeadArray](19)] [&Realm], unaligned|!npc_xp:[@[&UndeadArray](20)]|!npc_challenge:[@[&UndeadArray](21)]|!npc_deception_base:[@[&UndeadArray](78)]|!npc_deception_flag:[@[&UndeadArray](79)]|!npc_insight_base:[@[&UndeadArray](80)]|!npc_insight_flag:[@[&UndeadArray](81)]|!npc_stealth_base:[@[&UndeadArray](82)]|!npc_stealth_flag:[@[&UndeadArray](83)]|!npc_perception_base:[@[&UndeadArray](84)]|!npc_perception_flag:[@[&UndeadArray](85)]|!npc_languages:[@[&UndeadArray](88)]
