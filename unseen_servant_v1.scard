@@ -1,0 +1,82 @@
+!scriptcards {{
+  --/| ==========================================================================
+  --/| Script Name : Tim's Unseen Servant Mod for D&D 5E 2014
+  --/| Version     : v1.0
+  --/| Author      : Timothy Beasley
+  --/| API Mods    : ScriptCards
+  --/| ==========================================================================
+  --/| Automates Unseen Servant. Summons an Unseen Servant Token. 
+  --/| Transforms an NPC sheet with full stats, traits, and senses.
+  --/| SETUP INSTRUCTIONS:
+  --/| 1. Create a character named: ScriptCards_TemplateMule (for CSS).
+  --/| 2. Run the script once to initialize the templates.
+  --/| 4. Create a macro on the caster's sheet and enable "Show as Token Action"
+  --/| 5. Select the caster's token and launch the macro to begin.
+  --/| ==========================================================================
+  --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
+  --?"[*[&TemplateMuleID]:character_name]" -eq ""|[ --+|[c]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the Find Familiar will be kept.[/c] --X| --]|
+  --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
+  --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4public
+  --?"[&IsTemplate]" -eq "AbilityNotFound"|[ --+|[c]The style information has been written, please run the Mod again.[/c]
+    --&StatBlock|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; position: relative ; left: -30px ;'}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --!ob:StyleSaveResult:[&TemplateMuleID]:statblockv4:0|[&StatBlock]
+    --&StatBlockPublic|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; '}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --!ob:StyleSaveResult:[&TemplateMuleID]:statblockv4public:0|[&StatBlockPublic]
+    --@sc-reloadtemplates|
+    --X|
+  --]|
+  --/| ADD THE NAME OF THE JUKEBOX SOUNDTRACK HERE
+  --&SoundEffectTrack|
+  --#overridetemplate|statblockv4 --#sourceToken|@{selected|token_id} --#Debug|0 --#emoteState|0 --#whisper|self
+  --&CasterName|[*S:character_name]
+  --/|Token Image Variables
+  --&BttnTd_CSS|style="align-self: center; background-color: transparent; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
+  --&BodyStyle|font-size: 12px ; letter-spacing: 0.01em ; line-height: 18px
+  -->SpellInfo|
+--X|
+--:SpellInfo|
+  --#whisper|self
+  --Rfind|[*S:character_id];Unseen Servant;repeating_spell-1;spellname
+  --#title|[*R:spellname]
+  --?"[*R:spelllevel]" -eq "cantrip"|&spllvl;cantrip|&spllvl;[*R:spelllevel]
+  --?"[&spllvl]" -eq "3"|&lvlsuffix;rd --?"[&spllvl]" -ge "4"|&lvlsuffix;th
+  --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal; --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic; S|&Somatic; --?"[*R:spellcomp_m]" -inc "m=1"|[ --&Components| M --&Materials|([*R:spellcomp_materials]) --]| --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
+  --&SpellDesc|[*R:spelldescription]
+  --&SpellStats|[t width=100% style="margin-bottom: 5px ; [&BodyStyle] ; "][tr][td][i][&spllvl][&lvlsuffix]-Level [*R:spellschool][/i][/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td][b]Casting Time:[/b]&nbsp;[*R:spellcastingtime][/td][/tr]
+  --&SpellStats|+[tr][td][b]Range:[/b]&nbsp;[*R:spellrange][/td][/tr]
+  --&SpellStats|+[tr][td][b]Components:[/b]&nbsp;[&Verbal][&Somatic][&Components] [&Materials][/td][/tr]
+  --&SpellStats|+[tr][td][b]Duration:[/b]&nbsp;[&Concentration]&nbsp;[*R:spellduration][/td][/tr]
+  --&SpellStats|+[tr][td][b]Classes:[/b]&nbsp;Wizard[/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td style="margin-bottom: 5px ; "][&SpellDesc][/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; text-align: center ; font-weight: bold ; margin-top: 5px ; "][tr][td]At what level is the spell being cast?[/td][/tr][/t]
+  --&SpellStats|+[t width=110% style="[&BodyStyle] ; text-align: center ; position: relative ; left: -14px ; "][tr]
+  --%ButtonLoop|1;9;1
+    --?"[*S:lvl[&ButtonLoop]_slots_expended]" -ne "0"|[
+      --?"[&ButtonLoop]" -eq "1"|&ButtonSuffix;st --?"[&ButtonLoop]" -eq "2"|&ButtonSuffix;nd --?"[&ButtonLoop]" -eq "3"|&ButtonSuffix;rd --?"[&ButtonLoop]" -ge "4"|&ButtonSuffix;th --&SpellStats|+[td [&BttnTd_CSS]][rbutton][&ButtonLoop][&ButtonSuffix]::DoSpell;[&ButtonLoop][/rbutton][/td] --]|
+  --%|
+  --&SpellStats|+[/td][/tr]
+  --+|[&SpellStats]
+--X|
+--:DoSpell|
+  --#whisper|self
+  --=SlotLevel|[&reentryval]
+  --=SlotsTotal|0
+  --=SlotsExpended|[*S:lvl[$SlotLevel]_slots_expended]
+  --=SlotsLeft|[$SlotsExpended] - 1
+  --!a:[*S:character_id]|lvl[$SlotLevel]_slots_expended:[$SlotsLeft]
+  --?"[$SlotLevel]" -eq "1"|&lvlsuffix;st --?"[$SlotLevel]" -eq "2"|&lvlsuffix;nd --?"[$SlotLevel]" -eq "3"|&lvlsuffix;rd --?"[$SlotLevel]" -ge "4"|&lvlsuffix;th
+  --+|[t width=100% style="margin-top: 5px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td]A [$SlotLevel.Raw][&lvlsuffix] level spell slot has been removed.[br][&CasterName] has [$SlotsLeft.Raw] level [$SlotLevel.Raw] slots left.[/td][/tr][/t]
+  -->Summon|
+--X|
+--:Summon|
+  --#whisper| --#overridetemplate|statblockv4public --#emoteState|visible --#emoteBackground|#f1e5c9 --#emoteFontColor|#6e2425
+  --#emotetext|[&CasterName] Summoned an Unseen Servant.
+  --&TruncName|[&CasterName(before, )]
+  --?"[&TruncName(-1,1)]" -eqi "s"|&Owner;'|&Owner;'s
+  --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-smoke
+  --!ot:NewTID|name:"[&TruncName][&Owner] Unseen Servant"|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:70|height:70|imgsrc:"https://files.d20.io/images/479845815/RRKzuiaLQZJQSFA4Jc0vDQ/original.webp"|showname:1|order:toFront|showplayers_name:1
+  --!t:[&NewTID]|bar1_link:hp|bar2_link:npc_ac
+  --+|[t width=100% style="margin-top: 5px ; margin-bottom: -15px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td][img width=100px]https://files.d20.io/images/479845815/RRKzuiaLQZJQSFA4Jc0vDQ/original.webp[/img][/td][/tr][/t]
+--X|
+}}
