@@ -1,24 +1,28 @@
 !script {{
-  --/|Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
-  --/|Version     : 3.5.4
-  --/|Author      : Timothy Beasley
+  --/| ==========================================================================
+  --/| Script Name : Tim's SpellBook Mod (Scriptcards) for D&D 5E 2014
+  --/| Version     : 3.5.5
+  --/| Author      : Timothy Beasley
+  --/| API Mods    : ScriptCards
+  --/| ==========================================================================
+  --/| Provides an ultra-fast, interactive HUD for managing and casting spells.
+  --/| FEATURES:
+  --/| * Performance: Integrated Cache (Reset via Gear icon or UI toggles).
+  --/| * Smart UI: Filter Prepared/All Spells; unique Icons for every Subclass.
+  --/| * Multiclassing: Dynamic Stat selection and dedicated Warlock Pact headers.
+  --/| * Interactivity: D20 Attack buttons, Prep toggles, and Hover Tooltips.
+  --/| * Theming: 16 Built-in Themes with full CSS editing via Settings gear.
+  --/| * Spell Mule: Stores custom hyphenated macros on a separate character sheet.
+  --/| SETUP INSTRUCTIONS:
+  --/| 1. Create a character named: ScriptCards_TemplateMule (for CSS & Themes).
+  --/| 2. (Optional) Define a "Spell Mule" sheet name at the top of the script.
+  --/| 3. Create an Ability on the caster's sheet and enable "Show as Token Action."
+  --/| 4. Select the caster's token and click the button; the first run will 
+  --/|    automatically initialize your Template Mule and theme data.
+  --/| NOTE: Reset Cache in settings after adding new spells or custom macros.
+  --/| ==========================================================================
 
-  --/|Description : This script displays the PC's Spellbook in chat that has buttons for all spells available to selected character.
-  --/|              If the character has an attack roll a d20 button will appear beside the spell name which will roll the attack from the character sheet.
-  --/|              There is a round button which indicates if the spell is prepared, clicking the button will prepare or unprepare the spell(class dependant).
-  --/|              There is a button shaped like an open book, which when clicked will display the full description of the spell.
-  --/|              There is a settings button shaped like a gear, from the settings menu you can choose a theme and/or change almost every aspect of the spell book template
-  --/|              Use the plus or minus buttons to add or remove spell slots.
-  --/|              If there is any confusion about what something does, all buttons and items on the spellbook have tooltips, just mouseover them.
-  --/|              If the character has access to their entire class spell list then they will start with non-prepared spells hidden.
-  --/|              The player can hide or show non-prepared spells by clicking on the arrow above the blue prepare button in the cantrip header.
-  --/|              If you want to use your own spell macros, this script will detect if they exist and run them instead. Just make sure they are
-  --/|              named exactly as the spell only instead of spaces, use a hyphen -
-  --/|
-  --/|Installation: This script is for the 2014 edition of the official D&D 5E Character Sheet by Roll20 and requires the
-  --/|              installation of the ScriptCards API MOD using a pro account with API access. 
-  --/|              This script also requires the creation of a template mule named ScriptCards_TemplateMule (exactly as written here).
-
+  --&SpellMule|     --/| IF YOU USE A SPELL MULE, TYPE THE NAME HERE TO USE IT INSTEAD OF CASTER SHEETS
   --/| CHECK FOR EXISTANCE OF ScriptCards_TemplateMule
   --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
   --?"[*[&TemplateMuleID]:character_name]" -eq ""|[
@@ -243,10 +247,10 @@
     --&SpellSchool|[:lvl[&SpellLevel]Hash("[&SpellName]-spellschool")]
     --?"[&Innate]" -eq "undefined"|&Innate;
     --~MacroName|string;replaceall; ;-;[&SpellName]
-    --~MacroButton|system;findability;[&CharName_Attr];[&MacroName]
+    --?"[&SpellMule]" -ne ""|[ --~MacroButton|system;findability;[&SpellMule];[&MacroName] --&CasterID|[&SpellMule] --]|[ --~MacroButton|system;findability;[&CharName_Attr];[&MacroName] --&CasterID|[&CharName_Attr] --]|
     --?"[&MacroButton]" -ne "AbilityNotFound"|[
-      --&SpellRoll|[button][#[&IconColor_Attr]][&RollImage][/#]::~[&CharName_Attr]|[&MacroButton][/button]
-      --&SpellDetail|[button][&BookImage]::~[&CharName_Attr]|[&MacroButton][/button]
+      --&SpellRoll|[button][#[&IconColor_Attr]][&RollImage][/#]::~[&CasterID]|[&MacroButton][/button]
+      --&SpellDetail|[button][&BookImage]::~[&CasterID]|[&MacroButton][/button]
     --]|[
       --?"[&SpellOutputType]" -inc "ATTACK"|[
         --&SpellRoll|[sheetbutton][#[&IconColor_Attr]][&RollImage][/#]::[&CharName_Attr]::repeating_spell-[&SpellLevel]_$[&SpellIndex]_spell[/sheetbutton]
