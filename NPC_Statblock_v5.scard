@@ -134,7 +134,7 @@
     --Rfind|[&CharID];[&ActionLoop];repeating_npc[&Action];name
     --&CleanedText|
     --?"[&Action]" -eq "reaction" -or "[&Action]" -eq "trait"|&ButtonURL;[*R>npc_roll_output]|&ButtonURL;[*R>npc_action]
-    --?"[&Action]" -eq "trait"|[ --&ButtonSize|14 --&ButtonEmote|&#128220;&#65038; --]|[ --&ButtonSize|16 --&ButtonEmote|&#x2694; --]|
+    --?"[&Action]" -eq "trait"|[ --&ButtonSize|14 --&ButtonEmote|&#128220;&#65038; --]|[ --&ButtonSize|18 --&ButtonEmote|&#x2694; --]|
     --&Name|[*R:name] --&Description|[*R:description] --~Description|string;replaceall;,;;[&Description] --&AttackType|[*R:attack_type]
     --?"[&AttackType]" -inc "ranged"|&RangeType;range|&RangeType;reach
     --&AttDesc| --&ToHitText|
@@ -171,7 +171,7 @@
       --?"[&Innate]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Innate] --]|
       --&ToolTip|+&nbsp;&#x2666;&nbsp;[&CleanedText]
       --?"[&SpellHigherLevels]" -ne "undefined" -and "[&SpellHigherLevels]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;AT HIGHER LEVELS: [&SpellHigherLevels] --]|
-      --?"[*R:spelloutput]" -inc "ATTACK"|[ --&CastSpell|[td title="Cast Spell" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::16]&#x2694;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_spell[/sheetbutton][/td] --&SpellDesc|[td title="Description" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::14]&#128220;&#65038;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_output[/sheetbutton][/td] --]|
+      --?"[*R:spelloutput]" -inc "ATTACK"|[ --&CastSpell|[td title="Cast Spell" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::18]&#x2694;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_spell[/sheetbutton][/td] --&SpellDesc|[td title="Description" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::14]&#128220;&#65038;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_output[/sheetbutton][/td] --]|
       --?"[*R:spelloutput]" -inc "SPELLCARD"|[ --&SpellDesc|[td title="Description" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::14]&#128220;&#65038;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_output[/sheetbutton][/td] --]|
       --+|[t width=100%][tr][td title="[&ToolTip]" style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][#000][b][i][*R:spellname].[/i][/b] [&SpellDescription][/#][/td][&CastSpell][&SpellDesc][/tr][/t]
       --&SpellIndex|[= [&SpellIndex] + 1 ]
