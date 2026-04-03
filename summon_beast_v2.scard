@@ -113,13 +113,13 @@
   --Rfirst|[&SummonBeast];repeating_npctrait
   --?"[&BeastType]" -inc "Air"|[ --!a:[&SummonBeast]|![*R>name]:Flyby|![*R>description]:The beast doesn’t provoke opportunity attacks when it flies out of an enemy’s reach. --]|[ --!a:[&SummonBeast]|[*R>name]:Pack Tactics|[*R>description]:The beast has advantage on an attack roll against a creature if at least one of the beast’s allies is within 5 feet of the creature and the ally isn’t incapacitated. --]|
   --Rnext| --?"[&BeastType]" -inc "Water"|[ --!a:[&SummonBeast]|[*R>name]:Water Breathing|[*R>description]:The beast can breathe only underwater. --]|[ --!a:[&SummonBeast]|[*R>name]:|[*R>description]: --]|
-  --Rfirst|[&SummonBeast];repeating_npcaction --!a:[&SummonBeast]|[*R>attack_damage]:1d8 + 4 + [$SlotLevel]|[*R>attack_onhit]:1d8 + 4 + [$SlotLevel]
-  --Rnext| --!a:[&SummonBeast]|[*R>description]:The beast makes [$AttNum] attack per round(half the spell's level rounded down).
+  --Rfirst|[&SummonBeast];repeating_npcaction --!a:[&SummonBeast]|[*R>attack_damage]:1d8 + 4 + [$SlotLevel]|[*R>attack_onhit]:1d8 + 4 + [$SlotLevel]|[*R>attack_tohit]:[*S:spell_attack_bonus]
+  --Rnext| --!a:[&SummonBeast]|[*R>description]:The beast makes [$AttNum] attacks per round(half the spell's level rounded down).
   --&ExistingControl|[*[&SummonBeast]:controlledby]
   --?"[&ExistingControl]" -eq ""|[ --!c:[&SummonBeast]|controlledby:[&SendingPlayerID] --]| --?"[&ExistingControl]" -ninc "[&SendingPlayerID]" -and "[&ExistingControl]" -ne ""|[ --&NewControl|[&ExistingControl],[&SendingPlayerID] --!c:[&SummonBeast]|controlledby:[&NewControl] --]|
   --?"[&SoundEffectTrack]" -ne ""|[ --a|[&SoundEffectTrack] --]|
   --vpoint|[=[*S:t-left]+70] [*S:t-top] explode-smoke
-  --!ot:NewTID|name:"[&BeastType] Beastial Spirit"|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:70|height:70|imgsrc:"https://files.d20.io/images/[&ImgToken]"|represents:"[&SummonBeast]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:60|night_vision_effect:Nocturnal|order:toFront|showplayers_name:1
+  --!ot:NewTID|name:"[&BeastType] Bestial Spirit"|left:[=[*S:t-left]+70]|top:[*S:t-top]|width:70|height:70|imgsrc:"https://files.d20.io/images/[&ImgToken]"|represents:"[&SummonBeast]"|has_bright_light_vision:1|showname:1|has_night_vision:1|night_vision_distance:60|night_vision_effect:Nocturnal|order:toFront|showplayers_name:1
   --!t:[&NewTID]|bar1_link:hp|bar2_link:npc_ac
   --+|[t width=100% style="margin-top: 5px ; margin-bottom: -15px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td][img width=100px]https://files.d20.io/images/[&ImgToken][/img][/td][/tr][/t]
 --X|

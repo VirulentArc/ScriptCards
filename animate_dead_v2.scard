@@ -62,15 +62,12 @@
     --!ob:AbilID6:[&AnimateDead]:Initiative:y|[&perc][&obrac]selected|npc_init[&cbrac]
   --]|
   --Rfind|[*S:character_id];Animate Dead;repeating_spell-3;spellname
-  --&SpellName|[*R:spellname]
-  --&SpellLevel|[*R:spelllevel]
+  --&SpellName|[*R:spellname] --&SpellLevel|[*R:spelllevel] --&SpellDesc|[*R:spelldescription]
   --#title|[&SpellName]
   --?"[&SpellLevel]" -eq "cantrip"|&spllvl;cantrip|&spllvl;[&SpellLevel]
-  --?"[&spllvl]" -eq "3"|&lvlsuffix;rd
-  --?"[&spllvl]" -ge "4"|&lvlsuffix;th
+  --?"[&spllvl]" -eq "3"|&lvlsuffix;rd --?"[&spllvl]" -ge "4"|&lvlsuffix;th
   --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal; --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic;S|&Somatic; --?"[*R:spellcomp_m]" -inc "m=1"|[ --&Components|M --&Materials|([*R:spellcomp_materials]) --]|
-  --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
-  --&SpellDesc|[*R:spelldescription]
+  --?"[*R:spellconcentration]" -inc "1"|&Concentration;Concentration,
   --=SpellDescCalc|[&SpellDesc(length)] - 1024
   --&SpellStats|[t width=100% style="margin-bottom: 5px ; [&BodyStyle] ; "][tr][td][i][&spllvl][&lvlsuffix]-Level [*R:spellschool][/i][/td][/tr][/t]
   --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td][b]Casting Time:[/b]&nbsp;[*R:spellcastingtime][/td][/tr]
@@ -105,13 +102,12 @@
 --X|
 --:Undead|
   --#whisper| --#overridetemplate|statblockv4public --#emoteState|visible --#emoteBackground|#f1e5c9 --#emoteFontColor|#6e2425
-  --&UndeadType|[&reentryval]
-  --&UndeadArray|Data[&UndeadType]
+  --&UndeadType|[&reentryval] --&UndeadArray|Data[&UndeadType]
   --?"[$HowManyDead.Total]" -gt "1"|&Plural;s|&Plural;
   --#emotetext|[&CasterName] Casts [&SpellName] at [&SpellLevel][&lvlsuffix] Level and Summons [$HowManyDead.Raw] [&UndeadType][&Plural].
   --~|array;define;DataZombie;8;;;22;3d8 + 9;13;6;16;3;6;5;20 ft.;-2;;; poison;poisoned;darkvision 60 ft., passive Perception 8; 18:Night_Vision_Dist ;Medium undead, neutral evil;50;1/4; Undead Fortitude;If damage reduces the zombie to 0 hit points, it must make a Constitution saving throw with a DC of 5 + the damage taken, unless the damage is radiant or from a critical hit. On a success, the zombie drops to 1 hit point instead.;;;;;;; Slam;true;on;Melee;5 ft.;one target;3;1d6 + 1;bludgeoning;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;false;0;Melee;;;0;;;;;; ;0;;0;;0;;0;374874811/CkeFPFdmE3dnpwtFjfvGZg/original.png?1704935724;; understands all languages it spoke in life but can't speak
   --~|array;define;DataSkeleton;13;armor scraps;;13;2d8 + 4;10;14;15;6;8;5;30 ft.;2;;bludgeoning; poison;exhaustion, poisoned;darkvision 60 ft., passive Perception 9; 18:Night_Vision_Dist ;Medium undead, lawful evil;50;1/4; ;;;;;;;; Shortsword;true;on;Melee;5 ft.;one target;4;1d6 + 2;piercing;;;; Shortbow;true;on;Ranged;80/320 ft.;one target;4;1d6 + 2;piercing;;;; ;;0;Melee;;;0;;;;;; ;;0;Melee;;;0;;;;;; ;0;;0;;0;;0;374874951/YcobSDMcdzaefYw0I5rTdw/original.png?1704935780;; understands all languages it spoke in life but can't speak
-  --!a:[&AnimateDead]|!npc_name:[&UndeadType]|!npc_ac:[@[&UndeadArray](0)]|!npc_actype:[@[&UndeadArray](1)]|!hp:[@[&UndeadArray](2)]|!hp^:[@[&UndeadArray](3)]|!npc_hpformula:[@[&UndeadArray](4)]|!strength:[@[&UndeadArray](5)]|!strength_base:[@[&UndeadArray](5)]|!dexterity_base:[@[&UndeadArray](6)]|!dexterity:[@[&UndeadArray](6)]|!constitution_base:[@[&UndeadArray](7)]|!constitution:[@[&UndeadArray](7)]|!intelligence_base:[@[&UndeadArray](8)]|!intelligence:[@[&UndeadArray](8)]|!wisdom_base:[@[&UndeadArray](9)]|!wisdom:[@[&UndeadArray](9)]|!charisma_base:[@[&UndeadArray](10)]|!charisma:[@[&UndeadArray](10)]|!npc_speed:[@[&UndeadArray](11)]|!initiative_bonus:[@[&UndeadArray](12)]|!npc_resistances:[@[&UndeadArray](13)]|!npc_vulnerabilities:[@[&UndeadArray](14)]|!npc_immunities:[@[&UndeadArray](15)]|!npc_condition_immunities:[@[&UndeadArray](16)]|!npc_senses:[@[&UndeadArray](17)]|!npc_type:[@[&UndeadArray](19)] [&Realm], unaligned|!npc_xp:[@[&UndeadArray](20)]|!npc_challenge:[@[&UndeadArray](21)]|!npc_deception_base:[@[&UndeadArray](78)]|!npc_deception_flag:[@[&UndeadArray](79)]|!npc_insight_base:[@[&UndeadArray](80)]|!npc_insight_flag:[@[&UndeadArray](81)]|!npc_stealth_base:[@[&UndeadArray](82)]|!npc_stealth_flag:[@[&UndeadArray](83)]|!npc_perception_base:[@[&UndeadArray](84)]|!npc_perception_flag:[@[&UndeadArray](85)]|!npc_languages:[@[&UndeadArray](88)]
+  --!a:[&AnimateDead]|!npc_name:[&UndeadType]|!npc_ac:[@[&UndeadArray](0)]|!npc_actype:[@[&UndeadArray](1)]|!hp:[@[&UndeadArray](3)]|!hp^:[@[&UndeadArray](3)]|!npc_hpformula:[@[&UndeadArray](4)]|!strength:[@[&UndeadArray](5)]|!strength_base:[@[&UndeadArray](5)]|!dexterity_base:[@[&UndeadArray](6)]|!dexterity:[@[&UndeadArray](6)]|!constitution_base:[@[&UndeadArray](7)]|!constitution:[@[&UndeadArray](7)]|!intelligence_base:[@[&UndeadArray](8)]|!intelligence:[@[&UndeadArray](8)]|!wisdom_base:[@[&UndeadArray](9)]|!wisdom:[@[&UndeadArray](9)]|!charisma_base:[@[&UndeadArray](10)]|!charisma:[@[&UndeadArray](10)]|!npc_speed:[@[&UndeadArray](11)]|!initiative_bonus:[@[&UndeadArray](12)]|!npc_resistances:[@[&UndeadArray](13)]|!npc_vulnerabilities:[@[&UndeadArray](14)]|!npc_immunities:[@[&UndeadArray](15)]|!npc_condition_immunities:[@[&UndeadArray](16)]|!npc_senses:[@[&UndeadArray](17)]|!npc_type:[@[&UndeadArray](19)]|!npc_xp:[@[&UndeadArray](20)]|!npc_challenge:[@[&UndeadArray](21)]|!npc_deception_base:[@[&UndeadArray](78)]|!npc_deception_flag:[@[&UndeadArray](79)]|!npc_insight_base:[@[&UndeadArray](80)]|!npc_insight_flag:[@[&UndeadArray](81)]|!npc_stealth_base:[@[&UndeadArray](82)]|!npc_stealth_flag:[@[&UndeadArray](83)]|!npc_perception_base:[@[&UndeadArray](84)]|!npc_perception_flag:[@[&UndeadArray](85)]|!npc_languages:[@[&UndeadArray](88)]
   --Rfirst|[&AnimateDead];repeating_npctrait
   --!a:[&AnimateDead]|[*R>name]:[@[&UndeadArray](22)]|[*R>description]:[@[&UndeadArray](23)]
   --~|array;abilities;ability_list;[&AnimateDead]
@@ -138,5 +134,4 @@
   --%|
   --+|[t width=100% style="margin-top: 5px ; margin-bottom: -15px ; [&BodyStyle] ; font-weight: bold ; text-align: center ; "][tr][td][img width=100px]https://files.d20.io/images/[@[&UndeadArray](86)][/img][/td][/tr][/t]
 --X|
---+|[&ExistingControl]
 }}
