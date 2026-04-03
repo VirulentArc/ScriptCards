@@ -127,23 +127,20 @@
   --&ActionName|[&ActionName(touppercase)]
   --&ActionOutput|[t width=100% style="line-height: 1.1em;"]
   --?"[&Action]" -ne "trait"|[ --&ActionOutput|+[tr][td style="line-height:4px;"]&nbsp;[/td][/tr][tr][td colspan=100% [&HRStyle]][&ActionName][/td][/tr][tr][td style="line-height:4px;"]&nbsp;[/td][/tr] --]|
-  --?"[&Action]" -eq "action-l"|[ --&LegDesc|[*S:npc_legendary_actions_desc] --&ActionOutput|+[tr][td colspan=100% style="font-size: 12px ; color: #000 ; "][&LegDesc][/td][/tr] --]|
-  --?"[&Action]" -eq "action-m"|[ --&MythDesc|[*S:npc_mythic_actions_desc] --&ActionOutput|+[tr][td colspan=100% style="font-size: 12px ; color: #000 ; "][&MythDesc][/td][/tr] --]|
+  --?"[&Action]" -eq "action-l"|[ --&LegDesc|[*S:npc_legendary_actions_desc] --&CleanedText|[&LegDesc] -->CleanText| --&ActionOutput|+[tr][td colspan=100% style="font-size: 12px ; color: #000 ; "][&CleanedText][/td][/tr] --]|
+  --?"[&Action]" -eq "action-m"|[ --&MythDesc|[*S:npc_mythic_actions_desc] --&CleanedText|[&MythDesc] -->CleanText| --&ActionOutput|+[tr][td colspan=100% style="font-size: 12px ; color: #000 ; "][&CleanedText][/td][/tr] --]|
   --~|array;fromrepeatingsection;actionarray;[&CharID];repeating_npc[&Action];name
   --%ActionLoop|foreach;actionarray
     --Rfind|[&CharID];[&ActionLoop];repeating_npc[&Action];name
+    --&CleanedText|
     --?"[&Action]" -eq "reaction" -or "[&Action]" -eq "trait"|&ButtonURL;[*R>npc_roll_output]|&ButtonURL;[*R>npc_action]
     --?"[&Action]" -eq "trait"|[ --&ButtonSize|14 --&ButtonEmote|&#128220;&#65038; --]|[ --&ButtonSize|16 --&ButtonEmote|&#x2694; --]|
-    --&Name|[*R:name] --&Description|[*R:description] --&AttackType|[*R:attack_type]
+    --&Name|[*R:name] --&Description|[*R:description] --~Description|string;replaceall;,;;[&Description] --&AttackType|[*R:attack_type]
     --?"[&AttackType]" -inc "ranged"|&RangeType;range|&RangeType;reach
     --&AttDesc| --&ToHitText|
-    --?"[&Description]" -eq ""|[ --&ToHitText|[&AttackType] Weapon Attack: --&AttDesc|++[*R:attack_tohit] to hit, [&RangeType] [*R:attack_range], [*R:attack_target]. [*R:attack_onhit]. --]|[
-      --~Description|string;striplinefeeds;[&Description] --~Description|string;replaceall;>;;[&Description] --~Description|string;replaceall;<br;;[&Description] --~Description|string;replaceall;";;[&Description]
-      --~Description|string;replaceall;[;;[&Description] --~Description|string;replaceall;];;[&Description] --~Description|string;replaceall;*;;[&Description] --~Description|string;replaceall;|;;[&Description]
-      --&Description|[&Description(replaceall,',&#39;)]
-    --]|
-    --&ActionToolTip|[&Name]&nbsp;&#x2666;&nbsp;[&Description][&ToHitText] [&AttDesc]
-    --?"[&Name]X" -ne "X"|[ --&ActionOutput|+[tr title="[&ActionToolTip]"][td style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][b][i][&Name].[/i][/b] [&Description][i][&ToHitText][/i] [&AttDesc][/td][td style="[&ButtonStyle] text-align: right ; "][F::[&ButtonSize]][sheetbutton][&ButtonEmote]::[*S:character_name]::[&ButtonURL][/sheetbutton][/F][/td][/tr] --]|
+    --?"[&Description]" -eq ""|[ --&ToHitText|[&AttackType] Weapon Attack: --&AttDesc|++[*R:attack_tohit] to hit, [&RangeType] [*R:attack_range], [*R:attack_target]. [*R:attack_onhit]. --]|[ --&CleanedText|[&Description] -->CleanText| --]|
+    --&ActionToolTip|[&Name]&nbsp;&#x2666;&nbsp;[&CleanedText][&ToHitText] [&AttDesc]
+    --?"[&Name]X" -ne "X"|[ --&ActionOutput|+[tr title="[&ActionToolTip]"][td style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][b][i][&Name].[/i][/b] [&CleanedText][i][&ToHitText][/i] [&AttDesc][/td][td style="[&ButtonStyle] text-align: right ; "][F::[&ButtonSize]][sheetbutton][&ButtonEmote]::[*S:character_name]::[&ButtonURL][/sheetbutton][/F][/td][/tr] --]|
   --%|
   --&ActionOutput|+[/t]
   --+|[&ActionOutput]
@@ -162,9 +159,9 @@
     --%SpellLoop|foreach;LvlSpells
       --Rfind|[&CharID];[&SpellLoop];repeating_spell-[&LevelLoop];spellname
       --&CastSpell| --&SpellDesc| --&Ritual| --&Concentration| --&ToolComponents|
-      --&SpellSchool|[*R:spellschool] --&SpellTarget|[*R:spelltarget] --&SpellDescription|[*R:spelldescription]
+      --&SpellSchool|[*R:spellschool] --&SpellTarget|[*R:spelltarget] --&SpellDescription|[*R:spelldescription] --&CleanedText|[&SpellDescription] -->CleanText|
       --&Innate|[*R:innate] --&SpellHigherLevels|[*R:spellathigherlevels]
-      --&ToolTip|title="[&SpellSchool(totitlecase)]&nbsp;&#x2666;&nbsp;CASTING&nbsp;TIME:&nbsp;[*R:spellcastingtime]&nbsp;&#x2666;&nbsp;RANGE:&nbsp;[*R:spellrange]
+      --&ToolTip|[&SpellSchool(totitlecase)]&nbsp;&#x2666;&nbsp;CASTING&nbsp;TIME:&nbsp;[*R:spellcastingtime]&nbsp;&#x2666;&nbsp;RANGE:&nbsp;[*R:spellrange]
       --?"[&SpellTarget]" -ne "undefined" -and "[&SpellTarget]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;TARGET:&nbsp;[&SpellTarget] --]|
       --?"[*R:spellcomp_v]" -ne "0"|&ToolComponents;+V --?"[*R:spellcomp_s]" -ne "0"|&ToolComponents;+,S --?"[*R:spellcomp_m]" -ne "0"|&ToolComponents;+,M([*R:spellcomp_materials])
       --&ToolTip|+&nbsp;&#x2666;&nbsp;[&ToolComponents]
@@ -172,15 +169,20 @@
       --?"[*R:spellconcentration]" -inc "1"|[ --&Concentration|(c) --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Concentration] --]|
       --&ToolTip|+&nbsp;&#x2666;&nbsp;DURATION:&nbsp;[*R:spellduration]
       --?"[&Innate]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Innate] --]|
-      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&SpellDescription]
+      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&CleanedText]
       --?"[&SpellHigherLevels]" -ne "undefined" -and "[&SpellHigherLevels]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;AT HIGHER LEVELS: [&SpellHigherLevels] --]|
-      --&ToolTip|+"
       --?"[*R:spelloutput]" -inc "ATTACK"|[ --&CastSpell|[td title="Cast Spell" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::16]&#x2694;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_spell[/sheetbutton][/td] --&SpellDesc|[td title="Description" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::14]&#128220;&#65038;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_output[/sheetbutton][/td] --]|
       --?"[*R:spelloutput]" -inc "SPELLCARD"|[ --&SpellDesc|[td title="Description" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::14]&#128220;&#65038;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_output[/sheetbutton][/td] --]|
-      --+|[t width=100%][tr][td [&ToolTip] style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][#000][b][i][*R:spellname].[/i][/b] [&SpellDescription][/#][/td][&CastSpell][&SpellDesc][/tr][/t]
+      --+|[t width=100%][tr][td title="[&ToolTip]" style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][#000][b][i][*R:spellname].[/i][/b] [&SpellDescription][/#][/td][&CastSpell][&SpellDesc][/tr][/t]
       --&SpellIndex|[= [&SpellIndex] + 1 ]
     --%|
     --:NextLevel|
   --%|
 --X|
+--:CleanText|
+  --~CleanedText|string;replaceall;’;&#39;;[&CleanedText] --~CleanedText|string;replaceall;";&quot;;[&CleanedText] --~CleanedText|string;replaceall;[;;[&CleanedText]
+  --~CleanedText|string;replaceall;];;[&CleanedText] --~CleanedText|string;replaceall;*;;[&CleanedText] --~CleanedText|string;replaceall;|;;[&CleanedText]
+  --&CleanedText|[&CleanedText(replaceall,>,)] --&CleanedText|[&CleanedText(replaceall,<br,)] --&CleanedText|[&CleanedText(replaceall,;,&#59;)]
+  --~CleanedText|string;replaceall;,;&#44;;[&CleanedText] --~CleanedText|string;striplinefeeds;[&CleanedText] --~CleanedText|string;striphtml;[&CleanedText]
+--<|
 }}
