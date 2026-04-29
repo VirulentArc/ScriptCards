@@ -78,9 +78,9 @@
   --Rfind|[&CharID];Find Familiar;repeating_spell-1;spellname
   --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|[ --#title|Spell Missing --+|Could not find the "Find Familiar" spell on this character. --X| --]|
   --&SpellName|[*R:spellname] --#title|[&SpellName]
-  --?[*R:spelllevel] -eq cantrip|&spllvl;cantrip|&spllvl;[*R:spelllevel]
+  --?[*R:spelllevel] -eq cantrip|[ --&spllvl|cantrip --]|[ --&spllvl|[*R:spelllevel] --]|
   --?[&spllvl] -eq 1|&lvlsuffix;st --?[&spllvl] -eq 2|&lvlsuffix;nd --?[&spllvl] -eq 3|&lvlsuffix;rd --?[&spllvl] -ge 4|&lvlsuffix;th
-  --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal; --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic;S|&Somatic; --?"[*R:spellcomp_m]" -inc "m=1"|[ --&Components|M --&Materials|([*R:spellcomp_materials]) --]|
+  --?"[*R:spellcomp_v]" -inc "v=1"|[ --&Verbal|V --]|[ --&Verbal| --]| --?"[*R:spellcomp_s]" -inc "s=1"|[ --&Somatic|S --]|[ --&Somatic| --]| --?"[*R:spellcomp_m]" -inc "m=1"|[ --&Components|M --&Materials|([*R:spellcomp_materials]) --]|
   --?"[*R:spellconcentration]" -inc 1|&Concentration;Concentration,
   --&SpellDesc|[*R:spelldescription]
   --=SpellDescCalc|[&SpellDesc(length)] - 1024
@@ -108,12 +108,12 @@
   -->FamStats|
   --#whisper|self
   --?"[&reentryval]" -eq "WildComp"|[ --&WildComp|1 --&Realm|Fey --]|[ --&WildComp|0 --&Realm|[&reentryval] --]|
-  --?"[&reentryval]" -eq "fromsettings" -or "[&FromSettings]" -eq "1"|&Realm;settings
+  --?"[&reentryval]" -eq "fromsettings" -or "[&FromSettings]" -eq "1"|[ --&Realm|settings --]|
   --?"[&WildComp]" -eq "0"|NotDruid
-  --?"[*S:class]" -eq "Druid"|&DruidLevel;[= [*S:base_level] / 2 {FLOOR}]
-  --?"[*S:multiclass1]" -eq "Druid"|&DruidLevel;[= [*S:multiclass1_lvl] / 2 {FLOOR}]
-  --?"[*S:multiclass2]" -eq "Druid"|&DruidLevel;[= [*S:multiclass2_lvl] / 2 {FLOOR}]
-  --?"[*S:multiclass3]" -eq "Druid"|&DruidLevel;[= [*S:multiclass3_lvl] / 2 {FLOOR}]
+  --?"[*S:class]" -eq "Druid"|[ --&DruidLevel|[= [*S:base_level] / 2 {FLOOR}] --]|
+  --?"[*S:multiclass1]" -eq "Druid"|[ --&DruidLevel|[= [*S:multiclass1_lvl] / 2 {FLOOR}] --]|
+  --?"[*S:multiclass2]" -eq "Druid"|[ --&DruidLevel|[= [*S:multiclass2_lvl] / 2 {FLOOR}] --]|
+  --?"[*S:multiclass3]" -eq "Druid"|[ --&DruidLevel|[= [*S:multiclass3_lvl] / 2 {FLOOR}] --]|
   --&ClassRes|[*S:class_resource]
   --?"[&ClassRes]" -ge "1"|[ --&ResSubtract|[= [&ClassRes] - 1] --!a:[&CharID]|class_resource:[&ResSubtract] --]|[ --+|[br][c][b][*S:character_name] has no Wild Shape uses left.[/b][/c] --X| --]
   --:NotDruid|
@@ -133,11 +133,11 @@
   --&AllTokens|[&SettingsButtons][&WarlockTitle][t width=112% style="position: relative ; left: -8px ; "][tr]
   --%TokenLoop|foreach;FamiliarToken
     --?"[&Realm]" -eq "settings"|[ --&ResetButton|[rbutton]RESET::ProcessReset;[&TokenLoop][/rbutton][br] --]|
-    --?"[*[&FindFamiliar]:[&TokenLoop]]" -ne "0"|&FinalToken;[*[&FindFamiliar]:[&TokenLoop]]|&FinalToken;https://files.d20.io/images/[@Data[&TokenLoop](86)]
-    --?"[@Data[&TokenLoop](87)]" -eq ""|&DisplayName;[&TokenLoop]|&DisplayName;[@Data[&TokenLoop](87)]
+    --?"[*[&FindFamiliar]:[&TokenLoop]]" -ne "0"|[ --&FinalToken|[*[&FindFamiliar]:[&TokenLoop]] --]|[ --&FinalToken;https://files.d20.io/images/[@Data[&TokenLoop](86)] --]|
+    --?"[@Data[&TokenLoop](87)]" -eq ""|[ --&DisplayName|[&TokenLoop] --]|[ --&DisplayName;[@Data[&TokenLoop](87)] --]|
     --?"[&TokenLoop]" -eq "Bat"|&AllTokens;+[/tr][tr][td colspan=3][c][b]Regular Familiars[/b][/c][/td][/tr][tr]
     --&AllTokens|+[td [&TokenBGImage]][rbutton][img width=70][&FinalToken][/img]::[&ButtonParam];[&TokenLoop][/rbutton][br][b][&DisplayName][/b][br][&ResetButton][/td]
-    --?"[&TokenLoop]" -eq "Weasel"|&OtherFamTitle;Other CR0 Familiars
+    --?"[&TokenLoop]" -eq "Weasel"|[ --&OtherFamTitle|Other CR0 Familiars --]|
     --?";Sprite;Weasel;" -inc ";[&TokenLoop];"|[ --&TokenCounter|0 --&AllTokens|+[/tr][tr][td colspan=3][&Divider][c][b][&OtherFamTitle][/b][/c][/td][/tr][tr] --]|
     --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
     --&TokenCounter|[= [&TokenCounter] + 1 ]
@@ -167,13 +167,13 @@
   --!ability:[@ability_list(2)]|name:[@[&Beast](54)]|istokenaction:[@[&Beast](55)]
   --Rnext| --!a:[&FindFamiliar]|[*R>name]:[@[&Beast](66)]|[*R>attack_flag]:[@[&Beast](68)]|[*R>attack_type]:[@[&Beast](69)]|[*R>attack_range]:[@[&Beast](70)]|[*R>attack_target]:[@[&Beast](71)]|[*R>attack_tohit]:[@[&Beast](72)]|[*R>attack_damage]:[@[&Beast](73)]|[*R>attack_damagetype]:[@[&Beast](74)]|[*R>description]:[@[&Beast](75)]|[*R>attack_damage2]:[@[&Beast](76)]|[*R>attack_damagetype2]:[@[&Beast](77)]
   --!ability:[@ability_list(3)]|name:[@[&Beast](66)]|istokenaction:[@[&Beast](67)]
-  --?"[*[&FindFamiliar]:[&FamiliarType]]" -ne "0"|&TokenDisplay;[*[&FindFamiliar]:[&FamiliarType]]|&TokenDisplay;https://files.d20.io/images/[@[&Beast](86)]
+  --?"[*[&FindFamiliar]:[&FamiliarType]]" -ne "0"|[ --&TokenDisplay|[*[&FindFamiliar]:[&FamiliarType]] --]|[ --&TokenDisplay;https://files.d20.io/images/[@[&Beast](86)] --]|
   --&TruncName|[&SourceName(before, )]
-  --?"[&TruncName(-1,1)]" -eqi "s"|&Owner;'|&Owner;'s
-  --?"[&FamiliarCustom]" -eq "0"|&TokenDisplayName;[&TruncName][&Owner] Familiar|&TokenDisplayName;[&FamiliarCustom]
-  --?";Imp;Octopus;" -inc ";[&FamiliarType];"|&Article;an|&Article;a
-  --?"[&FamiliarCustom]" -ne "0"|&FamiliarName;[&Article] [&FamiliarType] named [&TokenDisplayName]|&FamiliarName;[&Article] [&FamiliarType] [&TokenDisplayName]
-   --?"[&FamiliarType]" -inc "Beetle"|&ShedLight;10|&ShedLight;0
+  --?"[&TruncName(-1,1)]" -eqi "s"|[ --&Owner|' --]|[ --&Owner|'s --]|
+  --?"[&FamiliarCustom]" -eq "0"|[ --&TokenDisplayName|[&TruncName][&Owner] Familiar --]|[ --&TokenDisplayName|[&FamiliarCustom] --]|
+  --?";Imp;Octopus;" -inc ";[&FamiliarType];"|[ --&Article|an --]|[ --&Article|a --]|
+  --?"[&FamiliarCustom]" -ne "0"|[ --&FamiliarName|[&Article] [&FamiliarType] named [&TokenDisplayName] --]|[ --&FamiliarName|[&Article] [&FamiliarType] [&TokenDisplayName] --]|
+   --?"[&FamiliarType]" -inc "Beetle"|[ --&ShedLight|10 --]|[ --&ShedLight|0 --]|
   --&ShedDimLight|[= [&ShedLight] * 3]
   --&ExistingControl|[*[&FindFamiliar]:controlledby] --?"[&ExistingControl]" -eq ""|[ --!c:[&FindFamiliar]|controlledby:[&SendingPlayerID] --]| --?"[&ExistingControl]" -ninc "[&SendingPlayerID]" -and "[&ExistingControl]" -ne ""|[ --&NewControl|[&ExistingControl],[&SendingPlayerID] --!c:[&FindFamiliar]|controlledby:[&NewControl] --]|
   --&LeftPos|[*S:t-left] --&TopPos|[*S:t-top]
@@ -190,7 +190,7 @@
   --?"[&reentryval]" -eq ""|[ --&Target|custom_name --&BtnText|Click Here to Change Name --&Prompt|What are you naming your Familiar? --]|[ --&Target|[&reentryval] --&BtnText|Click Here to add image URL --&Prompt|What Is The URL To Your Token Image? It must be an image from your Roll20 Library. --]|
   --I. ;[&BtnText]|q;UpdateToken;[&Prompt]
   --!a:[&FindFamiliar]|![&Target]:[&UpdateToken]
-  --?"[&Target]" -eq "custom_name"|&UpdateName;[&UpdateToken]
+  --?"[&Target]" -eq "custom_name"|[ --&UpdateName|[&UpdateToken] --]|
   --&FromSettings|1
   --^GetFamiliar|
 --X|
