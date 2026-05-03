@@ -20,17 +20,28 @@
   --/|    (first run initializes styles; subsequent runs show the stat block)
   --/| ==========================================================================
   --/| CHECK FOR EXISTENCE OF ScriptCards_TemplateMule
-  --&TemplateMuleID|@{ScriptCards_TemplateMule|character_id}
-  --?"[*[&TemplateMuleID]:character_name]" -eq ""|[ --+|[c]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the NPC Stat will be kept.[/c] --X| --]|
+  --~|array;objects:character;TemplateID;ScriptCards_TemplateMule
+  --?"[@TemplateID(0)]" -eq ""|[ --#title|NPC Stat Block Setup --+|[c]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the NPC Stat Block will be kept.[/c] --X| --]|
   --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
-  --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4
-  --?"[&IsTemplate]" -eq "AbilityNotFound"|[ --+|[c]The style information has been written, please run the Mod again.[/c]
+  --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4public
+  --?"[&IsTemplate]" -eq "AbilityNotFound"|[
+    --+|[c]The style information has been written, please run the Mod again.[/c]
     --&StatBlock|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; position: relative ; left: -30px ;'}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
-    --!ob:StyleSaveResult:[&TemplateMuleID]:statblockv4:0|[&StatBlock]
+    --!ob:StyleSaveResult:[@TemplateID(0)]:statblockv4:0|[&StatBlock]
+    --&StatBlockPublic|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; '}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --!ob:StyleSaveResult:[@TemplateID(0)]:statblockv4public:0|[&StatBlockPublic]
     --@sc-reloadtemplates|
     --X|
   --]|
-  --#Debug|0 --#reentrant|NPCBlock- @{selected|character_id} --#overridetemplate|statblockv4 --#Whisper|self --#sourceToken|@{selected|token_id} --#emoteState|0
+  --&TokenID|[@SC_SelectedTokens(0)]
+  --#Debug|0 --#overridetemplate|statblockv4 --#Whisper|self --#sourceToken|[&TokenID] --#emoteState|0 --#reentrant|NPCBlock- [&TokenID]
+  --?"[@SC_SelectedTokens()]" -eq "undefined array"|NoSelectedToken
+  --?"[@SC_SelectedTokens()]" -gt "1"|MultipleSelectedTokens
+  --?"[*S:npc]" -ne "1" -and "[&TokenID]" -ne ""|NotNPC|Continue
+  --:NotNPC| --#title|NPC Stat Block --+Wrong Token Type|[*S:character_name] is not an NPC character. Please select an NPC token to continue. --X|
+  --:NoSelectedToken| --#title|NPC Stat Block --+No Token Selected|Please select an NPC token to continue. --X|
+  --:MultipleSelectedTokens| --#title|NPC Stat Block --+Multiple Tokens Selected|Please select only one NPC token to continue. --X|
+  --:Continue|
   --&NPC_Name|[*S:npc_name]
   --#title|[&NPC_Name]
   --&CharID|[*S:character_id]
@@ -82,14 +93,13 @@
   --&SkillOutput|[t style="width: 100%; border-collapse: separate; border-spacing: 0px 2px;"][tr]
   --%SkillLoop|foreach;SkillArray
     --?"[&SkillLoop]" -ne "initiative"|[
-      --?"[*S:npc_[&SkillLoop]_base]" -gt "0"|[ --~SkillTitle|string;totitlecase;[&SkillLoop] --&AddSkill|+[&SkillTitle]&nbsp;[*S:npc_[&SkillLoop]_base],&nbsp; --]|
+      --?"[*S:npc_[&SkillLoop]_base]" -ne ""|[ --&SkillTitle|[&SkillLoop(replaceall,_, )] --&SkillTitle|[&SkillTitle(totitlecase)] --&AddSkill|+[&SkillTitle]&nbsp;[*S:npc_[&SkillLoop]_base],&nbsp; --]|
     --]|
     --?"[= [&SkillCounter] % [&SkillsPerRow] ]" -eq "0" -and "[&SkillCounter]" -ne "0"|&SkillOutput;+[/tr][tr]
     --&RawSkill|[&SkillLoop] --&SkillLabel|[&RawSkill(replaceall,_, )] --&SkillLabel|[&SkillLabel(totitlecase)]
     --?"[&RawSkill]" -ne "initiative"|&RawSkill;npc_[&RawSkill]
     --?"[&SkillLabel]" -eq "Animal Handling"|&SkillLabel;Animal Hand.
     --&SkillOutput|+[td style="[&ButtonStyle] text-align: center ; "][sheetbutton][&SkillLabel]::[*S:character_name]::~selected|[&RawSkill][/sheetbutton][/td]
-
     --&SkillCounter|[= [&SkillCounter] + 1 ]
   --%|
   --&SkillOutput|+[/tr][/t]
@@ -105,7 +115,7 @@
   --?"[&NPC_senses]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Senses[/b]&nbsp;[&NPC_senses][/td][/tr] --]|
   --?"[&NPC_lang]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Languages[/b]&nbsp;[&NPC_lang][/td][/tr] --]|
   --?"[&NPC_chall]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Challenge[/b]&nbsp;[&NPC_chall]&nbsp;([*S:npc_xp]xp)[/td][/tr] --]|
-  --?"[&NPC_pb]" -ne "0"|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Proficiency Bonus[/b]&nbsp;[&NPC_pb][/td][/tr] --]|
+  --?"[&NPC_pb]" -ne "0" -and "[&NPC_pb]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Proficiency Bonus[/b]&nbsp;[&NPC_pb][/td][/tr] --]|
   --&FourthBlock|+[/t]
   --+|[&FourthBlock]
   --+|[&Divider]
@@ -135,7 +145,7 @@
     --&CleanedText|
     --?"[&Action]" -eq "reaction" -or "[&Action]" -eq "trait"|&ButtonURL;[*R>npc_roll_output]|&ButtonURL;[*R>npc_action]
     --?"[&Action]" -eq "trait"|[ --&ButtonSize|14 --&ButtonEmote|&#128220;&#65038; --]|[ --&ButtonSize|18 --&ButtonEmote|&#x2694; --]|
-    --&Name|[*R:name] --&Description|[*R:description] --~Description|string;replaceall;,;;[&Description] --&AttackType|[*R:attack_type]
+    --&Name|[*R:name] --&Description|[*R:description] --&AttackType|[*R:attack_type]
     --?"[&AttackType]" -inc "ranged"|&RangeType;range|&RangeType;reach
     --&AttDesc| --&ToHitText|
     --?"[&Description]" -eq ""|[ --&ToHitText|[&AttackType] Weapon Attack: --&AttDesc|++[*R:attack_tohit] to hit, [&RangeType] [*R:attack_range], [*R:attack_target]. [*R:attack_onhit]. --]|[ --&CleanedText|[&Description] -->CleanText| --]|
@@ -159,30 +169,32 @@
     --%SpellLoop|foreach;LvlSpells
       --Rfind|[&CharID];[&SpellLoop];repeating_spell-[&LevelLoop];spellname
       --&CastSpell| --&SpellDesc| --&Ritual| --&Concentration| --&ToolComponents|
-      --&SpellSchool|[*R:spellschool] --&SpellTarget|[*R:spelltarget] --&SpellDescription|[*R:spelldescription] --&CleanedText|[&SpellDescription] -->CleanText|
-      --&Innate|[*R:innate] --&SpellHigherLevels|[*R:spellathigherlevels]
+      --&SpellSchool|[*R:spellschool] --&SpellTarget|[*R:spelltarget] --&SpellDescription|[*R:spelldescription] --&CleanedText|[&SpellDescription] -->CleanText| --&CleanedDescription|[&CleanedText]
+      --&Innate|[*R:innate] --&SpellHigherLevels|[*R:spellathigherlevels] --&CleanedHigherLevels|[&SpellHigherLevels]
+      --?"[&CleanedHigherLevels]" -ne "undefined" -and "[&CleanedHigherLevels]" -ne ""|[ --&CleanedText|[&CleanedHigherLevels] -->CleanText| --&CleanedHigherLevels|[&CleanedText] --]|
       --&ToolTip|[&SpellSchool(totitlecase)]&nbsp;&#x2666;&nbsp;CASTING&nbsp;TIME:&nbsp;[*R:spellcastingtime]&nbsp;&#x2666;&nbsp;RANGE:&nbsp;[*R:spellrange]
       --?"[&SpellTarget]" -ne "undefined" -and "[&SpellTarget]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;TARGET:&nbsp;[&SpellTarget] --]|
       --?"[*R:spellcomp_v]" -ne "0"|&ToolComponents;+V --?"[*R:spellcomp_s]" -ne "0"|&ToolComponents;+,S --?"[*R:spellcomp_m]" -ne "0"|&ToolComponents;+,M([*R:spellcomp_materials])
+      --?"[&ToolComponents(0,1)]" -eq ","|&ToolComponents;[&ToolComponents(1)]
       --&ToolTip|+&nbsp;&#x2666;&nbsp;[&ToolComponents]
       --?"[*R:spellritual]" -eq "Yes"|[ --&Ritual|(r) --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Ritual] --]|
       --?"[*R:spellconcentration]" -inc "1"|[ --&Concentration|(c) --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Concentration] --]|
       --&ToolTip|+&nbsp;&#x2666;&nbsp;DURATION:&nbsp;[*R:spellduration]
       --?"[&Innate]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Innate] --]|
-      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&CleanedText]
-      --?"[&SpellHigherLevels]" -ne "undefined" -and "[&SpellHigherLevels]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;AT HIGHER LEVELS: [&SpellHigherLevels] --]|
+      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&CleanedDescription]
+      --?"[&CleanedHigherLevels]" -ne "undefined" -and "[&CleanedHigherLevels]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;AT HIGHER LEVELS: [&CleanedHigherLevels] --]|
       --?"[*R:spelloutput]" -inc "ATTACK"|[ --&CastSpell|[td title="Cast Spell" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::18]&#x2694;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_spell[/sheetbutton][/td] --&SpellDesc|[td title="Description" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::14]&#128220;&#65038;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_output[/sheetbutton][/td] --]|
       --?"[*R:spelloutput]" -inc "SPELLCARD"|[ --&SpellDesc|[td title="Description" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::14]&#128220;&#65038;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_output[/sheetbutton][/td] --]|
-      --+|[t width=100%][tr][td title="[&ToolTip]" style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][#000][b][i][*R:spellname].[/i][/b] [&SpellDescription][/#][/td][&CastSpell][&SpellDesc][/tr][/t]
+      --+|[t width=100%][tr][td title="[&ToolTip]" style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][#000][b][i][*R:spellname].[/i][/b] [&CleanedDescription][/#][/td][&CastSpell][&SpellDesc][/tr][/t]
       --&SpellIndex|[= [&SpellIndex] + 1 ]
     --%|
     --:NextLevel|
   --%|
 --X|
 --:CleanText|
-  --~CleanedText|string;replaceall;’;&#39;;[&CleanedText] --~CleanedText|string;replaceall;";&quot;;[&CleanedText] --~CleanedText|string;replaceall;[;;[&CleanedText]
-  --~CleanedText|string;replaceall;];;[&CleanedText] --~CleanedText|string;replaceall;*;;[&CleanedText] --~CleanedText|string;replaceall;|;;[&CleanedText]
-  --&CleanedText|[&CleanedText(replaceall,>,)] --&CleanedText|[&CleanedText(replaceall,<br,)] --&CleanedText|[&CleanedText(replaceall,;,&#59;)]
-  --~CleanedText|string;replaceall;,;&#44;;[&CleanedText] --~CleanedText|string;striplinefeeds;[&CleanedText] --~CleanedText|string;striphtml;[&CleanedText]
+  --&LT|< --&GT|> --&SPACE|X X --&SPACE|[&SPACE(1,1)]
+  --~CleanedText|string;striplinefeeds;[&CleanedText] --~CleanedText|string;replaceall;[&LT]br[&GT];[&SPACE];[&CleanedText] --~CleanedText|string;replaceall;[&LT]br/[&GT];[&SPACE];[&CleanedText]
+  --~CleanedText|string;replaceall;[&LT]br /[&GT];[&SPACE];[&CleanedText] --~CleanedText|string;striphtml;[&CleanedText] --~CleanedText|string;replaceall;’;&#39;;[&CleanedText]
+  --~CleanedText|string;replaceall;";&quot;;[&CleanedText] --~CleanedText|string;stripchars;[]*|;[&CleanedText] --~CleanedText|string;replaceall;,;&#44;;[&CleanedText]
 --<|
 }}
