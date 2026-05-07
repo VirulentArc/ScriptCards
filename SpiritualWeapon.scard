@@ -258,7 +258,6 @@
   --&WeaponMat|[&WeaponMat(replace,-, )]
 --<|
 --:TokenVariables|
-  --&URL|https://s3.amazonaws.com/files.d20.io/images/
   --&URL|https://files.d20.io/images/
   --&BattleAxe1|[&URL]409077658/KzwQT9XRqmgC5a9ucaRIgw/original.webp
   --&BattleAxe2|[&URL]409077659/P__XMkLmyxq5d7uxuoS5NQ/original.webp
