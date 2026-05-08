@@ -1,8 +1,8 @@
-!scriptcards {{ 
+!scriptcards {{ --/|{& skip}
 
   --/| ==========================================================================
   --/| Script Name : Tim's Spiritual Weapon Mod for D&D 5E 2014
-  --/| Version     : 2.0.1
+  --/| Version     : 2.0.2
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| ==========================================================================
@@ -45,10 +45,9 @@
   --&obrac|{ --&cbrac|} --&perc|%
   -->TokenVariables|
   --~|array;define;WeaponTypes;BattleAxe;Club;Dagger;Flail;Glaive;Greataxe;Greatclub;Greatsword;Halberd;Handaxe;Javelin;Lance;Light-Hammer;Longsword;Mace;Maul;Morningstar;Pike;Quarterstaff;Rapier;Scimitar;Shortsword;Sickle;Spear;Trident;Warhammer;Warpick;Miscellaneous
-  --~|hash;set;WeaponMax;BattleAxe==3;Club==3;Dagger==8;Flail==5;Glaive==3;Greataxe==3;Greatclub==3;Greatsword==10;Halberd==5;Handaxe==3;Javelin==3;Lance==1;Light-Hammer==6;Longsword==11;Mace==10;Maul==7;Morningstar==5;Pike==6;Quarterstaff==8;Rapier==7;Scimitar==11;Shortsword==9;Sickle==3;Spear==9;Trident==7;Warhammer==5;Warpick==3
+  --~|hash;set;WeaponMax;BattleAxe==3;Club==3;Dagger==8;Flail==5;Glaive==3;Greataxe==3;Greatclub==3;Greatsword==10;Halberd==5;Handaxe==3;Javelin==3;Lance==1;Light-Hammer==6;Longsword==11;Mace==10;Maul==7;Morningstar==5;Pike==6;Quarterstaff==8;Rapier==7;Scimitar==11;Shortsword==9;Sickle==3;Spear==9;Trident==7;Warhammer==5;Warpick==3;Miscellaneous==43
   --~|hash;set;Misc;Miscellaneous1==Anvil;Miscellaneous2==Bagpipes;Miscellaneous3==Banana;Miscellaneous4==Barrel;Miscellaneous5==Floating-Boot;Miscellaneous6==Floating-Boot;Miscellaneous7==Chess-Piece;Miscellaneous8==Storm-Cloud;Miscellaneous9==Storm-Cloud;Miscellaneous10==Crowbar;Miscellaneous11==Demon-Skull;Miscellaneous12==Trout;Miscellaneous13==Flute;Miscellaneous14==Pan;Miscellaneous15==Castiron-Pan;Miscellaneous16==Horn;Miscellaneous17==Hourglass;Miscellaneous18==Ice-Pick;Miscellaneous19==Rainbow-Lollipop;Miscellaneous20==Pink-Lollipop;Miscellaneous21==Colorful-Lollipop;Miscellaneous22==Mage-Hand;Miscellaneous23==Hand-Mirror;Miscellaneous24==Golden-Moon;Miscellaneous25==Magical-Moon;Miscellaneous26==Crescent-Moon;Miscellaneous27==Beer-Mug;Miscellaneous28==Beer-Stein;Miscellaneous29==Needle;Miscellaneous30==Rolling-Pin;Miscellaneous31==Handsaw;Miscellaneous32==Scroll;Miscellaneous33==Shovel;Miscellaneous34==Skull;Miscellaneous35==Spellbook;Miscellaneous36==Grimoire;Miscellaneous37==Ancient-Spellbook;Miscellaneous38==Warlock-Grimoire;Miscellaneous39==Spellbook;Miscellaneous40==Necromancer-Spellbook;Miscellaneous41==Wooden-Spoon;Miscellaneous42==Gravestone;Miscellaneous43==Torch
   --&BodyStyle|font-size: 12px ; letter-spacing: 0.01em ; line-height: 18px
-  --&TokenCell|width=100% style="background-image: url([&URL]431269924/wXGXxCLvc_js7eWmz5NQkw/original.png) ; background-repeat: no-repeat ; background-size: 85px 80px ; background-position: center ; display: inline-block ; bottom: 0;  margin-left: auto ; margin-right: auto ; width: 33% ; text-align: center ; font-weight: bold ; font-size: 14px ; "
   --&ButtonStyle|style="align-self: center;  background-color: transparent ; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: #6e2425; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
   --?"[@SC_SelectedTokens()]" -eq "undefined array"|NoSelectedToken
   --?"[@SC_SelectedTokens()]" -gt "1"|MultipleSelectedTokens|RestartMod
@@ -57,7 +56,7 @@
   --:RestartMod|
   --&CasterCharID|[*S:character_id]
   --&CasterName|[*S:character_name]
-  --&SpellAttackBonus|[&SpellAttackBonus]
+  --&SpellAttackBonus|[*S:spell_attack_bonus]
   --?"[*[&SW_TokenID]:charactersheet_type]" -ne "npc"|NoCharacter|SpellInfo
   --:NoCharacter| --#title|Spiritual Weapon Setup --+|[b]Please make sure to create an NPC character named SpiritualWeapon, then rerun the script.[/b] --X|
 --X|
@@ -112,7 +111,7 @@
   --#emoteState|0 --#emoteText| --#title| --#whisper|self
   --&TokensPerRow|3
   --&TokenCounter|1
-  --?"[&WeaponType]" -inc "miscellaneous|[ --&WeaponNameTitle|[&WeaponType] Weapon --]|[ --&WeaponNameTitle|[&WeaponType] --]|
+  --?"[&WeaponType]" -inc "miscellaneous"|[ --&WeaponNameTitle|[&WeaponType] Weapon --]|[ --&WeaponNameTitle|[&WeaponType] --]|
   --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 16px ; "][c][b]Choose Your Spiritual [&WeaponNameTitle][/b][/c][/td][/tr][/t]
   --&AllTokens|[t style="width: 100% ; table-layout: fixed ;"][tr]
     --%TokenLoop|1;43;1
@@ -122,7 +121,7 @@
         --?"[&WeaponType]" -ninc "misc"|>SpecificName;[&WeaponType];[&RandomToken]|&WeaponMat;[:Misc("[&WeaponType][&TokenLoop]")]
         --~WeaponMat|string;replaceall;-; ;[&WeaponMat]
         --?"[&WeaponType]" -ninc "misc"|=WeaponMatLength;[&WeaponMat(length)] - 1|=WeaponMatLength;[&WeaponMat(length)]
-        --&AllTokens|+[td style="width: 33% ; text-align: center ; vertical-align: top ;"][t style="width: 100% ; table-layout: fixed ;"][tr][td [&ButtonStyle] style="text-align: center ;"][rbutton][img width=70][&TokenImage][/img]::SaveToken;[&WeaponType][&TokenLoop][/rbutton][/td][/tr][tr][td style="width: 80px ; max-width: 80px ; text-align: center ; font-weight: bold ; font-size: 12px ; line-height: 13px ; white-space: normal ; word-break: break-word ; overflow-wrap: anywhere ;"][&WeaponMat(0,[$WeaponMatLength.Raw])][/td][/tr][/t][/td]
+        --&AllTokens|+[td style="width: 33% ; text-align: center ; vertical-align: top ;"][t style="width: 100% ; table-layout: fixed ;"][tr][td [&ButtonStyle]][rbutton][img width=70][&TokenImage][/img]::SaveToken;[&WeaponType][&TokenLoop][/rbutton][/td][/tr][tr][td style="width: 80px ; max-width: 80px ; text-align: center ; font-weight: bold ; font-size: 12px ; line-height: 13px ; white-space: normal ; word-break: break-word ; overflow-wrap: anywhere ;"][&WeaponMat(0,[$WeaponMatLength.Raw])][/td][/tr][/t][/td]
         --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
         --&TokenCounter|[= [&TokenCounter] + 1]
       --]|
@@ -137,7 +136,7 @@
   --?"[&WeaponChosen]" -eq "Random"|[
     --!a:[&SW_TokenID]|!WeaponChosen:[&WeaponChosen]
     --!a:[&SW_TokenID]|!WeaponCustom:0
-    --+|[t style="width: 100% ; text-align: center ; font-size: 14px ; "][tr][td][b]Spiritual Weapon set to Random. A Random Spiritual Weapon will be chosen at each summoning. This does not include the Miscellaneous Weapons.[/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
+    --+|[t style="width: 100% ; text-align: center ; font-size: 14px ; "][tr][td][b]Spiritual Weapon set to Random. A Random Spiritual Weapon will be chosen at each summoning.[/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
   --]|[
     --~WeaponName|string;nonumbers;[&WeaponChosen]
     --!a:[&SW_TokenID]|!WeaponChosen:[&WeaponChosen]
@@ -166,7 +165,7 @@
   --&WeaponName|[*[&SW_TokenID]:WeaponName]
   --^SW_TokenReady|
   --:SW_GetRandomToken|
-  --=WeaponRoll|1d27
+  --=WeaponRoll|1d28 - 1
   --&WeaponType|[@WeaponTypes([$WeaponRoll.Raw])]
   --=WeaponNum|1d[:WeaponMax("[&WeaponType]")]
   --&RandomToken|[&WeaponType][$WeaponNum.Raw]
@@ -175,6 +174,7 @@
   --^SW_TokenReady|
   --:SW_TokenReady|
   --=SlotsExpended|[*S:lvl[&SlotLevel]_slots_expended]
+  --&SlotsTotal|[*S:lvl[&SlotLevel]_slots_total]
   --?[$SlotsExpended.Raw] -eq 0|[
     -->NoSlots|[&SlotLevel]
   --]|[
@@ -195,7 +195,7 @@
     --?[&SlotLevel] -ge 4|=Dice;2
     --?[&SlotLevel] -ge 6|=Dice;3
     --?[&SlotLevel] -ge 8|=Dice;4
-    --!a:[&SW_TokenID]|[*R>name]:Attack Spell Level [&SlotLevel]|[*R>attack_flag]:on|[*R>attack_type]:Melee|[*R>attack_target]:one target|[*R>attack_range]:5 ft.|[*R>attack_tohit]:[&SpellAttackBonus]|[*R>attack_damage]:[$Dice.Total]d8+[&SpellAttackBonus]|[*R>attack_damagetype]:force|[*R>attack_onhit]:([$Dice.Total]d8+[&SpellAttackBonus]) 11 (1d8 + [&SpellAttackBonus])
+    --!a:[&SW_TokenID]|[*R>name]:Attack Spell Level [&SlotLevel]|[*R>attack_flag]:on|[*R>attack_type]:Melee|[*R>attack_target]:one target|[*R>attack_range]:5 ft.|[*R>attack_tohit]:[&SpellAttackBonus]|[*R>attack_damage]:[$Dice.Total]d8+[&SpellAttackBonus]|[*R>attack_damagetype]:force|[*R>attack_onhit]:|[*R>attack_onhit]:([$Dice.Total]d8+[&SpellAttackBonus]) force damage|[*R>attack_crit]:[$Dice.Total]d8
   --]|
   -->SummonMessage|[&SlotLevel];[&WeaponMat]
 --X|
@@ -247,7 +247,8 @@
   --+|[t width=267px][tr][td style="height: 30px ; font-size: 14px ; "][c][&CasterName] has no level [b][%1%][/b] spell slots available.[/c][/td][/tr][/t]
 --X|
 --:SpecificName|
-  --?"[%1%]" -inc "Misc"|&WeaponMat;[:Misc("[*[&SW_TokenID]:WeaponChosen]")]
+  --?"[%1%]" -inc "Misc" -and "[%2%]" -eq ""|&WeaponMat;[:Misc("[*[&SW_TokenID]:WeaponChosen]")]
+  --?"[%1%]" -inc "Misc" -and "[%2%]" -ne ""|&WeaponMat;[:Misc("[%2%]")]
   --?"[%1%]" -inc "random"|&TokenImage;[&[%2%]]
   --?";[&Longsword11];[&Mace3];[&Maul1];[&Maul4];[&Morningstar3];[&Quarterstaff1];[&Quarterstaff8];[&Scimitar1];[&Scimitar3];[&Scimitar4];[&Scimitar10];[&Sickle3];[&Trident2];[&Trident7];[&Pike6];" -inc ";[&TokenImage];"|&WeaponMat;Magic-
   --?";[&BattleAxe3];[&Club3];[&Dagger1];[&Flail5];[&Glaive2];[&Greataxe2];[&Greatsword1];[&Mace7];[&Morningstar5];[&Rapier5];[&Rapier7];[&Scimitar5];[&Scimitar6];[&Scimitar7];[&Trident5];[&Warhammer1];[&Warhammer4];[&Pike5];" -inc ";[&TokenImage];"|&WeaponMat;Adamantine-
