@@ -1,0 +1,29 @@
+!scriptcards {{ --/|{& skip}
+  --/|==========================================================================
+  --/| Script Name : Spiritual Weapon Turn Order Cleanup Trigger
+  --/| Version     : 1.0.0
+  --/| Author      : Timothy Beasley
+  --/| Trigger     : change:campaign:turnorder
+  --/|==========================================================================
+  --/| This trigger is used by Tim's Spiritual Weapon Mod. When a summoned
+  --/| Spiritual Weapon token reaches the end of its duration in the turn
+  --/| tracker, this trigger removes it from the turn tracker and deletes
+  --/| the token from the map.
+  --/|
+  --/| Requires a character named ScriptCards_Triggers with an ability named:
+  --/| change:campaign:turnorder
+  --/| Restart the sandbox after adding this to ScriptCards_Triggers
+  --/|==========================================================================
+  --#hidecard|1
+  --#debug|0
+  --~CurrentActor|turnorder;getcurrentactor
+  --?"[*[&CurrentActor]:character_name]" -ne "SpiritualWeapon"|Done
+  --~CurrentActorPR|turnorder;findtoken;[&CurrentActor]
+  --?[&CurrentActorPR] -gt 0|Done
+  --&sfx|[*[&SW_TokenID]:swsoundfx]
+  --?"[&sfx]" -ne ""|[ --a|[&sfx] --]|
+  --vpoint|[*[&CurrentActor]:t-left] [*[&CurrentActor]:t-top] [*[&CurrentActor]:swfxtype]-[*[&CurrentActor]:swfxcolor]
+  --~|object;token;remove;[&CurrentActor]
+  --:Done|
+--X|
+}}

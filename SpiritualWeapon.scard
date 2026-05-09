@@ -2,7 +2,7 @@
 
   --/| ==========================================================================
   --/| Script Name : Tim's Spiritual Weapon Mod for D&D 5E 2014
-  --/| Version     : 2.0.2
+  --/| Version     : 2.1.0
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| ==========================================================================
@@ -14,7 +14,7 @@
   --/| * Spell Slot Support: Cast at 2nd through 9th level and deducts the slot.
   --/| * Scaling Attack: Updates the Spiritual Weapon attack for the chosen slot level.
   --/| * Token Customization: Save a random weapon, chosen weapon, custom image URL,
-  --/|   and custom name on the SpiritualWeapon NPC mule.
+  --/|   custom name, custom FX and sound effect on the SpiritualWeapon NPC mule.
   --/| * Spell Display: Shows the spell details with a settings gear and spellbook button.
   --/| SETUP INSTRUCTIONS:
   --/| 1. Create a character named: ScriptCards_TemplateMule (for CSS).
@@ -36,10 +36,8 @@
     --@sc-reloadtemplates|
     --X|
   --]|
-
-  --&sfx|      --/| ADD YOUR OWN JUKEBOX SOUND HERE
   --&CasterToken|[@SC_SelectedTokens(0)]
-  --#overridetemplate|statblockv4 --#sourceToken|[&CasterToken] --#Debug|0 --#emoteState|0 --#emoteBackground|#f1e5c9 --#emoteFontColor|#6e2425 --#whisper|self --#reentrant|SpiritualWeapon- [&CasterToken]
+  --#sourceToken|[&CasterToken] --#Debug|0 --#emoteState|0 --#emoteBackground|#f1e5c9 --#emoteFontColor|#6e2425 --#whisper|self --#reentrant|SpiritualWeapon- [&CasterToken]
   --~|array;objects:character;SpiritualWeaponID;SpiritualWeapon
   --&SW_TokenID|[@SpiritualWeaponID(0)]
   --&obrac|{ --&cbrac|} --&perc|%
@@ -47,13 +45,16 @@
   --~|array;define;WeaponTypes;BattleAxe;Club;Dagger;Flail;Glaive;Greataxe;Greatclub;Greatsword;Halberd;Handaxe;Javelin;Lance;Light-Hammer;Longsword;Mace;Maul;Morningstar;Pike;Quarterstaff;Rapier;Scimitar;Shortsword;Sickle;Spear;Trident;Warhammer;Warpick;Miscellaneous
   --~|hash;set;WeaponMax;BattleAxe==3;Club==3;Dagger==8;Flail==5;Glaive==3;Greataxe==3;Greatclub==3;Greatsword==10;Halberd==5;Handaxe==3;Javelin==3;Lance==1;Light-Hammer==6;Longsword==11;Mace==10;Maul==7;Morningstar==5;Pike==6;Quarterstaff==8;Rapier==7;Scimitar==11;Shortsword==9;Sickle==3;Spear==9;Trident==7;Warhammer==5;Warpick==3;Miscellaneous==43
   --~|hash;set;Misc;Miscellaneous1==Anvil;Miscellaneous2==Bagpipes;Miscellaneous3==Banana;Miscellaneous4==Barrel;Miscellaneous5==Floating-Boot;Miscellaneous6==Floating-Boot;Miscellaneous7==Chess-Piece;Miscellaneous8==Storm-Cloud;Miscellaneous9==Storm-Cloud;Miscellaneous10==Crowbar;Miscellaneous11==Demon-Skull;Miscellaneous12==Trout;Miscellaneous13==Flute;Miscellaneous14==Pan;Miscellaneous15==Castiron-Pan;Miscellaneous16==Horn;Miscellaneous17==Hourglass;Miscellaneous18==Ice-Pick;Miscellaneous19==Rainbow-Lollipop;Miscellaneous20==Pink-Lollipop;Miscellaneous21==Colorful-Lollipop;Miscellaneous22==Mage-Hand;Miscellaneous23==Hand-Mirror;Miscellaneous24==Golden-Moon;Miscellaneous25==Magical-Moon;Miscellaneous26==Crescent-Moon;Miscellaneous27==Beer-Mug;Miscellaneous28==Beer-Stein;Miscellaneous29==Needle;Miscellaneous30==Rolling-Pin;Miscellaneous31==Handsaw;Miscellaneous32==Scroll;Miscellaneous33==Shovel;Miscellaneous34==Skull;Miscellaneous35==Spellbook;Miscellaneous36==Grimoire;Miscellaneous37==Ancient-Spellbook;Miscellaneous38==Warlock-Grimoire;Miscellaneous39==Spellbook;Miscellaneous40==Necromancer-Spellbook;Miscellaneous41==Wooden-Spoon;Miscellaneous42==Gravestone;Miscellaneous43==Torch
+  --~SWCleanupTrigger|system;findability;ScriptCards_Triggers;change:campaign:turnorder
   --&BodyStyle|font-size: 12px ; letter-spacing: 0.01em ; line-height: 18px
   --&ButtonStyle|style="align-self: center;  background-color: transparent ; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: #6e2425; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
+
   --?"[@SC_SelectedTokens()]" -eq "undefined array"|NoSelectedToken
   --?"[@SC_SelectedTokens()]" -gt "1"|MultipleSelectedTokens|RestartMod
   --:NoSelectedToken| --#title|Spiritual Weapon --+No Token Selected|Please select the caster's token before running Spiritual Weapon. --X|
   --:MultipleSelectedTokens| --#title|Spiritual Weapon --+Multiple Tokens Selected|Please select only one caster token before running Spiritual Weapon. --X|
   --:RestartMod|
+  --#overridetemplate|statblockv4
   --&CasterCharID|[*S:character_id]
   --&CasterName|[*S:character_name]
   --&SpellAttackBonus|[*S:spell_attack_bonus]
@@ -61,13 +62,16 @@
   --:NoCharacter| --#title|Spiritual Weapon Setup --+|[b]Please make sure to create an NPC character named SpiritualWeapon, then rerun the script.[/b] --X|
 --X|
 --:SpellInfo|
-  --#emoteState|0 --#emoteText| --#whisper|self
+  --#emoteState|0 --#emoteText| --#whisper|self --#overridetemplate|statblockv4
   --~MacroButton|system;findability;[*[&SW_TokenID]:character_name];Spiritual-Weapon-Attack
   --?"[&MacroButton]" -eq "AbilityNotFound"|[
     --!a:[&SW_TokenID]|!npc_name:Spiritual Weapon
     --!a:[&SW_TokenID]|!WeaponChosen:[&Maul1]
     --!a:[&SW_TokenID]|!WeaponName:Maul
     --!a:[&SW_TokenID]|!WeaponCustom:0
+    --!a:[&SW_TokenID]|!swsoundfx:
+    --!a:[&SW_TokenID]|!swfxtype:burn
+    --!a:[&SW_TokenID]|!swfxcolor:magic
     --!or:[&SW_TokenID]:npcaction|name:Attack Spell Level 2|attack_flag:on|attack_type:Melee|attack_target:one target|attack_range:5 ft.|attack_tohit:[&SpellAttackBonus]|attack_damage:1d8+[&SpellAttackBonus]|attack_damagetype:force|attack_tohitrange:+[&SpellAttackBonus], Reach 5ft., one target|attack_onhit:11 (1d8 + [&SpellAttackBonus]) force damage|attack_crit:1d8
     --!ob:AbilID:[&SW_TokenID]:Spiritual-Weapon-Attack:y|[&perc][&obrac]SpiritualWeapon|repeating_npcaction_$0_npc_action[&cbrac]
   --]|
@@ -93,7 +97,7 @@
   --+|[&SpellStats]
 --X|
 --:ChooseWeaponType|
-  --#emoteState|0 --#emoteText| --#title|Choose Weapon Type --#Whisper|self
+  --#emoteState|0 --#emoteText| --#title|Choose Weapon Type --#Whisper|self --#overridetemplate|statblockv4
   --&TypesPerRow|3
   --&TypeCounter|1
   --&AllTypes|[t style="width:120% ; text-align: center ; position: relative ; left: -24px ; "][tr]
@@ -102,7 +106,7 @@
     --?[= [&TypeCounter] % [&TypesPerRow] ] -eq 0|&AllTypes;+[/tr][tr]
     --&TypeCounter|[= [&TypeCounter] + 1]
   --%|
-  --&AllTypes|+[/tr][tr][td [&ButtonStyle]][rbutton]Random Weapon::SaveToken;Random[/rbutton][/td][td [&ButtonStyle]][rbutton]Custom Token::CustomToken[/rbutton][/td][/tr][/t]
+  --&AllTypes|+[td [&ButtonStyle]][rbutton]Random Weapon::SaveToken;Random[/rbutton][/td][/tr][tr][td [&ButtonStyle]][rbutton]Custom Token::CustomToken[/rbutton][/td][td [&ButtonStyle]][rbutton]Custom FX::Effects[/rbutton][/td][/tr][/t]
   --+|[&AllTypes]
   --+|[t style="width: 95% ;"][tr][td width=100% [&ButtonStyle]][c][rbutton]BACK::SpellInfo[/rbutton][/c][/td][/tr][/t]
 --X|
@@ -150,8 +154,15 @@
     --+|[t style="width: 100% ; text-align: center ; font-size: 14px ; "][tr][td][img width=120][&[&WeaponChosen]][/img][br][b][&WeaponMat][&WeaponName][/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
   --]|
 --X|
+--:SaveFX|
+  --~FXSetting|string;before;|;[&reentryval]
+  --~FXValue|string;after;|;[&reentryval]
+  --?"[&FXSetting]" -eq "Type"|[ --!a:[&SW_TokenID]|!swfxtype:[&FXValue] --]|
+  --?"[&FXSetting]" -eq "Color"|[ --!a:[&SW_TokenID]|!swfxcolor:[&FXValue] --]|
+  --^Effects|
+--X|
 --:GetWeapon|
-  --#title| --#whisper|
+  --#title| --#whisper| --#overridetemplate|statblockv4public --#emoteState|visible
   --&SlotLevel|[&reentryval]
   --&WeaponCustom|[*[&SW_TokenID]:WeaponCustom]
   --?"[&WeaponCustom]" -eq ""|&WeaponCustom;0
@@ -171,12 +182,12 @@
   --&RandomToken|[&WeaponType][$WeaponNum.Raw]
   --~WeaponName|string;nonumbers;[&RandomToken]
   --&TokenImage|[&[&RandomToken]]
-  --^SW_TokenReady|
   --:SW_TokenReady|
   --=SlotsExpended|[*S:lvl[&SlotLevel]_slots_expended]
   --&SlotsTotal|[*S:lvl[&SlotLevel]_slots_total]
   --?[$SlotsExpended.Raw] -eq 0|[
-    -->NoSlots|[&SlotLevel]
+    --#emoteState|0
+    --+|[t width=267px][tr][td style="height: 30px ; font-size: 14px ; "][c][&CasterName] has no level [b][&SlotLevel][/b] spell slots available.[/c][/td][/tr][/t]
   --]|[
     --=SummonLeft|[*S:t-left] + 70
     --&CasterTop|[*S:t-top]
@@ -187,7 +198,14 @@
     --?"[&WeaponName]" -inc "Misc"|&WeaponName;
     --+|[t style="width: 100% ; text-align: center ; "][tr][td][img width=120][&TokenImage][/img][/td][/tr][/t]
     --!ot:NewTID|name:"[&WeaponMat][&WeaponName]"|left:[$SummonLeft.Raw]|top:[&CasterTop]|width:[&CasterWidth]|height:[&CasterHeight]|imgsrc:"[&TokenImage]"|represents:"[&SW_TokenID]"|showname:1|order:toFront|showplayers_name:1
-    --vpoint|[$SummonLeft.Raw] [&CasterTop] [&sfx]
+    --?"[&SWCleanupTrigger]" -ne "AbilityNotFound"|[
+      --&CasterFirstName|[&CasterName(word,1)]
+      --&SWTurnName|[&CasterFirstName]'s Spiritual Weapon
+      --~|turnorder;addtoken;[&NewTID];10;[&SWTurnName];-1
+    --]|
+    --&SoundFX|[*[&SW_TokenID]:swsoundfx]
+    --?"[&SoundFX]" -ne ""|[ --a|[&SoundFX] --]|
+    --vpoint|[$SummonLeft.Raw] [&CasterTop] [*[&SW_TokenID]:swfxtype]-[*[&SW_TokenID]:swfxcolor]
     --=SlotsLeft|[$SlotsExpended] - 1
     --!a:[&CasterCharID]|lvl[&SlotLevel]_slots_expended:[$SlotsLeft]
     --Rfirst|[&SW_TokenID];repeating_npcaction
@@ -197,13 +215,11 @@
     --?[&SlotLevel] -ge 8|=Dice;4
     --!a:[&SW_TokenID]|[*R>name]:Attack Spell Level [&SlotLevel]|[*R>attack_flag]:on|[*R>attack_type]:Melee|[*R>attack_target]:one target|[*R>attack_range]:5 ft.|[*R>attack_tohit]:[&SpellAttackBonus]|[*R>attack_damage]:[$Dice.Total]d8+[&SpellAttackBonus]|[*R>attack_damagetype]:force|[*R>attack_onhit]:|[*R>attack_onhit]:([$Dice.Total]d8+[&SpellAttackBonus]) force damage|[*R>attack_crit]:[$Dice.Total]d8
   --]|
-  -->SummonMessage|[&SlotLevel];[&WeaponMat]
+  --#emoteText|[&CasterName] summons their Spiritual [&WeaponMat] [&WeaponName]
+  --+|[t width=267px][tr][td style="height: 20px ; "][c][f14][&CasterName] has [b][$SlotsLeft.Raw][/b] of [b][&SlotsTotal][/b] level [b][&SlotLevel][/b] slots left.[/f][/c][/td][/tr][/t]
 --X|
 --:CustomToken|
-  --#emoteState|0
-  --#emoteText|
-  --#title|
-  --#whisper|self
+  --#emoteState|0 --#emoteText| --#title| --#whisper|self
   --&CurrentToken|[*[&SW_TokenID]:WeaponChosen]
   --&CurrentName|[*[&SW_TokenID]:WeaponName]
   --&CurrentCustom|[*[&SW_TokenID]:WeaponCustom]
@@ -217,34 +233,62 @@
   --&PreviewBlock|
   --?"[&PreviewImage]" -ne ""|&PreviewBlock;[img width=120][&PreviewImage][/img][br]
   --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 16px ; "][c][b]Custom Spiritual Weapon Settings[/b][/c][/td][/tr][/t]
-  --+|[t style="width: 100% ; text-align: center ; font-size: 14px ; "][tr][td colspan=2][&PreviewBlock][b]Current Name:[/b] [&CurrentName][br][b]Current Token:[/b] [&CurrentTokenText][/td][/tr][tr][td [&ButtonStyle]][rbutton]Change Token Image::ProcessUpdate;WeaponChosen[/rbutton][/td][td [&ButtonStyle]][rbutton]Change Name::ProcessUpdate;WeaponName[/rbutton][/td][/tr][tr][td [&ButtonStyle]][rbutton]Reset to Maul::ProcessReset[/rbutton][/td][td [&ButtonStyle]][rbutton]Back::ChooseWeaponType[/rbutton][/td][/tr][/t]
+  --+|[t style="width: 100% ; text-align: center ; font-size: 14px ; "][tr][td colspan=2][&PreviewBlock][b]Current Name:[/b] [&CurrentName][br][b]Current Token:[/b] [&CurrentTokenText][/td][/tr][tr][td [&ButtonStyle]][rbutton]Change Token Image::ProcessUpdate;WeaponChosen[/rbutton][/td][td [&ButtonStyle]][rbutton]Change Name::ProcessUpdate;WeaponName[/rbutton][/td][/tr][tr][td [&ButtonStyle]][rbutton]Reset to Maul::ProcessReset;Weapon[/rbutton][/td][td [&ButtonStyle]][rbutton]Back::ChooseWeaponType[/rbutton][/td][/tr][/t]
 --X|
 --:ProcessUpdate|
-  --?"[&reentryval]" -eq ""|CustomToken
-  --?"[&reentryval]" -eq "WeaponName"|&BtnText;Click Here to add custom name|&BtnText;Click Here to add image URL
-  --?"[&reentryval]" -eq "WeaponName"|&Prompt;What name do you want to give your Spiritual Weapon?|&Prompt;What Is The URL To Your Token Image? It must be an image from your Roll20 Library.
+  --?"[&reentryval]" -eq "WeaponName"|[ --&BtnText|Click Here to add custom token name --&Prompt|What name do you want to give your Spiritual Weapon? --]|
+  --?"[&reentryval]" -eq "WeaponChosen"|[ --&BtnText|Click Here to add image URL --&Prompt|What Is The URL To Your Token Image? It must be an image from your Roll20 Library. --]|
+  --?"[&reentryval]" -eq "swsoundfx"|[ --&BtnText|Click Here to add Jukebox track name --&Prompt|What is the exact name of the Jukebox track to play when Spiritual Weapon is summoned? Leave blank to clear it. --]|
   --I. ;[&BtnText]|q;UpdateValue;[&Prompt]
+  --?"[&reentryval]" -eq "swsoundfx"|[ --!a:[&SW_TokenID]|!swsoundfx:[&UpdateValue] --^Effects| --]|
   --?"[&UpdateValue]" -eq ""|CustomToken
   --!a:[&SW_TokenID]|![&reentryval]:[&UpdateValue]
-  --?"[&reentryval]" -eq "WeaponChosen"|!a:[&SW_TokenID];!WeaponCustom:1
+  --?"[&reentryval]" -eq "WeaponChosen"|[ --!a:[&SW_TokenID]|!WeaponCustom:1 --]|
   --^CustomToken|
 --X|
 --:ProcessReset|
-  --!a:[&SW_TokenID]|!WeaponChosen:[&Maul1]
-  --!a:[&SW_TokenID]|!WeaponName:Maul
-  --!a:[&SW_TokenID]|!WeaponCustom:0
-  --^CustomToken|
+  --?"[&reentryval]" -eq "Weapon"|[
+    --!a:[&SW_TokenID]|!WeaponChosen:[&Maul1] --!a:[&SW_TokenID]|!WeaponName:Maul --!a:[&SW_TokenID]|!WeaponCustom:0
+    --^CustomToken|
+  --]|[
+    --!a:[&SW_TokenID]|!swfxtype:burn --!a:[&SW_TokenID]|!swfxcolor:magic
+    --^Effects|
+  --]|
 --X|
---:SummonMessage|
-  --#whisper|
-  --#overridetemplate|statblockv4public
-  --#emoteState|visible
-  --#emoteText|[&CasterName] summons their Spiritual [%2%][&WeaponName]
-  --+|[t width=267px][tr][td style="height: 20px ; "][c][f14][&CasterName] has [b][$SlotsLeft.Raw][/b] of [b][&SlotsTotal][/b] level [b][%1%][/b] slots left.[/f][/c][/td][/tr][/t]
---X|
---:NoSlots|
-  --#emoteState|0
-  --+|[t width=267px][tr][td style="height: 30px ; font-size: 14px ; "][c][&CasterName] has no level [b][%1%][/b] spell slots available.[/c][/td][/tr][/t]
+--:Effects|
+  --#emoteState|0 --#emoteText| --#title| --#whisper|self
+  --&CurrentSound|[*[&SW_TokenID]:swsoundfx]
+  --&CurrentFXType|[*[&SW_TokenID]:swfxtype]
+  --&CurrentFXColor|[*[&SW_TokenID]:swfxcolor]
+  --?"[&CurrentFXType]" -eq ""|&CurrentFXType;burn
+  --?"[&CurrentFXColor]" -eq ""|&CurrentFXColor;magic
+  --?"[&CurrentSound]" -eq ""|&CurrentSound;None
+  --~|array;define;FXTypes;beam;bomb;breath;bubbling;burn;burst;explode;glow;missile;nova;splatter
+  --~|array;define;FXColors;acid;blood;charm;death;fire;frost;holy;magic;slime;smoke;water
+  --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 16px ; "][c][b]Custom Spiritual Weapon FX[/b][/c][/td][/tr][/t]
+  --+|[t style="width: 100% ; text-align: center ; font-size: 14px ;"][tr][td][b]Current Visual FX:[/b] [&CurrentFXType]-[&CurrentFXColor][br][b]Current Sound FX:[/b] [&CurrentSound][/td][/tr][tr][td [&ButtonStyle]][rbutton]Set Jukebox Sound::ProcessUpdate;swsoundfx[/rbutton][/td][/tr][/t]
+  --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 15px ; "][c][b]Effect Type[/b][/c][/td][/tr][/t]
+  --&FXTypeButtons|[t style="width: 100% ; text-align: center ; table-layout: fixed ;"][tr]
+  --&FXTypeCounter|1
+  --%FXTypeLoop|foreach;FXTypes
+    --&FXTypeButtons|+[td [&ButtonStyle]][rbutton][&FXTypeLoop]::SaveFX;Type|[&FXTypeLoop][/rbutton][/td]
+    --?[= [&FXTypeCounter] % 3 ] -eq 0|&FXTypeButtons;+[/tr][tr]
+    --&FXTypeCounter|[= [&FXTypeCounter] + 1]
+  --%|
+  --&FXTypeButtons|+[/tr][/t]
+  --+|[&FXTypeButtons]
+  --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 15px ; "][c][b]Effect Color[/b][/c][/td][/tr][/t]
+  --&FXColorButtons|[t style="width: 100% ; text-align: center ; table-layout: fixed ;"][tr]
+  --&FXColorCounter|1
+  --%FXColorLoop|foreach;FXColors
+    --&FXColorButtons|+[td [&ButtonStyle]][rbutton][&FXColorLoop]::SaveFX;Color|[&FXColorLoop][/rbutton][/td]
+    --?[= [&FXColorCounter] % 3 ] -eq 0|&FXColorButtons;+[/tr][tr]
+    --&FXColorCounter|[= [&FXColorCounter] + 1]
+  --%|
+  --&FXColorButtons|+[/tr][/t]
+  --+|[&FXColorButtons]
+  --+|[t style="width: 95% ; text-align: center"][tr][td width=50% [&ButtonStyle]][c][rbutton]Reset FX::ProcessReset;Effects[/rbutton][/c][/td][/tr][/t]
+  --+|[t style="width: 95% ;"][tr][td width=100% [&ButtonStyle]][c][rbutton]Back::ChooseWeaponType[/rbutton][/c][/td][/tr][/t]
 --X|
 --:SpecificName|
   --?"[%1%]" -inc "Misc" -and "[%2%]" -eq ""|&WeaponMat;[:Misc("[*[&SW_TokenID]:WeaponChosen]")]
