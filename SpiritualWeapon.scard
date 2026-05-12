@@ -2,7 +2,7 @@
 
   --/| ==========================================================================
   --/| Script Name : Tim's Spiritual Weapon Mod for D&D 5E 2014
-  --/| Version     : 2.1.0
+  --/| Version     : 2.1.1
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| ==========================================================================
@@ -157,6 +157,8 @@
 --:SaveFX|
   --~FXSetting|string;before;|;[&reentryval]
   --~FXValue|string;after;|;[&reentryval]
+  --?"[&FXSetting]" -eq "Default"|[ --!a:[&SW_TokenID]|!swfxtype:Default --!a:[&SW_TokenID]|!swfxcolor: --]|
+  --?"[&FXSetting]" -eq "None"|[ --!a:[&SW_TokenID]|!swfxtype: --!a:[&SW_TokenID]|!swfxcolor: --]|
   --?"[&FXSetting]" -eq "Type"|[ --!a:[&SW_TokenID]|!swfxtype:[&FXValue] --]|
   --?"[&FXSetting]" -eq "Color"|[ --!a:[&SW_TokenID]|!swfxcolor:[&FXValue] --]|
   --^Effects|
@@ -205,7 +207,17 @@
     --]|
     --&SoundFX|[*[&SW_TokenID]:swsoundfx]
     --?"[&SoundFX]" -ne ""|[ --a|[&SoundFX] --]|
-    --vpoint|[$SummonLeft.Raw] [&CasterTop] [*[&SW_TokenID]:swfxtype]-[*[&SW_TokenID]:swfxcolor]
+    --&SWFXType|[*[&SW_TokenID]:swfxtype]
+    --&SWFXColor|[*[&SW_TokenID]:swfxcolor]
+    --?"[&SWFXType]" -eq "" -and "[&SWFXColor]" -eq ""|SW_NoVFX
+    --?"[&SWFXType]" -eq "Default"|SW_DefaultVFX
+    --vpoint|[$SummonLeft.Raw] [&CasterTop] [&SWFXType]-[&SWFXColor]
+    --^SW_VFXDone|
+    --:SW_DefaultVFX|
+    --vpoint|[$SummonLeft.Raw] [&CasterTop] [&default]
+    --^SW_VFXDone|
+    --:SW_NoVFX|
+    --:SW_VFXDone|
     --=SlotsLeft|[$SlotsExpended] - 1
     --!a:[&CasterCharID]|lvl[&SlotLevel]_slots_expended:[$SlotsLeft]
     --Rfirst|[&SW_TokenID];repeating_npcaction
@@ -260,13 +272,14 @@
   --&CurrentSound|[*[&SW_TokenID]:swsoundfx]
   --&CurrentFXType|[*[&SW_TokenID]:swfxtype]
   --&CurrentFXColor|[*[&SW_TokenID]:swfxcolor]
-  --?"[&CurrentFXType]" -eq ""|&CurrentFXType;burn
-  --?"[&CurrentFXColor]" -eq ""|&CurrentFXColor;magic
-  --?"[&CurrentSound]" -eq ""|&CurrentSound;None
-  --~|array;define;FXTypes;beam;bomb;breath;bubbling;burn;burst;explode;glow;missile;nova;splatter
+  --&CurrentVisualFX|[&CurrentFXType]-[&CurrentFXColor]
+  --?"[&CurrentFXType]" -eq "Default"|&CurrentVisualFX;Default
+  --?"[&CurrentFXType]" -eq "" -and "[&CurrentFXColor]" -eq ""|&CurrentVisualFX;None
+  --~|array;define;FXTypes;bomb;breath;bubbling;burn;burst;explode;glow;nova;splatter
   --~|array;define;FXColors;acid;blood;charm;death;fire;frost;holy;magic;slime;smoke;water
   --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 16px ; "][c][b]Custom Spiritual Weapon FX[/b][/c][/td][/tr][/t]
-  --+|[t style="width: 100% ; text-align: center ; font-size: 14px ;"][tr][td][b]Current Visual FX:[/b] [&CurrentFXType]-[&CurrentFXColor][br][b]Current Sound FX:[/b] [&CurrentSound][/td][/tr][tr][td [&ButtonStyle]][rbutton]Set Jukebox Sound::ProcessUpdate;swsoundfx[/rbutton][/td][/tr][/t]
+  --+|[t style="width: 100% ; text-align: center ; font-size: 14px ;"][tr][td][b]Current Visual FX:[/b] [&CurrentVisualFX][br][b]Current Sound FX:[/b] [&CurrentSound][/td][/tr][tr][td [&ButtonStyle]][rbutton]Set Jukebox Sound::ProcessUpdate;swsoundfx[/rbutton][/td][/tr][/t]
+  --+|[t style="width: 95% ; text-align: center ;"][tr][td width=50% [&ButtonStyle]][rbutton]Default FX::SaveFX;Default|[/rbutton][/td][td width=50% [&ButtonStyle]][rbutton]No FX::SaveFX;None|[/rbutton][/td][/tr][/t]
   --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 15px ; "][c][b]Effect Type[/b][/c][/td][/tr][/t]
   --&FXTypeButtons|[t style="width: 100% ; text-align: center ; table-layout: fixed ;"][tr]
   --&FXTypeCounter|1
