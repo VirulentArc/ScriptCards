@@ -287,10 +287,10 @@
   --&ArrayCounter|[= [&Pages] +3]
   --c[&Pages]|0:&PageNum;1|4:&PageNum;2|8:&PageNum;3|12:&PageNum;4|16:&PageNum;5
   --+|[t width=100% [&TtlTbl_CSS]][tr][td][#[*S:iconcolor]][&CharName_Attr][&Owner] Spell Book Settings Page [&PageNum][/#][/td][/tr][/t]
-  --+|[t width=98% border=1 [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&Stngs_SpellColor]]This Button rebuilds stored spell data from the character sheet. Use if spells are missing or out of date. Also use if you've added a custom spell.[/#][/td][td title="Clear Spellbook Cache"][F::18][rbutton][#[&IconColor_Attr]]&#9851;[/#]::ClearCache;restart[/rbutton][/F][/td][/tr][/t]
+  --+|[t width=98% border=1 [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&Stngs_SpellColor]][F::12]This Button rebuilds stored spell data from the character sheet. Use if spells are missing or out of date. Also use if you've added a custom spell.[/F][/#][/td][td title="Clear Spellbook Cache"][F::18][rbutton][#[&IconColor_Attr]]&#9851;[/#]::ClearCache;restart[/rbutton][/F][/td][/tr][/t]
   --&SpellMuleDisplay|[&SpellMule]
   --?"[&SpellMuleDisplay]" -eq ""|&SpellMuleDisplay;None
-  --+|[t width=98% border=1 [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&Stngs_SpellColor]]Spell Mule: [b][&SpellMuleDisplay][/b][br][F::12]Add custom ablity macros to your spell mule named here. Replace spaces in spell names with dashes.[/#][/td][td title="Change Spell Mule"][F::18][rbutton][#[&IconColor_Attr]]&#x270E;[/#]::WriteSpellMule;edit[/rbutton][/F][br][br][rbutton][#[&IconColor_Attr]]Clear[/#]::WriteSpellMule;clear[/rbutton][/td][/tr][/t]
+  --+|[t width=98% border=1 [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&Stngs_SpellColor]][F::12]Spell Mule: [b][&SpellMuleDisplay][/b][br]Add custom ablity macros to your spell mule named here. Replace spaces in spell names with dashes.[/F][/#][/td][td title="Change Spell Mule"][F::18][rbutton][#[&IconColor_Attr]]&#x270E;[/#]::WriteSpellMule;edit[/rbutton][/F][br][br][rbutton][#[&IconColor_Attr]]Clear[/#]::WriteSpellMule;clear[/rbutton][/td][/tr][/t]
   --&ThemeOutput|[br][t width=98% [&DarkTd_CSS] border=1][tr]
   --%ThemeLoop|[&Pages];[&ArrayCounter]
     --&ChosenTheme|style="text-shadow: 0 1px 1px rgba(0,0,0,0) ; "
