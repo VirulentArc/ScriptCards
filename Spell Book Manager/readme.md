@@ -11,7 +11,7 @@ The script is designed for the official D&D 5E 2014 by Roll20 character sheet an
 - A Roll20 Pro account with Mod/API access.
 - ScriptCards installed.
 - ScriptCards 3.0.22 or newer is recommended.
-- The official D&D 5E by Roll20 character sheet.
+- The official D&D 5E 2014 by Roll20 character sheet.
 - One or more spell mule characters whose names begin with `SBM_`.
 
 The script creates and uses handouts for settings and spell descriptions. No manual handout creation is required.
@@ -33,7 +33,7 @@ The settings handout stores GM configuration. The player-specific handout is use
 The first time each player runs the script a new `Spell Book Manager [PlayerID]` will be created.<br>
 ![Installation](images/handouts.png)
 
-GM's will see a string of characters in the GM Notes of the Handouts. Do not manually edit the GM Notes, that is a JSON string that holds all the mule assignment information.<br>
+GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes, that is a JSON string that holds all the mule assignment information.<br>
 ![Installation](images/JSON.png)
 
 ---
@@ -63,7 +63,7 @@ Players can normally:
 1. Choose a character.
 2. Click **Choose Spells** to browse available spells from the spell mules assigned to that character. (see Choose Spells section)
 ![Basic Player Use](images/character_choice.png)
-3. If the character is a Warlock than **Move Spells** button is also available, which will allow you to move spells from one spell level to another. (see Move Spells sections)<br>
+3. If the character is a Warlock, the **Move Spells** button is also available, which will allow you to move spells from one spell level to another. (see Move Spells section)<br>
 ![Basic Player Use](images/choose_move.png)
 
 If the character already knows a spell with the same name, Spell Book Manager marks that spell as **Already Known** instead of offering another copy button, but not until the Spell List is refreshed.
@@ -76,9 +76,9 @@ If the character already knows a spell with the same name, Spell Book Manager ma
 
 **Choose Spells** shows spells available from assigned spell mules.
 
-1. Click the spell description button to open the Spell Book Manager handout.
-1. Click the &#x1F56E; button to view a formatted spell description in the Spell Book Manager handout.
-2. Click **Copy to Character** to copy a spell onto the character sheet.
+1. Click **Spell Description Handout** to open the Spell Book Manager handout.
+2. Click the &#x1F56E; button beside a spell to write that spell's formatted description to the handout.
+3. Click **Copy to Character** to copy a spell onto the character sheet.
 
 Spell availability comes from two sources:
 
@@ -258,7 +258,7 @@ For custom description-roll spells:
 5. Put the complete custom roll directly in the spell description.
 6. If the custom roll needs to scale by spell level, use `@{spelllevel}` as the default/current level reference instead of hard-coding a default level.
 
-For custom Warlock spells that place their damage roll directly in the spell description, create the spell manually from a blank spell row instead of editing a compendium spell row. Leave At Higher Levels and higher-level damage fields blank.
+For custom Warlock spells that place their damage roll directly in the spell description, make sure **At Higher Levels** and higher-level damage fields are blank unless you intentionally want Roll20's normal upcast behavior to run as well.
 
 ### Example: Hellish Rebuke-style scaling
 
