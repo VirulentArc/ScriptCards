@@ -182,21 +182,21 @@ Character-specific mule settings can:
 
 ## Custom Classes
 
-![Custom Classes](images/11-custom-classes.png)
-
 The GM can add custom class names from the settings menu.
 
-Use this if your game has a homebrew class or a sheet class name that is not part of the default class list.
+Use this if your game has a homebrew class, a sheet class name that is not part of the default class list, or a subclass that should have its own spell mule assignments.
+
+Custom class names can also be subclass names. If a custom class entry matches a character's subclass, Spell Book Manager will apply the mule assignments for that custom entry to that character.
+
+For example, if the GM adds a custom class named `Eldritch Knight`, then assigns a spell mule to `Eldritch Knight`, characters with `Eldritch Knight` as their subclass can inherit that mule assignment.
 
 Custom class names are stored in the Spell Book Manager settings handout and appear in the class mule assignment menu.
 
-Class names are normalized to lowercase internally.
+Class and subclass names are normalized to lowercase internally.
 
 ---
 
 ## Themes
-
-![Themes](images/12-themes.png)
 
 Spell Book Manager includes multiple visual themes.
 
@@ -218,13 +218,11 @@ Theme selection is stored per user. Players can choose their own display theme w
 
 ## Spell Description Handout
 
-![Spell Description Handout](images/13-spell-description-handout.png)
+![Spell Description Handout](images/handout.png)
 
-In Choose Spells mode, each spell has a description button. Clicking it writes the formatted spell description to that user's Spell Book Manager handout.
+In Choose Spells mode, each spell has a &#x1F56E; description button. Clicking it writes the formatted spell description to that user's Spell Book Manager handout.
 
 The spell list also includes a **Spell Description Handout** button that opens the handout.
-
-If Roll20 does not visually update the handout immediately, close and reopen the handout.
 
 ---
 
