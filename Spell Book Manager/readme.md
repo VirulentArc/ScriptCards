@@ -40,8 +40,6 @@ GM's will see a string of characters in the GM Notes of the Handouts. Do not man
 
 ## Basic Player Use
 
-![Basic Player Use](images/04-basic-player-use.png)
-
 Run Spell Book Manager from the macro bar or collections tab.
 
 If the player controls only one valid PC, the script will go directly to that character's spell list. If the player controls more than one valid PC, the script will ask which character to manage.
@@ -60,7 +58,7 @@ If the character already knows a spell with the same name, Spell Book Manager ma
 
 ## Choose Spells
 
-![Choose Spells](images/05-choose-spells.png)
+![Choose Spells](images/spell_choice.png)
 
 **Choose Spells** shows spells available from assigned spell mules.
 
