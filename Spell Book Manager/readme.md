@@ -20,6 +20,8 @@ The script creates and uses handouts for settings and spell descriptions. No man
 
 ## Installation
 
+![Installation](images/handouts.png)
+
 1. Install ScriptCards in your Roll20 game.
 2. Create a new Macro Spell Book Manager.
 3. Paste the full `Spell_Book_Manager.scard` script into that Macro.
@@ -37,6 +39,8 @@ GM's will see a string of characters in the GM Notes of the Handouts. Do not man
 ---
 
 ## Basic Player Use
+
+![Basic Player Use](images/04-basic-player-use.png)
 
 Run Spell Book Manager from the macro bar or collections tab.
 
@@ -56,6 +60,8 @@ If the character already knows a spell with the same name, Spell Book Manager ma
 
 ## Choose Spells
 
+![Choose Spells](images/05-choose-spells.png)
+
 **Choose Spells** shows spells available from assigned spell mules.
 
 Spell availability comes from two sources:
@@ -70,6 +76,8 @@ When a spell is copied, the script copies the full spell row to the character sh
 ---
 
 ## Move Spells
+
+![Move Spells](images/06-move-spells.png)
 
 **Move Spells** allows a character's existing leveled spells to be moved up or down one spell level at a time.
 
@@ -89,6 +97,8 @@ When moving Warlock-style scaling spells, Spell Book Manager attempts to preserv
 
 ## GM Settings
 
+![GM Settings](images/07-gm-settings.png)
+
 Click the settings button in the Spell Book Manager title bar to open settings.
 
 GM settings include:
@@ -107,6 +117,8 @@ Only the GM sees class mule, character mule, and custom class management options
 ---
 
 ## Spell Mule Characters
+
+![Spell Mule Characters](images/08-spell-mule-characters.png)
 
 A spell mule is a normal Roll20 character sheet whose name begins with:
 
@@ -131,6 +143,8 @@ The `SBM_` prefix is only for identifying spell mule characters. The prefix is r
 
 ## Assigning Class Spell Mules
 
+![Assigning Class Spell Mules](images/09-assigning-class-spell-mules.png)
+
 To assign spell mules by class:
 
 1. Run Spell Book Manager as the GM.
@@ -144,6 +158,8 @@ A character inherits spell mules from any matching class names found on their sh
 ---
 
 ## Character-Specific Spell Mules
+
+![Character-Specific Spell Mules](images/10-character-specific-spell-mules.png)
 
 Character-specific settings let the GM add or block spell mules for a specific character.
 
@@ -166,6 +182,8 @@ Character-specific mule settings can:
 
 ## Custom Classes
 
+![Custom Classes](images/11-custom-classes.png)
+
 The GM can add custom class names from the settings menu.
 
 Use this if your game has a homebrew class or a sheet class name that is not part of the default class list.
@@ -177,6 +195,8 @@ Class names are normalized to lowercase internally.
 ---
 
 ## Themes
+
+![Themes](images/12-themes.png)
 
 Spell Book Manager includes multiple visual themes.
 
@@ -198,6 +218,8 @@ Theme selection is stored per user. Players can choose their own display theme w
 
 ## Spell Description Handout
 
+![Spell Description Handout](images/13-spell-description-handout.png)
+
 In Choose Spells mode, each spell has a description button. Clicking it writes the formatted spell description to that user's Spell Book Manager handout.
 
 The spell list also includes a **Spell Description Handout** button that opens the handout.
@@ -208,12 +230,16 @@ If Roll20 does not visually update the handout immediately, close and reopen the
 
 ## Important Notes
 
+![Important Notes](images/14-important-notes.png)
+
 Only one GM should edit Spell Book Manager settings at a time. The settings are stored in a shared handout, and simultaneous writes can overwrite or confuse each other.
 
 
 ---
 
 ## Custom Spell Notes
+
+![Custom Spell Notes](images/15-custom-spell-notes.png)
 
 Custom spells that put their own damage or upcast rolls directly in the spell description should be created from a clean blank spell row, not by modifying a compendium spell row.
 
@@ -242,6 +268,8 @@ This uses `@{spelllevel}` so the roll follows the spell row's current level inst
 
 ## Troubleshooting
 
+![Troubleshooting](images/16-troubleshooting.png)
+
 ### No characters appear
 
 Make sure the character is a PC, not an NPC, and that the character sheet has normal class attributes. For normal players, the character must be controlled by that player. For GMs, all valid PCs should appear.
@@ -269,6 +297,8 @@ If ScriptCards cannot find a repeating attack row, `_reporder_repeating_attack`,
 ---
 
 ## Recommended Release Test
+
+![Recommended Release Test](images/17-recommended-release-test.png)
 
 Before using in a live game, test once as GM on a fresh character:
 
