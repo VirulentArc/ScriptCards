@@ -79,7 +79,7 @@ When a spell is copied, the script copies the full spell row to the character sh
 
 ## Move Spells
 
-![Move Spells](images/06-move-spells.png)
+![Move Spells](images/move-spell.png)
 
 **Move Spells** allows a character's existing leveled spells to be moved up or down one spell level at a time.
 
