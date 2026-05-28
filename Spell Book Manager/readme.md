@@ -30,10 +30,10 @@ The script creates and uses handouts for settings and spell descriptions. No man
 
 The settings handout stores GM configuration. The player-specific handout is used to display spell descriptions when the spell description button is clicked.
 
-The first time each player runs the script a new `Spell Book Manager [PlayerID]` will be created.
+The first time each player runs the script a new `Spell Book Manager [PlayerID]` will be created.<br>
 ![Installation](images/handouts.png)
 
-GM's will see a string of characters in the GM Notes of the Handouts. Do not manually edit the GM Notes, that is a JSON string that holds all the mule assignment information.
+GM's will see a string of characters in the GM Notes of the Handouts. Do not manually edit the GM Notes, that is a JSON string that holds all the mule assignment information.<br>
 ![Installation](images/JSON.png)
 
 ---
