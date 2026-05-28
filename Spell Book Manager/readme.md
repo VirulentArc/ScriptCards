@@ -228,8 +228,6 @@ The spell list also includes a **Spell Description Handout** button that opens t
 
 ## Important Notes
 
-![Important Notes](images/14-important-notes.png)
-
 Only one GM should edit Spell Book Manager settings at a time. The settings are stored in a shared handout, and simultaneous writes can overwrite or confuse each other.
 
 
@@ -237,11 +235,9 @@ Only one GM should edit Spell Book Manager settings at a time. The settings are 
 
 ## Custom Spell Notes
 
-![Custom Spell Notes](images/15-custom-spell-notes.png)
+Custom spells that put their own damage or upcast rolls directly in the spell description should not also use the sheet's normal At Higher Levels/upcast fields unless that behavior is intentional.
 
-Custom spells that put their own damage or upcast rolls directly in the spell description should be created from a clean blank spell row, not by modifying a compendium spell row.
-
-If a spell is dragged from the compendium and then edited, the Roll20 5E sheet may keep hidden At Higher Levels or upcast fields attached to the row. Those hidden fields can still trigger Roll20's normal upcast query even if the visible description has been customized.
+If the spell description already contains a custom scaling roll, make sure **At Higher Levels** and any higher-level damage fields are blank. Otherwise, Roll20's normal upcast behavior may run in addition to the custom roll in the description.
 
 For custom description-roll spells:
 
@@ -266,8 +262,6 @@ This uses `@{spelllevel}` so the roll follows the spell row's current level inst
 
 ## Troubleshooting
 
-![Troubleshooting](images/16-troubleshooting.png)
-
 ### No characters appear
 
 Make sure the character is a PC, not an NPC, and that the character sheet has normal class attributes. For normal players, the character must be controlled by that player. For GMs, all valid PCs should appear.
@@ -280,34 +274,8 @@ Open settings as the GM and assign one or more `SBM_` spell mule characters to t
 
 The character already has a spell with the same name on their sheet. Delete or rename the existing spell if you need to copy it again.
 
-### Spell descriptions do not update
-
-Close and reopen the Spell Book Manager handout. Roll20 handouts sometimes do not visually refresh immediately after an API write.
-
 ### A copied spell has unexpected upcast behavior
 
 Check whether the source mule spell was created by modifying a compendium spell. For custom description-roll spells, rebuild the spell manually from a blank row and leave Roll20's normal At Higher Levels and higher-level damage fields blank.
 
-### A corrupted old test character shows phantom attacks
-
-If ScriptCards cannot find a repeating attack row, `_reporder_repeating_attack`, or a spell row with a dangling `spellattackid`, the visible row is probably sheet/browser cache or sheet corruption. Test on a duplicated or fresh character.
-
 ---
-
-## Recommended Release Test
-
-![Recommended Release Test](images/17-recommended-release-test.png)
-
-Before using in a live game, test once as GM on a fresh character:
-
-1. Create or duplicate a clean PC.
-2. Create at least one `SBM_` spell mule.
-3. Add a few spells to the mule, including at least one attack spell and one spellcard/description spell.
-4. Assign the mule to the character's class.
-5. Copy spells onto the character.
-6. Confirm the copied spell descriptions, save DCs, attack buttons, and damage are correct.
-7. Move at least one leveled spell up and down.
-8. Confirm no phantom attack rows are created.
-
-If this test passes, the script is ready for regular use.
-
