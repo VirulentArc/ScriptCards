@@ -99,7 +99,7 @@ When moving Warlock-style scaling spells, Spell Book Manager attempts to preserv
 
 ## GM Settings
 
-![GM Settings](images/07-gm-settings.png)
+![GM Settings](images/gm_settings.png)
 
 Click the settings button in the Spell Book Manager title bar to open settings.
 
