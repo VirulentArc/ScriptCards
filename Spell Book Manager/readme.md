@@ -47,7 +47,7 @@ If the player controls only one valid PC, the script will go directly to that ch
 Players can normally:
 
 1. Choose a character. ![Basic Player Use](images/character_choice.png)
-2. Click **Choose Spells**.
+2. Click **Choose Spells**. ![Basic Player Use](images/choose_move.png)
 3. Browse available spells from the spell mules assigned to that character.
 4. Click **Copy to Character** to copy a spell onto the character sheet.
 5. Click the spell description button to view a formatted spell description in the Spell Book Manager handout.
