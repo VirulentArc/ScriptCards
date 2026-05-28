@@ -186,14 +186,9 @@ The GM can add custom class names from the settings menu.
 
 Use this if your game has a homebrew class, a sheet class name that is not part of the default class list, or a subclass that should have its own spell mule assignments.
 
-Custom class names can also be subclass names. If a custom class entry matches a character's subclass, Spell Book Manager will apply the mule assignments for that custom entry to that character.
+Custom class entries are matched against the class and subclass names on a character’s sheet. If the custom entry matches either a character’s class or subclass, Spell Book Manager will apply the mule assignments for that custom entry to that character.
 
-For example, if the GM adds a custom class named `Eldritch Knight`, then assigns a spell mule to `Eldritch Knight`, characters with `Eldritch Knight` as their subclass can inherit that mule assignment.
-
-Custom class names are stored in the Spell Book Manager settings handout and appear in the class mule assignment menu.
-
-Class and subclass names are normalized to lowercase internally.
-
+For example, if the GM adds a custom class named Eldritch Knight, then assigns a spell mule to Eldritch Knight, characters with Eldritch Knight as their subclass can inherit that mule assignment the same way a character inherits assignments from a matching class name.
 ---
 
 ## Themes
