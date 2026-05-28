@@ -49,7 +49,7 @@ Players can normally:
 1. Choose a character.
 2. Click **Choose Spells** to browse available spells from the spell mules assigned to that character. (see Choose Spells section)
 ![Basic Player Use](images/character_choice.png)
-3. If the character is a Warlock than **Move Spells** button is also available, which will allow you to move spells from one spell level to another. (see Move Spells sections)<br>
+3. If the character is a Warlock than **Move Spells** button is also available, which will allow you to move spells from one spell level to another. (see Move Spells sections)<>
 ![Basic Player Use](images/choose_move.png)
 
 If the character already knows a spell with the same name, Spell Book Manager marks that spell as **Already Known** instead of offering another copy button, but not until the Spell List is refreshed.
@@ -62,7 +62,8 @@ If the character already knows a spell with the same name, Spell Book Manager ma
 
 **Choose Spells** shows spells available from assigned spell mules.
 
-1. Click the spell description button to view a formatted spell description in the Spell Book Manager handout.
+1. Click the spell description button to open the Spell Book Manager handout.
+1. Click the &#x1F56E; button to view a formatted spell description in the Spell Book Manager handout.
 2. Click **Copy to Character** to copy a spell onto the character sheet.
 
 Spell availability comes from two sources:
