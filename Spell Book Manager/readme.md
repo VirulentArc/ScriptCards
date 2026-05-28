@@ -189,6 +189,7 @@ Use this if your game has a homebrew class, a sheet class name that is not part 
 Custom class entries are matched against the class and subclass names on a character’s sheet. If the custom entry matches either a character’s class or subclass, Spell Book Manager will apply the mule assignments for that custom entry to that character.
 
 For example, if the GM adds a custom class named Eldritch Knight, then assigns a spell mule to Eldritch Knight, characters with Eldritch Knight as their subclass can inherit that mule assignment the same way a character inherits assignments from a matching class name.
+
 ---
 
 ## Themes
