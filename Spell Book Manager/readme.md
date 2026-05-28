@@ -38,6 +38,20 @@ GM's will see a string of characters in the GM Notes of the Handouts. Do not man
 
 ---
 
+## Spell List Size and Roll20 Performance
+
+Avoid putting too many spells on a single character sheet.
+
+This includes both player characters and `SBM_` spell mule characters. Spell mules are still character sheets, and very large spell lists can make Roll20 slower or less reliable.
+
+There is no exact universal spell limit. Some sheets may work fine with a large number of spells, while others may slow down or behave unpredictably depending on browser, computer, campaign size, and overall sheet data.
+
+For best results, do not create one giant spell mule containing every spell in the game. Split large spell libraries into smaller `SBM_` mule characters, such as class-based, source-based, subclass-based, or campaign-specific spell mules.
+
+If a character sheet or spell mule starts loading slowly, failing to update correctly, or behaving strangely, reduce the number of spell rows on that sheet.
+
+---
+
 ## Basic Player Use
 
 Run Spell Book Manager from the macro bar or collections tab.
