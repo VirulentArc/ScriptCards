@@ -120,8 +120,6 @@ Only the GM sees class mule, character mule, and custom class management options
 
 ## Spell Mule Characters
 
-![Spell Mule Characters](images/08-spell-mule-characters.png)
-
 A spell mule is a normal Roll20 character sheet whose name begins with:
 
 ```text
@@ -145,7 +143,7 @@ The `SBM_` prefix is only for identifying spell mule characters. The prefix is r
 
 ## Assigning Class Spell Mules
 
-![Assigning Class Spell Mules](images/09-assigning-class-spell-mules.png)
+![Assigning Class Spell Mules](images/class_assigned.png)
 
 To assign spell mules by class:
 
@@ -161,7 +159,7 @@ A character inherits spell mules from any matching class names found on their sh
 
 ## Character-Specific Spell Mules
 
-![Character-Specific Spell Mules](images/10-character-specific-spell-mules.png)
+![Character-Specific Spell Mules](images/character_assigned.png)
 
 Character-specific settings let the GM add or block spell mules for a specific character.
 
