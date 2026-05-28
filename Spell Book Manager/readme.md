@@ -34,6 +34,7 @@ The first time each player runs the script a new `Spell Book Manager [PlayerID]`
 ![Installation](images/handouts.png)
 
 GM's will see a string of characters in the GM Notes of the Handouts. Do not manually edit the GM Notes, that is a JSON string that holds all the mule assignment information.
+![Installation](images/JSON.png)
 
 ---
 
