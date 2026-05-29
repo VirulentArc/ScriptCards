@@ -24,11 +24,11 @@
   --=PCCount|0
   --&SinglePC|
   --%PlayerLoop|foreach;PlayerArray
+    --~|array;attributes;CharacterNPCAttrs;[&PlayerLoop];npc
+    --?"[@CharacterNPCAttrs(maxindex)]" -lt "0"|%
     --?"[*[&PlayerLoop]:npc]" -eq "1"|%
     --&Character_Name|[*[&PlayerLoop]:character_name]
     --?"[&Character_Name]" -imatch "^SBM_" -or "[&Character_Name]" -imatch "^ScriptCards"|%
-    --~|array;attributes;CharacterClassAttrs;[&PlayerLoop];class
-    --?"[@CharacterClassAttrs(maxindex)]" -lt "0"|%
     --&SBMValidPCList(99999)|[&PlayerLoop]
     --&SinglePC|[&PlayerLoop]
     --=PCCount|[$PCCount.Raw] + 1
@@ -375,11 +375,11 @@
   --&CharacterCounter|0
   --&CharacterOutput|[t [&GridTable_CSS]][tr]
   --%SBMCharacterLoop|foreach;SBMAvailableCharacters
+    --~|array;attributes;CharacterNPCAttrs;[&SBMCharacterLoop];npc
+    --?"[@CharacterNPCAttrs(maxindex)]" -lt "0"|%
     --?"[*[&SBMCharacterLoop]:npc]" -eq "1"|%
     --&Character_Name|[*O:[&SBMCharacterLoop]:character:name]
     --?"[&Character_Name]" -imatch "^SBM_" -or "[&Character_Name]" -imatch "^ScriptCards"|%
-    --~|array;attributes;CharacterClassAttrs;[&SBMCharacterLoop];class
-    --?"[@CharacterClassAttrs(maxindex)]" -lt "0"|%
     --?"[= [&CharacterCounter] % 3 ]" -eq "0" -and "[&CharacterCounter]" -ne "0"|&CharacterOutput;+[/tr][tr]
     --=CharacterRow|[&CharacterCounter] \ 3
     --=CharacterRowMod|[$CharacterRow.Raw] % 2
@@ -670,6 +670,9 @@
   --!a:[&CharID]|$[&TransferSpellDestRowPrefix]smm_originallevel:[&TransferSpellOriginalLevel]
   --?"[&WhatDo]" -eq "CHOOSE"|[
     --!a:[&CharID]|[&TransferSpellDestRowPrefix]roll_output_dc:[*[&CharID]:spell_save_dc]
+  --]|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[*[&CharID]:class]" -eq ""|[
+    --!a:[&CharID]|!npcspellcastingflag:1
   --]|
   --?"[&TransferSpellOutput]" -ne "ATTACK"|AfterTransferSpellAttackRefresh
   --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellhldie:
