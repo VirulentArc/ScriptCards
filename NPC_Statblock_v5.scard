@@ -1,7 +1,7 @@
-!Script{{
+!Script{{ --/|{& skip}
   --/| ==========================================================================
   --/| Script Name : Tim's NPC Stat Block Mod v5 for D&D 5E 2014
-  --/| Version     : 5.0.1
+  --/| Version     : 5.1.0
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| ==========================================================================
@@ -23,140 +23,150 @@
   --~|array;objects:character;TemplateID;ScriptCards_TemplateMule
   --?"[@TemplateID(0)]" -eq ""|[ --#title|NPC Stat Block Setup --+|[c]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the NPC Stat Block will be kept.[/c] --X| --]|
   --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
-  --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4public
+  --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4
   --?"[&IsTemplate]" -eq "AbilityNotFound"|[
     --+|[c]The style information has been written, please run the Mod again.[/c]
     --&StatBlock|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; position: relative ; left: -30px ;'}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
     --!ob:StyleSaveResult:[@TemplateID(0)]:statblockv4:0|[&StatBlock]
-    --&StatBlockPublic|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; '}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
-    --!ob:StyleSaveResult:[@TemplateID(0)]:statblockv4public:0|[&StatBlockPublic]
     --@sc-reloadtemplates|
     --X|
   --]|
-  --&TokenID|[@SC_SelectedTokens(0)]
-  --#Debug|0 --#overridetemplate|statblockv4 --#Whisper|self --#sourceToken|[&TokenID] --#emoteState|0 --#reentrant|NPCBlock- [&TokenID]
+  --#Debug|0 --#overridetemplate|statblockv4 --#Whisper|self --#emoteState|0 --#title|
   --?"[@SC_SelectedTokens()]" -eq "undefined array"|NoSelectedToken
   --?"[@SC_SelectedTokens()]" -gt "1"|MultipleSelectedTokens
-  --?"[*S:npc]" -ne "1" -and "[&TokenID]" -ne ""|NotNPC|Continue
-  --:NotNPC| --#title|NPC Stat Block --+Wrong Token Type|[*S:character_name] is not an NPC character. Please select an NPC token to continue. --X|
+  --&TokenID|[@SC_SelectedTokens(0)]
+  --#sourceToken|[&TokenID]
+  --&SelectedTokenName|[*S:t-name]
+  --#reentrant|NPCBlock- [&TokenID]
+  --?"[*S:npc]" -ne "1"|NotNPC|Continue
+  --:NotNPC| --#title|NPC Stat Block --+Wrong Token Type|[&SelectedTokenName] is not an NPC character. Please select an NPC token to continue. --X|
   --:NoSelectedToken| --#title|NPC Stat Block --+No Token Selected|Please select an NPC token to continue. --X|
   --:MultipleSelectedTokens| --#title|NPC Stat Block --+Multiple Tokens Selected|Please select only one NPC token to continue. --X|
   --:Continue|
   --&NPC_Name|[*S:npc_name]
-  --#title|[&NPC_Name]
   --&CharID|[*S:character_id]
-  --&SAB|[*S:spell_attack_bonus]
-  --&NPC_actype|[*S:npc_actype] --?"[&NPC_actype]" -ne ""|[ --&NPCactype|([&NPC_actype]) --]|
-  --&HP|[*S:hp] --?"[&HP]" -ne ""|&BaseHP; [&HP] /
-  --&NPC_vuln|[*S:npc_vulnerabilities] --&NPC_res|[*S:npc_resistances] --&NPC_imm|[*S:npc_immunities]
-  --&NPC_cond|[*S:npc_condition_immunities] --&NPC_senses|[*S:npc_senses] --&NPC_lang|[*S:npc_languages]
-  --&NPC_chall|[*S:npc_challenge] --&NPC_pb|[*S:npc_pb]
+  --&SAB|[*S:spell_attack_bonus] --&NPCactype| --&BaseHP|
+  --?"[*S:npc_actype]" -ne ""|[ --&NPCactype|([*S:npc_actype]) --]|
+  --?"[*S:hp]" -ne ""|&BaseHP; [*S:hp] /
   --&ButtonStyle|width: 1%; white-space: nowrap; background-color: #FFEFD5; border-radius: 4px; box-shadow: 0px 1px 2px rgba(0,0,0,0.3), inset 0px 1px 1px rgba(0,0,0,0.1), inset 0px -1px 1px rgba(0,0,0,0.1); padding: 0px 4px ; 
   --&Divider|[t][tr][td height=5px][/td][/tr][/t][t][tr][td width=100% style="border: none; border-top: 0.10em solid transparent; border-bottom: 0.25em solid transparent; border-left: 16em solid #910900; line-height: 1.25em; font-size: 1.4em; display: block; pointer-events: none;"][/td][/tr][/t][t][tr][td height=5px][/td][/tr][/t]
+  --&StatBlockTitleFont|Georgia, 'Noto Serif', 'Liberation Serif', 'Nimbus Roman No9 L', 'Nimbus Roman', 'DejaVu Serif', 'Times New Roman', serif
   --&HRStyle|style="background-image:linear-gradient(#7A2008,#7A2008);background-size:100% 2px;background-repeat:no-repeat;background-position:bottom;padding-bottom:2px; letter-spacing: .8px; text-shadow: 0.6px 0 0 currentColor;"
-  --&HeaderBlock|[t width=100% style="width:100% ; font-size: 12px ; "][tr][td][#000][i][*S:npc_type]&nbsp;[/i][/#][/td][/tr][tr][td][&Divider][/td][/tr][tr][td][b]Armor&nbsp;Class[/b]&nbsp;[*S:npc_ac]&nbsp;[&NPCactype][br][b]Hit&nbsp;Points[/b][&BaseHP]&nbsp;[*S:hp^]&nbsp;([*S:npc_hpformula])[br][b]Speed[/b]&nbsp;[*S:npc_speed][/td][/tr][/t]
-  --+|[&HeaderBlock]
+  --&FullWidthStyle|style="width:100%;"
+  --&HeaderTableStyle|style="width:100%; font-size: 12px;"
+  --&InfoCellStyle|style="width: 260px; display: block; font-size: 12px;"
+  --&BodyCellStyle|style="font-size: 12px;"
+  --&ClipCellStyle|style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"
+  --&CenterTableStyle|style="width: 100%; text-align: center;"
+  --&ActionTableStyle|style="line-height: 1.1em;"
+  --&StatTableStyle|style="text-align: center; border-collapse: collapse;"
+  --&ButtonGridStyle|style="width: 100%; border-collapse: separate; border-spacing: 0px 2px;"
+  --&CenterButtonCell|style="[&ButtonStyle] text-align: center;"
+  --&RightButtonCell|style="[&ButtonStyle] text-align: right;"
+  --&RuleSpacer|[tr][td style="line-height:4px;"]&nbsp;[/td][/tr]
+  --&TightRuleSpacer|[tr][td style="line-height:2px;"]&nbsp;[/td][/tr]
+  --&SectionRule|[t width=100%][&RuleSpacer][tr][td [&HRStyle]][/td][/tr][&RuleSpacer][/t]
+  --&NPCNameStyle|style="font-family: [&StatBlockTitleFont]; font-variant: small-caps; font-variant-caps: small-caps; font-feature-settings: 'smcp' 1; font-size: 24px; font-weight: bold; font-style: normal; color: #7A2008; line-height: .9em; letter-spacing: .4px;"
+  --+|[t width=100% [&FullWidthStyle]][tr][td [&NPCNameStyle]][&NPC_Name][/td][/tr][/t]
+  --+|[t width=100% [&HeaderTableStyle]][tr][td][#000][i][*S:npc_type]&nbsp;[/i][/#][/td][/tr][tr][td][&Divider][/td][/tr][tr][td][b]Armor&nbsp;Class[/b]&nbsp;[*S:npc_ac]&nbsp;[&NPCactype][br][b]Hit&nbsp;Points[/b][&BaseHP]&nbsp;[*S:hp^]&nbsp;([*S:npc_hpformula])[br][b]Speed[/b]&nbsp;[*S:npc_speed][/td][/tr][/t]
   --+|[&Divider]
   --~|array;define;StatArray;strength;dexterity;constitution;intelligence;wisdom;charisma
   --&StatsPerRow|3 --&StatsCounter|0
-  --&StatsBlock|[t width=100% style="text-align: center; border-collapse: collapse;"][tr]
+  --&StatsBlock|[t width=100% [&StatTableStyle]][tr]
   --%StatLoop|foreach;StatArray
-    --&StatSpace| --&Sign| --&ModPart|
+    --&StatSpace| --&ModPart|
     --?"[= [&StatsCounter] % [&StatsPerRow] ]" -eq "0" -and "[&StatsCounter]" -ne "0"|&StatsBlock;+[/tr][tr]
     --&SaveButton|[&StatLoop(0,3)]
     --&StatName|[&SaveButton(touppercase)]
     --=ThisMod|[*S:[&StatLoop]_mod]
     --&StatNum|[*S:[&StatLoop]]
-    --?[$ThisMod.Raw] -ge 0|[ --&Sign|&#43; --&ModPart|[&Sign][$ThisMod.Raw] --]|
-    --?[$ThisMod.Raw] -lt 0|[ --=AbsMod|[$ThisMod.Raw] {ABS} --&Sign|&minus; --&ModPart|[&Sign][$AbsMod.Raw] --]|
+    --?[$ThisMod.Raw] -ge 0|[ --&ModPart|&#43;[$ThisMod.Raw] --]|
+    --?[$ThisMod.Raw] -lt 0|[ --=AbsMod|[$ThisMod.Raw] {ABS} --&ModPart|&minus;[$AbsMod.Raw] --]|
     --?"[&StatNum]" -lt "10"|[ --&StatSpace|&nbsp; --]|
-    --&StatsBlock|+[td][t style="width: 100%; border-collapse: separate; border-spacing: 0px 2px;"][tr][td style="[&ButtonStyle] text-align: center ; "][F::14][b][sheetbutton][&StatName]&nbsp;[&StatNum][&StatSpace]&nbsp;([&ModPart])::[*S:character_name]::npc_[&SaveButton][/sheetbutton][/b][/F][/td][/tr][tr][td style="[&ButtonStyle] text-align: center ; "][sheetbutton]save::[*S:character_name]::npc_[&SaveButton]_save[/sheetbutton][/td][/tr][/t][/td]
+    --&StatsBlock|+[td][t [&ButtonGridStyle]][tr][td [&CenterButtonCell]][F::14][b][sheetbutton][&StatName]&nbsp;[&StatNum][&StatSpace]&nbsp;([&ModPart])::[*S:character_name]::npc_[&SaveButton][/sheetbutton][/b][/F][/td][/tr][tr][td [&CenterButtonCell]][sheetbutton]save::[*S:character_name]::npc_[&SaveButton]_save[/sheetbutton][/td][/tr][/t][/td]
     --&StatsCounter|[= [&StatsCounter] + 1 ]
   --%|
   --&StatsBlock|+[/tr][/t]
   --+|[&StatsBlock]
   --+|[&Divider]
-  --&SecondBlock|[t width=100%][tr][td style="width: 260px ; display: block ; font-size: 12px ; "]
+  --&SecondBlock|[t width=100%][tr][td [&InfoCellStyle]]
   --&AddSave|
   --~|array;define;SaveArray;str;dex;con;int;wis;cha
   --%SaveLoop|foreach;SaveArray
-    --?"[*S:npc_[&SaveLoop]_save_base]" -ne ""|[ --~SaveTitle|string;totitlecase;[&SaveLoop] --&AddSave|+[&SaveTitle]&nbsp;[*S:npc_[&SaveLoop]_save_base],&nbsp; --]|
+    --?"[*S:npc_[&SaveLoop]_save_base]" -ne ""|[ --&AddSave|+[&SaveLoop(totitlecase)]&nbsp;[*S:npc_[&SaveLoop]_save_base],&nbsp; --]|
   --%|
-  --?"[&AddSave]" -ne ""|[ --&SavingThrows|[b]Saving&nbsp;Throws&nbsp;[/b] --]|
-  --=SecondBlockCalc|[&AddSave(length)] - 7
-  --&SecondBlock|+[&SavingThrows][&AddSave(0,[$SecondBlockCalc.Raw])][/td][/tr][/t]
-  --+|[&SecondBlock]
-  --&ThirdBlock|[t width=100%][tr][td style="width: 260px ; display: block ; font-size: 12px ; "]
+  --?"[&AddSave]" -ne ""|[ --=SecondBlockCalc|[&AddSave(length)] - 7 --&SecondBlock|+[b]Saving&nbsp;Throws&nbsp;[/b][&AddSave(0,[$SecondBlockCalc.Raw])][/td][/tr][/t] --+|[&SecondBlock] --]|
+  --&ThirdBlock|[t width=100%][tr][td [&InfoCellStyle]]
   --&AddSkill|
   --~|array;define;SkillArray;initiative;acrobatics;animal_handling;arcana;athletics;history;insight;intimidation;investigation;medicine;nature;perception;performance;persuasion;religion;sleight_of_hand;stealth;survival
   --&SkillsPerRow|3 --&SkillCounter|0
-  --&SkillOutput|[t style="width: 100%; border-collapse: separate; border-spacing: 0px 2px;"][tr]
+  --&SkillOutput|[t [&ButtonGridStyle]][tr]
   --%SkillLoop|foreach;SkillArray
-    --?"[&SkillLoop]" -ne "initiative"|[
-      --?"[*S:npc_[&SkillLoop]_base]" -ne ""|[ --&SkillTitle|[&SkillLoop(replaceall,_, )] --&SkillTitle|[&SkillTitle(totitlecase)] --&AddSkill|+[&SkillTitle]&nbsp;[*S:npc_[&SkillLoop]_base],&nbsp; --]|
-    --]|
+    --&RawSkill|[&SkillLoop] --&SkillLabel|[&SkillLoop(replaceall,_, )] --&SkillLabel|[&SkillLabel(totitlecase)]
+    --?"[&SkillLoop]" -eq "initiative"|SKIP_NPC_SKILL_BASE
+    --?"[*S:npc_[&SkillLoop]_base]" -ne ""|[ --&AddSkill|+[&SkillLabel]&nbsp;[*S:npc_[&SkillLoop]_base],&nbsp; --]|
+    --&RawSkill|npc_[&SkillLoop]
+    --:SKIP_NPC_SKILL_BASE|
     --?"[= [&SkillCounter] % [&SkillsPerRow] ]" -eq "0" -and "[&SkillCounter]" -ne "0"|&SkillOutput;+[/tr][tr]
-    --&RawSkill|[&SkillLoop] --&SkillLabel|[&RawSkill(replaceall,_, )] --&SkillLabel|[&SkillLabel(totitlecase)]
-    --?"[&RawSkill]" -ne "initiative"|&RawSkill;npc_[&RawSkill]
     --?"[&SkillLabel]" -eq "Animal Handling"|&SkillLabel;Animal Hand.
-    --&SkillOutput|+[td style="[&ButtonStyle] text-align: center ; "][sheetbutton][&SkillLabel]::[*S:character_name]::~selected|[&RawSkill][/sheetbutton][/td]
+    --&SkillOutput|+[td [&CenterButtonCell]][sheetbutton][&SkillLabel]::[*S:character_name]::~selected|[&RawSkill][/sheetbutton][/td]
     --&SkillCounter|[= [&SkillCounter] + 1 ]
   --%|
   --&SkillOutput|+[/tr][/t]
-  --?"[&AddSkill]" -ne ""|[ --&SkillHeading|[b]Skills&nbsp;[/b] --]|
-  --=ThirdBlockCalc|[&AddSkill(length)] - 7
-  --&ThirdBlock|+[&SkillHeading][&AddSkill(0,[$ThirdBlockCalc.Raw])][/td][/tr][/t]
-  --+|[&ThirdBlock]
+  --?"[&AddSkill]" -ne ""|[ --=ThirdBlockCalc|[&AddSkill(length)] - 7 --&ThirdBlock|+[b]Skills&nbsp;[/b][&AddSkill(0,[$ThirdBlockCalc.Raw])][/td][/tr][/t] --+|[&ThirdBlock] --]|
+  --~|array;define;FourthRows;npc_vulnerabilities!@!Damage Vulnerabilities!@!normal;npc_resistances!@!Damage Resistances!@!normal;npc_immunities!@!Damage Immunities!@!normal;npc_condition_immunities!@!Condition Immunities!@!normal;npc_senses!@!Senses!@!normal;npc_languages!@!Languages!@!normal;npc_challenge!@!Challenge!@!challenge;pb!@!Proficiency Bonus!@!pb
   --&FourthBlock|[t width=100%]
-  --?"[&NPC_vuln]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Damage&nbsp;Vulnerabilities[/b]&nbsp;[&NPC_vuln][/td][/tr] --]|
-  --?"[&NPC_res]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Damage&nbsp;Resistances[/b]&nbsp;[&NPC_res][/td][/tr] --]|
-  --?"[&NPC_imm]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Damage&nbsp;Immunities[/b]&nbsp;[&NPC_imm][/td][/tr] --]|
-  --?"[&NPC_cond]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Condition&nbsp;Immunities[/b]&nbsp;[&NPC_cond][/td][/tr] --]|
-  --?"[&NPC_senses]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Senses[/b]&nbsp;[&NPC_senses][/td][/tr] --]|
-  --?"[&NPC_lang]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Languages[/b]&nbsp;[&NPC_lang][/td][/tr] --]|
-  --?"[&NPC_chall]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Challenge[/b]&nbsp;[&NPC_chall]&nbsp;([*S:npc_xp]xp)[/td][/tr] --]|
-  --?"[&NPC_pb]" -ne "0" -and "[&NPC_pb]" -ne ""|[ --&FourthBlock|+[tr][td style="font-size: 12px ; "][b]Proficiency Bonus[/b]&nbsp;[&NPC_pb][/td][/tr] --]|
+  --%FourthLoop|foreach;FourthRows
+    --~FourthInfo|string;split;!@!;[&FourthLoop]
+    --&InfoAttr|[&FourthInfo1] --&InfoLabel|[&FourthInfo2] --&InfoType|[&FourthInfo3] --&InfoValue|[*S:[&InfoAttr]]
+    --?"[&InfoType]" -eq "normal" -and "[&InfoValue(length)]" -gt "0"|[ --&FourthBlock|+[tr][td [&BodyCellStyle]][b][&InfoLabel][/b]&nbsp;[&InfoValue][/td][/tr] --]|
+    --?"[&InfoType]" -eq "challenge" -and "[&InfoValue(length)]" -gt "0"|[ --&FourthBlock|+[tr][td [&BodyCellStyle]][b][&InfoLabel][/b]&nbsp;[&InfoValue]&nbsp;([*S:npc_xp]xp)[/td][/tr] --]|
+    --?"[&InfoType]" -eq "pb" -and "[&InfoValue]" -ne "0" -and "[&InfoValue(length)]" -gt "0"|[ --&FourthBlock|+[tr][td [&BodyCellStyle]][b][&InfoLabel][/b]&nbsp;&#43;[&InfoValue][/td][/tr] --]|
+  --%|
   --&FourthBlock|+[/t]
   --+|[&FourthBlock]
   --+|[&Divider]
   --~|array;define;SectionTypes;trait;action;bonusaction;reaction;action-l;action-m
   --%SectionLoop|foreach;SectionTypes
-    --Rfirst|[&CharID];repeating_npc[&SectionLoop]
-    --?"[*R:name]" -ne "NoRepeatingAttributeLoaded"|>ActionLoop;[&SectionLoop]
+    -->ActionLoop|[&SectionLoop]
   --%|
-  --+|[t width=100%][tr][td style="line-height:4px;"]&nbsp;[/td][/tr][tr][td [&HRStyle]][/td][/tr][tr][td style="line-height:4px;"]&nbsp;[/td][/tr][/t]
+  --+|[&SectionRule]
   --+|[&SkillOutput]
-  --?"[&SAB]" -ne "0" -and "[&SAB]" -ne ""|[ --+|[t width=100%][tr][td style="line-height:4px;"]&nbsp;[/td][/tr][tr][td [&HRStyle]][/td][/tr][tr][td style="line-height:4px;"]&nbsp;[/td][/tr][/t] --+|[t style="width: 100% ; text-align: center ; "][tr][td][/td][td style="[&ButtonStyle] text-align: center ; "][rbutton]Spells::SpellBlock[/rbutton][/td][td][/td][/tr][/t] --]|
+  --?"[&SAB]" -ne "0" -and "[&SAB]" -ne ""|[ --+|[&SectionRule] --+|[t [&CenterTableStyle]][tr][td][/td][td [&CenterButtonCell]][rbutton]Spells::SpellBlock[/rbutton][/td][td][/td][/tr][/t] --]|
 --X|
 --:ActionLoop|
   --&Action|[%1%]
-  --?"[&Action]" -eq "action-l"|&ActionName;[F::20]L[/F][F::15]EGENDARY[/F] [F::20]A[/F][F::15]CTIONS[/F]|&ActionName;[F::20]A[/F][F::15]CTIONS[/F]
+  --Rfirst|[&CharID];repeating_npc[&Action]
+  --?"[*R:name]" -eq "NoRepeatingAttributeLoaded"|[ --<| --]|
+  --&ActionName|[F::20]A[/F][F::15]CTIONS[/F]
+  --?"[&Action]" -eq "action-l"|&ActionName;[F::20]L[/F][F::15]EGENDARY[/F] [F::20]A[/F][F::15]CTIONS[/F]
   --?"[&Action]" -eq "action-m"|&ActionName;[F::20]M[/F][F::15]YTHIC[/F] [F::20]A[/F][F::15]CTIONS[/F]
   --?"[&Action]" -eq "bonusaction"|&ActionName;[F::20]B[/F][F::15]ONUS[/F] [F::20]A[/F][F::15]CTIONS[/F]
   --?"[&Action]" -eq "reaction"|&ActionName;[F::20]R[/F][F::15]EACTIONS[/F]
-  --&ActionName|[&ActionName(touppercase)]
-  --&ActionOutput|[t width=100% style="line-height: 1.1em;"]
-  --?"[&Action]" -ne "trait"|[ --&ActionOutput|+[tr][td style="line-height:4px;"]&nbsp;[/td][/tr][tr][td colspan=100% [&HRStyle]][&ActionName][/td][/tr][tr][td style="line-height:4px;"]&nbsp;[/td][/tr] --]|
-  --?"[&Action]" -eq "action-l"|[ --&LegDesc|[*S:npc_legendary_actions_desc] --&CleanedText|[&LegDesc] -->CleanText| --&ActionOutput|+[tr][td colspan=100% style="font-size: 12px ; color: #000 ; "][&CleanedText][/td][/tr] --]|
-  --?"[&Action]" -eq "action-m"|[ --&MythDesc|[*S:npc_mythic_actions_desc] --&CleanedText|[&MythDesc] -->CleanText| --&ActionOutput|+[tr][td colspan=100% style="font-size: 12px ; color: #000 ; "][&CleanedText][/td][/tr] --]|
-  --~|array;fromrepeatingsection;actionarray;[&CharID];repeating_npc[&Action];name
-  --%ActionLoop|foreach;actionarray
-    --Rfind|[&CharID];[&ActionLoop];repeating_npc[&Action];name
+  --&ActionOutput|[t width=100% [&ActionTableStyle]]
+  --?"[&Action]" -ne "trait"|[ --&ActionOutput|+[&RuleSpacer][tr][td colspan=100% [&HRStyle]][&ActionName][/td][/tr][&RuleSpacer] --]|
+  --?"[&Action]" -eq "action-l"|[ --&CleanedText|[*S:npc_legendary_actions_desc] -->CleanText| --&ActionOutput|+[tr][td colspan=100% [&BodyCellStyle]][&CleanedText][/td][/tr] --]|
+  --?"[&Action]" -eq "action-m"|[ --&CleanedText|[*S:npc_mythic_actions_desc] -->CleanText| --&ActionOutput|+[tr][td colspan=100% [&BodyCellStyle]][&CleanedText][/td][/tr] --]|
+  --%ActionLoop|while;"[*R:name]" -ne "NoRepeatingAttributeLoaded"
     --&CleanedText|
-    --?"[&Action]" -eq "reaction" -or "[&Action]" -eq "trait"|&ButtonURL;[*R>npc_roll_output]|&ButtonURL;[*R>npc_action]
-    --?"[&Action]" -eq "trait"|[ --&ButtonSize|14 --&ButtonEmote|&#128220;&#65038; --]|[ --&ButtonSize|18 --&ButtonEmote|&#x2694; --]|
+    --&ButtonURL|[*R>npc_action] --&ButtonSize|18 --&ButtonEmote|&#x2694;
+    --?"[&Action]" -eq "reaction" -or "[&Action]" -eq "trait"|&ButtonURL;[*R>npc_roll_output]
+    --?"[&Action]" -eq "trait"|[ --&ButtonSize|14 --&ButtonEmote|&#128220;&#65038; --]|
     --&Name|[*R:name] --&Description|[*R:description] --&AttackType|[*R:attack_type]
     --?"[&AttackType]" -inc "ranged"|&RangeType;range|&RangeType;reach
     --&AttDesc| --&ToHitText|
-    --?"[&Description]" -eq ""|[ --&ToHitText|[&AttackType] Weapon Attack: --&AttDesc|++[*R:attack_tohit] to hit, [&RangeType] [*R:attack_range], [*R:attack_target]. [*R:attack_onhit]. --]|[ --&CleanedText|[&Description] -->CleanText| --]|
-    --&ActionToolTip|[&Name]&nbsp;&#x2666;&nbsp;[&CleanedText][&ToHitText] [&AttDesc]
-    --?"[&Name]X" -ne "X"|[ --&ActionOutput|+[tr title="[&ActionToolTip]"][td style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][b][i][&Name].[/i][/b] [&CleanedText][i][&ToHitText][/i] [&AttDesc][/td][td style="[&ButtonStyle] text-align: right ; "][F::[&ButtonSize]][sheetbutton][&ButtonEmote]::[*S:character_name]::[&ButtonURL][/sheetbutton][/F][/td][/tr] --]|
+    --?"[&Description(length)]" -eq "0"|[ --&ToHitText|[&AttackType] Weapon Attack: --&AttDesc|&#43;[*R:attack_tohit] to hit, [&RangeType] [*R:attack_range], [*R:attack_target]. [*R:attack_onhit]. --&CleanedText|[&AttDesc] -->CleanText| --&AttDesc|[&CleanedText] --&CleanedText| --]|[ --&CleanedText|[&Description] -->CleanText| --]|
+    --&ActionText|[&CleanedText]
+    --&ActionToolTip|[&Name]&nbsp;&#x2666;&nbsp;[&ActionText][&ToHitText] [&AttDesc]
+    --&CleanedText|[&ActionToolTip] -->CleanText| --&ActionToolTip|[&CleanedText]
+    --?"[&Name(length)]" -gt "0"|[ --&ActionOutput|+[tr title="[&ActionToolTip]"][td [&ClipCellStyle]][b][i][&Name].[/i][/b] [&ActionText][&ToHitText] [&AttDesc][/td][td [&RightButtonCell]][F::[&ButtonSize]][sheetbutton][&ButtonEmote]::[*S:character_name]::[&ButtonURL][/sheetbutton][/F][/td][/tr] --]|
+    --Rnext|
   --%|
   --&ActionOutput|+[/t]
   --+|[&ActionOutput]
 --<|
 --:SpellBlock|
-  --#title|[&NPC_Name] Spells
+  --+|[t width=100% [&FullWidthStyle]][tr][td [&NPCNameStyle]][&NPC_Name] Spells[/td][/tr][/t]
   --+|[&Divider]
   --~|array;define;SpellLevels;cantrip;1;2;3;4;5;6;7;8;9
   --%LevelLoop|foreach;SpellLevels
@@ -164,37 +174,40 @@
     --Rfirst|[&CharID];repeating_spell-[&LevelLoop];spellname
     --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|NextLevel
     --?"[&LevelLoop]" -ne "cantrip"|&LvlName;Level [&LevelLoop]|&LvlName;[&LevelLoop(totitlecase)]
-    --+|[t width=100% [&HRStyle]][tr][td style="line-height:2px;"]&nbsp;[/td][/tr][tr][td][&LvlName][/td][/tr][tr][td style="line-height:2px;"]&nbsp;[/td][/tr][/t]
-    --~|array;fromrepeatingsection;LvlSpells;[&CharID];repeating_spell-[&LevelLoop];spellname
-    --%SpellLoop|foreach;LvlSpells
-      --Rfind|[&CharID];[&SpellLoop];repeating_spell-[&LevelLoop];spellname
-      --&CastSpell| --&SpellDesc| --&Ritual| --&Concentration| --&ToolComponents|
-      --&SpellSchool|[*R:spellschool] --&SpellTarget|[*R:spelltarget] --&SpellDescription|[*R:spelldescription] --&CleanedText|[&SpellDescription] -->CleanText| --&CleanedDescription|[&CleanedText]
-      --&Innate|[*R:innate] --&SpellHigherLevels|[*R:spellathigherlevels] --&CleanedHigherLevels|[&SpellHigherLevels]
-      --?"[&CleanedHigherLevels]" -ne "undefined" -and "[&CleanedHigherLevels]" -ne ""|[ --&CleanedText|[&CleanedHigherLevels] -->CleanText| --&CleanedHigherLevels|[&CleanedText] --]|
+    --+|[t width=100% [&HRStyle]][&TightRuleSpacer][tr][td][&LvlName][/td][/tr][&TightRuleSpacer][/t]
+    --%SpellLoop|while;"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"
+      --&CastSpell| --&SpellDesc| --&ToolComponents| --&SpellOutput|[*R:spelloutput]
+      --&SpellSchool|[*R:spellschool] --&SpellTarget|[*R:spelltarget] --&SpellDescription|[*R:spelldescription] --&CleanedText|[&SpellDescription] -->CleanText| --&SpellDescription|[&CleanedText]
+      --&Innate|[*R:innate] --&SpellHigherLevels|[*R:spellathigherlevels]
+      --?"[&SpellTarget]" -ne "undefined" -and "[&SpellTarget]" -ne ""|[ --&CleanedText|[&SpellTarget] -->CleanText| --&SpellTarget|[&CleanedText] --]|
+      --?"[&Innate]" -ne ""|[ --&CleanedText|[&Innate] -->CleanText| --&Innate|[&CleanedText] --]|
+      --?"[&SpellHigherLevels]" -ne "undefined" -and "[&SpellHigherLevels]" -ne ""|[ --&CleanedText|[&SpellHigherLevels] -->CleanText| --&SpellHigherLevels|[&CleanedText] --]|
       --&ToolTip|[&SpellSchool(totitlecase)]&nbsp;&#x2666;&nbsp;CASTING&nbsp;TIME:&nbsp;[*R:spellcastingtime]&nbsp;&#x2666;&nbsp;RANGE:&nbsp;[*R:spellrange]
       --?"[&SpellTarget]" -ne "undefined" -and "[&SpellTarget]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;TARGET:&nbsp;[&SpellTarget] --]|
-      --?"[*R:spellcomp_v]" -ne "0"|&ToolComponents;+V --?"[*R:spellcomp_s]" -ne "0"|&ToolComponents;+,S --?"[*R:spellcomp_m]" -ne "0"|&ToolComponents;+,M([*R:spellcomp_materials])
+      --?"[*R:spellcomp_v]" -ne "0"|&ToolComponents;+V --?"[*R:spellcomp_s]" -ne "0"|&ToolComponents;+,S --?"[*R:spellcomp_m]" -ne "0"|[ --&CleanedText|[*R:spellcomp_materials] -->CleanText| --&ToolComponents|+,M([&CleanedText]) --]|
       --?"[&ToolComponents(0,1)]" -eq ","|&ToolComponents;[&ToolComponents(1)]
-      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&ToolComponents]
-      --?"[*R:spellritual]" -eq "Yes"|[ --&Ritual|(r) --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Ritual] --]|
-      --?"[*R:spellconcentration]" -inc "1"|[ --&Concentration|(c) --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Concentration] --]|
+      --?"[&ToolComponents]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;[&ToolComponents] --]|
+      --?"[*R:spellritual]" -eq "Yes"|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;(r) --]|
+      --?"[*R:spellconcentration]" -inc "1"|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;(c) --]|
       --&ToolTip|+&nbsp;&#x2666;&nbsp;DURATION:&nbsp;[*R:spellduration]
       --?"[&Innate]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Innate] --]|
-      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&CleanedDescription]
-      --?"[&CleanedHigherLevels]" -ne "undefined" -and "[&CleanedHigherLevels]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;AT HIGHER LEVELS: [&CleanedHigherLevels] --]|
-      --?"[*R:spelloutput]" -inc "ATTACK"|[ --&CastSpell|[td title="Cast Spell" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::18]&#x2694;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_spell[/sheetbutton][/td] --&SpellDesc|[td title="Description" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::14]&#128220;&#65038;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_output[/sheetbutton][/td] --]|
-      --?"[*R:spelloutput]" -inc "SPELLCARD"|[ --&SpellDesc|[td title="Description" style="[&ButtonStyle] text-align: right ; "][sheetbutton][F::14]&#128220;&#65038;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_output[/sheetbutton][/td] --]|
-      --+|[t width=100%][tr][td title="[&ToolTip]" style="width: 85%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"][#000][b][i][*R:spellname].[/i][/b] [&CleanedDescription][/#][/td][&CastSpell][&SpellDesc][/tr][/t]
+      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&SpellDescription]
+      --?"[&SpellHigherLevels]" -ne "undefined" -and "[&SpellHigherLevels]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;AT HIGHER LEVELS: [&SpellHigherLevels] --]|
+      --&CleanedText|[&ToolTip] -->CleanText| --&ToolTip|[&CleanedText]
+      --?"[&SpellOutput]" -inc "ATTACK"|[ --&CastSpell|[td title="Cast Spell" [&RightButtonCell]][sheetbutton][F::18]&#x2694;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_spell[/sheetbutton][/td] --]|
+      --?"[&SpellOutput]" -inc "ATTACK" -or "[&SpellOutput]" -inc "SPELLCARD"|[ --&SpellDesc|[td title="Description" [&RightButtonCell]][sheetbutton][F::14]&#128220;&#65038;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_output[/sheetbutton][/td] --]|
+      --+|[t width=100%][tr][td title="[&ToolTip]" [&ClipCellStyle]][#000][b][i][*R:spellname].[/i][/b] [&SpellDescription][/#][/td][&CastSpell][&SpellDesc][/tr][/t]
       --&SpellIndex|[= [&SpellIndex] + 1 ]
+      --Rnext|
     --%|
     --:NextLevel|
   --%|
 --X|
 --:CleanText|
-  --&LT|< --&GT|> --&SPACE|X X --&SPACE|[&SPACE(1,1)]
-  --~CleanedText|string;striplinefeeds;[&CleanedText] --~CleanedText|string;replaceall;[&LT]br[&GT];[&SPACE];[&CleanedText] --~CleanedText|string;replaceall;[&LT]br/[&GT];[&SPACE];[&CleanedText]
-  --~CleanedText|string;replaceall;[&LT]br /[&GT];[&SPACE];[&CleanedText] --~CleanedText|string;striphtml;[&CleanedText] --~CleanedText|string;replaceall;’;&#39;;[&CleanedText]
-  --~CleanedText|string;replaceall;";&quot;;[&CleanedText] --~CleanedText|string;stripchars;[]*|;[&CleanedText] --~CleanedText|string;replaceall;,;&#44;;[&CleanedText]
+  --#parameterdelimiter|$$$
+  --~CleanedText|string$$$striplinefeeds$$$[&CleanedText] --~CleanedText|string$$$replaceall$$$&#13;$$$ $$$[&CleanedText] --~CleanedText|string$$$replaceall$$$&#10;$$$ $$$[&CleanedText]
+  --~CleanedText|string$$$striphtml$$$[&CleanedText] --~CleanedText|string$$$replaceall$$$’$$$&#39;$$$[&CleanedText] --~CleanedText|string$$$replaceall$$$"$$$&quot;$$$[&CleanedText]
+  --~CleanedText|string$$$stripchars$$$[]*|$$$[&CleanedText] --~CleanedText|string$$$replaceall$$$,$$$&#44;$$$[&CleanedText]
+  --#parameterdelimiter|;
 --<|
 }}
