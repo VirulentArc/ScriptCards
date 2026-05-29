@@ -745,19 +745,22 @@
   --&SpellLevelOutput|[*R:spelllevel][&lvlsuffix] level [*R:spellschool]
   --&SpellDescText|[*R:spelldescription]
   --&LB|[ --&RB|]
-  --&SpellDescDie| --&SpellDescRollFind|
-  --?"[&SpellDescText]" -inc "[&LB][&LB][&LB][&LB]spelllevel+1[&RB][&RB]d"|[ --~SpellDescDie|string;after;[&LB][&LB][&LB][&LB]spelllevel+1[&RB][&RB]d;[&SpellDescText] --~SpellDescDie|string;before;[&RB][&RB];[&SpellDescDie] --&SpellDescRollFind|[&LB][&LB][&LB][&LB]spelllevel+1[&RB][&RB]d[&SpellDescDie][&RB][&RB] [&LB][&LB][&RB]d[&SpellDescDie][&RB] --]|
-  --?"[&SpellDescRollFind]" -eq "" -and "[&SpellDescText]" -inc "[&LB][&LB](spelllevel+1)d"|[ --~SpellDescDie|string;after;[&LB][&LB](spelllevel+1)d;[&SpellDescText] --~SpellDescDie|string;before;[&RB][&RB];[&SpellDescDie] --&SpellDescRollFind|[&LB][&LB](spelllevel+1)d[&SpellDescDie][&RB][&RB] --]|
+  --~SpellDescText|string;replaceall;[&LB][&LB]spell_save_dc[&RB][&RB];[*[&CharID]:spell_save_dc];[&SpellDescText]
+  --&SpellDescDie| --&SpellDescRollFind| --&SpellDescDiceBonus|1
+  --?"[&SpellDescText]" -inc "[&LB][&LB][&LB][&LB]spelllevel+1[&RB][&RB]d"|[ --~SpellDescDie|string;after;[&LB][&LB][&LB][&LB]spelllevel+1[&RB][&RB]d;[&SpellDescText] --~SpellDescDie|string;before;[&RB][&RB];[&SpellDescDie] --&SpellDescRollFind|[&LB][&LB][&LB][&LB]spelllevel+1[&RB][&RB]d[&SpellDescDie][&RB][&RB] [&LB][&LB][&RB]d[&SpellDescDie][&RB] --&SpellDescDiceBonus|1 --]|
+  --?"[&SpellDescRollFind]" -eq "" -and "[&SpellDescText]" -inc "[&LB][&LB][&LB][&LB]spelllevel+5[&RB][&RB]d"|[ --~SpellDescDie|string;after;[&LB][&LB][&LB][&LB]spelllevel+5[&RB][&RB]d;[&SpellDescText] --~SpellDescDie|string;before;[&RB][&RB];[&SpellDescDie] --&SpellDescRollFind|[&LB][&LB][&LB][&LB]spelllevel+5[&RB][&RB]d[&SpellDescDie][&RB][&RB] [&LB][&LB][&RB]d[&SpellDescDie][&RB] --&SpellDescDiceBonus|5 --]|
+  --?"[&SpellDescRollFind]" -eq "" -and "[&SpellDescText]" -inc "[&LB][&LB][&LB][&RB]d"|[ --~SpellDescDie|string;after;[&LB][&LB][&LB][&RB]d;[&SpellDescText] --~SpellDescDie|string;before;[&RB][&RB];[&SpellDescDie] --&SpellDescRollFind|[&LB][&LB][&LB][&RB]d[&SpellDescDie][&RB][&RB] [&LB][&LB][&RB]d[&SpellDescDie][&RB] --&SpellDescDiceBonus|5 --]|
+  --?"[&SpellDescRollFind]" -eq "" -and "[&SpellDescText]" -inc "[&LB][&LB](spelllevel+1)d"|[ --~SpellDescDie|string;after;[&LB][&LB](spelllevel+1)d;[&SpellDescText] --~SpellDescDie|string;before;[&RB][&RB];[&SpellDescDie] --&SpellDescRollFind|[&LB][&LB](spelllevel+1)d[&SpellDescDie][&RB][&RB] --&SpellDescDiceBonus|1 --]|
   --?"[&SpellDescRollFind]" -eq ""|AfterSpellDescCustomRollDisplay
-  --=SpellDescDiceCount|[*R:spelllevel] + 1
+  --=SpellDescDiceCount|[*R:spelllevel] + [&SpellDescDiceBonus]
   --&SpellDescRollDisplay|[$SpellDescDiceCount.Raw]d[&SpellDescDie] [&LB][$SpellDescDiceCount.Raw]d[&SpellDescDie][&RB]
   --~SpellDescText|string;replaceall;[&SpellDescRollFind];[&SpellDescRollDisplay];[&SpellDescText]
   --:AfterSpellDescCustomRollDisplay|
-  --&SpellWrite|[t [&SpellDescOuter_CSS]][tr][td [&SpellDescOuterCell_CSS]][t [&SpellDescTable_CSS]][tr][td [&SpellDescTitle_CSS]]&nbsp;[*R:spellname][/td][/tr][tr][td [&SpellDescSub_CSS]][&SpellLevelOutput(totitlecase)][/td][/tr][tr][td [&SpellDescLabel_CSS]]Casting Time:&nbsp;&nbsp;[*R:spellcastingtime][/td][/tr][tr][td [&SpellDescLabel_CSS]]Range:&nbsp;&nbsp;[*R:spellrange][/td][/tr][tr][td [&SpellDescLabel_CSS]]Target:&nbsp;&nbsp;[*R:spelltarget][/td][/tr][tr][td [&SpellDescLabel_CSS]]Components:&nbsp;&nbsp;[&Verbal] [&Somatic] [&Components] [&Materials][/td][/tr][tr][td [&SpellDescLabel_CSS]]Duration:&nbsp;&nbsp;[*R:spellduration][/td][/tr]
+  --&SpellWrite|[t [&SpellDescOuter_CSS]][tr][td [&SpellDescOuterCell_CSS]][t [&SpellDescTable_CSS]][tr][td [&SpellDescTitle_CSS]]&nbsp;[*R:spellname][/td][/tr][tr][td [&SpellDescSub_CSS]]&nbsp;[&SpellLevelOutput(totitlecase)][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Casting Time:&nbsp;&nbsp;[*R:spellcastingtime][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Range:&nbsp;&nbsp;[*R:spellrange][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Target:&nbsp;&nbsp;[*R:spelltarget][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Components:&nbsp;&nbsp;[&Verbal] [&Somatic] [&Components] [&Materials][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Duration:&nbsp;&nbsp;[*R:spellduration][/td][/tr]
   --?"[*R:spellclass]" -ne ""|[ --&SpellWrite|+[tr][td [&SpellDescLabel_CSS]]Classes:&nbsp;&nbsp;[*R:spellclass][/td][/tr] --]|
   --?"[*R:spellsource]" -ne ""|[ --&SpellWrite|+[tr][td [&SpellDescLabel_CSS]]Source:&nbsp;&nbsp;[*R:spellsource][/td][/tr] --]|
-  --&SpellWrite|+[tr][td [&SpellDescText_CSS]][&SpellDescText][/td][/tr]
-  --?"[*R:spellathigherlevels]" -ne ""|[ --&SpellWrite|+[tr][td [&SpellDescSection_CSS]]At Higher Levels:&nbsp;&nbsp;[*R:spellathigherlevels][/td][/tr] --]|
+  --&SpellWrite|+[tr][td [&SpellDescText_CSS]]&nbsp;[&SpellDescText][/td][/tr]
+  --?"[*R:spellathigherlevels]" -ne ""|[ --&SpellWrite|+[tr][td [&SpellDescSection_CSS]]&nbsp;At Higher Levels:&nbsp;&nbsp;[*R:spellathigherlevels][/td][/tr] --]|
   --&SpellWrite|+[/t][/td][/tr][/t]
   --!h:[&SpellDescHandoutID]|notes:"[&SpellWrite]"
 --X|
