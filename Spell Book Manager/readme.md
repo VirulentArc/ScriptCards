@@ -21,7 +21,7 @@ The script creates and uses handouts for settings and spell descriptions. No man
 ## Installation
 
 1. Install ScriptCards in your Roll20 game.
-2. Create a new Macro Spell Book Manager.
+2. Create a new Macro Spell-Book-Manager.
 3. Paste the full `Spell_Book_Manager.scard` script into that Macro.
 4. Run the script once as the GM.
 5. On first run, the script will create these handouts automatically:
