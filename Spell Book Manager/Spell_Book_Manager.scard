@@ -665,6 +665,10 @@
   -->MoveRepeatingRowByPrefix|[&CharID];[&TransferSpellSourceRowPrefix];[&TransferSpellDestRowPrefix]
   --!a:[&CharID]|[&TransferSpellDestRowPrefix]spelllevel:[&NewLevel]
   --!a:[&CharID]|$[&TransferSpellDestRowPrefix]smm_originallevel:[&TransferSpellOriginalLevel]
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[&NewLevel]" -eq "cantrip"|[
+    --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels:SBM_CANTRIP_REFRESH
+    --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels:
+  --]|
   --?"[&WhatDo]" -eq "CHOOSE"|[
     --!a:[&CharID]|[&TransferSpellDestRowPrefix]roll_output_dc:[*[&CharID]:spell_save_dc]
   --]|
