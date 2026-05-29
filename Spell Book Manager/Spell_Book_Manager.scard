@@ -2,11 +2,11 @@
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SpellDescHandoutName|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SpellDescHandoutName]
-  --?"[@HandoutID(maxindex)]" -eq "-1"|[ --!oh:SpellDescHandoutID|name:"[&SpellDescHandoutName]"|notes:"Click the &#x1F56E; Button to See Spell Description"|inplayerjournals:"[&SendingPlayerID]" --]|
+  --?"[@HandoutID(maxindex)]" -eq "-1"|[ --!oh:SpellDescHandoutID|name:"[&SpellDescHandoutName]"|notes:"Click the &#x1F56E; Button to See Spell Description"|inplayerjournals:"[&SendingPlayerID]"|archived:true --]|
   --?"[@HandoutID(maxindex)]" -ne "-1"|&SpellDescHandoutID;[@HandoutID(0)]
   --&SBMSettingsHandoutName|Spell Book Manager Settings
   --~|array;objects:handout;SBMSettingsHandoutIDs;[&SBMSettingsHandoutName]
-  --?"[@SBMSettingsHandoutIDs(maxindex)]" -eq "-1"|[ --!oh:SBMSettingsHandoutID|name:"[&SBMSettingsHandoutName]"|gmnotes:"" --]|
+  --?"[@SBMSettingsHandoutIDs(maxindex)]" -eq "-1"|[ --!oh:SBMSettingsHandoutID|name:"[&SBMSettingsHandoutName]"|gmnotes:""|archived:true --]|
   --?"[@SBMSettingsHandoutIDs(maxindex)]" -ne "-1"|&SBMSettingsHandoutID;[@SBMSettingsHandoutIDs(0)]
   --~|array;define;SBMThemeList;2014;2024;AD&D2E;Arcane;Brasswork;Eldritch;Prismatic;Radiant;Verdant
   --~|array;define;SBMClassList;artificer;barbarian;bard;cleric;druid;fighter;monk;paladin;ranger;rogue;sorcerer;warlock;wizard
