@@ -407,7 +407,10 @@
   --?"[&CharacterExcludeMules]" -eq "undefined"|&CharacterExcludeMules;
   --&InheritedMules|,
   --&AssignedSpellMuleString|,
-  --&CharacterClassText|[*[&CharacterMuleCharID]:class] [*[&CharacterMuleCharID]:class_display] [*[&CharacterMuleCharID]:subclass] [*[&CharacterMuleCharID]:custom_class] [*[&CharacterMuleCharID]:multiclass1] [*[&CharacterMuleCharID]:multiclass1_subclass] [*[&CharacterMuleCharID]:multiclass2] [*[&CharacterMuleCharID]:multiclass2_subclass] [*[&CharacterMuleCharID]:multiclass3] [*[&CharacterMuleCharID]:multiclass3_subclass]
+  --&CharacterClassText|[*[&CharacterMuleCharID]:class] [*[&CharacterMuleCharID]:subclass] [*[&CharacterMuleCharID]:custom_class]
+  --?"[*[&CharacterMuleCharID]:multiclass1_flag]" -eq "1"|&CharacterClassText;+ [*[&CharacterMuleCharID]:multiclass1] [*[&CharacterMuleCharID]:multiclass1_subclass]
+  --?"[*[&CharacterMuleCharID]:multiclass2_flag]" -eq "1"|&CharacterClassText;+ [*[&CharacterMuleCharID]:multiclass2] [*[&CharacterMuleCharID]:multiclass2_subclass]
+  --?"[*[&CharacterMuleCharID]:multiclass3_flag]" -eq "1"|&CharacterClassText;+ [*[&CharacterMuleCharID]:multiclass3] [*[&CharacterMuleCharID]:multiclass3_subclass]
   --~CharacterClassText|string;tolowercase;[&CharacterClassText]
   --%SBMCharacterClassLoop|foreach;SBMClassList
     --?"[&CharacterClassText]" -ninc "[&SBMCharacterClassLoop]"|NextCharacterClassLookup
@@ -665,10 +668,6 @@
   -->MoveRepeatingRowByPrefix|[&CharID];[&TransferSpellSourceRowPrefix];[&TransferSpellDestRowPrefix]
   --!a:[&CharID]|[&TransferSpellDestRowPrefix]spelllevel:[&NewLevel]
   --!a:[&CharID]|$[&TransferSpellDestRowPrefix]smm_originallevel:[&TransferSpellOriginalLevel]
-  --?"[&WhatDo]" -eq "CHOOSE" -and "[&NewLevel]" -eq "cantrip"|[
-    --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels:SBM_CANTRIP_REFRESH
-    --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels:
-  --]|
   --?"[&WhatDo]" -eq "CHOOSE"|[
     --!a:[&CharID]|[&TransferSpellDestRowPrefix]roll_output_dc:[*[&CharID]:spell_save_dc]
   --]|
