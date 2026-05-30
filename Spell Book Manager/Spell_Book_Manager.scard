@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC .2
+  --/| RC .3
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SpellDescHandoutName|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SpellDescHandoutName]
@@ -186,15 +186,15 @@
 --:ApplySBMTheme|
   --#tableborder|0px solid transparent; --#tableshadow|0px 0px 0px 0px transparent; --#bodyfontsize|14px
   --#buttonfontsize|14px --#buttonpadding|2px 6px --#buttonwidth|auto
-  --h:SBMThemeData("2014")|2014!@!Georgia, Times New Roman, serif!@!Helvetica, Arial, sans-serif!@!serif!@!bold!@!0.03em!@!small-caps!@!none!@!#7A200D!@!#5B3924!@!#2A1608!@!#F1E5C9!@!#B89A5E!@!#6E2425!@!#F1E5C9!@!#E8D6B5!@!#F6EBD2!@!#6E2425!@!#F1E5C9!@!#5B3924!@!normal
-  --h:SBMThemeData("2024")|2024!@!Proxima Nova, Helvetica, sans-serif!@!Proxima Nova, Helvetica, sans-serif!@!modesto-text, Georgia, serif!@!normal!@!normal!@!normal!@!uppercase!@!#eb9797!@!#999998!@!#e6e6e6!@!#000000!@!#555555!@!#000000!@!#eb9797!@!#151515!@!#000000!@!#1f1f1f!@!#eb9797!@!#555555!@!normal
-  --h:SBMThemeData("ad&d2e")|Ad&D2E!@!Arial, Helvetica, sans-serif!@!Arial, Helvetica, sans-serif!@!Candal, Arial, sans-serif!@!normal!@!0.02em!@!normal!@!none!@!#930c10!@!#58180d!@!#290000!@!#fffebd!@!#930c10!@!#672223!@!#fffebd!@!#f7ce65!@!#fffebd!@!#672223!@!#fffebd!@!#58180d!@!normal
-  --h:SBMThemeData("verdant")|Verdant!@!Helvetica, Arial, sans-serif!@!Tahoma, Geneva, sans-serif!@!Georgia, serif!@!normal!@!normal!@!normal!@!none!@!#766649!@!#766649!@!#58180D!@!#EEE5CE!@!#766649!@!#58180D!@!#F2E5B5!@!#E0E5C1!@!#EEE5CE!@!#58180D!@!#F2E5B5!@!#C0AD6A!@!1.25em
-  --h:SBMThemeData("radiant")|Radiant!@!Palatino Linotype, Book Antiqua, Palatino, Georgia, serif!@!Candal, Arial, sans-serif!@!Candal, Georgia, serif!@!bold!@!0.03em!@!normal!@!none!@!#B08A2E!@!#6E6240!@!#2F2A1D!@!#F7F1DE!@!#C8AF66!@!#D8C27A!@!#2F2A1D!@!#FFF8E2!@!#EDE3BD!@!#5A4720!@!#FFF8E2!@!#B08A2E!@!normal
-  --h:SBMThemeData("arcane")|Arcane!@!Courier New, Courier, monospace!@!Contrail One, Arial, sans-serif!@!Contrail One, Georgia, serif!@!bold!@!0.04em!@!normal!@!none!@!#9F8CFF!@!#B7B2D8!@!#E7E3FF!@!#0D1224!@!#5D5FEF!@!#151A36!@!#E7E3FF!@!#151A36!@!#10162B!@!#302B63!@!#E7E3FF!@!#9F8CFF!@!normal
-  --h:SBMThemeData("eldritch")|Eldritch!@!Garamond, Georgia, Times New Roman, serif!@!Candal, Arial, sans-serif!@!Candal, Garamond, Georgia, serif!@!bold!@!0.04em!@!normal!@!none!@!#B24A6B!@!#9E7D95!@!#EAD7E7!@!#120812!@!#5A1E48!@!#3A1234!@!#F3DCA2!@!#1B0D1B!@!#120812!@!#3A1234!@!#F3DCA2!@!#B24A6B!@!normal
-  --h:SBMThemeData("brasswork")|Brasswork!@!Trebuchet MS, Verdana, Geneva, sans-serif!@!Contrail One, Arial, sans-serif!@!Contrail One, Trebuchet MS, sans-serif!@!bold!@!0.05em!@!normal!@!none!@!#B56A2A!@!#8B765C!@!#2E261D!@!#EFE0C5!@!#8A5A2B!@!#5A3820!@!#F3D7A4!@!#F6E8CC!@!#DFCAA7!@!#5A3820!@!#F3D7A4!@!#B56A2A!@!normal
-  --h:SBMThemeData("prismatic")|Prismatic!@!Trebuchet MS, Helvetica, sans-serif!@!Trebuchet MS, Helvetica, Arial, sans-serif!@!Shadows Into Light, Georgia, serif!@!bold!@!0.05em!@!normal!@!none!@!#FF8FA3!@!#C8A7C8!@!#F8E6FF!@!#1A0B24!@!#8E3A8C!@!#4B155D!@!#FFD6E0!@!#24102F!@!#1A0B24!@!#4B155D!@!#FFD6E0!@!#FF8FA3!@!normal
+  --h:SBMThemeData("2014")|2014!@!Georgia, Times New Roman, serif!@!Helvetica, Arial, sans-serif!@!serif!@!bold!@!0.03em!@!small-caps!@!none!@!#7A200D!@!#5B3924!@!#2A1608!@!#F1E5C9!@!#B89A5E!@!#6E2425!@!#F1E5C9!@!#E8D6B5!@!#F6EBD2!@!#6E2425!@!#F1E5C9!@!#5B3924!@!normal!@!18px
+  --h:SBMThemeData("2024")|2024!@!Proxima Nova, Helvetica, sans-serif!@!Proxima Nova, Helvetica, sans-serif!@!modesto-text, Georgia, serif!@!normal!@!normal!@!normal!@!uppercase!@!#eb9797!@!#999998!@!#e6e6e6!@!#000000!@!#555555!@!#000000!@!#eb9797!@!#151515!@!#000000!@!#1f1f1f!@!#eb9797!@!#555555!@!normal!@!16px
+  --h:SBMThemeData("ad&d2e")|Ad&D2E!@!Arial, Helvetica, sans-serif!@!Arial, Helvetica, sans-serif!@!Candal, Arial, sans-serif!@!normal!@!0.02em!@!normal!@!none!@!#930c10!@!#58180d!@!#290000!@!#fffebd!@!#930c10!@!#672223!@!#fffebd!@!#f7ce65!@!#fffebd!@!#672223!@!#fffebd!@!#58180d!@!normal!@!15px
+  --h:SBMThemeData("verdant")|Verdant!@!Helvetica, Arial, sans-serif!@!Tahoma, Geneva, sans-serif!@!Georgia, serif!@!normal!@!normal!@!normal!@!none!@!#766649!@!#766649!@!#58180D!@!#EEE5CE!@!#766649!@!#58180D!@!#F2E5B5!@!#E0E5C1!@!#EEE5CE!@!#58180D!@!#F2E5B5!@!#C0AD6A!@!1.25em!@!18px
+  --h:SBMThemeData("radiant")|Radiant!@!Palatino Linotype, Book Antiqua, Palatino, Georgia, serif!@!Candal, Arial, sans-serif!@!Candal, Georgia, serif!@!bold!@!0.03em!@!normal!@!none!@!#B08A2E!@!#6E6240!@!#2F2A1D!@!#F7F1DE!@!#C8AF66!@!#D8C27A!@!#2F2A1D!@!#FFF8E2!@!#EDE3BD!@!#5A4720!@!#FFF8E2!@!#B08A2E!@!normal!@!14px
+  --h:SBMThemeData("arcane")|Arcane!@!Courier New, Courier, monospace!@!Contrail One, Arial, sans-serif!@!Contrail One, Georgia, serif!@!bold!@!0.04em!@!normal!@!none!@!#9F8CFF!@!#B7B2D8!@!#E7E3FF!@!#0D1224!@!#5D5FEF!@!#151A36!@!#E7E3FF!@!#151A36!@!#10162B!@!#302B63!@!#E7E3FF!@!#9F8CFF!@!normal!@!16px
+  --h:SBMThemeData("eldritch")|Eldritch!@!Garamond, Georgia, Times New Roman, serif!@!Candal, Arial, sans-serif!@!Candal, Garamond, Georgia, serif!@!bold!@!0.04em!@!normal!@!none!@!#B24A6B!@!#9E7D95!@!#EAD7E7!@!#120812!@!#5A1E48!@!#3A1234!@!#F3DCA2!@!#1B0D1B!@!#120812!@!#3A1234!@!#F3DCA2!@!#B24A6B!@!normal!@!14px
+  --h:SBMThemeData("brasswork")|Brasswork!@!Trebuchet MS, Verdana, Geneva, sans-serif!@!Contrail One, Arial, sans-serif!@!Contrail One, Trebuchet MS, sans-serif!@!bold!@!0.05em!@!normal!@!none!@!#B56A2A!@!#8B765C!@!#2E261D!@!#EFE0C5!@!#8A5A2B!@!#5A3820!@!#F3D7A4!@!#F6E8CC!@!#DFCAA7!@!#5A3820!@!#F3D7A4!@!#B56A2A!@!normal!@!16px
+  --h:SBMThemeData("prismatic")|Prismatic!@!Trebuchet MS, Helvetica, sans-serif!@!Trebuchet MS, Helvetica, Arial, sans-serif!@!Shadows Into Light, Georgia, serif!@!bold!@!0.05em!@!normal!@!none!@!#FF8FA3!@!#C8A7C8!@!#F8E6FF!@!#1A0B24!@!#8E3A8C!@!#4B155D!@!#FFD6E0!@!#24102F!@!#1A0B24!@!#4B155D!@!#FFD6E0!@!#FF8FA3!@!normal!@!18px
   --&SBMTheme|[:SBMSettings("theme")]
   --?"[&SBMTheme]" -eq "" -or "[&SBMTheme]" -eq "undefined"|&SBMTheme;2014
   --&SBMThemeCheck|[&SBMTheme]
@@ -208,6 +208,8 @@
   --&DescRed|[&SBMThemeSplit9] --&DescGrey|[&SBMThemeSplit10] --&DescWhite|[&SBMThemeSplit11] --&DescBG|[&SBMThemeSplit12] --&DescBorder|[&SBMThemeSplit13]
   --&TitleBG|[&SBMThemeSplit14] --&TitleText|[&SBMThemeSplit15] --&OddRowBG|[&SBMThemeSplit16] --&EvenRowBG|[&SBMThemeSplit17]
   --#buttonbackground|[&SBMThemeSplit18] --#buttontextcolor|[&SBMThemeSplit19] --#buttonbordercolor|[&SBMThemeSplit20] --#lineheight|[&SBMThemeSplit21]
+  --&TitleFontSize|[&SBMThemeSplit22]
+  --?"[&TitleFontSize]" -eq "" -or "[&TitleFontSize]" -eq "undefined"|&TitleFontSize;18px
   --#bodyfontface|[&BodyFontFace] --#tablebgcolor|transparent --#oddrowbackground|transparent
   --#evenrowbackground|transparent --#oddrowfontcolor|[&DescWhite] --#evenrowfontcolor|[&DescWhite]
   --&CardRowPadding|2px 3px
@@ -217,8 +219,8 @@
   --&CardAppTitle|Spell Book Manager
   --&HomeButton|[rbutton][F:Tahoma:18]&#x2302;[/F]::CharacterSelect;BACK[/rbutton]
   --&TitleButtonDivider|[/td][td style='width:2px; min-width:2px; max-width:2px; height:28px; font-size:1px; line-height:28px; padding:0; vertical-align:middle; background-color:[&DescBG]; color:[&DescBG];']&nbsp;[/td][td style='text-align:center; width:30px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
-  --&CardTitleBar_Open|[t style='width:100%; border-collapse:collapse; table-layout:fixed;'][tr style='height:28px;'][td style='text-align:left; width:24px; height:28px; font-size:18px; white-space:nowrap; vertical-align:middle;']
-  --&CardTitleBar_Mid|[/td][td style='text-align:center; width:100%; height:28px; font-size:18px; border-left:4px solid [&DescBG]; border-right:0px solid [&TitleBG]; padding:0 4px; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText]; [&TitleFont]; [&TitleTextTransform]']
+  --&CardTitleBar_Open|[t style='width:100%; border-collapse:collapse; table-layout:fixed;'][tr style='height:28px;'][td style='text-align:center; width:28px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
+  --&CardTitleBar_Mid|[/td][td style='text-align:center; width:100%; height:28px; font-size:[&TitleFontSize]; border-left:2px solid [&DescBG]; border-right:0px solid [&TitleBG]; padding:0 4px; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText]; [&TitleFont]; [&TitleTextTransform]']
   --&CardTitleBar_Right|[/td][td style='width:2px; min-width:2px; max-width:2px; height:28px; font-size:1px; line-height:28px; padding:0; vertical-align:middle; background-color:[&DescBG]; color:[&DescBG];']&nbsp;[/td][td style='text-align:center; width:30px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
   --&CardTitleBar_Close|[/td][/tr][/t]
   --&CardOuter_CSS|style='width:300px; position:relative; left:-30px; border:1px solid [&DescBorder]; border-radius:8px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; color:[&DescWhite]; overflow:hidden;'
@@ -249,8 +251,8 @@
   --&SpellDescTitle_CSS|style='width:100%; border:0; border-bottom:1px solid [&DescBorder]; padding:10px 0; background-color:[&TitleBG]; color:[&TitleText]; [&TitleFont]; font-size:20px; [&TitleTextTransform]'
   --&SpellDescSub_CSS|style='border:none; padding:[&DescRowPadding]; color:[&DescGrey]; font-size:13px; font-style:italic; font-weight:bold;'
   --&SpellDescLabel_CSS|style='border:none; padding:[&DescRowPadding]; color:[&DescRed]; font-size:13px; font-weight:bold;'
-  --&SpellDescSection_CSS|style='border:none; padding:4px 0 0; color:[&DescRed]; font-size:13px; font-weight:bold;'
-  --&SpellDescText_CSS|style='border:none; padding:[&DescRowPadding]; color:[&DescWhite]; font-size:13px; font-weight:600;'
+  --&SpellDescSection_CSS|style='border:none; padding:4px 0 0 3px; color:[&DescRed]; font-size:13px; font-weight:bold;'
+  --&SpellDescText_CSS|style='border:none; padding:0 0 0 3px; color:[&DescWhite]; font-size:13px; font-weight:600;'
 --<|
 --:SBMAddCustomClassPrompt|
   --&SBMSettingsReturn|[&reentryval]
@@ -928,8 +930,8 @@
   --&SpellWrite|[t [&SpellDescOuter_CSS]][tr][td [&SpellDescOuterCell_CSS]][t [&SpellDescTable_CSS]][tr][td [&SpellDescTitle_CSS]]&nbsp;[*R:spellname][/td][/tr][tr][td [&SpellDescSub_CSS]]&nbsp;[&SpellLevelOutput(totitlecase)][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Casting Time:&nbsp;&nbsp;[*R:spellcastingtime][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Range:&nbsp;&nbsp;[*R:spellrange][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Target:&nbsp;&nbsp;[*R:spelltarget][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Components:&nbsp;&nbsp;[&Verbal] [&Somatic] [&Components] [&Materials][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Duration:&nbsp;&nbsp;[*R:spellduration][/td][/tr]
   --?"[*R:spellclass]" -ne ""|[ --&SpellWrite|+[tr][td [&SpellDescLabel_CSS]]Classes:&nbsp;&nbsp;[*R:spellclass][/td][/tr] --]|
   --?"[*R:spellsource]" -ne ""|[ --&SpellWrite|+[tr][td [&SpellDescLabel_CSS]]Source:&nbsp;&nbsp;[*R:spellsource][/td][/tr] --]|
-  --&SpellWrite|+[tr][td [&SpellDescText_CSS]]&nbsp;[&SpellDescText][/td][/tr]
-  --?"[*R:spellathigherlevels]" -ne ""|[ --&SpellWrite|+[tr][td [&SpellDescSection_CSS]]&nbsp;At Higher Levels:&nbsp;&nbsp;[*R:spellathigherlevels][/td][/tr] --]|
+  --&SpellWrite|+[tr][td [&SpellDescText_CSS]][&SpellDescText][/td][/tr]
+  --?"[*R:spellathigherlevels]" -ne ""|[ --&SpellWrite|+[tr][td [&SpellDescSection_CSS]]At Higher Levels:&nbsp;&nbsp;[*R:spellathigherlevels][/td][/tr] --]|
   --&SpellWrite|+[/t][/td][/tr][/t]
   --!h:[&SpellDescHandoutID]|notes:"[&SpellWrite]"
 --X|
