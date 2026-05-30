@@ -2,7 +2,7 @@
 
 Spell Book Manager is a ScriptCards utility for Roll20 D&D 5E 2014 games. It lets a GM maintain one or more spell mule characters and lets players copy approved spells from those mules onto their own character sheets. It can also move a character's existing leveled spells up or down between spell levels, which is especially useful for Warlocks and other cases where the same spell may need to live at a different slot level.
 
-The script is designed for the official D&D 5E 2014 by Roll20 character sheet and works with normal PC spell rows. It is not intended for NPC spell management.
+The script is designed for the official D&D 5E 2014 by Roll20 character sheet and works with normal PC spell rows.
 
 ---
 
