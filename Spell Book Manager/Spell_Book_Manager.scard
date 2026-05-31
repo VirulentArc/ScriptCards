@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC .5
+  --/| RC .6
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SpellDescHandoutName|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SpellDescHandoutName]
@@ -222,7 +222,6 @@
   --&CardAppTitle|Spell Book Manager
   --&HomeButton|[rbutton][F:Tahoma:18]&#x2302;[/F]::CharacterSelect;BACK[/rbutton]
   --&BackIcon|&#x2B9C;
-  --&RightArrow|& --&RightArrow|+# --&RightArrow|+x2192 --&RightArrow|+;
   --&SettingsIcon|[F:Tahoma:16]&#x2699;[/F]
   --&BackBtn|[rbutton][&BackIcon]::
   --&SettingsBtn|[rbutton][&SettingsIcon]::SBMSettings;
@@ -789,7 +788,7 @@
   --:SpellSourceReady|
   --?"[&WhatDo]" -eq "CHOOSE" -and "[&SelectedSpellMule]" -eq "ALL"|&Title;[&Title]: All Spells
   --?"[&WhatDo]" -eq "CHOOSE" -and "[&SelectedSpellMule]" -ne "ALL" -and "[&IsMuleCopyManager]" -ne "1"|[ --&SelectedSpellMuleName|[*O:[&SelectedSpellMule]:character:name] --~SelectedSpellMuleName|string;replaceall;SBM_;;[&SelectedSpellMuleName] --&Title|[&Title]: [&SelectedSpellMuleName] --]|
-  --?"[&WhatDo]" -eq "CHOOSE" -and "[&SelectedSpellMule]" -ne "ALL" -and "[&IsMuleCopyManager]" -eq "1"|[ --&SelectedSpellMuleName|[*O:[&SelectedSpellMule]:character:name] --~SelectedSpellMuleName|string;replaceall;SBM_;;[&SelectedSpellMuleName] --&Title|[&SelectedSpellMuleName] -> [&MuleCopyDestName] --]|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[&SelectedSpellMule]" -ne "ALL" -and "[&IsMuleCopyManager]" -eq "1"|[ --&SelectedSpellMuleName|[*O:[&SelectedSpellMule]:character:name] --~SelectedSpellMuleName|string;replaceall;SBM_;;[&SelectedSpellMuleName] --&Title|[&SelectedSpellMuleName] >> [&MuleCopyDestName] --]|
   --~|array;fromstring;SpellMuleIDs;,;[&AssignedSpellMuleString]
   --&KnownSpellList|!@!
   --?"[&WhatDo]" -ne "CHOOSE"|AfterKnownSpellList
