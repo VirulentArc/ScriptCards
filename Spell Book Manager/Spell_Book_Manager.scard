@@ -83,7 +83,9 @@
   --&SelectedClass|
   --&CardHTML|+[&CardSectionRow]Class Spell Mules[/td][/tr]
   --&ClassCounter|0
-  --&ClassOutput|[t [&GridTable_CSS]][tr]
+  --&ClassTableBG|[&OddRowBG]
+  --?"[= [@SBMClassList()] \ 3 % 2 ]" -eq "1"|&ClassTableBG;[&EvenRowBG]
+  --&ClassOutput|[t style='width:100%; border:none; border-collapse:collapse; table-layout:fixed; background-color:[&ClassTableBG];'][tr]
   --%SBMClassLoop|foreach;SBMClassList
     --?"[= [&ClassCounter] % 3 ]" -eq "0" -and "[&ClassCounter]" -ne "0"|&ClassOutput;+[/tr][tr]
     --&ClassButtonBG|[&OddRowBG]
