@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC .5
+  --/| RC .6
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SpellDescHandoutName|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SpellDescHandoutName]
@@ -430,14 +430,16 @@
     --&SBMClassMules|[:SBMSettings("[&SBMCharacterClassLoop]")]
     --~|array;fromstring;SBMClassMuleIDs;,;[&SBMClassMules]
     --%SBMCharacterClassMuleLoop|foreach;SBMClassMuleIDs
-      --?"[&SBMCharacterClassMuleLoop]" -ne "" -and "[&SBMCharacterClassMuleLoop]" -ne "undefined" -and "[&InheritedMules]" -ninc ",[&SBMCharacterClassMuleLoop],"|&InheritedMules;+[&SBMCharacterClassMuleLoop],
-      --?"[&SBMCharacterClassMuleLoop]" -ne "" -and "[&SBMCharacterClassMuleLoop]" -ne "undefined" -and "[&AssignedSpellMuleString]" -ninc ",[&SBMCharacterClassMuleLoop],"|&AssignedSpellMuleString;+[&SBMCharacterClassMuleLoop],
+      --?"[&SBMCharacterClassMuleLoop]" -eq "" -or "[&SBMCharacterClassMuleLoop]" -eq "undefined"|%
+      --?"[*O:[&SBMCharacterClassMuleLoop]:character:name]" -match "^SBM_" -and "[&InheritedMules]" -ninc ",[&SBMCharacterClassMuleLoop],"|&InheritedMules;+[&SBMCharacterClassMuleLoop],
+      --?"[*O:[&SBMCharacterClassMuleLoop]:character:name]" -match "^SBM_" -and "[&AssignedSpellMuleString]" -ninc ",[&SBMCharacterClassMuleLoop],"|&AssignedSpellMuleString;+[&SBMCharacterClassMuleLoop],
     --%|
     --:NextCharacterClassLookup|
   --%|
   --~|array;fromstring;SBMCharacterIncludeMuleIDs;,;[&CharacterIncludeMules]
   --%SBMCharacterIncludeLoop|foreach;SBMCharacterIncludeMuleIDs
-    --?"[&SBMCharacterIncludeLoop]" -ne "" -and "[&SBMCharacterIncludeLoop]" -ne "undefined" -and "[&AssignedSpellMuleString]" -ninc ",[&SBMCharacterIncludeLoop],"|&AssignedSpellMuleString;+[&SBMCharacterIncludeLoop],
+    --?"[&SBMCharacterIncludeLoop]" -eq "" -or "[&SBMCharacterIncludeLoop]" -eq "undefined"|%
+    --?"[*O:[&SBMCharacterIncludeLoop]:character:name]" -match "^SBM_" -and "[&AssignedSpellMuleString]" -ninc ",[&SBMCharacterIncludeLoop],"|&AssignedSpellMuleString;+[&SBMCharacterIncludeLoop],
   --%|
   --~|array;fromstring;SBMCharacterExcludeMuleIDs;,;[&CharacterExcludeMules]
   --%SBMCharacterExcludeLoop|foreach;SBMCharacterExcludeMuleIDs
@@ -457,7 +459,8 @@
   --&AssignedSpellMuleString|,
   --~|array;fromstring;SBMCharacterIncludeMuleIDs;,;[&CharacterIncludeMules]
   --%SBMDirectIncludeLoop|foreach;SBMCharacterIncludeMuleIDs
-    --?"[&SBMDirectIncludeLoop]" -ne "" -and "[&SBMDirectIncludeLoop]" -ne "undefined" -and "[&AssignedSpellMuleString]" -ninc ",[&SBMDirectIncludeLoop],"|&AssignedSpellMuleString;+[&SBMDirectIncludeLoop],
+    --?"[&SBMDirectIncludeLoop]" -eq "" -or "[&SBMDirectIncludeLoop]" -eq "undefined"|%
+    --?"[*O:[&SBMDirectIncludeLoop]:character:name]" -match "^SBM_" -and "[&AssignedSpellMuleString]" -ninc ",[&SBMDirectIncludeLoop],"|&AssignedSpellMuleString;+[&SBMDirectIncludeLoop],
   --%|
 --<|
 --:SBMCharacterMules|
