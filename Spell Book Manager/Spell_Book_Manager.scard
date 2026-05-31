@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC .6
+  --/| RC .5
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SpellDescHandoutName|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SpellDescHandoutName]
@@ -13,6 +13,7 @@
   --~|array;define;SBMClassList;artificer;barbarian;bard;cleric;druid;fighter;monk;paladin;ranger;rogue;sorcerer;warlock;wizard
   -->LoadSBMSettings| -->ParseSBMSettings| -->LoadSBMPlayerTheme| -->ApplySBMTheme|
 --:CharacterSelect|
+  --&IsMuleCopyManager|0
   --&BackButton|&nbsp;
   --&SettingsButton|[&SettingsBtn]CharacterSelect[/rbutton]
   -->OpenSBMCard|Choose a Character
@@ -42,19 +43,20 @@
       --&Character_Name|[*[&PlayerLoop]:character_name]
       --&CharacterRowBG|[&OddRowBG]
       --?"[= [&CharacterCounter] % 2 ]" -eq "1"|&CharacterRowBG;[&EvenRowBG]
-      --&CardHTML|+[tr][td style='border:none; padding:[&CardRowPadding]; color:[&DescWhite]; font-weight:600; text-align:center; background-color:[&CharacterRowBG];'][rbutton][&Character_Name]::SelectCharacter;[&PlayerLoop][/rbutton][/td][/tr]
+      --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&CharacterRowBG];'][rbutton][&Character_Name]::SelectCharacter;[&PlayerLoop][/rbutton][/td][/tr]
       --&CharacterCounter|[= [&CharacterCounter] + 1]
     --%|
   --]|
   --?"[&SendingPlayerIsGM]" -eq "1"|[
     --&CardHTML|+[&CardSectionRow]GM Tools[/td][/tr]
     --&CardHTML|+[&CardCenterRow][rbutton]NPC Spell Manager::NPCSpellManager;START[/rbutton][/td][/tr]
+    --&CardHTML|+[&CardCenterRow][rbutton]Copy Between Mules::SBMMuleCopySelectDest;START[/rbutton][/td][/tr]
   --]|
   -->ShowSBMCard|
 --X|
 --:OpenSBMCard|Subtitle
   --&CardTitleBar|[&CardTitleBar_Open][&BackButton][&CardTitleBar_Mid][&CardAppTitle][&CardTitleBar_Right][&HomeButton][&TitleButtonDivider][&SettingsButton][&CardTitleBar_Close]
-  --&CardHTML|[&CardOpen] --&CardHTML|+[&CardTitleRow][&CardTitleBar][&RowEnd] --&CardHTML|+[tr][td style='border:none; padding:0 0 2px;'][t style='width:100%; border:none; border-collapse:collapse; table-layout:fixed;'][tr][td [&CardSubHeader_CSS]][%1%][/td][/tr][/t][/td][/tr]
+  --&CardHTML|[&CardOpen] --&CardHTML|+[&CardTitleRow][&CardTitleBar][&RowEnd] --&CardHTML|+[tr][td style='[&B0] padding:0 0 2px;'][t style='width:100%; [&B0] [&TF]'][tr][td [&CardSubHeader_CSS]][%1%][/td][/tr][/t][/td][/tr]
 --<|
 --:ShowSBMCard|
   --&CardHTML|+[&CardClose]
@@ -63,7 +65,7 @@
 --:SBMSettings|
   --#hidecard|0
   --&SBMSettingsReturn|[&reentryval]
-  --?",CharacterSelect,SelectCharacterReady,SpellMuleSelect,SpellList,NoAssignedSpellMules,SBMClassMules,SBMCharacterSelectMules,SBMCharacterMules,NPCSpellManager,SBMNPCSelectMules,SBMNPCMules," -ninc ",[&SBMSettingsReturn],"|&SBMSettingsReturn;CharacterSelect
+  --?",CharacterSelect,SelectCharacterReady,SpellMuleSelect,SpellList,NoAssignedSpellMules,SBMClassMules,SBMCharacterSelectMules,SBMCharacterMules,NPCSpellManager,SBMNPCSelectMules,SBMNPCMules,SBMMuleCopySelectDest,SBMMuleCopySelectSource," -ninc ",[&SBMSettingsReturn],"|&SBMSettingsReturn;CharacterSelect
   --&SBMThemeCounter|0
   --&SBMThemeOutput|[t [&GridTable_CSS]][tr]
   --%SBMThemeLoop|foreach;SBMThemeList
@@ -85,7 +87,7 @@
   --&ClassCounter|0
   --&ClassTableBG|[&OddRowBG]
   --?"[= [@SBMClassList()] \ 3 % 2 ]" -eq "1"|&ClassTableBG;[&EvenRowBG]
-  --&ClassOutput|[t style='width:100%; border:none; border-collapse:collapse; table-layout:fixed; background-color:[&ClassTableBG];'][tr]
+  --&ClassOutput|[t style='width:100%; [&B0] [&TF] background-color:[&ClassTableBG];'][tr]
   --%SBMClassLoop|foreach;SBMClassList
     --?"[= [&ClassCounter] % 3 ]" -eq "0" -and "[&ClassCounter]" -ne "0"|&ClassOutput;+[/tr][tr]
     --&ClassButtonBG|[&OddRowBG]
@@ -213,12 +215,14 @@
   --#bodyfontface|[&BodyFontFace] --#tablebgcolor|transparent --#oddrowbackground|transparent
   --#evenrowbackground|transparent --#oddrowfontcolor|[&DescWhite] --#evenrowfontcolor|[&DescWhite]
   --&CardRowPadding|2px 3px
-  --&GridTable_CSS|style='width:100%; border:none; border-collapse:collapse; table-layout:fixed;'
-  --&GridCellStyle|width:33%; border:none; padding:[&CardRowPadding]; text-align:center;
-  --&MuleGridCellStyle|width:50%; border:none; padding:[&CardRowPadding]; text-align:center;
+  --&B0|border:none; --&RP|padding:[&CardRowPadding]; --&CW|color:[&DescWhite]; --&CR|color:[&DescRed]; --&TC|text-align:center; --&W6|font-weight:600; --&TF|border-collapse:collapse; table-layout:fixed;
+  --&GridTable_CSS|style='width:100%; [&B0] [&TF]'
+  --&GridCellStyle|width:33%; [&B0] [&RP] [&TC]
+  --&MuleGridCellStyle|width:50%; [&B0] [&RP] [&TC]
   --&CardAppTitle|Spell Book Manager
   --&HomeButton|[rbutton][F:Tahoma:18]&#x2302;[/F]::CharacterSelect;BACK[/rbutton]
   --&BackIcon|&#x2B9C;
+  --&RightArrow|& --&RightArrow|+# --&RightArrow|+x2192 --&RightArrow|+;
   --&SettingsIcon|[F:Tahoma:16]&#x2699;[/F]
   --&BackBtn|[rbutton][&BackIcon]::
   --&SettingsBtn|[rbutton][&SettingsIcon]::SBMSettings;
@@ -226,41 +230,40 @@
   --&NoSpellMulesFoundText|No spell mule characters found. Create one or more character sheets with names beginning with SBM_ and run this settings page again.
   --&NoNPCSheetsText|No 2014 NPC sheets were found.
   --&NoRow|NoRepeatingAttributeLoaded
-  --&TitleButtonDivider|[/td][td style='width:2px; min-width:2px; max-width:2px; height:28px; font-size:1px; line-height:28px; padding:0; vertical-align:middle; background-color:[&DescBG]; color:[&DescBG];']&nbsp;[/td][td style='text-align:center; width:30px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
-  --&CardTitleBar_Open|[t style='width:100%; border-collapse:collapse; table-layout:fixed;'][tr style='height:28px;'][td style='text-align:center; width:28px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
-  --&CardTitleBar_Mid|[/td][td style='text-align:center; width:100%; height:28px; font-size:[&TitleFontSize]; border-left:2px solid [&DescBG]; border-right:0px solid [&TitleBG]; padding:0 4px; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText]; [&TitleFont]; [&TitleTextTransform]']
+  --&TitleButtonDivider|[/td][td style='width:2px; min-width:2px; max-width:2px; height:28px; font-size:1px; line-height:28px; padding:0; vertical-align:middle; background-color:[&DescBG]; color:[&DescBG];']&nbsp;[/td][td style='[&TC] width:30px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
+  --&CardTitleBar_Open|[t style='width:100%; [&TF]'][tr style='height:28px;'][td style='[&TC] width:28px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
+  --&CardTitleBar_Mid|[/td][td style='[&TC] width:100%; height:28px; font-size:[&TitleFontSize]; border-left:2px solid [&DescBG]; border-right:0px solid [&TitleBG]; padding:0 4px; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText]; [&TitleFont]; [&TitleTextTransform]']
   --&CardTitleBar_Right|[&TitleButtonDivider]
   --&CardTitleBar_Close|[/td][/tr][/t]
-  --&CardOuter_CSS|style='width:300px; position:relative; left:-30px; border:1px solid [&DescBorder]; border-radius:8px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; color:[&DescWhite]; overflow:hidden;'
-  --&CardOuterCell_CSS|style='border:none; padding:10px 5px 4px 5px; background-color:[&DescBG];'
-  --&CardTable_CSS|style='width:100%; border:none; border-collapse:collapse; table-layout:fixed; background-color:[&DescBG]; color:[&DescWhite];'
+  --&CardOuter_CSS|style='width:300px; position:relative; left:-30px; border:1px solid [&DescBorder]; border-radius:8px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; [&CW] overflow:hidden;'
+  --&CardOuterCell_CSS|style='[&B0] padding:10px 5px 4px 5px; background-color:[&DescBG];'
+  --&CardTable_CSS|style='width:100%; [&B0] [&TF] background-color:[&DescBG]; [&CW]'
   --&CardOpen|[t [&CardOuter_CSS]][tr][td [&CardOuterCell_CSS]][t [&CardTable_CSS]]
   --&CardClose|[/t][/td][/tr][/t]
-  --&CardTitle_CSS|style='width:100%; border:0; padding:10px 0 3px; color:[&DescRed]; [&TitleFont]; font-size:20px; [&TitleTextTransform]'
-  --&CardSubHeader_CSS|style='border:1px solid [&DescBorder]; border-radius:5px; padding:3px 4px; text-align:center; background-color:[&EvenRowBG]; color:[&DescRed]; font-weight:bold; [&TitleFont]; [&TitleTextTransform]'
-  --&CardSection_CSS|style='border:none; padding:[&CardRowPadding]; color:[&DescRed]; font-weight:bold;'
-  --&CardText_CSS|style='border:none; padding:[&CardRowPadding]; color:[&DescWhite]; font-weight:600;'
-  --&CardCenter_CSS|style='border:none; padding:[&CardRowPadding]; color:[&DescWhite]; font-weight:600; text-align:center;'
+  --&CardTitle_CSS|style='width:100%; border:0; padding:10px 0 3px; [&CR] [&TitleFont]; font-size:20px; [&TitleTextTransform]'
+  --&CardSubHeader_CSS|style='border:1px solid [&DescBorder]; border-radius:5px; padding:3px 4px; [&TC] background-color:[&EvenRowBG]; [&CR] font-weight:bold; [&TitleFont]; [&TitleTextTransform]'
+  --&CardSection_CSS|style='[&B0] [&RP] [&CR] font-weight:bold;'
+  --&CardText_CSS|style='[&B0] [&RP] [&CW] [&W6]'
+  --&CardCenter_CSS|style='[&B0] [&RP] [&CW] [&W6] [&TC]'
   --&RowEnd|[/td][/tr]
-  --&CardTitleRow|[tr][td [&CardTitle_CSS]] --&CardSubRow|[tr][td [&CardSubHeader_CSS]] --&CardSectionRow|[tr][td [&CardSection_CSS]]
+  --&CardTitleRow|[tr][td [&CardTitle_CSS]] --&CardSectionRow|[tr][td [&CardSection_CSS]]
   --&CardTextRow|[tr][td [&CardText_CSS]] --&CardCenterRow|[tr][td [&CardCenter_CSS]]
-  --&CharacterCell_CSS|style='border:none; padding:[&CardRowPadding]; color:[&DescWhite]; font-weight:600; text-align:center; background-color:[&CharacterRowBG];'
-  --&SpellRowOuter_CSS|style='border:none; padding:0px; background-color:[&SpellRowBG];'
-  --&SpellRowInner_CSS|style='width:100%; table-layout:fixed; border:none; border-collapse:collapse; background-color:[&SpellRowBG]; color:[&DescWhite];'
-  --&SpellHeaderTable_CSS|style='width:100%; table-layout:fixed; border:1px solid [&DescBorder]; border-radius:5px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; color:[&DescWhite];'
-  --&SpellHeaderTd_CSS|style='width:25%; border:none; text-align:left; padding:[&CardRowPadding]; vertical-align:middle; color:[&DescRed]; font-weight:bold;'
-  --&SpellIconTd_CSS|style='width:24px; min-width:24px; border:none; text-align:center; white-space:nowrap; padding:[&CardRowPadding]; color:[&DescRed];'
-  --&SpellNameTd_CSS|style='width:100%; border:none; text-align:left; padding:[&CardRowPadding]; vertical-align:middle; color:[&DescWhite]; font-weight:600;'
-  --&SpellActionTd_CSS|style='width:115px; min-width:115px; border:none; text-align:center; white-space:nowrap; padding:[&CardRowPadding]; color:[&DescRed];'
+  --&SpellRowOuter_CSS|style='[&B0] padding:0px; background-color:[&SpellRowBG];'
+  --&SpellRowInner_CSS|style='width:100%; table-layout:fixed; [&B0] border-collapse:collapse; background-color:[&SpellRowBG]; [&CW]'
+  --&SpellHeaderTable_CSS|style='width:100%; table-layout:fixed; border:1px solid [&DescBorder]; border-radius:5px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; [&CW]'
+  --&SpellHeaderTd_CSS|style='width:25%; [&B0] text-align:left; [&RP] vertical-align:middle; [&CR] font-weight:bold;'
+  --&SpellIconTd_CSS|style='width:24px; min-width:24px; [&B0] [&TC] white-space:nowrap; [&RP] [&CR]'
+  --&SpellNameTd_CSS|style='width:100%; [&B0] text-align:left; [&RP] vertical-align:middle; [&CW] [&W6]'
+  --&SpellActionTd_CSS|style='width:115px; min-width:115px; [&B0] [&TC] white-space:nowrap; [&RP] [&CR]'
   --&DescRowPadding|0
-  --&SpellDescOuter_CSS|style='width:100%; border:1px solid [&DescBorder]; border-radius:8px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; color:[&DescWhite]; font-family:[&BodyFontFace]; font-style:normal; overflow:hidden;'
-  --&SpellDescOuterCell_CSS|style='border:none; padding:10px 15px 4px 15px; background-color:[&DescBG];'
+  --&SpellDescOuter_CSS|style='width:100%; border:1px solid [&DescBorder]; border-radius:8px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; [&CW] font-family:[&BodyFontFace]; font-style:normal; overflow:hidden;'
+  --&SpellDescOuterCell_CSS|style='[&B0] padding:10px 15px 4px 15px; background-color:[&DescBG];'
   --&SpellDescTable_CSS|[&CardTable_CSS]
   --&SpellDescTitle_CSS|style='width:100%; border:0; border-bottom:1px solid [&DescBorder]; padding:10px 0; background-color:[&TitleBG]; color:[&TitleText]; [&TitleFont]; font-size:20px; [&TitleTextTransform]'
-  --&SpellDescSub_CSS|style='border:none; padding:[&DescRowPadding]; color:[&DescGrey]; font-size:13px; font-style:italic; font-weight:bold;'
-  --&SpellDescLabel_CSS|style='border:none; padding:[&DescRowPadding]; color:[&DescRed]; font-size:13px; font-weight:bold;'
-  --&SpellDescSection_CSS|style='border:none; padding:4px 0 0 3px; color:[&DescRed]; font-size:13px; font-weight:bold;'
-  --&SpellDescText_CSS|style='border:none; padding:0 0 0 3px; color:[&DescWhite]; font-size:13px; font-weight:600;'
+  --&SpellDescSub_CSS|style='[&B0] padding:[&DescRowPadding]; color:[&DescGrey]; font-size:13px; font-style:italic; font-weight:bold;'
+  --&SpellDescLabel_CSS|style='[&B0] padding:[&DescRowPadding]; [&CR] font-size:13px; font-weight:bold;'
+  --&SpellDescSection_CSS|style='[&B0] padding:4px 0 0 3px; [&CR] font-size:13px; font-weight:bold;'
+  --&SpellDescText_CSS|style='[&B0] padding:0 0 0 3px; [&CW] font-size:13px; [&W6]'
 --<|
 --:SBMAddCustomClassPrompt|
   --&SBMSettingsReturn|[&reentryval]
@@ -431,22 +434,27 @@
     --~|array;fromstring;SBMClassMuleIDs;,;[&SBMClassMules]
     --%SBMCharacterClassMuleLoop|foreach;SBMClassMuleIDs
       --?"[&SBMCharacterClassMuleLoop]" -eq "" -or "[&SBMCharacterClassMuleLoop]" -eq "undefined"|%
-      --?"[*O:[&SBMCharacterClassMuleLoop]:character:name]" -match "^SBM_" -and "[&InheritedMules]" -ninc ",[&SBMCharacterClassMuleLoop],"|&InheritedMules;+[&SBMCharacterClassMuleLoop],
-      --?"[*O:[&SBMCharacterClassMuleLoop]:character:name]" -match "^SBM_" -and "[&AssignedSpellMuleString]" -ninc ",[&SBMCharacterClassMuleLoop],"|&AssignedSpellMuleString;+[&SBMCharacterClassMuleLoop],
+      --&SBMCharacterClassMuleName|[*O:[&SBMCharacterClassMuleLoop]:character:name]
+      --?"[&SBMCharacterClassMuleName]" -imatch "^SBM_" -and "[&InheritedMules]" -ninc ",[&SBMCharacterClassMuleLoop],"|&InheritedMules;+[&SBMCharacterClassMuleLoop],
+      --?"[&SBMCharacterClassMuleName]" -imatch "^SBM_" -and "[&AssignedSpellMuleString]" -ninc ",[&SBMCharacterClassMuleLoop],"|&AssignedSpellMuleString;+[&SBMCharacterClassMuleLoop],
     --%|
     --:NextCharacterClassLookup|
   --%|
-  --~|array;fromstring;SBMCharacterIncludeMuleIDs;,;[&CharacterIncludeMules]
-  --%SBMCharacterIncludeLoop|foreach;SBMCharacterIncludeMuleIDs
-    --?"[&SBMCharacterIncludeLoop]" -eq "" -or "[&SBMCharacterIncludeLoop]" -eq "undefined"|%
-    --?"[*O:[&SBMCharacterIncludeLoop]:character:name]" -match "^SBM_" -and "[&AssignedSpellMuleString]" -ninc ",[&SBMCharacterIncludeLoop],"|&AssignedSpellMuleString;+[&SBMCharacterIncludeLoop],
-  --%|
+  -->AppendActiveDirectMules|
   --~|array;fromstring;SBMCharacterExcludeMuleIDs;,;[&CharacterExcludeMules]
   --%SBMCharacterExcludeLoop|foreach;SBMCharacterExcludeMuleIDs
     --&ExcludeEntry|[&SBMCharacterExcludeLoop],
     --?"[&SBMCharacterExcludeLoop]" -ne "" -and "[&SBMCharacterExcludeLoop]" -ne "undefined"|[
       --~AssignedSpellMuleString|string;replaceall;[&ExcludeEntry];;[&AssignedSpellMuleString]
     --]|
+  --%|
+--<|
+--:AppendActiveDirectMules|
+  --~|array;fromstring;SBMCharacterIncludeMuleIDs;,;[&CharacterIncludeMules]
+  --%SBMActiveDirectLoop|foreach;SBMCharacterIncludeMuleIDs
+    --?"[&SBMActiveDirectLoop]" -eq "" -or "[&SBMActiveDirectLoop]" -eq "undefined"|%
+    --&SBMActiveDirectMuleName|[*O:[&SBMActiveDirectLoop]:character:name]
+    --?"[&SBMActiveDirectMuleName]" -imatch "^SBM_" -and "[&AssignedSpellMuleString]" -ninc ",[&SBMActiveDirectLoop],"|&AssignedSpellMuleString;+[&SBMActiveDirectLoop],
   --%|
 --<|
 --:BuildDirectMuleLists|Character ID
@@ -457,11 +465,7 @@
   --&CharacterExcludeMules|
   --&InheritedMules|,
   --&AssignedSpellMuleString|,
-  --~|array;fromstring;SBMCharacterIncludeMuleIDs;,;[&CharacterIncludeMules]
-  --%SBMDirectIncludeLoop|foreach;SBMCharacterIncludeMuleIDs
-    --?"[&SBMDirectIncludeLoop]" -eq "" -or "[&SBMDirectIncludeLoop]" -eq "undefined"|%
-    --?"[*O:[&SBMDirectIncludeLoop]:character:name]" -match "^SBM_" -and "[&AssignedSpellMuleString]" -ninc ",[&SBMDirectIncludeLoop],"|&AssignedSpellMuleString;+[&SBMDirectIncludeLoop],
-  --%|
+  -->AppendActiveDirectMules|
 --<|
 --:SBMCharacterMules|
   --?"[&reentryval]" -ninc "!@!" -and "[&reentryval]" -ne "BACK" -and "[&reentryval]" -ne "START"|&SelectedChar;[&reentryval]
@@ -540,6 +544,23 @@
   --%|
   --?[$NPCCount.Raw] -gt 0|[ --~|array;sort;SBMValidNPCList --]|
 --<|
+--:BuildSBMMuleList|Excluded Mule ID
+  --~|array;objects:character;SBMAvailableMuleCharacters;SBM_
+  --~|array;define;SBMValidNPCList;dummy
+  --~|array;removeat;SBMValidNPCList;0
+  --=NPCCount|0
+  --%SBMMuleBuildLoop|foreach;SBMAvailableMuleCharacters
+    --&NPCCharacterID|[&SBMMuleBuildLoop]
+    --?"[&NPCCharacterID]" -eq "[%1%]"|%
+    --&NPCCharacterName|[*O:[&NPCCharacterID]:character:name]
+    --?"[&NPCCharacterName]" -imatch "^SBM_"|[
+      --~NPCCharacterName|string;replaceall;SBM_;;[&NPCCharacterName]
+      --&SBMValidNPCList(99999)|[&NPCCharacterName]!@![&NPCCharacterID]
+      --=NPCCount|[$NPCCount.Raw] + 1
+    --]|
+  --%|
+  --?[$NPCCount.Raw] -gt 0|[ --~|array;sort;SBMValidNPCList --]|
+--<|
 --:AppendNPCPage|
   --=NPCPageSize|21
   --=NPCStartIndex|[&NPCListPage] * [$NPCPageSize.Raw]
@@ -594,7 +615,64 @@
   --?[$NPCCount.Raw] -eq 0|[ --&CardHTML|+[&CardTextRow][&NoNPCSheetsText][/td][/tr] --]|[ --&NPCListSectionTitle|Choose NPC -->AppendNPCPage| --]|
   -->ShowSBMCard|
 --X|
+--:SetMuleCopyMode|
+  --&IsMuleCopyManager|1
+  --&IsNPCSpellManager|0
+  --&CanMoveSpells|0
+  --&WhatDo|CHOOSE
+--<|
+--:SBMMuleCopySelectDest|
+  --?"[&SendingPlayerIsGM]" -ne "1"|CharacterSelect
+  -->SetMuleCopyMode|
+  --&MuleCopyDestID|
+  --&MuleCopySourceID|
+  --&SelectedSpellMule|
+  --&NPCListPage|[&reentryval]
+  --?"[&NPCListPage]" -eq "START" -or "[&NPCListPage]" -eq "BACK"|&NPCListPage;0
+  -->BuildSBMMuleList|
+  --&BackButton|[&BackBtn]CharacterSelect;BACK[/rbutton]
+  --&SettingsButton|[&SettingsBtn]SBMMuleCopySelectDest[/rbutton]
+  --&NPCListButtonTarget|SetMuleCopyDest
+  --&NPCListPageTarget|SBMMuleCopySelectDest
+  -->OpenSBMCard|Spell Mule Copy
+  --?[$NPCCount.Raw] -eq 0|[ --&CardHTML|+[&CardTextRow]No SBM_ spell mules were found.[/td][/tr] --]|[ --&NPCListSectionTitle|Choose Destination Mule -->AppendNPCPage| --]
+  -->ShowSBMCard|
+--X|
+--:SetMuleCopyDest|
+  --?"[&SendingPlayerIsGM]" -ne "1"|CharacterSelect
+  -->SetMuleCopyMode|
+  --&MuleCopyDestID|[&reentryval]
+  --&MuleCopySourceID|
+  --&SelectedSpellMule|
+  --&ChosenChar|[&MuleCopyDestID]
+  --^SBMMuleCopySelectSource|
+--:SBMMuleCopySelectSource|
+  --?"[&SendingPlayerIsGM]" -ne "1"|CharacterSelect
+  --?"[&MuleCopyDestID]" -eq "" -or "[&MuleCopyDestID]" -eq "undefined"|SBMMuleCopySelectDest
+  -->SetMuleCopyMode|
+  --&NPCListPage|[&reentryval]
+  --?"[&NPCListPage]" -eq "START" -or "[&NPCListPage]" -eq "BACK"|&NPCListPage;0
+  -->BuildSBMMuleList|[&MuleCopyDestID]
+  --&MuleCopyDestName|[*O:[&MuleCopyDestID]:character:name]
+  --~MuleCopyDestName|string;replaceall;SBM_;;[&MuleCopyDestName]
+  --&BackButton|[&BackBtn]SBMMuleCopySelectDest;BACK[/rbutton]
+  --&SettingsButton|[&SettingsBtn]SBMMuleCopySelectSource[/rbutton]
+  --&NPCListButtonTarget|SetMuleCopySource
+  --&NPCListPageTarget|SBMMuleCopySelectSource
+  -->OpenSBMCard|Copy to [&MuleCopyDestName]
+  --?[$NPCCount.Raw] -eq 0|[ --&CardHTML|+[&CardTextRow]No other SBM_ spell mules were found.[/td][/tr] --]|[ --&NPCListSectionTitle|Choose Source Mule -->AppendNPCPage| --]
+  -->ShowSBMCard|
+--X|
+--:SetMuleCopySource|
+  --?"[&SendingPlayerIsGM]" -ne "1"|CharacterSelect
+  -->SetMuleCopyMode|
+  --&MuleCopySourceID|[&reentryval]
+  --&SelectedSpellMule|[&MuleCopySourceID]
+  --&ChosenChar|[&MuleCopyDestID]
+  --&CharID|[&MuleCopyDestID]
+  --^SpellList|
 --:SelectNPC|
+  --&IsMuleCopyManager|0
   --&ChosenChar|[&reentryval]
   --&CharID|[&ChosenChar]
   --&IsNPCSpellManager|1
@@ -622,6 +700,7 @@
   -->ShowSBMCard|
 --X|
 --:SelectCharacter|
+  --&IsMuleCopyManager|0
   --&ChosenChar|[&reentryval]
   --&IsNPCSpellManager|0
 --:SelectCharacterReady|
@@ -637,7 +716,7 @@
   --?"[$PCCount.Raw]" -gt "1"|[ --&BackButton|[&BackBtn]CharacterSelect;BACK[/rbutton] --]|
   --&SettingsButton|[&SettingsBtn]SelectCharacterReady[/rbutton]
   -->OpenSBMCard|[*[&CharID]:character_name]
-  --&CardHTML|+[&CardCenterRow][t style='width:100%; border:none; border-collapse:collapse; table-layout:fixed;'][tr][td style='border:none; padding:0; text-align:center;'][rbutton]Choose Spells::SetSpellMode;CHOOSE!@![&ChosenChar][/rbutton][/td][td style='border:none; padding:0; text-align:center;'][rbutton]Move Spells::SetSpellMode;MOVE!@![&ChosenChar][/rbutton][/td][/tr][/t][/td][/tr]
+  --&CardHTML|+[&CardCenterRow][t style='width:100%; [&B0] [&TF]'][tr][td style='[&B0] padding:0; [&TC]'][rbutton]Choose Spells::SetSpellMode;CHOOSE!@![&ChosenChar][/rbutton][/td][td style='[&B0] padding:0; [&TC]'][rbutton]Move Spells::SetSpellMode;MOVE!@![&ChosenChar][/rbutton][/td][/tr][/t][/td][/tr]
   -->ShowSBMCard|
 --X|
 --:SetSpellMode|
@@ -682,7 +761,6 @@
     --=SpellMuleSelectCount|[$SpellMuleSelectCount.Raw] + 1
   --%|
   --&SpellMuleSelectOutput|+[/tr][/t]
-  --?[$SpellMuleSelectCount.Raw] -eq 0|NoAssignedSpellMules
   --&CardHTML|+[&CardCenterRow][&SpellMuleSelectOutput][/td][/tr]
   -->ShowSBMCard|
 --X|
@@ -692,16 +770,26 @@
 --:SpellList|
   --&CharID|[*[&ChosenChar]:character_id]
   --?"[&IsNPCSpellManager]" -eq "1"|&CharID;[&ChosenChar]
+  --?"[&IsMuleCopyManager]" -eq "1"|&CharID;[&MuleCopyDestID]
   --:Restart|
   --?"[&WhatDo]" -eq "MOVE"|[ --&Title|Move [*[&CharID]:character_name] Spells --]|[ --&Title|[*[&CharID]:character_name] Spell Choice --]|
+  --?"[&IsMuleCopyManager]" -ne "1"|AfterMuleCopyTitle
+  --&MuleCopyDestName|[*O:[&MuleCopyDestID]:character:name]
+  --~MuleCopyDestName|string;replaceall;SBM_;;[&MuleCopyDestName]
+  --&Title|Copy to [&MuleCopyDestName]
+  --:AfterMuleCopyTitle|
   --~|array;define;SpellLevels;cantrip;1;2;3;4;5;6;7;8;9
   --?"[&WhatDo]" -eq "MOVE"|&AssignedSpellMuleString;[&CharID],
   --?"[&WhatDo]" -eq "MOVE"|SpellSourceReady
-  --?"[&SelectedSpellMule]" -eq "" -or "[&SelectedSpellMule]" -eq "undefined"|SpellMuleSelect
+  --?"[&SelectedSpellMule]" -ne "" -and "[&SelectedSpellMule]" -ne "undefined"|SpellSourceSelected
+  --?"[&IsMuleCopyManager]" -eq "1"|SBMMuleCopySelectSource
+  --^SpellMuleSelect|
+  --:SpellSourceSelected|
   --?"[&SelectedSpellMule]" -ne "ALL"|&AssignedSpellMuleString;[&SelectedSpellMule],
   --:SpellSourceReady|
   --?"[&WhatDo]" -eq "CHOOSE" -and "[&SelectedSpellMule]" -eq "ALL"|&Title;[&Title]: All Spells
-  --?"[&WhatDo]" -eq "CHOOSE" -and "[&SelectedSpellMule]" -ne "ALL"|[ --&SelectedSpellMuleName|[*O:[&SelectedSpellMule]:character:name] --~SelectedSpellMuleName|string;replaceall;SBM_;;[&SelectedSpellMuleName] --&Title|[&Title]: [&SelectedSpellMuleName] --]|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[&SelectedSpellMule]" -ne "ALL" -and "[&IsMuleCopyManager]" -ne "1"|[ --&SelectedSpellMuleName|[*O:[&SelectedSpellMule]:character:name] --~SelectedSpellMuleName|string;replaceall;SBM_;;[&SelectedSpellMuleName] --&Title|[&Title]: [&SelectedSpellMuleName] --]|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[&SelectedSpellMule]" -ne "ALL" -and "[&IsMuleCopyManager]" -eq "1"|[ --&SelectedSpellMuleName|[*O:[&SelectedSpellMule]:character:name] --~SelectedSpellMuleName|string;replaceall;SBM_;;[&SelectedSpellMuleName] --&Title|[&SelectedSpellMuleName] -> [&MuleCopyDestName] --]|
   --~|array;fromstring;SpellMuleIDs;,;[&AssignedSpellMuleString]
   --&KnownSpellList|!@!
   --?"[&WhatDo]" -ne "CHOOSE"|AfterKnownSpellList
@@ -717,7 +805,8 @@
   --%|
   --:AfterKnownSpellList|
   --&BackButton|&nbsp;
-  --?"[&WhatDo]" -eq "CHOOSE"|[ --&BackButton|[&BackBtn]SpellMuleSelect;BACK[/rbutton] --]|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[&IsMuleCopyManager]" -eq "1"|[ --&BackButton|[&BackBtn]SBMMuleCopySelectSource;BACK[/rbutton] --]|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[&IsMuleCopyManager]" -ne "1"|[ --&BackButton|[&BackBtn]SpellMuleSelect;BACK[/rbutton] --]|
   --?"[&WhatDo]" -ne "CHOOSE" -and "[&IsNPCSpellManager]" -eq "1"|[ --&BackButton|[&BackBtn]NPCSpellManager;[&NPCListPage][/rbutton] --]|
   --?"[&WhatDo]" -ne "CHOOSE" -and "[&IsNPCSpellManager]" -ne "1" -and "[&CanMoveSpells]" -eq "1"|[ --&BackButton|[&BackBtn]SelectCharacterReady;BACK[/rbutton] --]|
   --?"[&WhatDo]" -ne "CHOOSE" -and "[&IsNPCSpellManager]" -ne "1" -and "[&CanMoveSpells]" -ne "1" -and "[$PCCount.Raw]" -gt "1"|[ --&BackButton|[&BackBtn]CharacterSelect;BACK[/rbutton] --]|
@@ -765,7 +854,9 @@
       --?"[&LevelLoop]" -ne "cantrip" -and "[&WhatDo]" -eq "MOVE" -and "[&LevelLoop]" -ne "1"|[ --&UpButton|[td [&SpellIconTd_CSS]][rbutton]&#x2B9D;::TransferSpell;UP!@![&LevelLoop]!@![&SpellIndex][/rbutton][/td] --]|
       --?"[&LevelLoop]" -ne "cantrip" -and "[&WhatDo]" -eq "MOVE" -and "[&LevelLoop]" -ne "9"|[ --&DownButton|[td [&SpellIconTd_CSS]][rbutton]&#x2B9F;::TransferSpell;DOWN!@![&LevelLoop]!@![&SpellIndex][/rbutton][/td] --]|
       --?"[&WhatDo]" -eq "CHOOSE"|[ --&DescButton|[td [&SpellIconTd_CSS] title="Description"][rbutton][F::12]&#x1F56E;[/F]::SpellDescription;[&SpellMuleID]!@![&SpellName]!@![&LevelLoop][/rbutton][/td] --]|
-      --?"[&WhatDo]" -eq "CHOOSE" -and "[&AlreadyKnown]" -eq "0"|[ --&CopySpells|[td [&SpellActionTd_CSS]][rbutton][F::12]Copy to Character[/F]::TransferSpell;[&SpellMuleID]!@![&LevelLoop]!@![&SpellIndex][/rbutton][/td] --]|
+      --&CopySpellButtonText|Copy to Character
+      --?"[&IsMuleCopyManager]" -eq "1"|&CopySpellButtonText;Copy to Mule
+      --?"[&WhatDo]" -eq "CHOOSE" -and "[&AlreadyKnown]" -eq "0"|[ --&CopySpells|[td [&SpellActionTd_CSS]][rbutton][F::12][&CopySpellButtonText][/F]::TransferSpell;[&SpellMuleID]!@![&LevelLoop]!@![&SpellIndex][/rbutton][/td] --]|
       --?"[&WhatDo]" -eq "CHOOSE" -and "[&AlreadyKnown]" -eq "1"|[ --&CopySpells|[td [&SpellActionTd_CSS]][F::12][b][i]Already Known[/i][/b][/F][/td] --]|
       --=SpellDisplayRow|[$SpellDisplayRow.Raw] + 1
       --&SpellRowBG|[&OddRowBG]
@@ -847,8 +938,8 @@
   --!a:[&CharID]|$[&TransferSpellDestRowPrefix]smm_originallevel:[&TransferSpellOriginalLevel]
   --?"[&WhatDo]" -eq "CHOOSE" -and "[&NewLevel]" -eq "cantrip"|[ --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels:SBM_CANTRIP_REFRESH --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels: --]|
   --?"[&WhatDo]" -eq "CHOOSE"|[ --!a:[&CharID]|[&TransferSpellDestRowPrefix]roll_output_dc:[*[&CharID]:spell_save_dc] --]|
-  --?"[&WhatDo]" -eq "CHOOSE" -and "[*[&CharID]:class]" -eq ""|[ --!a:[&CharID]|!npcspellcastingflag:1 --]|
-  --?"[&WhatDo]" -eq "CHOOSE" -and "[*[&CharID]:npc]" -eq "1"|[ --!a:[&CharID]|!npcspellcastingflag:1 --]|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[&IsMuleCopyManager]" -ne "1" -and "[*[&CharID]:class]" -eq ""|[ --!a:[&CharID]|!npcspellcastingflag:1 --]|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[&IsMuleCopyManager]" -ne "1" -and "[*[&CharID]:npc]" -eq "1"|[ --!a:[&CharID]|!npcspellcastingflag:1 --]|
   --?"[&TransferSpellOutput]" -ne "ATTACK"|AfterTransferSpellAttackRefresh
   --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellhldie:
   --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels:
@@ -856,7 +947,7 @@
   --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels:[&TransferSpellHigherLevels]
   --?"[&IsNPCSpellManager]" -eq "1"|AfterTransferSpellAttackRowRefresh
   --&TransferSpellAttackID|[*[&CharID]:[&TransferSpellDestRowPrefix]spellattackid]
-  --&PERC|% --&OB|{ --&CB|} --&Vbar|\\\\| --&AT|@
+  --&PERC|% --&OB|{ --&CB|} --&Vbar|\\\\|
   --?"[&TransferSpellAttackID]" -eq "" -or "[&TransferSpellAttackID]" -eq "undefined" -or "[&TransferSpellAttackID]" -eq "[&NoRow]"|AfterTransferSpellAttackRowRefresh
   --!a:[&CharID]|$[&TransferSpellDestRowPrefix]rollcontent:[&PERC][&OB][&CharID][&Vbar]repeating_attack_[&TransferSpellAttackID]_attack[&CB]
   --!a:[&CharID]|!repeating_attack_[&TransferSpellAttackID]_spelllevel:[&NewLevel]
@@ -929,6 +1020,11 @@
   --&SpellDescRollDisplay|[$SpellDescDiceCount.Raw]d[&SpellDescDie] [&LB][$SpellDescDiceCount.Raw]d[&SpellDescDie][&RB]
   --~SpellDescText|string;replaceall;[&SpellDescRollFind];[&SpellDescRollDisplay];[&SpellDescText]
   --:AfterSpellDescCustomRollDisplay|
+  --?"[&SpellDescText]" -inc "[&LB][&LB][&LB][&RB]d6[&RB][&RB]"|[
+    --=SpellDescQueryDiceCount|[&SpellDescEffectiveLevel] + 5
+    --&SpellDescQueryRollDisplay|[$SpellDescQueryDiceCount.Raw]d6 [&LB][$SpellDescQueryDiceCount.Raw]d6[&RB]
+    --~SpellDescText|string;replaceall;[&LB][&LB][&LB][&RB]d6[&RB][&RB];[&SpellDescQueryRollDisplay];[&SpellDescText]
+  --]|
   --&SpellWrite|[t [&SpellDescOuter_CSS]][tr][td [&SpellDescOuterCell_CSS]][t [&SpellDescTable_CSS]][tr][td [&SpellDescTitle_CSS]]&nbsp;[*R:spellname][/td][/tr][tr][td [&SpellDescSub_CSS]]&nbsp;[&SpellLevelOutput(totitlecase)][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Casting Time:&nbsp;&nbsp;[*R:spellcastingtime][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Range:&nbsp;&nbsp;[*R:spellrange][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Target:&nbsp;&nbsp;[*R:spelltarget][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Components:&nbsp;&nbsp;[&Verbal] [&Somatic] [&Components] [&Materials][/td][/tr][tr][td [&SpellDescLabel_CSS]]&nbsp;Duration:&nbsp;&nbsp;[*R:spellduration][/td][/tr]
   --?"[*R:spellclass]" -ne ""|[ --&SpellWrite|+[tr][td [&SpellDescLabel_CSS]]Classes:&nbsp;&nbsp;[*R:spellclass][/td][/tr] --]|
   --?"[*R:spellsource]" -ne ""|[ --&SpellWrite|+[tr][td [&SpellDescLabel_CSS]]Source:&nbsp;&nbsp;[*R:spellsource][/td][/tr] --]|
