@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC .3
+  --/| RC .4
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SpellDescHandoutName|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SpellDescHandoutName]
@@ -14,7 +14,7 @@
   -->LoadSBMSettings| -->ParseSBMSettings| -->LoadSBMPlayerTheme| -->ApplySBMTheme|
 --:CharacterSelect|
   --&BackButton|&nbsp;
-  --&SettingsButton|[rbutton][F:Tahoma:16]&#x2699;[/F]::SBMSettings;CharacterSelect[/rbutton]
+  --&SettingsButton|[&SettingsBtn]CharacterSelect[/rbutton]
   -->OpenSBMCard|Choose a Character
   --~|array;fromcontrolledcharacters;PlayerArray;[&SendingPlayerID]
   --?"[&SendingPlayerIsGM]" -eq "1"|[
@@ -40,9 +40,8 @@
     --&CharacterCounter|0
     --%PlayerLoop|foreach;SBMValidPCList
       --&Character_Name|[*[&PlayerLoop]:character_name]
-      --=CharacterRow|[&CharacterCounter] % 2
       --&CharacterRowBG|[&OddRowBG]
-      --?"[$CharacterRow.Raw]" -eq "1"|&CharacterRowBG;[&EvenRowBG]
+      --?"[= [&CharacterCounter] % 2 ]" -eq "1"|&CharacterRowBG;[&EvenRowBG]
       --&CardHTML|+[tr][td [&CharacterCell_CSS]][rbutton][&Character_Name]::SelectCharacter;[&PlayerLoop][/rbutton][/td][/tr]
       --&CharacterCounter|[= [&CharacterCounter] + 1]
     --%|
@@ -64,23 +63,21 @@
 --:SBMSettings|
   --#hidecard|0
   --&SBMSettingsReturn|[&reentryval]
-  --?",CharacterSelect,SelectCharacterReady,SpellList,NoAssignedSpellMules,SBMClassMules,SBMCharacterSelectMules,SBMCharacterMules,NPCSpellManager,SBMNPCSelectMules,SBMNPCMules," -ninc ",[&SBMSettingsReturn],"|&SBMSettingsReturn;CharacterSelect
+  --?",CharacterSelect,SelectCharacterReady,SpellMuleSelect,SpellList,NoAssignedSpellMules,SBMClassMules,SBMCharacterSelectMules,SBMCharacterMules,NPCSpellManager,SBMNPCSelectMules,SBMNPCMules," -ninc ",[&SBMSettingsReturn],"|&SBMSettingsReturn;CharacterSelect
   --&SBMThemeCounter|0
   --&SBMThemeOutput|[t [&GridTable_CSS]][tr]
   --%SBMThemeLoop|foreach;SBMThemeList
     --?"[= [&SBMThemeCounter] % 3 ]" -eq "0" -and "[&SBMThemeCounter]" -ne "0"|&SBMThemeOutput;+[/tr][tr]
-    --=SBMThemeRow|[&SBMThemeCounter] \ 3
-    --=SBMThemeRowMod|[$SBMThemeRow.Raw] % 2
     --&SBMThemeButtonBG|[&OddRowBG]
-    --?"[$SBMThemeRowMod.Raw]" -eq "1"|&SBMThemeButtonBG;[&EvenRowBG]
+    --?"[= [&SBMThemeCounter] \ 3 % 2 ]" -eq "1"|&SBMThemeButtonBG;[&EvenRowBG]
     --&SBMThemeOutput|+[td style='[&GridCellStyle] background-color:[&SBMThemeButtonBG];'][rbutton][&SBMThemeLoop(totitlecase)]::SBMSetTheme;[&SBMThemeLoop][/rbutton][/td]
     --&SBMThemeCounter|[= [&SBMThemeCounter] + 1]
   --%|
   --&SBMThemeOutput|+[/tr][/t]
   --&SettingsTitle|Player Settings
   --?[&SendingPlayerIsGM] -eq 1|&SettingsTitle;DM Settings
-  --&BackButton|[rbutton]&#x2B9C;::[&SBMSettingsReturn];BACK[/rbutton]
-  --&SettingsButton|[rbutton][F:Tahoma:14]&#x2699;[/F]::SBMSettings;[&SBMSettingsReturn][/rbutton]
+  --&BackButton|[&BackBtn][&SBMSettingsReturn];BACK[/rbutton]
+  --&SettingsButton|[rbutton][&SmallSettingsIcon]::SBMSettings;[&SBMSettingsReturn][/rbutton]
   -->OpenSBMCard|[&SettingsTitle]
   --?[&SendingPlayerIsGM] -ne 1|SkipSettingsClassMules
   --&SelectedClass|
@@ -89,18 +86,14 @@
   --&ClassOutput|[t [&GridTable_CSS]][tr]
   --%SBMClassLoop|foreach;SBMClassList
     --?"[= [&ClassCounter] % 3 ]" -eq "0" -and "[&ClassCounter]" -ne "0"|&ClassOutput;+[/tr][tr]
-    --=ClassRow|[&ClassCounter] \ 3
-    --=ClassRowMod|[$ClassRow.Raw] % 2
     --&ClassButtonBG|[&OddRowBG]
-    --?"[$ClassRowMod.Raw]" -eq "1"|&ClassButtonBG;[&EvenRowBG]
+    --?"[= [&ClassCounter] \ 3 % 2 ]" -eq "1"|&ClassButtonBG;[&EvenRowBG]
     --&ClassOutput|+[td style='[&GridCellStyle] background-color:[&ClassButtonBG];'][rbutton][&SBMClassLoop(totitlecase)]::SBMClassMules;[&SBMClassLoop][/rbutton][/td]
     --&ClassCounter|[= [&ClassCounter] + 1]
   --%|
   --?"[= [&ClassCounter] % 3 ]" -eq "0" -and "[&ClassCounter]" -ne "0"|&ClassOutput;+[/tr][tr]
-  --=ClassRow|[&ClassCounter] \ 3
-  --=ClassRowMod|[$ClassRow.Raw] % 2
   --&ClassButtonBG|[&OddRowBG]
-  --?"[$ClassRowMod.Raw]" -eq "1"|&ClassButtonBG;[&EvenRowBG]
+  --?"[= [&ClassCounter] \ 3 % 2 ]" -eq "1"|&ClassButtonBG;[&EvenRowBG]
   --&ClassOutput|+[td style='[&GridCellStyle] background-color:[&ClassButtonBG];'][rbutton][b][F::14]&#x2B;[/F][/b]::SBMAddCustomClassPrompt;[&SBMSettingsReturn][/rbutton][/td]
   --&ClassOutput|+[/tr][/t]
   --&CardHTML|+[&CardCenterRow][&ClassOutput][/td][/tr]
@@ -218,10 +211,18 @@
   --&MuleGridCellStyle|width:50%; border:none; padding:[&CardRowPadding]; text-align:center;
   --&CardAppTitle|Spell Book Manager
   --&HomeButton|[rbutton][F:Tahoma:18]&#x2302;[/F]::CharacterSelect;BACK[/rbutton]
+  --&BackIcon|&#x2B9C;
+  --&SettingsIcon|[F:Tahoma:16]&#x2699;[/F]
+  --&BackBtn|[rbutton][&BackIcon]::
+  --&SettingsBtn|[rbutton][&SettingsIcon]::SBMSettings;
+  --&SmallSettingsIcon|[F:Tahoma:14]&#x2699;[/F]
+  --&NoSpellMulesFoundText|No spell mule characters found. Create one or more character sheets with names beginning with SBM_ and run this settings page again.
+  --&NoNPCSheetsText|No 2014 NPC sheets were found.
+  --&NoRow|NoRepeatingAttributeLoaded
   --&TitleButtonDivider|[/td][td style='width:2px; min-width:2px; max-width:2px; height:28px; font-size:1px; line-height:28px; padding:0; vertical-align:middle; background-color:[&DescBG]; color:[&DescBG];']&nbsp;[/td][td style='text-align:center; width:30px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
-  --&CardTitleBar_Open|[t style='width:100%; border-collapse:collapse; table-layout:fixed;'][tr style='height:28px;'][td style='text-align:center; width:28px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
+  --&CardTitleBar_Open|[t style='width:105%; border-collapse:collapse; table-layout:fixed;'][tr style='height:28px;'][td style='text-align:center; width:28px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
   --&CardTitleBar_Mid|[/td][td style='text-align:center; width:100%; height:28px; font-size:[&TitleFontSize]; border-left:2px solid [&DescBG]; border-right:0px solid [&TitleBG]; padding:0 4px; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText]; [&TitleFont]; [&TitleTextTransform]']
-  --&CardTitleBar_Right|[/td][td style='width:2px; min-width:2px; max-width:2px; height:28px; font-size:1px; line-height:28px; padding:0; vertical-align:middle; background-color:[&DescBG]; color:[&DescBG];']&nbsp;[/td][td style='text-align:center; width:30px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
+  --&CardTitleBar_Right|[&TitleButtonDivider]
   --&CardTitleBar_Close|[/td][/tr][/t]
   --&CardOuter_CSS|style='width:300px; position:relative; left:-30px; border:1px solid [&DescBorder]; border-radius:8px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; color:[&DescWhite]; overflow:hidden;'
   --&CardOuterCell_CSS|style='border:none; padding:10px 20px 4px 5px; background-color:[&DescBG];'
@@ -299,10 +300,7 @@
   --~StringTail|string;after;!q!;[&String2]
   --&SBMSettingsRaw|[&String3][&NewCustomClasses]!q![&StringTail]
   --&ClassNeedle|!q![&CustomClassName]!q!:!q!
-  --?"[&CustomClassMode]" -eq "ADD" -and "[&SBMSettingsRaw]" -ninc "[&ClassNeedle]"|[
-    --~StringBase|string;before;!%!;[&SBMSettingsRaw]
-    --&SBMSettingsRaw|[&StringBase],!q![&CustomClassName]!q!:!q!!q!!%!
-  --]|
+  --?"[&CustomClassMode]" -eq "ADD" -and "[&SBMSettingsRaw]" -ninc "[&ClassNeedle]"|[ --~StringBase|string;before;!%!;[&SBMSettingsRaw] --&SBMSettingsRaw|[&StringBase],!q![&CustomClassName]!q!:!q!!q!!%! --]|
   --?"[&CustomClassMode]" -eq "REMOVE" -and "[&SBMSettingsRaw]" -inc "[&ClassNeedle]"|[
     --~String2|string;after;[&ClassNeedle];[&SBMSettingsRaw]
     --?"[&String2]" -eq ""|SBMModifyCustomClassStorageError
@@ -329,15 +327,15 @@
   --?"[&SelectedClass]" -eq "" -or "[&SelectedClass]" -eq "undefined"|&SelectedClass;[&reentryval]
   --&AssignedMules|[:SBMSettings("[&SelectedClass]")]
   --~|array;objects:character;SBMAvailableMules;SBM_
-  --&BackButton|[rbutton]&#x2B9C;::SBMSettings;[&SBMSettingsReturn][/rbutton]
-  --&SettingsButton|[rbutton][F:Tahoma:16]&#x2699;[/F]::SBMSettings;SBMClassMules[/rbutton]
+  --&BackButton|[&BackBtn]SBMSettings;[&SBMSettingsReturn][/rbutton]
+  --&SettingsButton|[&SettingsBtn]SBMClassMules[/rbutton]
   -->OpenSBMCard|[&SelectedClass(totitlecase)] Spell Mules
   --?"[@SBMAvailableMules(maxindex)]" -lt "0"|NoSBMMules
   -->AppendMuleSection|Unassigned Spell Mules;UNASSIGNED;class;No unassigned spell mules found.
   -->AppendMuleSection|Assigned Spell Mules;ASSIGNED;class;No assigned spell mules.
   --^AfterSBMMules|
   --:NoSBMMules|
-  --&CardHTML|+[&CardTextRow]No spell mule characters found. Create one or more character sheets with names beginning with SBM_ and run this settings page again.[/td][/tr]
+  --&CardHTML|+[&CardTextRow][&NoSpellMulesFoundText][/td][/tr]
   --:AfterSBMMules|
   -->ShowSBMCard|
 --X|
@@ -361,10 +359,8 @@
     --?"[&MuleSectionToggle]" -ne "class" -and "[&MuleSectionMode]" -eq "BLOCKED" -and "[&CharacterExcludeMules]" -inc "[&MuleEntry]"|&ShowMule;1
     --?"[&ShowMule]" -eq "1"|[
       --?"[= [$MuleSectionCount.Raw] % 2 ]" -eq "0" -and "[$MuleSectionCount.Raw]" -ne "0"|&MuleSectionOutput;+[/tr][tr]
-      --=MuleSectionRow|[$MuleSectionCount.Raw] \ 2
-      --=MuleSectionRowMod|[$MuleSectionRow.Raw] % 2
       --&MuleButtonBG|[&OddRowBG]
-      --?"[$MuleSectionRowMod.Raw]" -eq "1"|&MuleButtonBG;[&EvenRowBG]
+      --?"[= [$MuleSectionCount.Raw] \ 2 % 2 ]" -eq "1"|&MuleButtonBG;[&EvenRowBG]
       --&MuleName|[*O:[&SBMMuleSectionLoop]:character:name]
       --~MuleName|string;replaceall;SBM_;;[&MuleName]
       --?"[&MuleSectionToggle]" -eq "class"|&MuleToggleData;class!@![&SelectedClass]!@![&SBMMuleSectionLoop]
@@ -378,8 +374,8 @@
   --?[$MuleSectionCount.Raw] -gt 0|[ --&CardHTML|+[&CardCenterRow][&MuleSectionOutput][/td][/tr] --]|
 --<|
 --:SBMCharacterSelectMules|
-  --&BackButton|[rbutton]&#x2B9C;::SBMSettings;[&SBMSettingsReturn][/rbutton]
-  --&SettingsButton|[rbutton][F:Tahoma:16]&#x2699;[/F]::SBMSettings;SBMCharacterSelectMules[/rbutton]
+  --&BackButton|[&BackBtn]SBMSettings;[&SBMSettingsReturn][/rbutton]
+  --&SettingsButton|[&SettingsBtn]SBMCharacterSelectMules[/rbutton]
   -->OpenSBMCard|Character Spell Mules
   --~|array;objects:character;SBMAvailableCharacters;
   --?"[@SBMAvailableCharacters(maxindex)]" -lt "0"|NoCharactersForMules
@@ -393,10 +389,8 @@
     --&Character_Name|[*O:[&SBMCharacterLoop]:character:name]
     --?"[&Character_Name]" -imatch "^SBM_" -or "[&Character_Name]" -imatch "^ScriptCards"|%
     --?"[= [&CharacterCounter] % 3 ]" -eq "0" -and "[&CharacterCounter]" -ne "0"|&CharacterOutput;+[/tr][tr]
-    --=CharacterRow|[&CharacterCounter] \ 3
-    --=CharacterRowMod|[$CharacterRow.Raw] % 2
     --&CharacterButtonBG|[&OddRowBG]
-    --?"[$CharacterRowMod.Raw]" -eq "1"|&CharacterButtonBG;[&EvenRowBG]
+    --?"[= [&CharacterCounter] \ 3 % 2 ]" -eq "1"|&CharacterButtonBG;[&EvenRowBG]
     --&CharacterOutput|+[td style='[&GridCellStyle] background-color:[&CharacterButtonBG];'][rbutton][&Character_Name]::SBMCharacterMules;[&SBMCharacterLoop][/rbutton][/td]
     --&CharacterCounter|[= [&CharacterCounter] + 1]
   --%|
@@ -466,8 +460,8 @@
   -->BuildCharacterMuleLists|[&SelectedChar]
   --&MuleOwnerMode|character
   --~|array;objects:character;SBMAvailableMules;SBM_
-  --&BackButton|[rbutton]&#x2B9C;::SBMCharacterSelectMules;BACK[/rbutton]
-  --&SettingsButton|[rbutton][F:Tahoma:16]&#x2699;[/F]::SBMSettings;SBMCharacterMules[/rbutton]
+  --&BackButton|[&BackBtn]SBMCharacterSelectMules;BACK[/rbutton]
+  --&SettingsButton|[&SettingsBtn]SBMCharacterMules[/rbutton]
   -->OpenSBMCard|[&SelectedCharName] Spell Mules
   --?"[@SBMAvailableMules(maxindex)]" -lt "0"|NoCharacterSBMMules
   -->AppendMuleSection|Available Character Mules;AVAILABLE;include;No available character mules.
@@ -476,7 +470,7 @@
   -->AppendMuleSection|Blocked Class Mules;BLOCKED;exclude;No blocked class mules.
   --^AfterCharacterSBMMules|
   --:NoCharacterSBMMules|
-  --&CardHTML|+[&CardTextRow]No spell mule characters found. Create one or more character sheets with names beginning with SBM_ and run this settings page again.[/td][/tr]
+  --&CardHTML|+[&CardTextRow][&NoSpellMulesFoundText][/td][/tr]
   --:AfterCharacterSBMMules|
   -->ShowSBMCard|
 --X|
@@ -537,19 +531,9 @@
   --?[$NPCCount.Raw] -gt 0|[ --~|array;sort;SBMValidNPCList --]|
 --<|
 --:AppendNPCPage|
-  --?"[&NPCListPage]" -eq "" -or "[&NPCListPage]" -eq "undefined" -or "[&NPCListPage]" -eq "START" -or "[&NPCListPage]" -eq "BACK"|&NPCListPage;0
   --=NPCPageSize|21
-  --=NPCPageNum|[&NPCListPage]
-  --?[$NPCPageNum.Raw] -lt 0|=NPCPageNum;0
-  --&NPCListPage|[$NPCPageNum.Raw]
-  --=NPCStartIndex|[$NPCPageNum.Raw] * [$NPCPageSize.Raw]
-  --=NPCEndIndex|[$NPCStartIndex.Raw] + [$NPCPageSize.Raw] - 1
-  --?[$NPCStartIndex.Raw] -ge [$NPCCount.Raw]|[
-    --=NPCPageNum|0
-    --&NPCListPage|0
-    --=NPCStartIndex|0
-    --=NPCEndIndex|[$NPCPageSize.Raw] - 1
-  --]|
+  --=NPCStartIndex|[&NPCListPage] * [$NPCPageSize.Raw]
+  --?[$NPCStartIndex.Raw] -ge [$NPCCount.Raw]|[ --&NPCListPage|0 --=NPCStartIndex|0 --]|
   --&CardHTML|+[&CardSectionRow][&NPCListSectionTitle][/td][/tr]
   --&NPCOutput|[t [&GridTable_CSS]][tr]
   --=NPCEntryIndex|-1
@@ -557,50 +541,47 @@
   --%SBMNPCPageLoop|foreach;SBMValidNPCList
     --=NPCEntryIndex|[$NPCEntryIndex.Raw] + 1
     --?[$NPCEntryIndex.Raw] -lt [$NPCStartIndex.Raw]|%
-    --?[$NPCEntryIndex.Raw] -gt [$NPCEndIndex.Raw]|%
+    --?[$NPCPageCount.Raw] -ge [$NPCPageSize.Raw]|%
     --~NPCEntrySplit|string;split;!@!;[&SBMNPCPageLoop]
     --&NPCCharacterName|[&NPCEntrySplit1]
     --&NPCCharacterID|[&NPCEntrySplit2]
     --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "0" -and "[$NPCPageCount.Raw]" -ne "0"|&NPCOutput;+[/tr][tr]
-    --=NPCRow|[$NPCPageCount.Raw] \ 3
-    --=NPCRowMod|[$NPCRow.Raw] % 2
     --&NPCButtonBG|[&OddRowBG]
-    --?"[$NPCRowMod.Raw]" -eq "1"|&NPCButtonBG;[&EvenRowBG]
+    --?"[= [$NPCPageCount.Raw] \ 3 % 2 ]" -eq "1"|&NPCButtonBG;[&EvenRowBG]
     --&NPCOutput|+[td style='[&GridCellStyle] background-color:[&NPCButtonBG];'][rbutton][&NPCCharacterName]::[&NPCListButtonTarget];[&NPCCharacterID][/rbutton][/td]
     --=NPCPageCount|[$NPCPageCount.Raw] + 1
   --%|
   --&NPCOutput|+[/tr][/t]
   --&CardHTML|+[&CardCenterRow][&NPCOutput][/td][/tr]
   --?[$NPCCount.Raw] -le [$NPCPageSize.Raw]|AfterNPCPageNav
-  --=NPCDisplayPage|[$NPCPageNum.Raw] + 1
-  --=NPCPrevPage|[$NPCPageNum.Raw] - 1
-  --=NPCNextPage|[$NPCPageNum.Raw] + 1
-  --=NPCNextStartIndex|[$NPCStartIndex.Raw] + [$NPCPageSize.Raw]
+  --=NPCDisplayPage|[&NPCListPage] + 1
+  --=NPCPrevPage|[&NPCListPage] - 1
+  --=NPCNextPage|[&NPCListPage] + 1
   --&NPCNavOutput|[t [&GridTable_CSS]][tr]
-  --?[$NPCPageNum.Raw] -gt 0|[ --&NPCNavOutput|+[td style='[&GridCellStyle]'][rbutton]&#x2B9C; Prev::[&NPCListPageTarget];[$NPCPrevPage.Raw][/rbutton][/td] --]|[ --&NPCNavOutput|+[td style='[&GridCellStyle]']&nbsp;[/td] --]|
+  --?[$NPCPrevPage.Raw] -ge 0|[ --&NPCNavOutput|+[td style='[&GridCellStyle]'][rbutton][&BackIcon] Prev::[&NPCListPageTarget];[$NPCPrevPage.Raw][/rbutton][/td] --]|[ --&NPCNavOutput|+[td style='[&GridCellStyle]']&nbsp;[/td] --]|
   --&NPCNavOutput|+[td style='[&GridCellStyle]']Page [$NPCDisplayPage.Raw][/td]
-  --?[$NPCNextStartIndex.Raw] -lt [$NPCCount.Raw]|[ --&NPCNavOutput|+[td style='[&GridCellStyle]'][rbutton]Next &#x2B9E;::[&NPCListPageTarget];[$NPCNextPage.Raw][/rbutton][/td] --]|[ --&NPCNavOutput|+[td style='[&GridCellStyle]']&nbsp;[/td] --]|
+  --?[= [$NPCStartIndex.Raw] + [$NPCPageSize.Raw] ] -lt [$NPCCount.Raw]|[ --&NPCNavOutput|+[td style='[&GridCellStyle]'][rbutton]Next &#x2B9E;::[&NPCListPageTarget];[$NPCNextPage.Raw][/rbutton][/td] --]|[ --&NPCNavOutput|+[td style='[&GridCellStyle]']&nbsp;[/td] --]|
   --&NPCNavOutput|+[/tr][/t]
   --&CardHTML|+[&CardCenterRow][&NPCNavOutput][/td][/tr]
   --:AfterNPCPageNav|
 --<|
 --:NPCSpellManager|
-  --?"[&SendingPlayerIsGM]" -ne "1"|CharacterSelect
+  --&NPCSelectMode|SPELL
+  --^ShowNPCSelectPage|
+--:SBMNPCSelectMules|
+  --&NPCSelectMode|MULE
+  --^ShowNPCSelectPage|
+--:ShowNPCSelectPage|
+  --?"[&SendingPlayerIsGM]" -ne "1" -and "[&NPCSelectMode]" -eq "SPELL"|CharacterSelect
+  --?"[&SendingPlayerIsGM]" -ne "1"|SBMSettings
   --&NPCListPage|[&reentryval]
   --?"[&NPCListPage]" -eq "START" -or "[&NPCListPage]" -eq "BACK"|&NPCListPage;0
   -->BuildNPCList|
-  --&BackButton|[rbutton]&#x2B9C;::CharacterSelect;BACK[/rbutton]
-  --&SettingsButton|[rbutton][F:Tahoma:16]&#x2699;[/F]::SBMSettings;NPCSpellManager[/rbutton]
-  -->OpenSBMCard|NPC Spell Manager
-  --?[$NPCCount.Raw] -eq 0|NoNPCSpellManagerNPCs
-  --&NPCListSectionTitle|Choose NPC
-  --&NPCListButtonTarget|SelectNPC
-  --&NPCListPageTarget|NPCSpellManager
-  -->AppendNPCPage|
-  --^AfterNPCSpellManagerList|
-  --:NoNPCSpellManagerNPCs|
-  --&CardHTML|+[&CardTextRow]No 2014 NPC sheets were found.[/td][/tr]
-  --:AfterNPCSpellManagerList|
+  --?"[&NPCSelectMode]" -eq "SPELL"|[ --&NPCSelectTitle|NPC Spell Manager --&BackButton|[&BackBtn]CharacterSelect;BACK[/rbutton] --&NPCListButtonTarget|SelectNPC --&NPCListPageTarget|NPCSpellManager --]|
+  --?"[&NPCSelectMode]" -ne "SPELL"|[ --&NPCSelectTitle|NPC Spell Mules --&BackButton|[&BackBtn]SBMSettings;[&SBMSettingsReturn][/rbutton] --&NPCListButtonTarget|SBMNPCMules --&NPCListPageTarget|SBMNPCSelectMules --]|
+  --&SettingsButton|[&SettingsBtn][&NPCListPageTarget][/rbutton]
+  -->OpenSBMCard|[&NPCSelectTitle]
+  --?[$NPCCount.Raw] -eq 0|[ --&CardHTML|+[&CardTextRow][&NoNPCSheetsText][/td][/tr] --]|[ --&NPCListSectionTitle|Choose NPC -->AppendNPCPage| --]|
   -->ShowSBMCard|
 --X|
 --:SelectNPC|
@@ -609,26 +590,8 @@
   --&IsNPCSpellManager|1
   --&CanMoveSpells|0
   --&WhatDo|CHOOSE
-  --^SpellList|
---:SBMNPCSelectMules|
-  --?"[&SendingPlayerIsGM]" -ne "1"|SBMSettings
-  --&NPCListPage|[&reentryval]
-  --?"[&NPCListPage]" -eq "START" -or "[&NPCListPage]" -eq "BACK"|&NPCListPage;0
-  -->BuildNPCList|
-  --&BackButton|[rbutton]&#x2B9C;::SBMSettings;[&SBMSettingsReturn][/rbutton]
-  --&SettingsButton|[rbutton][F:Tahoma:16]&#x2699;[/F]::SBMSettings;SBMNPCSelectMules[/rbutton]
-  -->OpenSBMCard|NPC Spell Mules
-  --?[$NPCCount.Raw] -eq 0|NoNPCsForMules
-  --&NPCListSectionTitle|Choose NPC
-  --&NPCListButtonTarget|SBMNPCMules
-  --&NPCListPageTarget|SBMNPCSelectMules
-  -->AppendNPCPage|
-  --^AfterNPCMuleSelect|
-  --:NoNPCsForMules|
-  --&CardHTML|+[&CardTextRow]No 2014 NPC sheets were found.[/td][/tr]
-  --:AfterNPCMuleSelect|
-  -->ShowSBMCard|
---X|
+  --&SelectedSpellMule|
+  --^SpellMuleSelect|
 --:SBMNPCMules|
   --?"[&reentryval]" -ninc "!@!" -and "[&reentryval]" -ne "BACK" -and "[&reentryval]" -ne "START"|&SelectedChar;[&reentryval]
   --?"[&SelectedChar]" -eq "" -or "[&SelectedChar]" -eq "undefined"|SBMNPCSelectMules
@@ -636,15 +599,15 @@
   -->BuildDirectMuleLists|[&SelectedChar]
   --&MuleOwnerMode|npc
   --~|array;objects:character;SBMAvailableMules;SBM_
-  --&BackButton|[rbutton]&#x2B9C;::SBMNPCSelectMules;[&NPCListPage][/rbutton]
-  --&SettingsButton|[rbutton][F:Tahoma:16]&#x2699;[/F]::SBMSettings;SBMNPCMules[/rbutton]
+  --&BackButton|[&BackBtn]SBMNPCSelectMules;[&NPCListPage][/rbutton]
+  --&SettingsButton|[&SettingsBtn]SBMNPCMules[/rbutton]
   -->OpenSBMCard|[&SelectedCharName] Spell Mules
   --?"[@SBMAvailableMules(maxindex)]" -lt "0"|NoNPCSBMMules
   -->AppendMuleSection|Available NPC Mules;AVAILABLE;include;No available NPC mules.
   -->AppendMuleSection|Assigned NPC Mules;ADDED;include;No NPC-specific mules assigned.
   --^AfterNPCSBMMules|
   --:NoNPCSBMMules|
-  --&CardHTML|+[&CardTextRow]No spell mule characters found. Create one or more character sheets with names beginning with SBM_ and run this settings page again.[/td][/tr]
+  --&CardHTML|+[&CardTextRow][&NoSpellMulesFoundText][/td][/tr]
   --:AfterNPCSBMMules|
   -->ShowSBMCard|
 --X|
@@ -659,14 +622,10 @@
   --?"[*[&CharID]:multiclass2_flag]" -eq "1"|&ClassCheck;+ [*[&CharID]:multiclass2] [*[&CharID]:multiclass2_subclass]
   --?"[*[&CharID]:multiclass3_flag]" -eq "1"|&ClassCheck;+ [*[&CharID]:multiclass3] [*[&CharID]:multiclass3_subclass]
   --~ClassCheck|string;tolowercase;[&ClassCheck]
-  --?"[&SendingPlayerIsGM]" -ne "1" -and "[&ClassCheck]" -ninc "warlock"|[
-    --&CanMoveSpells|0
-    --&WhatDo|CHOOSE
-    --^SpellList|
-  --]|
+  --?"[&SendingPlayerIsGM]" -ne "1" -and "[&ClassCheck]" -ninc "warlock"|[ --&CanMoveSpells|0 --&WhatDo|CHOOSE --&SelectedSpellMule| --^SpellMuleSelect| --]|
   --&BackButton|&nbsp;
-  --?"[$PCCount.Raw]" -gt "1"|[ --&BackButton|[rbutton]&#x2B9C;::CharacterSelect;BACK[/rbutton] --]|
-  --&SettingsButton|[rbutton][F:Tahoma:16]&#x2699;[/F]::SBMSettings;SelectCharacterReady[/rbutton]
+  --?"[$PCCount.Raw]" -gt "1"|[ --&BackButton|[&BackBtn]CharacterSelect;BACK[/rbutton] --]|
+  --&SettingsButton|[&SettingsBtn]SelectCharacterReady[/rbutton]
   --&CardTitleBar|[&CardTitleBar_Open][&BackButton][&CardTitleBar_Mid][&CardAppTitle][&CardTitleBar_Right][&HomeButton][&TitleButtonDivider][&SettingsButton][&CardTitleBar_Close]
   --&CardHTML|[&CardOpen]
   --&CardHTML|+[tr][td colspan='2' [&CardTitle_CSS]][&CardTitleBar][/td][/tr]
@@ -677,19 +636,65 @@
 --:SetSpellMode|
   --~ModeSplit|string;split;!@!;[&reentryval]
   --&WhatDo|[&ModeSplit1] --&ChosenChar|[&ModeSplit2]
+  --&SelectedSpellMule|
+  --?"[&WhatDo]" -eq "CHOOSE"|SpellMuleSelect
+  --^SpellList|
+--:SetSpellSourceBackButton|
+  --&BackButton|&nbsp;
+  --?"[&IsNPCSpellManager]" -eq "1"|[ --&BackButton|[&BackBtn]NPCSpellManager;[&NPCListPage][/rbutton] --]|
+  --?"[&IsNPCSpellManager]" -ne "1" -and "[&CanMoveSpells]" -eq "1"|[ --&BackButton|[&BackBtn]SelectCharacterReady;BACK[/rbutton] --]|
+  --?"[&IsNPCSpellManager]" -ne "1" -and "[&CanMoveSpells]" -ne "1" -and "[$PCCount.Raw]" -gt "1"|[ --&BackButton|[&BackBtn]CharacterSelect;BACK[/rbutton] --]|
+--<|
+--:SpellMuleSelect|
+  --&CharID|[*[&ChosenChar]:character_id]
+  --?"[&IsNPCSpellManager]" -eq "1"|&CharID;[&ChosenChar]
+  --&WhatDo|CHOOSE
+  --?"[&IsNPCSpellManager]" -eq "1"|[ -->BuildDirectMuleLists|[&CharID] --^AfterSpellMuleSelectBuild| --]|
+  -->BuildCharacterMuleLists|[&CharID]
+  --:AfterSpellMuleSelectBuild|
+  --?"[&AssignedSpellMuleString]" -eq ","|NoAssignedSpellMules
+  --~|array;fromstring;SpellMuleIDs;,;[&AssignedSpellMuleString]
+  -->SetSpellSourceBackButton|
+  --&SettingsButton|[&SettingsBtn]SpellMuleSelect[/rbutton]
+  --&SpellMuleSelectTitle|[*[&CharID]:character_name] Spell Sources
+  -->OpenSBMCard|[&SpellMuleSelectTitle]
+  --&CardHTML|+[&CardSectionRow]Choose Spell List[/td][/tr]
+  --&SpellMuleSelectOutput|[t [&GridTable_CSS]][tr]
+  --=SpellMuleSelectCount|0
+  --&SpellMuleSelectOutput|+[td style='[&MuleGridCellStyle] background-color:[&OddRowBG];'][rbutton]All Spells::SetSpellMuleSource;ALL[/rbutton][/td]
+  --=SpellMuleSelectCount|1
+  --%SpellMuleSelectLoop|foreach;SpellMuleIDs
+    --&SpellMuleID|[&SpellMuleSelectLoop]
+    --?"[&SpellMuleID]" -eq "" -or "[&SpellMuleID]" -eq "undefined"|%
+    --?"[= [$SpellMuleSelectCount.Raw] % 2 ]" -eq "0" -and "[$SpellMuleSelectCount.Raw]" -ne "0"|&SpellMuleSelectOutput;+[/tr][tr]
+    --&SpellMuleSelectBG|[&OddRowBG]
+    --?"[= [$SpellMuleSelectCount.Raw] \ 2 % 2 ]" -eq "1"|&SpellMuleSelectBG;[&EvenRowBG]
+    --&SpellMuleName|[*O:[&SpellMuleID]:character:name]
+    --~SpellMuleName|string;replaceall;SBM_;;[&SpellMuleName]
+    --&SpellMuleSelectOutput|+[td style='[&MuleGridCellStyle] background-color:[&SpellMuleSelectBG];'][rbutton][&SpellMuleName]::SetSpellMuleSource;[&SpellMuleID][/rbutton][/td]
+    --=SpellMuleSelectCount|[$SpellMuleSelectCount.Raw] + 1
+  --%|
+  --&SpellMuleSelectOutput|+[/tr][/t]
+  --?[$SpellMuleSelectCount.Raw] -eq 0|NoAssignedSpellMules
+  --&CardHTML|+[&CardCenterRow][&SpellMuleSelectOutput][/td][/tr]
+  -->ShowSBMCard|
+--X|
+--:SetSpellMuleSource|
+  --&SelectedSpellMule|[&reentryval]
+  --^SpellList|
 --:SpellList|
   --&CharID|[*[&ChosenChar]:character_id]
   --?"[&IsNPCSpellManager]" -eq "1"|&CharID;[&ChosenChar]
   --:Restart|
   --?"[&WhatDo]" -eq "MOVE"|[ --&Title|Move [*[&CharID]:character_name] Spells --]|[ --&Title|[*[&CharID]:character_name] Spell Choice --]|
   --~|array;define;SpellLevels;cantrip;1;2;3;4;5;6;7;8;9
-  --&AssignedSpellMuleString|[&CharID],
+  --?"[&WhatDo]" -eq "MOVE"|&AssignedSpellMuleString;[&CharID],
   --?"[&WhatDo]" -eq "MOVE"|SpellSourceReady
-  --?"[&IsNPCSpellManager]" -eq "1"|[ -->BuildDirectMuleLists|[&CharID] --^AfterSpellMuleBuild| --]|
-  -->BuildCharacterMuleLists|[&CharID]
-  --:AfterSpellMuleBuild|
-  --?"[&AssignedSpellMuleString]" -eq ","|NoAssignedSpellMules
+  --?"[&SelectedSpellMule]" -eq "" -or "[&SelectedSpellMule]" -eq "undefined"|SpellMuleSelect
+  --?"[&SelectedSpellMule]" -ne "ALL"|&AssignedSpellMuleString;[&SelectedSpellMule],
   --:SpellSourceReady|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[&SelectedSpellMule]" -eq "ALL"|&Title;[&Title]: All Spells
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[&SelectedSpellMule]" -ne "ALL"|[ --&SelectedSpellMuleName|[*O:[&SelectedSpellMule]:character:name] --~SelectedSpellMuleName|string;replaceall;SBM_;;[&SelectedSpellMuleName] --&Title|[&Title]: [&SelectedSpellMuleName] --]|
   --~|array;fromstring;SpellMuleIDs;,;[&AssignedSpellMuleString]
   --&KnownSpellList|!@!
   --?"[&WhatDo]" -ne "CHOOSE"|AfterKnownSpellList
@@ -705,10 +710,11 @@
   --%|
   --:AfterKnownSpellList|
   --&BackButton|&nbsp;
-  --?"[&IsNPCSpellManager]" -eq "1"|[ --&BackButton|[rbutton]&#x2B9C;::NPCSpellManager;[&NPCListPage][/rbutton] --]|
-  --?"[&IsNPCSpellManager]" -ne "1" -and "[&CanMoveSpells]" -eq "1"|[ --&BackButton|[rbutton]&#x2B9C;::SelectCharacterReady;BACK[/rbutton] --]|
-  --?"[&IsNPCSpellManager]" -ne "1" -and "[&CanMoveSpells]" -ne "1" -and "[$PCCount.Raw]" -gt "1"|[ --&BackButton|[rbutton]&#x2B9C;::CharacterSelect;BACK[/rbutton] --]|
-  --&SettingsButton|[rbutton][F:Tahoma:16]&#x2699;[/F]::SBMSettings;SpellList[/rbutton]
+  --?"[&WhatDo]" -eq "CHOOSE"|[ --&BackButton|[&BackBtn]SpellMuleSelect;BACK[/rbutton] --]|
+  --?"[&WhatDo]" -ne "CHOOSE" -and "[&IsNPCSpellManager]" -eq "1"|[ --&BackButton|[&BackBtn]NPCSpellManager;[&NPCListPage][/rbutton] --]|
+  --?"[&WhatDo]" -ne "CHOOSE" -and "[&IsNPCSpellManager]" -ne "1" -and "[&CanMoveSpells]" -eq "1"|[ --&BackButton|[&BackBtn]SelectCharacterReady;BACK[/rbutton] --]|
+  --?"[&WhatDo]" -ne "CHOOSE" -and "[&IsNPCSpellManager]" -ne "1" -and "[&CanMoveSpells]" -ne "1" -and "[$PCCount.Raw]" -gt "1"|[ --&BackButton|[&BackBtn]CharacterSelect;BACK[/rbutton] --]|
+  --&SettingsButton|[&SettingsBtn]SpellList[/rbutton]
   -->OpenSBMCard|[&Title]
   --=SpellDisplayRow|0
   --%LevelLoop|foreach;SpellLevels
@@ -755,13 +761,13 @@
       --?"[&WhatDo]" -eq "CHOOSE" -and "[&AlreadyKnown]" -eq "0"|[ --&CopySpells|[td [&SpellActionTd_CSS]][rbutton][F::12]Copy to Character[/F]::TransferSpell;[&SpellMuleID]!@![&LevelLoop]!@![&SpellIndex][/rbutton][/td] --]|
       --?"[&WhatDo]" -eq "CHOOSE" -and "[&AlreadyKnown]" -eq "1"|[ --&CopySpells|[td [&SpellActionTd_CSS]][F::12][b][i]Already Known[/i][/b][/F][/td] --]|
       --=SpellDisplayRow|[$SpellDisplayRow.Raw] + 1
-      --=SpellRowMod|[$SpellDisplayRow.Raw] % 2
       --&SpellRowBG|[&OddRowBG]
-      --?"[$SpellRowMod.Raw]" -eq "0"|&SpellRowBG;[&EvenRowBG]
+      --?"[= [$SpellDisplayRow.Raw] % 2 ]" -eq "0"|&SpellRowBG;[&EvenRowBG]
       --&CardHTML|+[tr][td [&SpellRowOuter_CSS]][t [&SpellRowInner_CSS]][tr][&UpButton][&DownButton][td [&SpellNameTd_CSS]][&SpellName].[/td][&DescButton][&CopySpells][/tr][/t][/td][/tr]
     --%|
     --:NextLevel|
   --%|
+  --&CardHTML|+[&CardTitleRow][&CardTitleBar][&RowEnd]
   -->ShowSBMCard|
 --X|
 --:TransferSpell|
@@ -802,9 +808,7 @@
     --:NextKnownCheckLevel|
   --%|
   --?"[&AlreadyHasCopySpell]" -eq "1"|TransferSpellDone
-  --?"[&IsNPCSpellManager]" -eq "1"|[
-    --!a:[&CharID]|!npcspellcastingflag:1
-  --]|
+  --?"[&IsNPCSpellManager]" -eq "1"|[ --!a:[&CharID]|!npcspellcastingflag:1 --]|
   --~|repeatingrow;copybyindex;[&TransferSpellSourceChar];[&CharID];[&TransferSpellSourceSection];[&RowNumber];[&TransferSpellStageSection]
   --&CopiedSpellRowID|[&SC_LAST_CREATED_ROWID]
   --Rbysectionid|[&CharID];[&TransferSpellStageSection];[&CopiedSpellRowID]
@@ -823,7 +827,7 @@
   --:AfterChooseTransferSpell|
   --?"[&WhatDo]" -eq "MOVE"|[
     --&TransferSpellOriginalLevel|[*R:smm_originallevel]
-    --?"[&TransferSpellOriginalLevel]" -eq "" -or "[&TransferSpellOriginalLevel]" -eq "undefined" -or "[&TransferSpellOriginalLevel]" -eq "NoRepeatingAttributeLoaded"|&TransferSpellOriginalLevel;[&SpellLevel]
+    --?"[&TransferSpellOriginalLevel]" -eq "" -or "[&TransferSpellOriginalLevel]" -eq "undefined" -or "[&TransferSpellOriginalLevel]" -eq "[&NoRow]"|&TransferSpellOriginalLevel;[&SpellLevel]
     --&TransferSpellSourceRowPrefix|[&TransferOriginalRowPrefix]
     --&TransferSpellDestRowPrefix|[&TransferSpellSourceRowPrefix(replace,[&TransferSpellSourceSection],[&TransferSpellDestSection])]
     --=MovedLevelDelta|[&NewLevel] - [&SpellLevel]
@@ -831,24 +835,13 @@
     --=MovedNewBaselineDelta|[&NewLevel] - [&TransferSpellOriginalLevel]
     --?[$MovedOldBaselineDelta.Raw] -gt 0 -or [$MovedNewBaselineDelta.Raw] -gt 0|&ShouldAdjustWarlockDamage;1
   --]|
-  --?"[&TransferSpellSourceRowPrefix]" -ne "[&TransferSpellDestRowPrefix]"|[
-    -->MoveRepeatingRowByPrefix|[&CharID];[&TransferSpellSourceRowPrefix];[&TransferSpellDestRowPrefix]
-  --]|
+  --?"[&TransferSpellSourceRowPrefix]" -ne "[&TransferSpellDestRowPrefix]"|[ -->MoveRepeatingRowByPrefix|[&CharID];[&TransferSpellSourceRowPrefix];[&TransferSpellDestRowPrefix] --]|
   --!a:[&CharID]|[&TransferSpellDestRowPrefix]spelllevel:[&NewLevel]
   --!a:[&CharID]|$[&TransferSpellDestRowPrefix]smm_originallevel:[&TransferSpellOriginalLevel]
-  --?"[&WhatDo]" -eq "CHOOSE" -and "[&NewLevel]" -eq "cantrip"|[
-    --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels:SBM_CANTRIP_REFRESH
-    --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels:
-  --]|
-  --?"[&WhatDo]" -eq "CHOOSE"|[
-    --!a:[&CharID]|[&TransferSpellDestRowPrefix]roll_output_dc:[*[&CharID]:spell_save_dc]
-  --]|
-  --?"[&WhatDo]" -eq "CHOOSE" -and "[*[&CharID]:class]" -eq ""|[
-    --!a:[&CharID]|!npcspellcastingflag:1
-  --]|
-  --?"[&WhatDo]" -eq "CHOOSE" -and "[*[&CharID]:npc]" -eq "1"|[
-    --!a:[&CharID]|!npcspellcastingflag:1
-  --]|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[&NewLevel]" -eq "cantrip"|[ --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels:SBM_CANTRIP_REFRESH --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels: --]|
+  --?"[&WhatDo]" -eq "CHOOSE"|[ --!a:[&CharID]|[&TransferSpellDestRowPrefix]roll_output_dc:[*[&CharID]:spell_save_dc] --]|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[*[&CharID]:class]" -eq ""|[ --!a:[&CharID]|!npcspellcastingflag:1 --]|
+  --?"[&WhatDo]" -eq "CHOOSE" -and "[*[&CharID]:npc]" -eq "1"|[ --!a:[&CharID]|!npcspellcastingflag:1 --]|
   --?"[&TransferSpellOutput]" -ne "ATTACK"|AfterTransferSpellAttackRefresh
   --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellhldie:
   --!a:[&CharID]|[&TransferSpellDestRowPrefix]spellathigherlevels:
@@ -857,7 +850,7 @@
   --?"[&IsNPCSpellManager]" -eq "1"|AfterTransferSpellAttackRowRefresh
   --&TransferSpellAttackID|[*[&CharID]:[&TransferSpellDestRowPrefix]spellattackid]
   --&PERC|% --&OB|{ --&CB|} --&Vbar|\\\\| --&AT|@
-  --?"[&TransferSpellAttackID]" -eq "" -or "[&TransferSpellAttackID]" -eq "undefined" -or "[&TransferSpellAttackID]" -eq "NoRepeatingAttributeLoaded"|AfterTransferSpellAttackRowRefresh
+  --?"[&TransferSpellAttackID]" -eq "" -or "[&TransferSpellAttackID]" -eq "undefined" -or "[&TransferSpellAttackID]" -eq "[&NoRow]"|AfterTransferSpellAttackRowRefresh
   --!a:[&CharID]|$[&TransferSpellDestRowPrefix]rollcontent:[&PERC][&OB][&CharID][&Vbar]repeating_attack_[&TransferSpellAttackID]_attack[&CB]
   --!a:[&CharID]|!repeating_attack_[&TransferSpellAttackID]_spelllevel:[&NewLevel]
   --?"[&WhatDo]" -ne "CHOOSE"|AfterTransferSpellAttackSpellID
@@ -868,8 +861,8 @@
   --?"[&WhatDo]" -ne "MOVE" -or "[&ShouldAdjustWarlockDamage]" -ne "1"|AfterTransferSpellWarlockAdjust
   --&TransferSpellPrimaryField|spelldamage
   --&TransferSpellPrimaryDice|[&TransferSpellDamage]
-  --?"[&TransferSpellHealing]" -ne "" -and "[&TransferSpellHealing]" -ne "undefined" -and "[&TransferSpellHealing]" -ne "NoRepeatingAttributeLoaded"|&TransferSpellPrimaryField;spellhealing
-  --?"[&TransferSpellHealing]" -ne "" -and "[&TransferSpellHealing]" -ne "undefined" -and "[&TransferSpellHealing]" -ne "NoRepeatingAttributeLoaded"|&TransferSpellPrimaryDice;[&TransferSpellHealing]
+  --?"[&TransferSpellHealing]" -ne "" -and "[&TransferSpellHealing]" -ne "undefined" -and "[&TransferSpellHealing]" -ne "[&NoRow]"|&TransferSpellPrimaryField;spellhealing
+  --?"[&TransferSpellHealing]" -ne "" -and "[&TransferSpellHealing]" -ne "undefined" -and "[&TransferSpellHealing]" -ne "[&NoRow]"|&TransferSpellPrimaryDice;[&TransferSpellHealing]
   -->AdjustWarlockSpellDice|[&CharID];[&TransferSpellDestRowPrefix];[&TransferSpellPrimaryField];[&TransferSpellAttackID];dmgbase;[&TransferSpellPrimaryDice];[&TransferSpellHLDie];[&TransferSpellHLDieType];[$MovedLevelDelta.Raw]
   -->AdjustWarlockSpellDice|[&CharID];[&TransferSpellDestRowPrefix];spelldamage2;[&TransferSpellAttackID];dmg2base;[&TransferSpellDamage2];[&TransferSpellHLDie];[&TransferSpellHLDieType];[$MovedLevelDelta.Raw]
   --:AfterTransferSpellWarlockAdjust|
@@ -893,7 +886,7 @@
   --?[$AdjustedWriteDiceRoll.Raw] -lt 0|=AdjustedWriteDiceRoll;0
   --&AdjustedWriteDice|[$AdjustedWriteDiceRoll.Raw][%8%]
   --!a:[%1%]|[%2%][%3%]:[&AdjustedWriteDice]
-  --?"[%4%]" -eq "" -or "[%4%]" -eq "undefined" -or "[%4%]" -eq "NoRepeatingAttributeLoaded"|<
+  --?"[%4%]" -eq "" -or "[%4%]" -eq "undefined" -or "[%4%]" -eq "[&NoRow]"|<
   --!a:[%1%]|$repeating_attack_[%4%]_[%5%]:[&AdjustedWriteDice]
   --!a:[%1%]|$repeating_attack_[%4%]_hldmg:
 --<|
@@ -909,21 +902,23 @@
   --~SpellInfo|string;split;!@!;[&reentryval]
   --&SpellMuleID|[&SpellInfo1] --&SpellName|[&SpellInfo2] --&LevelLoop|[&SpellInfo3]
   --Rfind|[&SpellMuleID];[&SpellName];repeating_spell-[&LevelLoop];spellname
-  --?"[*R:spelllevel]" -eq "1"|&lvlsuffix;st --?"[*R:spelllevel]" -eq "2"|&lvlsuffix;nd --?"[*R:spelllevel]" -eq "3"|&lvlsuffix;rd --?"[*R:spelllevel]" -ge "4"|&lvlsuffix;th
+  --&SpellDescEffectiveLevel|[*R:spelllevel]
+  --?"[&SpellDescEffectiveLevel]" -eq "" -or "[&SpellDescEffectiveLevel]" -eq "0" -or "[&SpellDescEffectiveLevel]" -eq "undefined"|&SpellDescEffectiveLevel;[&LevelLoop]
+  --?"[&SpellDescEffectiveLevel]" -eq "1"|&lvlsuffix;st --?"[&SpellDescEffectiveLevel]" -eq "2"|&lvlsuffix;nd --?"[&SpellDescEffectiveLevel]" -eq "3"|&lvlsuffix;rd --?"[&SpellDescEffectiveLevel]" -ge "4"|&lvlsuffix;th
   --?"[*R:spellcomp_v]" -inc "v=1"|&Verbal;V|&Verbal;
   --?"[*R:spellcomp_s]" -inc "s=1"|&Somatic;S|&Somatic;
   --?"[*R:spellcomp_m]" -inc "m=1"|[ --&Components|M --&Materials|([*R:spellcomp_materials]) --]|
-  --&SpellLevelOutput|[*R:spelllevel][&lvlsuffix] level [*R:spellschool]
+  --&SpellLevelOutput|[&SpellDescEffectiveLevel][&lvlsuffix] level [*R:spellschool]
   --&SpellDescText|[*R:spelldescription]
   --&LB|[ --&RB|]
   --~SpellDescText|string;replaceall;[&LB][&LB]spell_save_dc[&RB][&RB];[*[&CharID]:spell_save_dc];[&SpellDescText]
   --&SpellDescDie| --&SpellDescRollFind| --&SpellDescDiceBonus|1
-  --?"[&SpellDescText]" -inc "[&LB][&LB][&LB][&LB]spelllevel+1[&RB][&RB]d"|[ --~SpellDescDie|string;after;[&LB][&LB][&LB][&LB]spelllevel+1[&RB][&RB]d;[&SpellDescText] --~SpellDescDie|string;before;[&RB][&RB];[&SpellDescDie] --&SpellDescRollFind|[&LB][&LB][&LB][&LB]spelllevel+1[&RB][&RB]d[&SpellDescDie][&RB][&RB] [&LB][&LB][&RB]d[&SpellDescDie][&RB] --&SpellDescDiceBonus|1 --]|
-  --?"[&SpellDescRollFind]" -eq "" -and "[&SpellDescText]" -inc "[&LB][&LB][&LB][&LB]spelllevel+5[&RB][&RB]d"|[ --~SpellDescDie|string;after;[&LB][&LB][&LB][&LB]spelllevel+5[&RB][&RB]d;[&SpellDescText] --~SpellDescDie|string;before;[&RB][&RB];[&SpellDescDie] --&SpellDescRollFind|[&LB][&LB][&LB][&LB]spelllevel+5[&RB][&RB]d[&SpellDescDie][&RB][&RB] [&LB][&LB][&RB]d[&SpellDescDie][&RB] --&SpellDescDiceBonus|5 --]|
-  --?"[&SpellDescRollFind]" -eq "" -and "[&SpellDescText]" -inc "[&LB][&LB][&LB][&RB]d"|[ --~SpellDescDie|string;after;[&LB][&LB][&LB][&RB]d;[&SpellDescText] --~SpellDescDie|string;before;[&RB][&RB];[&SpellDescDie] --&SpellDescRollFind|[&LB][&LB][&LB][&RB]d[&SpellDescDie][&RB][&RB] [&LB][&LB][&RB]d[&SpellDescDie][&RB] --&SpellDescDiceBonus|5 --]|
-  --?"[&SpellDescRollFind]" -eq "" -and "[&SpellDescText]" -inc "[&LB][&LB](spelllevel+1)d"|[ --~SpellDescDie|string;after;[&LB][&LB](spelllevel+1)d;[&SpellDescText] --~SpellDescDie|string;before;[&RB][&RB];[&SpellDescDie] --&SpellDescRollFind|[&LB][&LB](spelllevel+1)d[&SpellDescDie][&RB][&RB] --&SpellDescDiceBonus|1 --]|
+  -->FindSpellDescRoll|[&LB][&LB][&LB][&LB]spelllevel+1[&RB][&RB]d;1;2
+  -->FindSpellDescRoll|[&LB][&LB][&LB][&LB]spelllevel+5[&RB][&RB]d;5;2
+  -->FindSpellDescRoll|[&LB][&LB][&LB][&RB]d;5;2
+  -->FindSpellDescRoll|[&LB][&LB](spelllevel+1)d;1;1
   --?"[&SpellDescRollFind]" -eq ""|AfterSpellDescCustomRollDisplay
-  --=SpellDescDiceCount|[*R:spelllevel] + [&SpellDescDiceBonus]
+  --=SpellDescDiceCount|[&SpellDescEffectiveLevel] + [&SpellDescDiceBonus]
   --&SpellDescRollDisplay|[$SpellDescDiceCount.Raw]d[&SpellDescDie] [&LB][$SpellDescDiceCount.Raw]d[&SpellDescDie][&RB]
   --~SpellDescText|string;replaceall;[&SpellDescRollFind];[&SpellDescRollDisplay];[&SpellDescText]
   --:AfterSpellDescCustomRollDisplay|
@@ -935,13 +930,18 @@
   --&SpellWrite|+[/t][/td][/tr][/t]
   --!h:[&SpellDescHandoutID]|notes:"[&SpellWrite]"
 --X|
+--:FindSpellDescRoll|Pattern;Bonus;Mode
+  --?"[&SpellDescRollFind]" -ne "" -or "[&SpellDescText]" -ninc "[%1%]"|<
+  --~SpellDescDie|string;after;[%1%];[&SpellDescText]
+  --~SpellDescDie|string;before;[&RB][&RB];[&SpellDescDie]
+  --&SpellDescRollFind|[%1%][&SpellDescDie][&RB][&RB]
+  --?"[%3%]" -eq "2"|&SpellDescRollFind;+ [&LB][&LB][&RB]d[&SpellDescDie][&RB]
+  --&SpellDescDiceBonus|[%2%]
+--<|
 --:NoAssignedSpellMules|
-  --&BackButton|&nbsp;
-  --?"[&IsNPCSpellManager]" -eq "1"|[ --&BackButton|[rbutton]&#x2B9C;::NPCSpellManager;[&NPCListPage][/rbutton] --]|
-  --?"[&IsNPCSpellManager]" -ne "1" -and "[&CanMoveSpells]" -eq "1"|[ --&BackButton|[rbutton]&#x2B9C;::SelectCharacterReady;BACK[/rbutton] --]|
-  --?"[&IsNPCSpellManager]" -ne "1" -and "[&CanMoveSpells]" -ne "1" -and "[$PCCount.Raw]" -gt "1"|[ --&BackButton|[rbutton]&#x2B9C;::CharacterSelect;BACK[/rbutton] --]|
+  -->SetSpellSourceBackButton|
   --&NoAssignedMulesText|No spell mules are assigned to this character through class or character settings. Ask your DM to assign one or more spell mule characters to a matching class or directly to this character.
-  --&SettingsButton|[rbutton][F:Tahoma:16]&#x2699;[/F]::SBMSettings;NoAssignedSpellMules[/rbutton]
+  --&SettingsButton|[&SettingsBtn]NoAssignedSpellMules[/rbutton]
   --?"[&SendingPlayerIsGM]" -eq "1"|&NoAssignedMulesText;No spell mules are assigned to this character through class or character settings. Open Settings and assign one or more spell mule characters to a matching class or directly to this character.
   --?"[&IsNPCSpellManager]" -eq "1"|&NoAssignedMulesText;No spell mules are assigned directly to this NPC. Open Settings, choose NPC Assignments, and assign one or more spell mule characters to this NPC.
   -->OpenSBMCard|No Assigned Spell Mules
