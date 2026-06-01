@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC .6
+  --/| RC .7
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SpellDescHandoutName|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SpellDescHandoutName]
@@ -55,10 +55,12 @@
   -->ShowSBMCard|
 --X|
 --:OpenSBMCard|Subtitle
+  --#hidecard|0
   --&CardTitleBar|[&CardTitleBar_Open][&BackButton][&CardTitleBar_Mid][&CardAppTitle][&CardTitleBar_Right][&HomeButton][&TitleButtonDivider][&SettingsButton][&CardTitleBar_Close]
   --&CardHTML|[&CardOpen] --&CardHTML|+[&CardTitleRow][&CardTitleBar][&RowEnd] --&CardHTML|+[tr][td style='[&B0] padding:0 0 2px;'][t style='width:100%; [&B0] [&TF]'][tr][td [&CardSubHeader_CSS]][%1%][/td][/tr][/t][/td][/tr]
 --<|
 --:ShowSBMCard|
+  --#hidecard|0
   --&CardHTML|+[&CardClose]
   --+|[&CardHTML]
 --<|
@@ -328,6 +330,7 @@
   --:AfterRemoveCustomClassFromClassList|
   --^SBMSettings|
   --:SBMModifyCustomClassStorageError|
+  --#hidecard|0
   --&SBMSettingsRaw|[&SBMSettingsDefault]
   --!h:[&SBMSettingsHandoutID]|gmnotes:"[&SBMSettingsRaw]"
   --+Spell Book Manager Settings|The custom class settings text was invalid and has been reset. Open Settings again to add custom classes.
@@ -513,6 +516,7 @@
   --?"[&ToggleMode]" -eq "npc"|SBMNPCMules
   --^SBMCharacterMules|
   --:ToggleMuleStorageError|
+  --#hidecard|0
   --&SBMSettingsRaw|[&SBMSettingsDefault]
   --!h:[&SBMSettingsHandoutID]|gmnotes:"[&SBMSettingsRaw]"
   --+Spell Book Manager Settings|The mule assignment settings text was invalid and has been reset. Open Settings again and re-assign the mule.
