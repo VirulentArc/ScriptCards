@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC .7
+  --/| RC .8
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SDHN|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SDHN]
