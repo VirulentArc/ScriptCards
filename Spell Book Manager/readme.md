@@ -38,7 +38,7 @@ The latest version is available in the [Spell Book Manager folder on GitHub](htt
 
 To copy the script:
 
-1. Open the [raw `Spell_Book_Manager.scard` file](https://raw.githubusercontent.com/VirulentArc/ScriptCards/refs/heads/main/Spell%20Book%20Manager/Spell_Book_Manager.scard).
+1. Open the [raw Spell_Book_Manager.scard file](https://raw.githubusercontent.com/VirulentArc/ScriptCards/refs/heads/main/Spell%20Book%20Manager/Spell_Book_Manager.scard).
 2. Select all of the text on the page.
 3. Copy the selected text.
 4. Paste that full text into the Roll20 macro created in the Installation steps below.
