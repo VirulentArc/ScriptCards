@@ -29,9 +29,9 @@ The script is designed for the official D&D 5E 2014 by Roll20 character sheet an
    - `Spell Book Manager [PlayerID]`
 
 The settings handout stores GM configuration. The player-specific handout is used to display spell descriptions when the spell description button is clicked.
-All automatically created handouts are automatically stored as archived to not interfere with game journals.
 
 The first time each player runs the script, a new `Spell Book Manager [PlayerID]` handout will be created.<br>
+All automatically created handouts are automatically stored as archived to not interfere with game journals.<br>
 ![Installation handouts](images/handouts.png)
 
 GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text is a JSON string that stores mule assignment information and player theme information.<br>
