@@ -30,13 +30,31 @@ If Roll20 One-Click has an older version, install ScriptCards manually from the 
 
 ---
 
+## Getting Spell Book Manager
+
+Spell Book Manager is installed as a Roll20 macro, not as a separate Mod/API script. The file you need is `Spell_Book_Manager.scard`.
+
+The latest version is available in the [Spell Book Manager folder on GitHub](https://github.com/VirulentArc/ScriptCards/tree/main/Spell%20Book%20Manager).
+
+To copy the script:
+
+1. Open the [raw `Spell_Book_Manager.scard` file](https://raw.githubusercontent.com/VirulentArc/ScriptCards/refs/heads/main/Spell%20Book%20Manager/Spell_Book_Manager.scard).
+2. Select all of the text on the page.
+3. Copy the selected text.
+4. Paste that full text into the Roll20 macro created in the Installation steps below.
+
+If you open the normal GitHub preview page instead, click **Raw** before copying. The raw page is the safest way to make sure you only copy the script text.
+
+---
+
 ## Installation
 
 1. Install ScriptCards in your Roll20 game.
-2. Create a new Macro named `Spell-Book-Manager`.
-3. Paste the full `Spell_Book_Manager.scard` script into that macro.
-4. Run the script once as the GM.
-5. On first run, the script will create these handouts automatically:
+2. Copy the full `Spell_Book_Manager.scard` script from the raw GitHub source.
+3. Create a new Macro named `Spell-Book-Manager`.
+4. Paste the full Spell Book Manager script into that macro.
+5. Run the script once as the GM.
+6. On first run, the script will create these handouts automatically:
    - `Spell Book Manager Settings`
    - `Spell Book Manager [PlayerID]`
 
