@@ -183,9 +183,9 @@ Only the GM sees class source, character source, spell book assignment, and cust
 
 ---
 
-## Spell Source Characters
+## Spell Mule Characters
 
-A spell source is a normal Roll20 character sheet whose name begins with:
+A spell mule is a normal Roll20 character sheet whose name begins with:
 
 ```text
 SBM_
