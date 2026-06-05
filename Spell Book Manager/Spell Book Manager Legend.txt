@@ -23,16 +23,31 @@ ASMS     = AssignedSpellMuleString
            to the currently selected character. Built from class, inherited,
            direct, and character-specific assignments.
 
+ChBG     = CharacterButtonBG
+           Alternating/background color used for character picker buttons.
+
+ChCnt    = CharacterCounter
+           Counter used while building character selection rows.
+
+ChName   = Character_Name
+           Current character display name used in menus/cards.
+
+ChOut    = CharacterOutput
+           Accumulated output for a character-selection list.
+
+ChRowBG  = CharacterRowBG
+           Row background color used while rendering character picker rows.
+
 CMS      = CanMoveSpells
            Flag used to determine whether the current character/spell context
            should offer Move Spells in addition to Choose Spells.
 
-CSpells  = CopySpells
-           Internal display/output section for copy-spell buttons.
-
 CSBText  = CopySpellButtonText
            Text used on copy buttons. May vary depending on whether copying to a
            character, spell book, NPC, or another spell source.
+
+CSpells  = CopySpells
+           Internal display/output section for copy-spell buttons.
 
 DSL      = DisplayedSpellList
            Tracks which spell list is currently being displayed, such as All
@@ -57,15 +72,14 @@ SLevel   = SpellLevel
 SMID     = SpellMuleID
            Character ID of a spell source character currently being processed.
 
+SMMO     = SetMoveMode
+           Reentry label used by the Move Spells button. It bypasses Choose
+           Spells and assigned spell book source-selection logic so the selected
+           character's own sheet spell rows are used as the move source.
+
 SMName   = SpellMuleName
            Display name of a spell source character after stripping the SBM_
            prefix where appropriate.
-
-SSM      = SelectedSpellMule
-           Currently selected spell source ID. Can be a specific source or ALL.
-
-SSMN     = SelectedSpellMuleName
-           Display name of the selected spell source.
 
 SMRAR    = SkipMoveRowAttributeRename
            Label used in TransferSpell after copying/moving a repeating spell
@@ -73,54 +87,75 @@ SMRAR    = SkipMoveRowAttributeRename
            destination prefixes are already the same, or when no matching
            attributes were found.
 
-SMMO     = SetMoveMode
-           Reentry label used by the Move Spells button. It bypasses Choose
-           Spells and assigned spell book source-selection logic so the selected
-           character's own sheet spell rows are used as the move source.
+SSM      = SelectedSpellMule
+           Currently selected spell source ID. Can be a specific source or ALL.
 
-ChName   = Character_Name
-           Current character display name used in menus/cards.
-
-ChOut    = CharacterOutput
-           Accumulated output for a character-selection list.
-
-ChCnt    = CharacterCounter
-           Counter used while building character selection rows.
-
-ChBG     = CharacterButtonBG
-           Alternating/background color used for character picker buttons.
-
-ChRowBG  = CharacterRowBG
-           Row background color used while rendering character picker rows.
+SSMN     = SelectedSpellMuleName
+           Display name of the selected spell source.
 
 Card Layout / General CSS
 -------------------------
+B0       = BorderNone
+           CSS fragment used to remove borders from generated table cells.
+
+BackBtn  = BackButtonPrefix
+           Opening rbutton fragment used when building title-bar back buttons.
+
+BackIcon = BackButtonIcon
+           HTML entity/icon used for the custom title-bar back button.
+
+BFF      = BodyFontFace
+           Theme/body font family used in generated card and handout CSS.
+
+CB       = CloseBrace
+           Literal closing brace helper used while rebuilding Roll20 rollcontent
+           references.
+
+CCe      = CardCenter_CSS
+           CSS for centered content cells.
+
+CCR      = CardCenterRow
+           HTML/card row used for centered single-row content.
+
 CO       = CardOuter_CSS
            CSS for the outer card wrapper table.
 
 COC      = CardOuterCell_CSS
            CSS for the main outer cell inside a card wrapper.
 
-CT       = CardTable_CSS
-           Shared full-width table CSS used inside many cards.
+CR       = ColorRed
+           CSS fragment for emphasized text color using the current theme accent
+           color.
 
-CCR      = CardCenterRow
-           HTML/card row used for centered single-row content.
-
-CCe      = CardCenter_CSS
-           CSS for centered content cells.
-
-CSR      = CardSectionRow
-           HTML/card row used for section headers or section blocks.
+CRP      = CardRowPadding
+           Shared row padding value for card body rows.
 
 CSe      = CardSection_CSS
            CSS for section header rows.
 
-CTR      = CardTextRow
-           HTML/card row used for normal text output rows.
+CSH      = CardSubHeader_CSS
+           CSS for the subheader that says where the user is, such as Choose a
+           Character or DM Settings.
 
-CTX      = CardText_CSS
-           CSS for normal text rows.
+CSR      = CardSectionRow
+           HTML/card row used for section headers or section blocks.
+
+CT       = CardTable_CSS
+           Shared full-width table CSS used inside many cards.
+
+CTBC     = CardTitleBar_Close
+           Closing HTML for the custom title/navigation bar.
+
+CTBM     = CardTitleBar_Mid
+           Middle portion of the custom title/navigation bar, usually between
+           the back button area and title text.
+
+CTBO     = CardTitleBar_Open
+           Opening HTML for the custom title/navigation bar.
+
+CTBR     = CardTitleBar_Right
+           Right-side portion of the custom title/navigation bar, usually
+           containing home/settings cells.
 
 CTi      = CardTitle_CSS
            CSS for the card title text area.
@@ -128,50 +163,14 @@ CTi      = CardTitle_CSS
 CTiR     = CardTitleRow
            HTML/card row containing the card title.
 
-CSH      = CardSubHeader_CSS
-           CSS for the subheader that says where the user is, such as Choose a
-           Character or DM Settings.
+CTR      = CardTextRow
+           HTML/card row used for normal text output rows.
 
-CRP      = CardRowPadding
-           Shared row padding value for card body rows.
+CTX      = CardText_CSS
+           CSS for normal text rows.
 
-CTBO     = CardTitleBar_Open
-           Opening HTML for the custom title/navigation bar.
-
-CTBM     = CardTitleBar_Mid
-           Middle portion of the custom title/navigation bar, usually between
-           the back button area and title text.
-
-CTBR     = CardTitleBar_Right
-           Right-side portion of the custom title/navigation bar, usually
-           containing home/settings cells.
-
-CTBC     = CardTitleBar_Close
-           Closing HTML for the custom title/navigation bar.
-
-TBD      = TitleButtonDivider
-           Divider/spacing fragment used between title bar buttons.
-
-TFS      = TitleFontSize
-           Theme-controlled title font size.
-
-TTT      = TitleTextTransform
-           Theme-controlled title text-transform CSS, such as uppercase or none.
-
-BFF      = BodyFontFace
-           Theme/body font family used in generated card and handout CSS.
-
-FHA      = FontHelveticaArial
-           Font stack helper for Helvetica, Arial, and sans-serif fallback.
-
-FCA      = FontCandalArial
-           Font stack helper for Candal, Arial, and sans-serif fallback.
-
-FCO      = FontContrailOne
-           Font stack helper for Contrail One, Arial, and sans-serif fallback.
-
-FGE      = FontGeorgia
-           Font stack helper for Georgia and serif fallback.
+CW       = ColorWhite
+           CSS fragment for normal text color using the current theme text color.
 
 DescBG   = DescriptionBackground
            Theme color used for the main card/description background.
@@ -185,117 +184,118 @@ DescRed  = DescriptionRed
 DescWhite = DescriptionWhite
            Theme color used for normal readable text in the selected theme.
 
-TitleBG  = TitleBackground
-           Theme color used for the custom title bar background.
-
-TitleText = TitleTextColor
-           Theme color used for text inside the custom title bar.
-
-TitleFont = TitleFontCSS
-           Theme-built CSS fragment for the title font family, weight, spacing,
-           and variant.
-
-OddRowBG = OddRowBackground
-           Theme color used for odd alternating rows.
+DQ       = DoubleQuote
+           Literal double-quote helper used while rebuilding stored JSON text.
 
 EvenRowBG = EvenRowBackground
            Theme color used for even alternating rows.
 
-B0       = BorderNone
-           CSS fragment used to remove borders from generated table cells.
+FCA      = FontCandalArial
+           Font stack helper for Candal, Arial, and sans-serif fallback.
 
-RP       = RowPadding
-           Shared row/cell padding CSS fragment.
+FCO      = FontContrailOne
+           Font stack helper for Contrail One, Arial, and sans-serif fallback.
 
-CW       = ColorWhite
-           CSS fragment for normal text color using the current theme text color.
+FGE      = FontGeorgia
+           Font stack helper for Georgia and serif fallback.
 
-CR       = ColorRed
-           CSS fragment for emphasized text color using the current theme accent
-           color.
-
-TC       = TextCenter
-           CSS fragment for centered text.
-
-W6       = FontWeight600
-           CSS fragment for semi-bold text.
-
-TF       = TableFixed
-           CSS fragment for collapsed fixed-layout tables.
-
-DQ       = DoubleQuote
-           Literal double-quote helper used while rebuilding stored JSON text.
-
-LB       = LeftBracket
-           Literal left square bracket helper used while cleaning/displaying
-           spell description roll text.
-
-RB       = RightBracket
-           Literal right square bracket helper used while cleaning/displaying
-           spell description roll text.
-
-PERC     = PercentCharacter
-           Literal percent sign helper used while rebuilding Roll20 rollcontent
-           references.
-
-OB       = OpenBrace
-           Literal opening brace helper used while rebuilding Roll20 rollcontent
-           references.
-
-CB       = CloseBrace
-           Literal closing brace helper used while rebuilding Roll20 rollcontent
-           references.
-
-Vbar     = EscapedVerticalBar
-           Escaped vertical bar helper used when rebuilding Roll20 rollcontent
-           references.
-
-BackIcon = BackButtonIcon
-           HTML entity/icon used for the custom title-bar back button.
-
-BackBtn  = BackButtonPrefix
-           Opening rbutton fragment used when building title-bar back buttons.
-
-SettingsIcon = SettingsButtonIcon
-           HTML entity/icon used for the custom title-bar settings button.
-
-SettingsBtn = SettingsButtonPrefix
-           Opening rbutton fragment used when building title-bar settings
-           buttons.
-
-HomeButton = HomeNavigationButton
-           Full rbutton fragment used for the custom title-bar home button.
+FHA      = FontHelveticaArial
+           Font stack helper for Helvetica, Arial, and sans-serif fallback.
 
 Hbutton  = HeaderHandoutButton
            Optional spell-description handout button shown in spell-list level
            headers.
 
+HomeButton = HomeNavigationButton
+           Full rbutton fragment used for the custom title-bar home button.
+
+LB       = LeftBracket
+           Literal left square bracket helper used while cleaning/displaying
+           spell description roll text.
+
 NoRow    = NoRepeatingAttributeLoaded
            Sentinel value returned when a repeating row lookup does not load a
            valid row.
 
+OB       = OpenBrace
+           Literal opening brace helper used while rebuilding Roll20 rollcontent
+           references.
+
+OddRowBG = OddRowBackground
+           Theme color used for odd alternating rows.
+
+PERC     = PercentCharacter
+           Literal percent sign helper used while rebuilding Roll20 rollcontent
+           references.
+
+RB       = RightBracket
+           Literal right square bracket helper used while cleaning/displaying
+           spell description roll text.
+
 RowEnd   = CardRowEnd
            Shared closing HTML fragment for generated card rows.
 
+RP       = RowPadding
+           Shared row/cell padding CSS fragment.
+
+SettingsBtn = SettingsButtonPrefix
+           Opening rbutton fragment used when building title-bar settings
+           buttons.
+
+SettingsIcon = SettingsButtonIcon
+           HTML entity/icon used for the custom title-bar settings button.
+
+TBD      = TitleButtonDivider
+           Divider/spacing fragment used between title bar buttons.
+
+TC       = TextCenter
+           CSS fragment for centered text.
+
+TF       = TableFixed
+           CSS fragment for collapsed fixed-layout tables.
+
+TFS      = TitleFontSize
+           Theme-controlled title font size.
+
+TitleBG  = TitleBackground
+           Theme color used for the custom title bar background.
+
+TitleFont = TitleFontCSS
+           Theme-built CSS fragment for the title font family, weight, spacing,
+           and variant.
+
+TitleText = TitleTextColor
+           Theme color used for text inside the custom title bar.
+
+TTT      = TitleTextTransform
+           Theme-controlled title text-transform CSS, such as uppercase or none.
+
+Vbar     = EscapedVerticalBar
+           Escaped vertical bar helper used when rebuilding Roll20 rollcontent
+           references.
+
+W6       = FontWeight600
+           CSS fragment for semi-bold text.
+
 Grid / Button Layout
 --------------------
-GCS      = GridCellStyle
-           CSS used for generic grid cells.
-
-GT       = GridTable_CSS
-           CSS for button-grid tables.
-
-MGCS     = MuleGridCellStyle
-           CSS used for spell-source/mule assignment grid cells.
-
 CBG      = ClassButtonBG
            Background color used for class buttons.
 
 CTBG     = ClassTableBG
            Background color used for the class table area.
 
+GCS      = GridCellStyle
+           CSS used for generic grid cells.
+
+GT       = GridTable_CSS
+           CSS for button-grid tables.
+
 MBG      = MuleButtonBG
            Background color used for mule/spell-source buttons.
+
+MGCS     = MuleGridCellStyle
+           CSS used for spell-source/mule assignment grid cells.
 
 SMSBG    = SpellMuleSelectBG
            Background color used while building the spell-source selection page.
@@ -306,9 +306,6 @@ SSI      = SmallSettingsIcon
 
 Class / Custom Class Settings
 -----------------------------
-CCs      = CustomClasses
-           Working custom-class list loaded from settings.
-
 CCEntry  = CustomClassEntry
            Single custom-class entry while iterating the custom-class list.
 
@@ -317,6 +314,9 @@ CCMode   = CustomClassMode
 
 CCName   = CustomClassName
            Name of the custom class currently being processed.
+
+CCs      = CustomClasses
+           Working custom-class list loaded from settings.
 
 ClCnt    = ClassCounter
            Counter used while building class assignment buttons.
@@ -336,9 +336,6 @@ RCCOut   = RemoveCustomClassOutput
 RCName   = RemoveClassName
            Name of the class being removed from custom class settings.
 
-SelClass = SelectedClass
-           Currently selected class/theme/class assignment target.
-
 SBMCC    = SBMCustomClasses
            Settings-loaded list of custom classes.
 
@@ -354,43 +351,170 @@ SBMCCMN  = SBMCharacterClassMuleName
 SBMRCL   = SBMRemoveClassLoop
            Loop variable used while building the remove-custom-class list.
 
+SelClass = SelectedClass
+           Currently selected class/theme/class assignment target.
+
 Mule / Character Assignment Settings
 ------------------------------------
 AMules   = AssignedMules
            Assigned spell-source list for the current character or class.
 
-IMules   = InheritedMules
-           Spell sources inherited from class assignments.
+ANA      = AlphaNavActiveLetter
+           Currently selected letter for the current alpha navigation row.
 
-CIM      = CharacterIncludeMules
-           Direct character-level mules/spell sources added to a character.
+ANAZ     = AlphaNavAlphabet
+           A-Z helper array used by AppendAlphaNav.
 
-CEM      = CharacterExcludeMules
-           Character-level blocked inherited spell sources.
+ANC      = AlphaNavCount
+           Counter used while building the shared alpha navigation row.
+
+ANData   = AlphaNavButtonData
+           Reentry value passed by the current alpha navigation button.
+
+ANL      = AlphaNavLetters
+           Comma-wrapped list of valid letters for the current alpha navigation
+           row.
+
+ANLoop   = AlphaNavLoop
+           Loop variable used while building the shared A-Z alpha navigation
+           row.
+
+ANM      = AlphaNavMode
+           Mode passed to AppendAlphaNav. MULE builds MAL reentry data; PICKER
+           passes the clicked letter directly.
+
+ANO      = AlphaNavOutput
+           Accumulated HTML output for the shared alpha navigation row.
+
+ANPT     = AlphaNavPageTarget
+           Reentry page used by the alpha navigation buttons.
+
+ANSM     = AlphaNavSectionMode
+           Section mode included in mule alpha reentry data, such as UNASSIGNED
+           or AVAILABLE.
+
+ANText   = AlphaNavButtonText
+           Button text or bold active-letter text for the current alpha
+           navigation cell.
+
+AppendAlphaNav = AppendAlphaNav
+                 Shared helper label that builds the A-Z navigation row for
+                 alphabet-enabled mule sections and active SBM_ picker lists.
+
+AppendMuleSectionAlphaPath = AppendMuleSectionAlphaPath
+                             Internal branch inside AppendMuleSection used only
+                             when MSA is 1. Normal assigned, inherited, blocked,
+                             and assigned spell book sections do not enter this
+                             path.
+
+AssignedSpellBooks = AssignedSpellBooks
+                     Comma-wrapped list of active spell book destination
+                     character IDs assigned to any character. Used to keep
+                     assigned spell books out of class and character mule
+                     availability lists.
 
 CBK      = CharacterSpellBookKey
            Settings key for a character's assigned spell book destination. Only one spell book should be assigned per character.
-
-CSB      = CharacterSpellBookMules
-           Character-specific spell book destination. This is the active SBM_ character assigned as the selected character's spell book, separate from normal added/inherited spell-source mules. The setting stores a single comma-terminated character ID.
-
-CIK      = CharacterIncludeKey
-           Settings key for a character's included spell sources.
 
 CEK      = CharacterExcludeKey
            Settings key for a character's excluded/blocked inherited spell
            sources.
 
+CEM      = CharacterExcludeMules
+           Character-level blocked inherited spell sources.
+
+CIK      = CharacterIncludeKey
+           Settings key for a character's included spell sources.
+
+CIM      = CharacterIncludeMules
+           Direct character-level mules/spell sources added to a character.
+
 CMCID    = CharacterMuleCharID
            Character ID used when assigning/unassigning spell sources to a
            specific character.
+
+CSB      = CharacterSpellBookMules
+           Character-specific spell book destination. This is the active SBM_
+           character assigned as the selected character's spell book, separate
+           from normal added/inherited spell-source mules. The setting stores a
+           single comma-terminated character ID. Assigned spell books are
+           excluded from the normal Available Character Mules section.
+
+IMules   = InheritedMules
+           Spell sources inherited from class assignments.
+
+MALL     = MuleAlphaListLetter
+           Current selected alphabet letter for the active alphabet-enabled mule
+           assignment section.
+
+MALMSM   = MuleAlphaListModeSectionMode
+           Section mode currently being alphabet-filtered on mule assignment
+           cards, such as UNASSIGNED or AVAILABLE.
+
+MALSP    = MuleAlphaListSplit
+           Temporary split output for MAL reentry data.
+
+MASAL    = MuleAlphaSectionActiveLetter
+           Active letter being displayed for the current alphabet-enabled mule
+           section.
+
+MASDefaultLetter = MuleAlphaSectionDefaultLetter
+                   First available letter used when the selected alpha letter is
+                   blank, invalid, START, BACK, or from a different section.
+
+MASFirstSplit = MuleAlphaSectionFirstSplit
+                Temporary split result used to read the first sorted alpha item
+                and derive the default letter.
+
+MASID    = MuleAlphaSectionID
+           Character ID of the mule currently being rendered in an alpha-enabled
+           mule section.
+
+MASItemLoop = MuleAlphaSectionItemLoop
+              Loop variable used while rendering the currently selected alpha
+              section items.
+
+MASItems = MuleAlphaSectionItems
+           Alphabetically sorted temporary list of visible mules for the current
+           alphabet-enabled section. Stored as display name, character ID, and
+           first letter.
+
+MASItemSplit = MuleAlphaSectionItemSplit
+               Temporary split result used while rendering alpha-section items.
+
+MASL     = MuleAlphaSectionLetter
+           First letter of the current mule display name in an alpha-enabled
+           mule section.
+
+MASLetters = MuleAlphaSectionLetters
+             Comma-wrapped list of first letters represented in the current
+             alphabet-enabled mule section.
+
+MASLoop  = MuleAlphaSectionLoop
+           Loop variable used while scanning SBMAvailableMules for an
+           alpha-enabled mule section.
+
+MASName  = MuleAlphaSectionName
+           Display name of the current mule while building an alpha-enabled mule
+           section, after the SBM_ prefix is removed.
+
+MASPT    = MuleAlphaSectionPageTarget
+           Reentry page used by alphabet buttons on alphabet-enabled mule
+           sections.
 
 ME       = MuleEntry
            One spell-source assignment entry while iterating assignment data.
 
 MOM      = MuleOwnerMode
            Mode flag for whether the mule/spell-source assignment page is
-           operating on a class, character, NPC, or other owner type.
+           operating on a class or character owner.
+
+MSA      = MuleSectionAlpha
+           Internal flag set inside AppendMuleSection. When MSA is 0, the
+           section uses the original full-list rendering path. When MSA is 1,
+           the section uses the alphabet-filtered path. Only Unassigned Spell
+           Mules, Available Character Mules, and Available Spell Books set this
+           flag.
 
 MSET     = MuleSectionEmptyText
            Message shown when a mule/spell-source assignment section has no
@@ -412,6 +536,24 @@ NAMText  = NoAssignedMulesText
 NTD      = NewToggleData
            Rebuilt assignment data after toggling a spell source on/off.
 
+SBMCharacterSpellBook = SBMCharacterSpellBook
+                        Reentry label for the separate Spell Book Assignment
+                        card. This card shows either available spell books when
+                        no spell book is assigned, or the assigned spell book
+                        when one is already assigned.
+
+SBMSpellBookCharacters = SBMSpellBookCharacters
+                         Temporary character array used while scanning all
+                         character spell book assignments.
+
+SBMSpellBookLoop = SBMSpellBookLoop
+                   Loop variable used while scanning character spell book
+                   assignment settings.
+
+SpellBookCheck = SpellBookCheck
+                 Temporary spell book setting value read for the character
+                 currently being scanned.
+
 TLT      = ToggleListType
            Identifies which assignment list is being modified.
 
@@ -422,13 +564,97 @@ TMode    = ToggleMode
            Add/remove/toggle mode for the assignment change.
 
 TOwner   = ToggleOwner
-           Class, character, or NPC that owns the assignment being changed.
+           Class or character that owns the assignment being changed.
 
 TSK      = ToggleSettingKey
            Settings key modified by the current toggle operation.
 
 NPC / Spell Source Pickers
 --------------------------
+AppendAlphaNPCPage = AppendAlphaNPCPage
+                     Internal branch used by AppendNPCPage when NLAM is 1. It
+                     renders active SBM_ source picker lists by alphabet letter
+                     instead of numeric page.
+
+BNPL     = BuildNPCPickerList
+           Shared helper label that builds SBMValidNPCList and NPCCount for
+           paginated NPC and active SBM_ spell-source picker pages. Mode NPC
+           keeps real 2014 NPC sheets. Mode MULE keeps active SBM_ spell
+           sources and strips the SBM_ prefix for display.
+
+BPLADD   = BuildPickerListAdd
+           Temporary flag set to 1 when the current candidate should be added
+           to SBMValidNPCList.
+
+BPLAddCandidate = BuildPickerListAddCandidate
+                  Branch label shared by NPC and MULE mode after a candidate has
+                  passed filtering and should be added to SBMValidNPCList.
+
+BPLC     = BuildPickerListCharacters
+           Working array of candidate Roll20 character IDs loaded before BNPL
+           applies NPC or SBM_ filtering.
+
+BPLEX    = BuildPickerListExclude
+           Optional character ID excluded from the BNPL result, used when a
+           destination mule should not appear as its own source.
+
+BPLL     = BuildPickerListLoop
+           Loop variable used while BNPL scans candidate characters.
+
+BPLLoadMules = BuildPickerListLoadMules
+               Branch label used when BNPL should load only SBM_ candidate
+               characters instead of all characters.
+
+BPLM     = BuildPickerListMode
+           Mode passed into BNPL. NPC builds the NPC list. MULE builds the
+           active SBM_ spell-source list.
+
+BPLMuleCandidate = BuildPickerListMuleCandidate
+                   Branch label used when the current candidate has passed the
+                   active SBM_ prefix check in MULE mode.
+
+BPLStartLoop = BuildPickerListStartLoop
+               Branch label used after BNPL has loaded the correct candidate
+               character array.
+
+NLAM     = NPCListAlphaMode
+           Flag set by BNPL. NPC mode keeps numeric pagination, while MULE mode
+           uses alphabet navigation.
+
+NLBT     = NPCListButtonTarget
+           Reentry target used when clicking a listed NPC/spell-source button.
+
+NLDefaultLetter = NPCListDefaultLetter
+                  First available letter used when the selected picker letter is
+                  blank, invalid, START, BACK, or 0.
+
+NLL      = NPCListLetter
+           First letter of the current NPC/source picker display name while
+           building or filtering alphabetic source picker lists.
+
+NLLetters = NPCListLetters
+            Comma-wrapped list of first letters represented in the current
+            active SBM_ picker list.
+
+NLP      = NPCListPage
+           Current page number in paginated NPC/spell-source lists.
+
+NLPT     = NPCListPageTarget
+           Reentry target used when changing pages in NPC/spell-source lists.
+
+NLScanLoop = NPCListScanLoop
+             Loop variable used while scanning the active SBM_ picker list to
+             build NLLetters.
+
+NLST     = NPCListSectionTitle
+           Section title shown above the current NPC/spell-source list.
+
+NNO      = NPCNavOutput
+           Output for previous/next page navigation controls.
+
+NPCBG    = NPCButtonBG
+           Background color used for NPC or spell-source picker buttons.
+
 NPCID    = NPCCharacterID
            Character ID currently being processed in NPC or spell-source picker
            lists.
@@ -437,75 +663,9 @@ NPCName  = NPCCharacterName
            Display name currently being processed in NPC or spell-source picker
            lists.
 
-NPCBG    = NPCButtonBG
-           Background color used for NPC or spell-source picker buttons.
-
-NLP      = NPCListPage
-           Current page number in paginated NPC/spell-source lists.
-
-NLPT     = NPCListPageTarget
-           Reentry target used when changing pages in NPC/spell-source lists.
-
-NLBT     = NPCListButtonTarget
-           Reentry target used when clicking a listed NPC/spell-source button.
-
-NLST     = NPCListSectionTitle
-           Section title shown above the current NPC/spell-source list.
-
-NNO      = NPCNavOutput
-           Output for previous/next page navigation controls.
-
-NSM      = NPCSelectMode
-           Mode flag controlling whether the picker is selecting NPCs, mules,
-           sources, destinations, or assignment targets.
-
-NST      = NPCSelectTitle
-           Title used for the current NPC/spell-source selection card.
-
 NSMFText = NoSpellMulesFoundText
            Message shown when no valid spell sources are found for the current
            picker mode.
-
-BNPL     = BuildNPCPickerList
-           Shared helper label that builds SBMValidNPCList and NPCCount for
-           paginated NPC and active SBM_ spell-source picker pages. Mode NPC
-           keeps real 2014 NPC sheets. Mode MULE keeps active SBM_ spell
-           sources and strips the SBM_ prefix for display.
-
-BPLM     = BuildPickerListMode
-           Mode passed into BNPL. NPC builds the NPC list. MULE builds the
-           active SBM_ spell-source list.
-
-BPLEX    = BuildPickerListExclude
-           Optional character ID excluded from the BNPL result, used when a
-           destination mule should not appear as its own source.
-
-BPLC     = BuildPickerListCharacters
-           Working array of candidate Roll20 character IDs loaded before BNPL
-           applies NPC or SBM_ filtering.
-
-BPLL     = BuildPickerListLoop
-           Loop variable used while BNPL scans candidate characters.
-
-BPLADD   = BuildPickerListAdd
-           Temporary flag set to 1 when the current candidate should be added
-           to SBMValidNPCList.
-
-BPLLoadMules = BuildPickerListLoadMules
-               Branch label used when BNPL should load only SBM_ candidate
-               characters instead of all characters.
-
-BPLStartLoop = BuildPickerListStartLoop
-               Branch label used after BNPL has loaded the correct candidate
-               character array.
-
-BPLMuleCandidate = BuildPickerListMuleCandidate
-                   Branch label used when the current candidate has passed the
-                   active SBM_ prefix check in MULE mode.
-
-BPLAddCandidate = BuildPickerListAddCandidate
-                  Branch label shared by NPC and MULE mode after a candidate has
-                  passed filtering and should be added to SBMValidNPCList.
 
 Spell Description Handout / Handout CSS
 ---------------------------------------
@@ -515,39 +675,11 @@ DBor     = DescBorder
 DLP      = DescLeftPad
            Shared left padding used to align spell description handout content.
 
-SDO      = SpellDescOuter_CSS
-           CSS for the outer spell-description handout table.
+SDB      = SpellDescBase_CSS
+           Shared base CSS fragment for normal spell-description handout rows.
 
-SDOC     = SpellDescOuterCell_CSS
-           CSS for the outer spell-description handout cell.
-
-SDT      = SpellDescTable_CSS
-           CSS for the inner spell-description handout table.
-
-SDTi     = SpellDescTitle_CSS
-           CSS for the spell name/title row in the handout.
-
-SDS      = SpellDescSub_CSS
-           CSS for the spell level/school subtitle row in the handout.
-
-SDL      = SpellDescLabel_CSS
-           CSS for labelled rows such as Casting Time, Range, Components, and
-           Duration.
-
-SDSe     = SpellDescSection_CSS
-           CSS for section labels such as Description or At Higher Levels.
-
-SDTx     = SpellDescText_CSS
-           CSS for paragraph/body text in the spell description handout.
-
-SDText   = SpellDescText
-           Working spell description text after cleanup/replacements.
-
-SDur     = SpellDurationOutput
-           Duration line after concentration handling is applied.
-
-SWrite   = SpellWrite
-           Final handout HTML string written to the spell-description handout.
+SDF      = SpellDescFontSize
+           Shared font-size value for non-title spell-description handout text.
 
 SDHID    = SpellDescHandoutID
            Handout ID used when writing/updating the spell-description handout.
@@ -555,36 +687,67 @@ SDHID    = SpellDescHandoutID
 SDHN     = SpellDescHandoutName
            Name of the spell-description handout being created or updated.
 
+SDL      = SpellDescLabel_CSS
+           CSS for labelled rows such as Casting Time, Range, Components, and
+           Duration.
+
+SDO      = SpellDescOuter_CSS
+           CSS for the outer spell-description handout table.
+
+SDOC     = SpellDescOuterCell_CSS
+           CSS for the outer spell-description handout cell.
+
+SDS      = SpellDescSub_CSS
+           CSS for the spell level/school subtitle row in the handout.
+
+SDSe     = SpellDescSection_CSS
+           CSS for section labels such as Description or At Higher Levels.
+
+SDT      = SpellDescTable_CSS
+           CSS for the inner spell-description handout table.
+
+SDText   = SpellDescText
+           Working spell description text after cleanup/replacements.
+
+SDTi     = SpellDescTitle_CSS
+           CSS for the spell name/title row in the handout.
+
+SDTx     = SpellDescText_CSS
+           CSS for paragraph/body text in the spell description handout.
+
+SDur     = SpellDurationOutput
+           Duration line after concentration handling is applied.
+
+SWrite   = SpellWrite
+           Final handout HTML string written to the spell-description handout.
+
 Spell Description Roll Preview Helpers
 --------------------------------------
-SDEL     = SpellDescEffectiveLevel
-           Spell level used when resolving preview text for description-roll
-           spells. Includes fallback logic when spelllevel is blank.
+SDDB     = SpellDescDiceBonus
+           Bonus added to spell level while converting a description-roll pattern
+           into readable preview text.
 
 SDDie    = SpellDescDie
            Die type extracted from a spell description roll, such as 6 for d6.
 
-SDDB     = SpellDescDiceBonus
-           Bonus added to spell level while converting a description-roll pattern
-           into readable preview text.
+SDEL     = SpellDescEffectiveLevel
+           Spell level used when resolving preview text for description-roll
+           spells. Includes fallback logic when spelllevel is blank.
+
+SDQRD    = SpellDescQueryRollDisplay
+           Human-readable preview for a query-based description roll.
+
+SDRD     = SpellDescRollDisplay
+           Human-readable dice preview produced from the matched roll pattern.
 
 SDRF     = SpellDescRollFind
            Exact roll-string fragment found in the spell description and targeted
            for replacement.
 
-SDRD     = SpellDescRollDisplay
-           Human-readable dice preview produced from the matched roll pattern.
-
-SDQRD    = SpellDescQueryRollDisplay
-           Human-readable preview for a query-based description roll.
-
 Spell Row / Spell List CSS
 --------------------------
-SRO      = SpellRowOuter_CSS
-           CSS for the outer wrapper of a spell-list row.
-
-SRI      = SpellRowInner_CSS
-           CSS for the inner table/cell structure of a spell-list row.
+SATd     = SpellActionTd_CSS
+           CSS for the action-button cell in a spell row.
 
 SHT      = SpellHeaderTable_CSS
            CSS for the small header section inside each spell row.
@@ -592,14 +755,17 @@ SHT      = SpellHeaderTable_CSS
 SHTd     = SpellHeaderTd_CSS
            CSS for header cells inside spell rows.
 
-SATd     = SpellActionTd_CSS
-           CSS for the action-button cell in a spell row.
-
 SITd     = SpellIconTd_CSS
            CSS for icon/indicator cells in a spell row.
 
 SNTd     = SpellNameTd_CSS
            CSS for the spell name cell in a spell row.
+
+SRI      = SpellRowInner_CSS
+           CSS for the inner table/cell structure of a spell-list row.
+
+SRO      = SpellRowOuter_CSS
+           CSS for the outer wrapper of a spell-list row.
 
 Spell Mule / Spell Source Selection
 -----------------------------------
@@ -609,54 +775,90 @@ SMSO     = SpellMuleSelectOutput
 SMST     = SpellMuleSelectTitle
            Title/subtitle text for the spell-source selection page.
 
-
 Mule Copy Manager Flow
 ----------------------
-SMCM     = SetMuleCopyMode
-           Helper label that initializes the shared mule-copy flags before
-           choosing a destination or source mule.
-
 MCCD     = MuleCopyChooseDestination
            Reentry label for the Copy Between Mules destination picker. It now
            sets MCPM to DEST and jumps into the shared MCPP picker page.
-
-SMCD     = SetMuleCopyDestination
-           Reentry label that stores the selected destination mule and then moves
-           to the source picker.
 
 MCCS     = MuleCopyChooseSource
            Reentry label for the Copy Between Mules source picker. It now sets
            MCPM to SOURCE and jumps into the shared MCPP picker page.
 
-SMCS     = SetMuleCopySource
-           Reentry label that stores the selected source mule and enters the
-           normal spell-list copy flow.
+MCPE     = MuleCopyPickerEmptyText
+           Empty-list message shown by the shared mule-copy picker page.
+
+MCPM     = MuleCopyPickerMode
+           Mode used by MCPP. DEST builds the destination picker. SOURCE builds
+           the source picker.
 
 MCPP     = MuleCopyPickerPage
            Shared picker page used by both MCCD and MCCS. DEST mode lists
            possible destination SBM_ mules. SOURCE mode lists source SBM_ mules
            while excluding the already selected destination.
 
-MCPM     = MuleCopyPickerMode
-           Mode used by MCPP. DEST builds the destination picker. SOURCE builds
-           the source picker.
-
 MCPT     = MuleCopyPickerTitle
            Title passed to OpenSBMCard by the shared mule-copy picker page.
 
-MCPE     = MuleCopyPickerEmptyText
-           Empty-list message shown by the shared mule-copy picker page.
+SMCD     = SetMuleCopyDestination
+           Reentry label that stores the selected destination mule and then moves
+           to the source picker.
+
+SMCM     = SetMuleCopyMode
+           Helper label that initializes the shared mule-copy flags before
+           choosing a destination or source mule.
+
+SMCS     = SetMuleCopySource
+           Reentry label that stores the selected source mule and enters the
+           normal spell-list copy flow.
 
 Player Spell Book Copy Flow
 ---------------------------
+BPSBL    = BuildPlayerSpellBookList
+           Helper label that builds either the single assigned destination spell
+           book or the source spell-list picker for the Copy to Spell Book flow.
+           DEST mode is based on the selected character's spellbook JSON setting,
+           not Roll20 controlledby. SOURCE mode uses the character's assigned
+           sources for players and all active SBM_ sources for GMs.
+
+IMCM     = IsMuleCopyManager
+           Flag used when the copy flow is copying to a mule/spell source rather
+           than directly to a normal character.
+
 IPSB     = IsPlayerSpellBookCopy
            Flag used when the current copy flow is the player/character-facing
            Copy to Spell Book flow rather than the GM Copy Between Mules flow.
+
+MCDID    = MuleCopyDestinationID
+           Destination character ID for copy operations involving spell sources
+           or spell books.
+
+MCDN     = MuleCopyDestinationName
+           Display name for the selected destination, usually with the SBM_
+           prefix stripped before being shown in card titles.
+
+MCSID    = MuleCopySourceID
+           Source character ID for copy operations involving spell sources or
+           spell books.
+
+PSBA     = PlayerSpellBookAllowed
+           Result flag set by VPSBC. 1 means the destination/source ID is valid
+           for the current character and mode.
+
+PSBAS    = PlayerSpellBookAllowedString
+           Comma-wrapped list of IDs allowed by the current BPSBL mode. Used by
+           validation so stale or hand-crafted reentrant buttons cannot copy to
+           an unauthorized destination/source.
 
 PSBCD    = PlayerSpellBookCopyDestination
            Reentry label that loads the single spell book assigned to the selected
            character and jumps directly to source selection. Player-facing text
            says Spell Book rather than mule.
+
+PSBCID   = PlayerSpellBookCopyCharacterID
+           Character ID of the actual selected character whose spell book flow
+           is being used. This is the character context that determines the
+           assigned spell book destination and the normal assigned spell sources.
 
 PSBCS    = PlayerSpellBookCopySource
            Reentry label/card for choosing the source spell list after the
@@ -664,16 +866,39 @@ PSBCS    = PlayerSpellBookCopySource
            limited to the selected character's assigned spell sources; for GMs
            this can list all active SBM_ spell sources.
 
-PSBCID   = PlayerSpellBookCopyCharacterID
-           Character ID of the actual selected character whose spell book flow
-           is being used. This is the character context that determines the
-           assigned spell book destination and the normal assigned spell sources.
-
 PSBCt    = PlayerSpellBookCount
            Count of active assigned spell book destinations found for the
            selected character. This should normally be 0 or 1 and is used to
            decide whether to show the Copy to Spell Book button on that
            character's options card.
+
+PSBCX    = PlayerSpellBookCheckExclude
+           Excluded mule/source ID passed into VPSBC and then forwarded into
+           BPSBL.
+
+PSBIDs   = PlayerSpellBookMuleIDs
+           Array of assigned spell-source IDs built from the selected
+           character's assigned spell mule/source string.
+
+PSBL     = PlayerSpellBookLoop
+           Loop variable used while iterating PSBIDs or the valid SBM_ source
+           list.
+
+PSBLM    = PlayerSpellBookListMode
+           Mode passed into BPSBL. DEST builds the assigned spell book
+           destination; SOURCE builds valid source spell lists.
+
+PSBRE    = PlayerSpellBookReentry
+           Raw reentry value passed into the spell book copy destination card.
+           Usually contains the selected character ID and page/start value.
+
+PSBSP    = PlayerSpellBookSplit
+           Temporary split result used to separate PSBRE into its character ID
+           and page/start parts.
+
+PSBSX    = PlayerSpellBookSourceExclude
+           Mule/source ID excluded from the source list, normally the already
+           selected destination spell book.
 
 SBCID    = SpellBookCharacterID
            Temporary character ID extracted from the selected character's single
@@ -686,76 +911,19 @@ SBCM     = SpellBookChooseMode
            picker. Used mostly so the SpellList back button returns to the
            character options card instead of reopening the skipped source picker.
 
-PSBRE    = PlayerSpellBookReentry
-           Raw reentry value passed into the spell book copy destination card.
-           Usually contains the selected character ID and page/start value.
-
-PSBSP    = PlayerSpellBookSplit
-           Temporary split result used to separate PSBRE into its character ID
-           and page/start parts.
-
-BPSBL    = BuildPlayerSpellBookList
-           Helper label that builds either the single assigned destination spell
-           book or the source spell-list picker for the Copy to Spell Book flow.
-           DEST mode is based on the selected character's spellbook JSON setting,
-           not Roll20 controlledby. SOURCE mode uses the character's assigned
-           sources for players and all active SBM_ sources for GMs.
-
-PSBLM    = PlayerSpellBookListMode
-           Mode passed into BPSBL. DEST builds the assigned spell book
-           destination; SOURCE builds valid source spell lists.
-
-PSBIDs   = PlayerSpellBookMuleIDs
-           Array of assigned spell-source IDs built from the selected
-           character's assigned spell mule/source string.
-
-PSBL     = PlayerSpellBookLoop
-           Loop variable used while iterating PSBIDs or the valid SBM_ source
-           list.
-
-PSBSX    = PlayerSpellBookSourceExclude
-           Mule/source ID excluded from the source list, normally the already
-           selected destination spell book.
-
-PSBAS    = PlayerSpellBookAllowedString
-           Comma-wrapped list of IDs allowed by the current BPSBL mode. Used by
-           validation so stale or hand-crafted reentrant buttons cannot copy to
-           an unauthorized destination/source.
+SPSBS    = SetPlayerSpellBookSource
+           Reentry label that stores the chosen source spell list and then moves
+           into the normal spell-list/copy flow.
 
 VPSBC    = ValidatePlayerSpellBookCopy
            Helper label that validates a destination or source ID against the
            currently rebuilt allowed list.
 
-PSBA     = PlayerSpellBookAllowed
-           Result flag set by VPSBC. 1 means the destination/source ID is valid
-           for the current character and mode.
-
-PSBCX    = PlayerSpellBookCheckExclude
-           Excluded mule/source ID passed into VPSBC and then forwarded into
-           BPSBL.
-
-SPSBS    = SetPlayerSpellBookSource
-           Reentry label that stores the chosen source spell list and then moves
-           into the normal spell-list/copy flow.
-
-MCDID    = MuleCopyDestinationID
-           Destination character ID for copy operations involving spell sources
-           or spell books.
-
-MCSID    = MuleCopySourceID
-           Source character ID for copy operations involving spell sources or
-           spell books.
-
-MCDN     = MuleCopyDestinationName
-           Display name for the selected destination, usually with the SBM_
-           prefix stripped before being shown in card titles.
-
-IMCM     = IsMuleCopyManager
-           Flag used when the copy flow is copying to a mule/spell source rather
-           than directly to a normal character.
-
 Settings / Theme Storage
 ------------------------
+SBMCEL   = SBMCharacterExcludeLoop
+           Loop variable used while scanning blocked/excluded spell sources.
+
 SBMDef   = SBMSettingsDefault
            Default settings JSON text used when the settings handout is missing
            or invalid.
@@ -769,15 +937,6 @@ SBMHN    = SBMSettingsHandoutName
 SBMJ     = SBMSettingsJSON
            Parsed settings JSON.
 
-SBMR     = SBMSettingsRaw
-           Raw JSON text loaded from the settings handout.
-
-SBMRet   = SBMSettingsReturn
-           Return label/flow target used after loading or updating settings.
-
-SBMCEL   = SBMCharacterExcludeLoop
-           Loop variable used while scanning blocked/excluded spell sources.
-
 SBMPT    = SBMPlayerTheme
            Player-specific theme setting.
 
@@ -786,6 +945,12 @@ SBMPTN   = SBMPlayerThemeNeedle
 
 SBMPTR   = SBMPlayerThemeRaw
            Raw player-theme storage string.
+
+SBMR     = SBMSettingsRaw
+           Raw JSON text loaded from the settings handout.
+
+SBMRet   = SBMSettingsReturn
+           Return label/flow target used after loading or updating settings.
 
 SBMTBG   = SBMThemeButtonBG
            Background color used for theme selection buttons.
@@ -801,105 +966,24 @@ SBMTO    = SBMThemeOutput
 
 Transfer Spell / Attack Sync Helpers
 ------------------------------------
-AMCT     = AfterMuleCopyTitle
-           Label used in SpellList after the mule-copy title has been adjusted.
-
-STI      = SpellTransferInfo
-           Split helper for TransferSpell reentry data. Numbered outputs such
-           as STI1, STI2, and STI3 represent transfer direction/source, spell
-           level, and row index depending on the current mode.
-
-CSRID    = CopiedSpellRowID
-           Repeating spell row ID returned after a spell row is copied into its
-           staging or destination repeating section.
-
 AHCS     = AlreadyHasCharacterSpell
            Duplicate-prevention flag used while checking whether the destination
            character already has the spell being copied.
 
-KCSN     = KnownCheckSpellName
-           Normalized spell name used during the destination duplicate check.
+AMCT     = AfterMuleCopyTitle
+           Label used in SpellList after the mule-copy title has been adjusted.
 
-TSCID    = TransferSourceCharacterID
-           Character ID used as the source for the current copy/move operation.
-
-TSSec    = TransferSourceSection
-           Source repeating spell section, such as repeating_spell-1.
-
-TDSec    = TransferDestinationSection
-           Destination repeating spell section, such as repeating_spell-2.
-
-TSSP     = TransferSourceSpellPrefix
-           Full source repeating-row attribute prefix for the spell being moved
-           or copied.
-
-TSDP     = TransferDestinationPrefix
-           Full destination repeating-row attribute prefix after copy or move.
-
-TSOL     = TransferSpellOriginalLevel
-           Stored original spell level used as the baseline for moved spell
-           upcast/downcast adjustment.
-
-TStageSec = TransferStageSection
-            Temporary repeating section used while copying a spell before final
-            row-prefix adjustment.
-
-TSName   = TransferSpellName
-           Spell name read from the source spell row.
-
-TSOut    = TransferSpellOutput
-           Spell output mode read from the source spell row, such as ATTACK.
-
-TSDmg    = TransferSpellDamage
-           Primary spell damage value read from the source spell row.
-
-TSD2     = TransferSpellDamage2
-           Secondary spell damage value read from the source spell row.
-
-TSHeal   = TransferSpellHealing
-           Spell healing value read from the source spell row.
-
-TSHD     = TransferSpellHigherDie
-           Higher-level die count/value read from the source spell row.
-
-TSHDT    = TransferSpellHigherDieType
-           Higher-level die type read from the source spell row.
-
-TSHL     = TransferSpellHigherLevels
-           At Higher Levels text read from the source spell row.
-
-TORSN    = TransferOriginalRowSpellName
-           Full original repeating-row spellname attribute reference used to
-           derive the original row prefix.
-
-TORP     = TransferOriginalRowPrefix
-           Original source repeating-row prefix derived from TORSN.
-
-TSRSN    = TransferStageRowSpellName
-           Full staged repeating-row spellname attribute reference used to derive
-           the copied row prefix.
-
-TSAID    = TransferSpellAttackID
-           Repeating attack row ID linked to the copied or moved spell row.
-
-TSPF     = TransferSpellPrimaryField
-           Field name selected for Warlock damage adjustment, usually
-           spelldamage or spellhealing.
-
-TSPD     = TransferSpellPrimaryDice
-           Dice expression selected for Warlock damage adjustment.
-
-ATSASID  = AfterTransferSpellAttackSpellID
-           Label used after writing the copied spell row ID back to the linked
-           repeating attack row.
+ATSAF    = AfterTransferSpellAttackFix
+           Label used after attack-sync and Warlock damage adjustment logic is
+           finished.
 
 ATSAR    = AfterTransferSpellAttackRow
            Label used after repeating attack row processing is skipped or
            completed.
 
-ATSAF    = AfterTransferSpellAttackFix
-           Label used after attack-sync and Warlock damage adjustment logic is
-           finished.
+ATSASID  = AfterTransferSpellAttackSpellID
+           Label used after writing the copied spell row ID back to the linked
+           repeating attack row.
 
 AWSD     = AdjustWarlockSpellDamage
            Helper label that adjusts copied/moved spell damage fields when a
@@ -909,6 +993,87 @@ AWSDReady = AdjustWarlockSpellDamageReady
             Internal continuation label used after AWSD confirms it has numeric
             higher-level dice and a standard dice expression.
 
+CSRID    = CopiedSpellRowID
+           Repeating spell row ID returned after a spell row is copied into its
+           staging or destination repeating section.
+
+KCSN     = KnownCheckSpellName
+           Normalized spell name used during the destination duplicate check.
+
+STI      = SpellTransferInfo
+           Split helper for TransferSpell reentry data. Numbered outputs such
+           as STI1, STI2, and STI3 represent transfer direction/source, spell
+           level, and row index depending on the current mode.
+
+TDSec    = TransferDestinationSection
+           Destination repeating spell section, such as repeating_spell-2.
+
+TORP     = TransferOriginalRowPrefix
+           Original source repeating-row prefix derived from TORSN.
+
+TORSN    = TransferOriginalRowSpellName
+           Full original repeating-row spellname attribute reference used to
+           derive the original row prefix.
+
+TSAID    = TransferSpellAttackID
+           Repeating attack row ID linked to the copied or moved spell row.
+
+TSCID    = TransferSourceCharacterID
+           Character ID used as the source for the current copy/move operation.
+
+TSD2     = TransferSpellDamage2
+           Secondary spell damage value read from the source spell row.
+
+TSDmg    = TransferSpellDamage
+           Primary spell damage value read from the source spell row.
+
+TSDP     = TransferDestinationPrefix
+           Full destination repeating-row attribute prefix after copy or move.
+
+TSHD     = TransferSpellHigherDie
+           Higher-level die count/value read from the source spell row.
+
+TSHDT    = TransferSpellHigherDieType
+           Higher-level die type read from the source spell row.
+
+TSHeal   = TransferSpellHealing
+           Spell healing value read from the source spell row.
+
+TSHL     = TransferSpellHigherLevels
+           At Higher Levels text read from the source spell row.
+
+TSName   = TransferSpellName
+           Spell name read from the source spell row.
+
+TSOL     = TransferSpellOriginalLevel
+           Stored original spell level used as the baseline for moved spell
+           upcast/downcast adjustment.
+
+TSOut    = TransferSpellOutput
+           Spell output mode read from the source spell row, such as ATTACK.
+
+TSPD     = TransferSpellPrimaryDice
+           Dice expression selected for Warlock damage adjustment.
+
+TSPF     = TransferSpellPrimaryField
+           Field name selected for Warlock damage adjustment, usually
+           spelldamage or spellhealing.
+
+TSRSN    = TransferStageRowSpellName
+           Full staged repeating-row spellname attribute reference used to derive
+           the copied row prefix.
+
+TSSec    = TransferSourceSection
+           Source repeating spell section, such as repeating_spell-1.
+
+TSSP     = TransferSourceSpellPrefix
+           Full source repeating-row attribute prefix for the spell being moved
+           or copied.
+
+TStageSec = TransferStageSection
+            Temporary repeating section used while copying a spell before final
+            row-prefix adjustment.
+
 Damage / Handout Roll Adjustment
 --------------------------------
 AWD      = AdjustedWriteDice
@@ -917,13 +1082,13 @@ AWD      = AdjustedWriteDice
 
 Miscellaneous
 -------------
-SATd, SHTd, SITd, SNTd
-           The lowercase d suffix means "table data cell" CSS. These are CSS
-           snippets for different cells inside spell-list rows.
-
 CCe, CSe
            Lowercase e suffix is used where the abbreviation would otherwise
            collide with another name. These are still CSS helper variables.
+
+SATd, SHTd, SITd, SNTd
+           The lowercase d suffix means "table data cell" CSS. These are CSS
+           snippets for different cells inside spell-list rows.
 
 Notes for Future Maintenance
 ----------------------------
