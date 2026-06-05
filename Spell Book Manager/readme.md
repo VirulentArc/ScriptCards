@@ -95,32 +95,36 @@ Some Spell Book Manager menus can be long. If Roll20 does not automatically jump
 
 ---
 
-## Choose Spells
+## Browsing and Copying Spells
 
-![Choose Spells](images/spell_choice.png)
+![Spell list](images/spell_choice.png)
 
-**Choose Spells** shows spells available to the selected character.
+For most player characters, Spell Book Manager opens directly to the available spell list after the character is chosen.
+
+From the spell list, players can:
 
 1. Click **Spell Description Handout** to open the Spell Book Manager handout.
 2. Click the &#x1F56E; button beside a spell to write that spell's formatted description to the handout.
 3. Click **Copy to Character** to copy a spell onto the character sheet.
+
+For Warlocks, or when the GM is managing a character, Spell Book Manager shows a character options page before the spell list. In that case, **Choose Spells** opens the available spell list.
 
 Spell availability normally comes from two kinds of spell mule assignments:
 
 1. Class spell mules assigned by the GM.
 2. Character-specific spell mules assigned by the GM.
 
-If more than one spell mule is available, Spell Book Manager shows a spell mule selection page. Players can choose **All Spells** or a specific assigned mule.
+If more than one spell mule is available, Spell Book Manager shows a spell mule selection page before displaying the spell list. Players can choose **All Spells** or a specific assigned mule.
 
 ![Spell mule choice](images/spell_source_choice.png)
 
-Spells are grouped by spell level and sorted alphabetically. If multiple assigned mules contain a spell with the same name at the same level, the spell is only shown once in the chooser.
+Spells are grouped by spell level and sorted alphabetically. If multiple assigned mules contain a spell with the same name at the same level, the spell is only shown once in the list.
 
 When a spell is copied, the script copies the full spell row to the character sheet and preserves important spell text fields such as name, description, and At Higher Levels text.
 
 ### Characters with assigned spell books
 
-If the selected character has an assigned spell book, **Choose Spells** uses that assigned spell book instead of showing the normal spell mule picker. In that setup, the spell book acts as the character's curated or prepared list, and **Choose Spells** copies from the spell book onto the actual character sheet.
+If the selected character has an assigned spell book, the available spell list comes from that assigned spell book instead of the character's normal assigned spell mules. In that setup, the spell book acts as the character's curated or prepared spell list, and **Copy to Character** copies from the spell book onto the actual character sheet.
 
 Use **Copy to Spell Book** to add spells into the assigned spell book first.
 
