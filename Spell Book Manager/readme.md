@@ -77,12 +77,13 @@ If the player controls only one valid PC, the script will go directly to that ch
 
 Players can normally:
 
-1. Choose a character.
+1. Choose a character. If the player only control one character, this step will be skipped.<br>
+![Character choice](images/character_choice.png)
+
 2. Click **Choose Spells** to browse available spells.
 3. Click **Copy to Character** to copy a spell onto the character sheet.
 4. Click the &#x1F56E; description button beside a spell to write that spell's formatted description to the Spell Book Manager handout.
 
-![Character choice](images/character_choice.png)
 
 If the character is a Warlock, or if the GM is managing the character, the **Move Spells** button is also available.
 
