@@ -41,7 +41,7 @@ To copy the script:
 1. Open the [raw Spell_Book_Manager.scard file](https://raw.githubusercontent.com/VirulentArc/ScriptCards/refs/heads/main/Spell%20Book%20Manager/Spell_Book_Manager.scard).
 2. Select all of the text on the page.
 3. Copy the selected text.
-4. Paste that full text into the Roll20 macro created in the Installation steps below.
+4. Paste that full text into the Roll20 macro created in the Installation steps below. Make sure to paste as plain text; ctrl+shift+v
 
 If you open the normal GitHub preview page instead, click **Raw** before copying. The raw page is the safest way to make sure you only copy the script text.
 
