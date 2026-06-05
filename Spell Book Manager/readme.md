@@ -1,8 +1,8 @@
 # Spell Book Manager
 
-Spell Book Manager is a ScriptCards utility for Roll20 D&D 5E 2014 games. It lets a GM maintain one or more spell mule source characters and lets players copy approved spells from those sources onto their own character sheets.
+Spell Book Manager is a ScriptCards utility for Roll20 D&D 5E 2014 games. It lets a GM maintain one or more spell mule characters and lets players copy approved spells from those mules onto their own character sheets.
 
-Spell Book Manager can also manage assigned spell book characters, copy spells between mule source characters, add spells to NPC sheets, and move a character's existing leveled spells up or down between spell levels. The move feature is especially useful for Warlocks and other cases where the same spell may need to live at a different slot level.
+Spell Book Manager can also manage assigned spell book characters, copy spells between spell mule characters, add spells to NPC sheets, and move a character's existing leveled spells up or down between spell levels. The move feature is especially useful for Warlocks and other cases where the same spell may need to live at a different slot level.
 
 The script is designed for the official D&D 5E 2014 by Roll20 character sheet and works with normal PC spell rows. NPC support is available through the GM-only NPC Spell Manager.
 
@@ -14,7 +14,7 @@ The script is designed for the official D&D 5E 2014 by Roll20 character sheet an
 - ScriptCards installed.
 - ScriptCards 3.0.22 or newer is required. If Roll20 One-Click has an older ScriptCards version, install ScriptCards manually before using Spell Book Manager.
 - The official D&D 5E 2014 by Roll20 character sheet.
-- One or more spell source characters whose names begin with `SBM_`.
+- One or more spell mule characters whose names begin with `SBM_`.
 
 ---
 
@@ -58,7 +58,7 @@ If the character is a Warlock, or if the GM is managing the character, the **Mov
 
 ![Choose and move buttons](images/choose_move.png)
 
-If the character has an assigned spell book, the character options page can also show **Copy to Spell Book**. This lets a player copy spells from their approved spell sources into the assigned spell book rather than directly onto the character.
+If the character has an assigned spell book, the character options page can also show **Copy to Spell Book**. This lets a player copy spells from their approved spell mules into the assigned spell book rather than directly onto the character.
 
 ![Copy to Spell Book button](images/copy_to_spell_book_button.png)
 
@@ -76,22 +76,22 @@ If the character already knows a spell with the same name, Spell Book Manager ma
 2. Click the &#x1F56E; button beside a spell to write that spell's formatted description to the handout.
 3. Click **Copy to Character** to copy a spell onto the character sheet.
 
-Spell availability normally comes from two sources:
+Spell availability normally comes from two kinds of spell mule assignments:
 
-1. Class spell sources assigned by the GM.
-2. Character-specific spell source settings assigned by the GM.
+1. Class spell mules assigned by the GM.
+2. Character-specific spell mules assigned by the GM.
 
-If more than one spell source is available, Spell Book Manager shows a spell source selection page. Players can choose **All Spells** or a specific assigned source.
+If more than one spell mule is available, Spell Book Manager shows a spell mule selection page. Players can choose **All Spells** or a specific assigned mule.
 
-![Spell source choice](images/spell_source_choice.png)
+![Spell mule choice](images/spell_source_choice.png)
 
-Spells are grouped by spell level and sorted alphabetically. If multiple assigned sources contain a spell with the same name at the same level, the spell is only shown once in the chooser.
+Spells are grouped by spell level and sorted alphabetically. If multiple assigned mules contain a spell with the same name at the same level, the spell is only shown once in the chooser.
 
 When a spell is copied, the script copies the full spell row to the character sheet and preserves important spell text fields such as name, description, and At Higher Levels text.
 
 ### Characters with assigned spell books
 
-If the selected character has an assigned spell book, **Choose Spells** uses that assigned spell book as the source instead of showing the normal spell source picker. In that workflow, the spell book acts as the character's curated or prepared list, and **Choose Spells** copies from the spell book onto the actual character sheet.
+If the selected character has an assigned spell book, **Choose Spells** uses that assigned spell book instead of showing the normal spell mule picker. In that setup, the spell book acts as the character's curated or prepared list, and **Choose Spells** copies from the spell book onto the actual character sheet.
 
 Use **Copy to Spell Book** to add spells into the assigned spell book first.
 
@@ -99,21 +99,21 @@ Use **Copy to Spell Book** to add spells into the assigned spell book first.
 
 ## Copy to Spell Book
 
-![Copy to Spell Book source choice](images/copy_to_spell_book_source_choice.png)
+![Copy to Spell Book mule choice](images/copy_to_spell_book_source_choice.png)
 
 **Copy to Spell Book** appears when a character has a spell book assigned by the GM.
 
 This feature is intended for characters that should maintain a separate spell book, preparation list, research list, or other curated personal spell collection.
 
-For players, **Copy to Spell Book** allows copying from the character's approved spell sources into the assigned spell book. Players do not get unrestricted access to every `SBM_` spell source.
+For players, **Copy to Spell Book** allows copying from the character's approved spell mules into the assigned spell book. Players do not get unrestricted access to every `SBM_` spell mule.
 
-For GMs, **Copy to Spell Book** can use any active `SBM_` spell source as the source list, while still copying into the selected character's assigned spell book.
+For GMs, **Copy to Spell Book** can use any active `SBM_` spell mule as the spell mule list, while still copying into the selected character's assigned spell book.
 
 To use Copy to Spell Book:
 
 1. The GM assigns one `SBM_` character as the selected character's spell book.
 2. The player or GM clicks **Copy to Spell Book** from the character options page.
-3. The user chooses a source spell list.
+3. The user chooses a spell mule list.
 4. The user clicks **Copy to Spell Book** beside a spell.
 5. The spell is copied into the assigned spell book character.
 6. The character can then use **Choose Spells** to copy from that spell book onto their actual character sheet.
@@ -169,8 +169,8 @@ Click the settings button in the Spell Book Manager title bar to open settings.
 
 GM settings include:
 
-- Class spell source assignments.
-- Character-specific spell source assignments.
+- Class spell mule assignments.
+- Character-specific spell mule assignments.
 - Character spell book assignments.
 - Custom class management.
 - Theme selection.
@@ -179,7 +179,7 @@ Player settings include:
 
 - Theme selection.
 
-Only the GM sees class source, character source, spell book assignment, and custom class management options.
+Only the GM sees class mule, character mule, spell book assignment, and custom class management options.
 
 ---
 
@@ -201,19 +201,19 @@ SBM_Custom Warlock Spells
 SBM_Huxley Spell Book
 ```
 
-Put spells on the source as normal spell rows at the correct spell level. Spell Book Manager reads those spell rows and offers them to characters based on class, character, spell book, GM copy, or NPC manager workflows.
+Put spells on the spell mule as normal spell rows at the correct spell level. Spell Book Manager reads those spell rows and offers them to characters based on class, character, spell book, GM copy, or NPC manager workflows.
 
-The `SBM_` prefix is only for identifying Spell Book Manager source characters. The prefix is removed from button display names inside the settings menu.
+The `SBM_` prefix is only for identifying Spell Book Manager spell mule characters. The prefix is removed from button display names inside the settings menu.
 
-`SBM_` characters can be used in several ways:
+`SBM_` spell mule characters can be used in several ways:
 
-- Class spell sources.
-- Character-specific spell sources.
+- Class spell mules.
+- Character-specific spell mules.
 - Assigned spell books.
-- GM-only copy destinations or copy sources.
-- NPC Spell Manager sources.
+- GM-only Copy Between Mules.
+- NPC Spell Manager spell mules.
 
-A source assigned as a character's spell book should usually be treated as that character's personal spell book, not as a shared class source.
+A spell mule assigned as a character's spell book should usually be treated as that character's personal spell book, not as a shared class mule.
 
 ---
 
@@ -221,58 +221,58 @@ A source assigned as a character's spell book should usually be treated as that 
 
 Avoid putting too many spells on a single character sheet.
 
-This includes player characters, NPCs, spell source characters, and assigned spell book characters. `SBM_` sources are still character sheets, and very large spell lists can make Roll20 slower or less reliable.
+This includes player characters, NPCs, spell mule characters, and assigned spell book characters. `SBM_` spell mules are still character sheets, and very large spell lists can make Roll20 slower or less reliable.
 
 There is no exact universal spell limit. Some sheets may work fine with a large number of spells, while others may slow down or behave unpredictably depending on browser, computer, campaign size, and overall sheet data.
 
-For best results, do not create one giant spell source containing every spell in the game. Split large spell libraries into smaller `SBM_` characters, such as class-based, source-based, subclass-based, player-specific, or campaign-specific spell sources.
+For best results, do not create one giant spell mule containing every spell in the game. Split large spell libraries into smaller `SBM_` spell mules, such as class-based, sourcebook-based, subclass-based, player-specific, or campaign-specific spell mules.
 
-If a character sheet or spell source starts loading slowly, failing to update correctly, or behaving strangely, reduce the number of spell rows on that sheet.
+If a character sheet or spell mule starts loading slowly, failing to update correctly, or behaving strangely, reduce the number of spell rows on that sheet.
 
 ---
 
-## Assigning Class Spell Sources
+## Assigning Class Spell Mules
 
-![Assigning Class Spell Sources](images/class_assigned.png)
+![Assigning Class Spell Mules](images/class_assigned.png)
 
-To assign spell sources by class:
+To assign spell mules by class:
 
 1. Run Spell Book Manager as the GM.
 2. Click the settings button.
 3. Under **Class Spell Mules**, click a class.
-4. Click an unassigned spell source to assign it to that class.
-5. Click an assigned spell source to remove it from that class.
+4. Click an unassigned spell mule to assign it to that class.
+5. Click an assigned spell mule to remove it from that class.
 
-A character inherits spell sources from any matching class names found on their sheet, including multiclass fields.
+A character inherits spell mules from any matching class names found on their sheet, including multiclass fields.
 
-Large available source lists use A-Z navigation so the GM does not need to scroll through every `SBM_` character at once.
+Large available spell mule lists use A-Z navigation so the GM does not need to scroll through every `SBM_` character at once.
 
-![Class source A-Z navigation](images/class_source_alpha_nav.png)
+![Class mule A-Z navigation](images/class_source_alpha_nav.png)
 
 ---
 
-## Character-Specific Spell Sources
+## Character-Specific Spell Mules
 
-![Character-Specific Spell Sources](images/character_assigned.png)
+![Character-Specific Spell Mules](images/character_assigned.png)
 
-Character-specific settings let the GM add or block spell sources for a specific character.
+Character-specific settings let the GM add or block spell mules for a specific character.
 
-To manage character-specific spell sources:
+To manage character-specific spell mules:
 
 1. Run Spell Book Manager as the GM.
 2. Click the settings button.
 3. Click **Character Assignments**.
 4. Choose a character.
-5. Use the available, added, inherited, and blocked lists to control that character's spell source access.
+5. Use the available, added, inherited, and blocked lists to control that character's spell mule access.
 
-Character-specific source settings can:
+Character-specific mule settings can:
 
-- Add an extra source that the character does not inherit from class settings.
-- Block an inherited class source for that character.
-- Remove a previously added source.
-- Unblock a previously blocked inherited source.
+- Add an extra mule that the character does not inherit from class settings.
+- Block an inherited class mule for that character.
+- Remove a previously added mule.
+- Unblock a previously blocked inherited mule.
 
-Assigned spell books are kept out of the normal available source lists so they are not accidentally assigned as shared spell sources.
+Assigned spell books are kept out of the normal available spell mule lists so they are not accidentally assigned as shared spell mules.
 
 ---
 
@@ -297,7 +297,7 @@ A character can have one assigned spell book. If a spell book is already assigne
 
 Assigned spell books change the normal player workflow:
 
-- **Copy to Spell Book** copies from approved sources into the assigned spell book.
+- **Copy to Spell Book** copies from approved spell mules into the assigned spell book.
 - **Choose Spells** copies from the assigned spell book onto the actual character sheet.
 
 This makes it possible to support a wizard-style workflow where the player has a separate spell book character and only moves selected spells onto the playable character sheet.
@@ -308,23 +308,23 @@ This makes it possible to support a wizard-style workflow where the player has a
 
 ![Copy Between Mules destination](images/copy_between_mules_destination.png)
 
-**Copy Between Mules** is a GM-only tool for copying spells from one active `SBM_` spell source to another.
+**Copy Between Mules** is a GM-only tool for copying spells from one active `SBM_` spell mule to another.
 
-The basic flow is:
+To use this tool:
 
 1. Run Spell Book Manager as the GM.
 2. On the character selection page, click **Copy Between Mules**.
 3. Choose the destination mule.
-4. Choose the source mule.
+4. Choose the mule to copy from.
 5. Click **Copy to Mule** beside the spells you want to copy.
 
-![Copy Between Mules source](images/copy_between_mules_source.png)
+![Copy Between Mules mule to copy from](images/copy_between_mules_source.png)
 
-The source picker excludes the already-selected destination mule so the GM does not accidentally copy a mule into itself.
+The spell mule picker excludes the already-selected destination mule so the GM does not accidentally copy a mule into itself.
 
 ![Copy to Mule spell list](images/copy_to_mule_spell_list.png)
 
-This is useful for building smaller campaign-specific, subclass-specific, or player-specific spell sources from larger source mules.
+This is useful for building smaller campaign-specific, subclass-specific, or player-specific spell mules from larger spell mules.
 
 ---
 
@@ -332,21 +332,21 @@ This is useful for building smaller campaign-specific, subclass-specific, or pla
 
 ![NPC Spell Manager](images/npc_spell_manager.png)
 
-**NPC Spell Manager** is a GM-only tool for copying spells from active `SBM_` spell sources onto NPC sheets.
+**NPC Spell Manager** is a GM-only tool for copying spells from active `SBM_` spell mules onto NPC sheets.
 
 The NPC picker lists NPC sheets separately from player characters.
 
 ![NPC picker pagination](images/npc_picker_pagination.png)
 
-The basic flow is:
+To use this tool:
 
 1. Run Spell Book Manager as the GM.
 2. On the character selection page, click **NPC Spell Manager**.
 3. Choose an NPC.
-4. Choose a spell source.
+4. Choose a spell mule.
 5. Click **Copy to Character** beside the spells you want to add to the NPC.
 
-![NPC spell source choice](images/npc_spell_source_choice.png)
+![NPC spell mule choice](images/npc_spell_source_choice.png)
 
 When a spell is copied to an NPC, Spell Book Manager enables the NPC spellcasting flag if needed so the spell section can appear on the NPC sheet.
 
@@ -358,11 +358,11 @@ NPC Spell Manager is intended for the official D&D 5E 2014 NPC sheet. It is sepa
 
 The GM can add custom class names from the settings menu.
 
-Use this if your game has a homebrew class, a sheet class name that is not part of the default class list, or a subclass that should have its own spell source assignments.
+Use this if your game has a homebrew class, a sheet class name that is not part of the default class list, or a subclass that should have its own spell mule assignments.
 
-Custom class entries are matched against the class and subclass names on a character's sheet. If the custom entry matches either a character's class or subclass, Spell Book Manager applies the source assignments for that custom entry to that character.
+Custom class entries are matched against the class and subclass names on a character's sheet. If the custom entry matches either a character's class or subclass, Spell Book Manager applies the mule assignments for that custom entry to that character.
 
-For example, if the GM adds a custom class named `Eldritch Knight`, then assigns a spell source to Eldritch Knight, characters with Eldritch Knight as their subclass can inherit that source assignment the same way a character inherits assignments from a matching class name.
+For example, if the GM adds a custom class named `Eldritch Knight`, then assigns a spell mule to Eldritch Knight, characters with Eldritch Knight as their subclass can inherit that mule assignment the same way a character inherits assignments from a matching class name.
 
 ![Custom classes](images/custom_classes.png)
 
@@ -408,7 +408,7 @@ Only one GM should edit Spell Book Manager settings at a time. The settings are 
 
 Do not manually edit the GM Notes of the Spell Book Manager handouts, it contains a JSON string that stores all the settings.
 
-Assigned spell books are still `SBM_` character sheets. They count toward Roll20 sheet size and performance the same way other spell sources do.
+Assigned spell books are still `SBM_` character sheets. They count toward Roll20 sheet size and performance the same way other spell mules do.
 
 ---
 
@@ -444,15 +444,15 @@ This uses `@{spelllevel}` so the roll follows the spell row's current level inst
 
 Make sure the character is a PC, not an NPC, and that the character sheet has normal class attributes. For normal players, the character must be controlled by that player. For GMs, all valid PCs should appear.
 
-Spell Book Manager excludes NPCs, `SBM_` spell sources, and ScriptCards mule characters from the normal player character picker.
+Spell Book Manager excludes NPCs, `SBM_` spell mules, and ScriptCards mule characters from the normal player character picker.
 
-### No spell sources are assigned
+### No spell mules are assigned
 
-Open settings as the GM and assign one or more `SBM_` spell sources to the character's class or directly to the character.
+Open settings as the GM and assign one or more `SBM_` spell mules to the character's class or directly to the character.
 
 ### Choose Spells only shows the assigned spell book
 
-This is expected if the character has a spell book assigned. In that workflow, **Choose Spells** copies from the assigned spell book onto the character sheet. Use **Copy to Spell Book** to add spells from approved sources into the spell book first.
+This is expected if the character has a spell book assigned. In that workflow, **Choose Spells** copies from the assigned spell book onto the character sheet. Use **Copy to Spell Book** to add spells from approved spell mules into the spell book first.
 
 ### Copy to Spell Book does not appear
 
@@ -464,12 +464,12 @@ The character already has a spell with the same name on their sheet. Delete or r
 
 ### A copied spell has unexpected upcast behavior
 
-Check whether the source spell was created by modifying a compendium spell. For custom description-roll spells, rebuild the spell manually from a blank row and leave Roll20's normal At Higher Levels and higher-level damage fields blank.
+Check whether the original spell was created by modifying a compendium spell. For custom description-roll spells, rebuild the spell manually from a blank row and leave Roll20's normal At Higher Levels and higher-level damage fields blank.
 
 ### NPC Spell Manager does not list an NPC
 
 Make sure the sheet is a 2014 NPC sheet and not a player character sheet. NPC Spell Manager is GM-only and uses a separate NPC picker instead of the normal player character picker.
 
-### A source does not appear in an available source list
+### A spell mule does not appear in an available spell mule list
 
-If an `SBM_` character is already assigned as a spell book, it is excluded from normal available class or character source lists. Remove it as a spell book first if you want to reuse it as a normal shared source.
+If an `SBM_` character is already assigned as a spell book, it is excluded from normal available class or character mule lists. Remove it as a spell book first if you want to reuse it as a normal shared spell mule.
