@@ -73,19 +73,18 @@ GMs will see a string of characters in the GM Notes of the handouts. Do not manu
 
 Run Spell Book Manager from the macro bar or collections tab.
 
-If the player controls only one valid PC, the script will go directly to that character's spell options. If the player controls more than one valid PC, the script will ask which character to manage.
+If the player controls more than one valid character, Spell Book Manager first asks which character to manage. If the player only controls one valid character, this step is skipped.
 
-Players can normally:
-
-1. Choose a character. If the player only control one character, this step will be skipped.<br>
 ![Character choice](images/character_choice.png)
 
-2. Click **Choose Spells** to browse available spells.
-3. Click **Copy to Character** to copy a spell onto the character sheet.
-4. Click the &#x1F56E; description button beside a spell to write that spell's formatted description to the Spell Book Manager handout.
+For most player characters, Spell Book Manager opens directly to the available spell list.
 
+From the spell list, players can normally:
 
-If the character is a Warlock, or if the GM is managing the character, the **Move Spells** button is also available.
+1. Click **Copy to Character** to copy a spell onto the character sheet.
+2. Click the &#x1F56E; description button beside a spell to write that spell's formatted description to the Spell Book Manager handout.
+
+If the character is a Warlock, or if the GM is managing the character, Spell Book Manager shows a character options page first. From there, **Choose Spells** opens the spell list, and **Move Spells** allows existing spells on the character sheet to be moved between spell levels.
 
 ![Choose and move buttons](images/choose_move.png)
 
