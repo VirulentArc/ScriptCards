@@ -406,11 +406,9 @@ The handout updates live. If the handout is already open when a description butt
 
 Only one GM should edit Spell Book Manager settings at a time. The settings are stored in a shared handout, and simultaneous writes can overwrite or confuse each other.
 
-Do not manually edit the GM Notes of the Spell Book Manager handouts unless you are intentionally repairing settings data.
+Do not manually edit the GM Notes of the Spell Book Manager handouts, it contains a JSON string that stores all the settings.
 
 Assigned spell books are still `SBM_` character sheets. They count toward Roll20 sheet size and performance the same way other spell sources do.
-
-For testing, use clean test characters where possible. Roll20 repeating sections can sometimes leave behind UI artifacts after rows are created, moved, copied, or deleted manually.
 
 ---
 
@@ -425,13 +423,12 @@ For custom description-roll spells:
 1. Create the spell manually from a blank spell row.
 2. Set the spell output type as needed.
 3. Leave **At Higher Levels** blank unless you want the sheet's normal upcast behavior.
-4. Leave higher-level damage fields blank unless you want the sheet's normal upcast behavior.
-5. Put the complete custom roll directly in the spell description.
-6. If the custom roll needs to scale by spell level, use `@{spelllevel}` as the default/current level reference instead of hard-coding a default level.
+4. Put the complete custom roll directly in the spell description.
+5. If the custom roll needs to scale by spell level, use `@{spelllevel}` as the default/current level reference instead of hard-coding a default level.
 
 For custom Warlock spells that place their damage roll directly in the spell description, make sure **At Higher Levels** and higher-level damage fields are blank unless you intentionally want Roll20's normal upcast behavior to run as well.
 
-### Example: Hellish Rebuke-style scaling
+### Example: Hellish Rebuke Warlock scaling
 
 ```text
 A creature that damaged you is momentarily surrounded by hellish flames. The creature must make a Dexterity saving throw. It takes [[[[@{spelllevel}+1]]d10]] [[[@{spelllevel}+1]]d10] fire damage on a failed save, or half as much damage on a successful one.
@@ -475,4 +472,4 @@ Make sure the sheet is a 2014 NPC sheet and not a player character sheet. NPC Sp
 
 ### A source does not appear in an available source list
 
-If an `SBM_` character is already assigned as a spell book, it may be excluded from normal available class or character source lists. Remove it as a spell book first if you want to reuse it as a normal shared source.
+If an `SBM_` character is already assigned as a spell book, it is excluded from normal available class or character source lists. Remove it as a spell book first if you want to reuse it as a normal shared source.
