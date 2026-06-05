@@ -120,7 +120,7 @@ To use Copy to Spell Book:
 
 ![Copy spell into spell book](images/copy_to_spell_book_spell_list.png)
 
-Only one spell book should be assigned to a character at a time. The settings UI enforces this by replacing the assigned spell book when a new one is chosen.
+Only one spell book can be assigned to a character at a time.
 
 ---
 
@@ -137,10 +137,12 @@ Notes:
 - Cantrips cannot be moved.
 - Level 1 spells cannot be moved down.
 - Level 9 spells cannot be moved up.
-- Non-GM players only see **Move Spells** if the selected character appears to be a Warlock.
+- Non-GM players only see **Move Spells** if the selected character is a Warlock.
 - GMs can access move mode for any valid PC.
 
 When moving Warlock-style scaling spells, Spell Book Manager attempts to preserve the spell's original baseline level and adjust simple dice expressions when appropriate.
+
+See `Custom Spell Notes` further in the document for suggestions about custom Warlock spells.
 
 ---
 
