@@ -334,7 +334,7 @@ This is useful for building smaller campaign-specific, subclass-specific, or pla
 
 **NPC Spell Manager** is a GM-only tool for copying spells from active `SBM_` spell sources onto NPC sheets.
 
-The NPC picker lists NPC sheets separately from player characters. Because campaigns can contain many NPCs, the NPC list is paginated.
+The NPC picker lists NPC sheets separately from player characters.
 
 ![NPC picker pagination](images/npc_picker_pagination.png)
 
@@ -394,9 +394,9 @@ Theme selection is stored per user. Players can choose their own display theme w
 
 ![Spell Description Handout](images/handout.png)
 
-In Choose Spells mode, each spell has a &#x1F56E; description button. Clicking it writes the formatted spell description to that user's Spell Book Manager handout.
+In Choose Spells mode, each spell level header has a **Spell Description Handout** button. Clicking it opens the player's spell description handout.
 
-The spell list also includes a **Spell Description Handout** button that opens the handout.
+Each spell has a &#x1F56E; description button. Clicking it writes the formatted spell description to that user's Spell Book Manager handout.
 
 The handout updates live. If the handout is already open when a description button is clicked, the visible handout content should update after Roll20 refreshes the handout display.
 
