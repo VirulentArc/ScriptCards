@@ -83,14 +83,13 @@ From the spell list, players can normally:
 
 1. Click **Copy to Character** to copy a spell onto the character sheet.
 2. Click the &#x1F56E; description button beside a spell to write that spell's formatted description to the Spell Book Manager handout.
+![Copy to Spell Book button](images/copy_to_spell_book_button.png)
 
 If the character is a Warlock, or if the GM is managing the character, Spell Book Manager shows a character options page first. From there, **Choose Spells** opens the spell list, and **Move Spells** allows existing spells on the character sheet to be moved between spell levels.
 
 ![Choose and move buttons](images/choose_move.png)
 
 If the character has an assigned spell book, the character options page can also show **Copy to Spell Book**. This lets a player copy spells from their approved spell mules into the assigned spell book rather than directly onto the character.
-
-![Copy to Spell Book button](images/copy_to_spell_book_button.png)
 
 If the character already knows a spell with the same name, Spell Book Manager marks that spell as **Already Known** instead of offering another copy button. The spell list may need to be refreshed before this status updates after a copy.
 
