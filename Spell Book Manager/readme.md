@@ -1,8 +1,8 @@
 # Spell Book Manager
 
-Spell Book Manager is a ScriptCards utility for Roll20 D&D 5E 2014 games. It lets a GM maintain one or more `SBM_` spell source characters and lets players copy approved spells from those sources onto their own character sheets.
+Spell Book Manager is a ScriptCards utility for Roll20 D&D 5E 2014 games. It lets a GM maintain one or more spell mule source characters and lets players copy approved spells from those sources onto their own character sheets.
 
-Spell Book Manager can also manage assigned spell book characters, copy spells between `SBM_` sources, add spells to NPC sheets, and move a character's existing leveled spells up or down between spell levels. The move feature is especially useful for Warlocks and other cases where the same spell may need to live at a different slot level.
+Spell Book Manager can also manage assigned spell book characters, copy spells between mule source characters, add spells to NPC sheets, and move a character's existing leveled spells up or down between spell levels. The move feature is especially useful for Warlocks and other cases where the same spell may need to live at a different slot level.
 
 The script is designed for the official D&D 5E 2014 by Roll20 character sheet and works with normal PC spell rows. NPC support is available through the GM-only NPC Spell Manager.
 
@@ -12,11 +12,9 @@ The script is designed for the official D&D 5E 2014 by Roll20 character sheet an
 
 - A Roll20 Pro account with Mod/API access.
 - ScriptCards installed.
-- ScriptCards 3.0.22 or newer is recommended.
+- ScriptCards 3.0.22 or newer is required. If Roll20 One-Click has an older ScriptCards version, install ScriptCards manually before using Spell Book Manager.
 - The official D&D 5E 2014 by Roll20 character sheet.
 - One or more spell source characters whose names begin with `SBM_`.
-
-The script creates and uses handouts for settings and spell descriptions. No manual handout creation is required.
 
 ---
 
@@ -31,26 +29,13 @@ The script creates and uses handouts for settings and spell descriptions. No man
    - `Spell Book Manager [PlayerID]`
 
 The settings handout stores GM configuration. The player-specific handout is used to display spell descriptions when the spell description button is clicked.
+All automatically created handouts are automatically stored as archived to not interfere with game journals.
 
 The first time each player runs the script, a new `Spell Book Manager [PlayerID]` handout will be created.<br>
 ![Installation handouts](images/handouts.png)
 
-GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text is a JSON-style settings string that stores mule assignment information and player theme information.<br>
+GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text is a JSON string that stores mule assignment information and player theme information.<br>
 ![Settings JSON](images/JSON.png)
-
----
-
-## Spell List Size and Roll20 Performance
-
-Avoid putting too many spells on a single character sheet.
-
-This includes player characters, NPCs, spell source characters, and assigned spell book characters. `SBM_` sources are still character sheets, and very large spell lists can make Roll20 slower or less reliable.
-
-There is no exact universal spell limit. Some sheets may work fine with a large number of spells, while others may slow down or behave unpredictably depending on browser, computer, campaign size, and overall sheet data.
-
-For best results, do not create one giant spell source containing every spell in the game. Split large spell libraries into smaller `SBM_` characters, such as class-based, source-based, subclass-based, player-specific, or campaign-specific spell sources.
-
-If a character sheet or spell source starts loading slowly, failing to update correctly, or behaving strangely, reduce the number of spell rows on that sheet.
 
 ---
 
@@ -227,6 +212,20 @@ The `SBM_` prefix is only for identifying Spell Book Manager source characters. 
 - NPC Spell Manager sources.
 
 A source assigned as a character's spell book should usually be treated as that character's personal spell book, not as a shared class source.
+
+---
+
+## Spell List Size and Roll20 Performance
+
+Avoid putting too many spells on a single character sheet.
+
+This includes player characters, NPCs, spell source characters, and assigned spell book characters. `SBM_` sources are still character sheets, and very large spell lists can make Roll20 slower or less reliable.
+
+There is no exact universal spell limit. Some sheets may work fine with a large number of spells, while others may slow down or behave unpredictably depending on browser, computer, campaign size, and overall sheet data.
+
+For best results, do not create one giant spell source containing every spell in the game. Split large spell libraries into smaller `SBM_` characters, such as class-based, source-based, subclass-based, player-specific, or campaign-specific spell sources.
+
+If a character sheet or spell source starts loading slowly, failing to update correctly, or behaving strangely, reduce the number of spell rows on that sheet.
 
 ---
 
