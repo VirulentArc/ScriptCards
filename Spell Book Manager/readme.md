@@ -109,7 +109,7 @@ For players, **Copy to Spell Book** allows copying from the character's approved
 
 For GMs, **Copy to Spell Book** can use any active `SBM_` spell source as the source list, while still copying into the selected character's assigned spell book.
 
-The use Copy to Spell Book:
+To use Copy to Spell Book:
 
 1. The GM assigns one `SBM_` character as the selected character's spell book.
 2. The player or GM clicks **Copy to Spell Book** from the character options page.
