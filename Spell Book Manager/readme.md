@@ -132,7 +132,7 @@ Use **Copy to Spell Book** to add spells into the assigned spell book first.
 
 ## Copy to Spell Book
 
-![Copy to Spell Book mule choice](images/copy_to_spell_book_source_choice.png)
+![Copy to Spell Book mule choice](images/spell_source_choice.png)
 
 **Copy to Spell Book** appears when a character has a spell book assigned by the GM.
 
