@@ -441,38 +441,6 @@ This uses `@{spelllevel}` so the roll follows the spell row's current level inst
 
 ---
 
-## Suggested Screenshot Checklist
-
-The README currently references the following suggested image files. Add screenshots using these names, or rename the links to match your actual image files.
-
-- `images/handouts.png` — the created settings and player handouts.
-- `images/JSON.png` — the GM Notes settings string warning.
-- `images/character_choice.png` — player character picker.
-- `images/choose_move.png` — character options showing Choose Spells and Move Spells.
-- `images/copy_to_spell_book_button.png` — character options showing Copy to Spell Book.
-- `images/spell_choice.png` — normal spell chooser.
-- `images/spell_source_choice.png` — spell source picker with All Spells and assigned sources.
-- `images/copy_to_spell_book_source_choice.png` — Copy to Spell Book source picker.
-- `images/copy_to_spell_book_spell_list.png` — spell list showing Copy to Spell Book buttons.
-- `images/gm_tools.png` — GM Tools section on the character selection page.
-- `images/gm_settings.png` — DM Settings page.
-- `images/class_assigned.png` — class source assignment page.
-- `images/class_source_alpha_nav.png` — A-Z navigation on a large source list.
-- `images/character_assigned.png` — character-specific source assignment page.
-- `images/spell_book_assignment.png` — Spell Book Assignment button/page.
-- `images/available_spell_books.png` — available spell books list.
-- `images/copy_between_mules_destination.png` — Copy Between Mules destination picker.
-- `images/copy_between_mules_source.png` — Copy Between Mules source picker.
-- `images/copy_to_mule_spell_list.png` — spell list showing Copy to Mule buttons.
-- `images/npc_spell_manager.png` — NPC Spell Manager entry page.
-- `images/npc_picker_pagination.png` — paginated NPC picker.
-- `images/npc_spell_source_choice.png` — NPC spell source picker.
-- `images/custom_classes.png` — custom class add/remove area.
-- `images/theme_selection.png` — theme picker.
-- `images/handout.png` — formatted spell description handout output.
-
----
-
 ## Troubleshooting
 
 ### No characters appear
