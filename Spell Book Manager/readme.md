@@ -73,8 +73,7 @@ GMs will see a string of characters in the GM Notes of the handouts. Do not manu
 
 Run Spell Book Manager from the macro bar or collections tab.
 
-If the player controls more than one valid character, Spell Book Manager first asks which character to manage. If the player only controls one valid character, this step is skipped.
-
+If the player controls more than one valid character, Spell Book Manager first asks which character to manage. If the player only controls one valid character, this step is skipped.<br>
 ![Character choice](images/character_choice.png)
 
 For most player characters, Spell Book Manager opens directly to the available spell list.
@@ -83,13 +82,12 @@ From the spell list, players can normally:
 
 1. Click **Copy to Character** to copy a spell onto the character sheet.
 2. Click the &#x1F56E; description button beside a spell to write that spell's formatted description to the Spell Book Manager handout.
-![Copy to Spell Book button](images/copy_to_spell_book_button.png)
 
-If the character is a Warlock, or if the GM is managing the character, Spell Book Manager shows a character options page first. From there, **Choose Spells** opens the spell list, and **Move Spells** allows existing spells on the character sheet to be moved between spell levels.
-
+If the character is a Warlock, or if the GM is managing the character, Spell Book Manager shows a character options page first. From there, **Choose Spells** opens the spell list, and **Move Spells** allows existing spells on the character sheet to be moved between spell levels.<br>
 ![Choose and move buttons](images/choose_move.png)
 
-If the character has an assigned spell book, the character options page can also show **Copy to Spell Book**. This lets a player copy spells from their approved spell mules into the assigned spell book rather than directly onto the character.
+If the character has an assigned spell book, the character options page can also show **Copy to Spell Book**. This lets a player copy spells from their approved spell mules into the assigned spell book rather than directly onto the character.<br>
+![Copy to Spell Book button](images/copy_to_spell_book_button.png)
 
 If the character already knows a spell with the same name, Spell Book Manager marks that spell as **Already Known** instead of offering another copy button. The spell list may need to be refreshed before this status updates after a copy.
 
