@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC 1.0
+  --/| RC 1.1
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SDHN|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SDHN]
@@ -9,7 +9,7 @@
   --~|array;objects:handout;SBMSettingsHandoutIDs;[&SBMHN]
   --?"[@SBMSettingsHandoutIDs(maxindex)]" -eq "-1"|[ --!oh:SBMHID|name:"[&SBMHN]"|gmnotes:""|archived:true --]|
   --?"[@SBMSettingsHandoutIDs(maxindex)]" -ne "-1"|&SBMHID;[@SBMSettingsHandoutIDs(0)]
-  --~|array;define;SBMThemeList;2014;2024;AD&D2E;Arcane;Brasswork;Eldritch;Prismatic;Radiant;Verdant
+  --~|array;define;SBMThemeList;2014;2024 Core;R20 2024;AD&D 2E;2E Revised;D&D 3E;Arcane;Brasswork;Eldritch;Prismatic;Radiant;Verdant
   --~|array;define;SBMClassList;artificer;barbarian;bard;cleric;druid;fighter;monk;paladin;ranger;rogue;sorcerer;warlock;wizard
   -->LoadSBMSettings| -->ParseSBMSettings| -->LoadSBMPlayerTheme| -->ApplySBMTheme|
 --:CharacterSelect|
@@ -73,22 +73,21 @@
     --?"[= [&SBMTCnt] % 3 ]" -eq "0" -and "[&SBMTCnt]" -ne "0"|&SBMTO;+[/tr][tr]
     --&SBMTBG|[&OddRowBG]
     --?"[= [&SBMTCnt] \ 3 % 2 ]" -eq "1"|&SBMTBG;[&EvenRowBG]
-    --&SBMTO|+[td style='[&GCS] background-color:[&SBMTBG];'][rbutton][&SBMThemeLoop(totitlecase)]::SBMSetTheme;[&SBMThemeLoop][/rbutton][/td]
+    --&SBMThemeButtonText|[&SBMThemeLoop]
+    --&SBMTO|+[td style='[&GCS] background-color:[&SBMTBG];'][rbutton][&SBMThemeButtonText]::SBMSetTheme;[&SBMThemeLoop][/rbutton][/td]
     --&SBMTCnt|[= [&SBMTCnt] + 1]
   --%|
   --&SBMTO|+[/tr][/t]
   --&SettingsTitle|Player Settings
   --?[&SendingPlayerIsGM] -eq 1|&SettingsTitle;DM Settings
   --&BackButton|[&BackBtn][&SBMRet];BACK[/rbutton]
-  --&SettingsButton|[rbutton][&SSI]::SBMSettings;[&SBMRet][/rbutton]
+  --&SettingsButton|[&SettingsBtn][&SBMRet][/rbutton]
   -->OpenSBMCard|[&SettingsTitle]
   --?[&SendingPlayerIsGM] -ne 1|SkipSettingsClassMules
   --&SelClass|
   --&CardHTML|+[&CSR]Class Spell Mules[/td][/tr]
   --&ClCnt|0
-  --&CTBG|[&OddRowBG]
-  --?"[= [@SBMClassList()] \ 3 % 2 ]" -eq "1"|&CTBG;[&EvenRowBG]
-  --&ClOut|[t style='width:100%; [&B0] [&TF] background-color:[&CTBG];'][tr]
+  --&ClOut|[t style='width:100%; [&B0] [&TF] background-color:transparent;'][tr]
   --%SBMClassLoop|foreach;SBMClassList
     --?"[= [&ClCnt] % 3 ]" -eq "0" -and "[&ClCnt]" -ne "0"|&ClOut;+[/tr][tr]
     --&CBG|[&OddRowBG]
@@ -131,7 +130,7 @@
   -->ShowSBMCard|
 --X|
 --:LoadSBMSettings|
-  --?"[&SBMHID]" -eq "" -or "[&SBMHID]" -eq "undefined"|&SBMHID;[&SDHID]
+  --?"[&SBMHID]" -eq "" -or "[&SBMHID]" -eq "undefined"|[ --~|array;objects:handout;SBMSettingsHandoutIDs;[&SBMHN] --&SBMHID|[@SBMSettingsHandoutIDs(0)] --]|
   --&SBMDef|!$!!q!customclasses!q!:!q!!q!
   --%SBMDefaultClassLoop|foreach;SBMClassList
     --&SBMDef|+,!q![&SBMDefaultClassLoop]!q!:!q!!q!
@@ -187,22 +186,25 @@
 --<|
 --:ApplySBMTheme|
   --#tableborder|0px solid transparent; --#tableshadow|0px 0px 0px 0px transparent; --#bodyfontsize|14px
-  --#buttonfontsize|14px --#buttonpadding|2px 6px --#buttonwidth|auto
+  --#buttonpadding|2px 6px --#buttonwidth|auto
   --&FHA|Helvetica, Arial, sans-serif --&FCA|Candal, Arial, sans-serif --&FCO|Contrail One, Arial, sans-serif --&FGE|Georgia, serif
-  --h:SBMThemeData("2014")|2014!@!Georgia, Times New Roman, serif!@![&FHA]!@!serif!@!bold!@!0.03em!@!small-caps!@!none!@!#7A200D!@!#5B3924!@!#2A1608!@!#F1E5C9!@!#B89A5E!@!#6E2425!@!#F1E5C9!@!#E8D6B5!@!#F6EBD2!@!#6E2425!@!#F1E5C9!@!#5B3924!@!normal!@!18px
-  --h:SBMThemeData("2024")|2024!@!Proxima Nova, Helvetica, sans-serif!@!Proxima Nova, Helvetica, sans-serif!@!modesto-text, [&FGE]!@!normal!@!normal!@!normal!@!uppercase!@!#eb9797!@!#999998!@!#e6e6e6!@!#000000!@!#555555!@!#000000!@!#eb9797!@!#242424!@!#000000!@!#1f1f1f!@!#eb9797!@!#555555!@!normal!@!16px
-  --h:SBMThemeData("ad&d2e")|Ad&D2E!@!Arial, Helvetica, sans-serif!@!Arial, Helvetica, sans-serif!@![&FCA]!@!normal!@!0.02em!@!normal!@!none!@!#930c10!@!#58180d!@!#000000!@!#fffebd!@!#930c10!@!#672223!@!#fffebd!@!#f7ce65!@!#fffebd!@!#672223!@!#fffebd!@!#58180d!@!normal!@!15px
-  --h:SBMThemeData("verdant")|Verdant!@!Palatino Linotype, Book Antiqua, Palatino, [&FGE]!@![&FHA]!@!Georgia, [&FGE]!@!bold!@!0.04em!@!normal!@!none!@!#4F6F2F!@!#6A6B4D!@!#24331F!@!#E7E0C8!@!#7B8A45!@!#2F5A32!@!#F1E8BF!@!#D2BE96!@!#E7E0C8!@!#2F5A32!@!#F1E8BF!@!#7B8A45!@!normal!@!16px
-  --h:SBMThemeData("radiant")|Radiant!@!Palatino Linotype, Book Antiqua, Palatino, [&FGE]!@![&FCA]!@!Candal, [&FGE]!@!bold!@!0.04em!@!normal!@!none!@!#9B6F18!@!#766B55!@!#2B2415!@!#F7F5EF!@!#D6C08A!@!#C6A24A!@!#2B2415!@!#E8E2D0!@!#F7F5EF!@!#C6A24A!@!#2B2415!@!#8A6A1E!@!normal!@!14px
-  --h:SBMThemeData("arcane")|Arcane!@!Courier New, Courier, monospace!@![&FCO]!@!Contrail One, [&FGE]!@!bold!@!0.04em!@!normal!@!none!@!#C7BBFF!@!#B7B2D8!@!#E7E3FF!@!#0D1224!@!#5D5FEF!@!#151A36!@!#E7E3FF!@!#1D2752!@!#0D1224!@!#302B63!@!#E7E3FF!@!#9F8CFF!@!normal!@!16px
-  --h:SBMThemeData("eldritch")|Eldritch!@!Garamond, Georgia, Times New Roman, serif!@![&FCA]!@!Candal, Garamond, [&FGE]!@!bold!@!0.04em!@!normal!@!none!@!#B24A6B!@!#9E7D95!@!#EAD7E7!@!#120812!@!#5A1E48!@!#3A1234!@!#F3DCA2!@!#2A1230!@!#120812!@!#3A1234!@!#F3DCA2!@!#B24A6B!@!normal!@!14px
-  --h:SBMThemeData("brasswork")|Brasswork!@!Trebuchet MS, Verdana, Geneva, sans-serif!@![&FCO]!@!Contrail One, Trebuchet MS, sans-serif!@!bold!@!0.05em!@!normal!@!none!@!#B87333!@!#667574!@!#1A1A18!@!#E8D8B8!@!#6F7F7F!@!#3D4544!@!#F1D28A!@!#D6C091!@!#E8D8B8!@!#3D4544!@!#F1D28A!@!#B87333!@!normal!@!16px
-  --h:SBMThemeData("prismatic")|Prismatic!@!Trebuchet MS, Helvetica, sans-serif!@!Trebuchet MS, [&FHA]!@!Shadows Into Light, [&FGE]!@!bold!@!0.05em!@!normal!@!none!@!#FF8FA3!@!#C8A7C8!@!#F8E6FF!@!#1A0B24!@!#8E3A8C!@!#4B155D!@!#FFD6E0!@!#3A1F52!@!#1A0B24!@!#4B155D!@!#FFD6E0!@!#FF8FA3!@!normal!@!18px
+  --h:SBMThemeData("2014")|2014!@!Georgia, Times New Roman, serif!@![&FHA]!@!serif!@!bold!@!0.03em!@!small-caps!@!none!@!#58180D!@!#5B3924!@!#000000!@!transparent!@!#C9AD6A!@!#58180D!@!#FDF1DC!@!transparent!@!#D4DBAE!@!#58180D!@!#FDF1DC!@!#C9AD6A!@!normal!@!18px!@!#C9AD6A!@!#C9AD6A!@!14px!@!14px
+  --h:SBMThemeData("r20 2024")|R20 2024!@!Proxima Nova, Helvetica, sans-serif!@!Proxima Nova, Helvetica, sans-serif!@!modesto-text, [&FGE]!@!normal!@!normal!@!normal!@!uppercase!@!#eb9797!@!#999998!@!#e6e6e6!@!#000000!@!#555555!@!#000000!@!#eb9797!@!#000000!@!#242424!@!#1f1f1f!@!#eb9797!@!#555555!@!normal!@!16px!@!#3A1A1A!@!#3A1A1A!@!14px!@!13px
+  --h:SBMThemeData("2024 core")|2024 Core!@!Georgia, Times New Roman, serif!@![&FHA]!@!Georgia, [&FGE]!@!bold!@!0.04em!@!normal!@!none!@!#421610!@!#6E6252!@!#000000!@!transparent!@!#C5B880!@!#421610!@!#F3F3F7!@!transparent!@!#CDD8DE!@!#E8ECF5!@!#421610!@!#6E6252!@!normal!@!17px!@!#C5B880!@!#DFD1C8!@!14px
+  --h:SBMThemeData("ad&d 2e")|AD&D 2E!@!Arial, Helvetica, sans-serif!@!Arial, Helvetica, sans-serif!@![&FCA]!@!normal!@!0.02em!@!normal!@!none!@!#1C407F!@!#6F6A5A!@!#1B1B16!@!#F5F4EB!@!#1C407F!@!#1C407F!@!#F5F4EB!@!#F5F4EB!@!#B4AEAB!@!#B6C9D7!@!#1B1B16!@!#1C407F!@!normal!@!15px!@!#B6C9D7!@!#B6C9D7!@!14px
+  --h:SBMThemeData("2e revised")|2E Revised!@!Arial, Helvetica, sans-serif!@!Arial, Helvetica, sans-serif!@![&FCA]!@!normal!@!0.02em!@!normal!@!none!@!#E22044!@!#74316D!@!#000000!@!transparent!@!#74316D!@!#E22044!@!#FFFFFF!@!transparent!@!#D8D8DF!@!#74316D!@!#FFFFFF!@!#74316D!@!normal!@!15px!@!#E8E8ED!@!#E8E8ED!@!14px
+  --h:SBMThemeData("d&d 3e")|D&D 3E!@!Times New Roman, Georgia, serif!@!Trebuchet MS, Verdana, Geneva, sans-serif!@!Times New Roman, Georgia, serif!@!bold!@!0.10em!@!normal!@!uppercase!@!#0A386A!@!#5B4631!@!#000000!@!#FFFFFF!@!#642224!@!#0A386A!@!#FFFFFF!@!transparent!@!#FFEFCA!@!#FFEFCA!@!#0A386A!@!#A78340!@!normal!@!12px!@!#D7C18A!@!#642224!@!14px
+  --h:SBMThemeData("verdant")|Verdant!@!Palatino Linotype, Book Antiqua, Palatino, [&FGE]!@![&FHA]!@!Georgia, [&FGE]!@!bold!@!0.04em!@!normal!@!none!@!#1F3A20!@!#6A6B4D!@!#24331F!@!#E7E0C8!@!#7B8A45!@!#2F5A32!@!#F1E8BF!@!#E7E0C8!@!#D2BE96!@!#2F5A32!@!#F1E8BF!@!#7B8A45!@!normal!@!16px!@!#D6C79A!@!#C49B5A!@!14px
+  --h:SBMThemeData("radiant")|Radiant!@!Palatino Linotype, Book Antiqua, Palatino, [&FGE]!@![&FCA]!@!Candal, [&FGE]!@!bold!@!0.04em!@!normal!@!none!@!#5F3B0A!@!#6D7476!@!#2B2415!@!#F7F5EF!@!#D6C08A!@!#C6A24A!@!#2B2415!@!#F7F5EF!@!#E6EBEE!@!#C6A24A!@!#2B2415!@!#8A6A1E!@!normal!@!14px!@!#DDE4E8!@!#B8C8D0!@!12px!@!13px
+  --h:SBMThemeData("arcane")|Arcane!@!Palatino Linotype, Book Antiqua, Palatino, URW Palladio L, Noto Serif, DejaVu Serif, Georgia, serif!@![&FCO]!@!Contrail One, [&FGE]!@!bold!@!0.04em!@!normal!@!none!@!#C7BBFF!@!#B7B2D8!@!#E7E3FF!@!#0D1224!@!#5D5FEF!@!#33246B!@!#E7E3FF!@!#0D1224!@!#211A45!@!#302B63!@!#E7E3FF!@!#C7BBFF!@!normal!@!16px!@!#4A2E6B!@!#5D3A8A!@!14px
+  --h:SBMThemeData("eldritch")|Eldritch!@!Garamond, Georgia, Times New Roman, serif!@![&FCA]!@!Candal, Garamond, [&FGE]!@!bold!@!0.04em!@!normal!@!none!@!#B24A6B!@!#9E7D95!@!#EAD7E7!@!#120812!@!#5A1E48!@!#3A1234!@!#F3DCA2!@!#120812!@!#2A1230!@!#3A1234!@!#F3DCA2!@!#B24A6B!@!normal!@!14px!@!#2E1730!@!#4A1A3D!@!12px
+  --h:SBMThemeData("brasswork")|Brasswork!@!Trebuchet MS, Verdana, Geneva, sans-serif!@![&FCO]!@!Contrail One, Trebuchet MS, sans-serif!@!bold!@!0.05em!@!normal!@!none!@!#7A3F16!@!#667574!@!#1A1A18!@!#E8D8B8!@!#6F7F7F!@!#3D4544!@!#F1D28A!@!#E8D8B8!@!#D6C091!@!#3D4544!@!#F1D28A!@!#B87333!@!normal!@!16px!@!#DCC58F!@!#C29A55!@!14px
+  --h:SBMThemeData("prismatic")|Prismatic!@!Trebuchet MS, Helvetica, sans-serif!@!Trebuchet MS, [&FHA]!@!Patrick Hand, Trebuchet MS, [&FHA]!@!bold!@!0.02em!@!normal!@!none!@!#FF8FA3!@!#C8A7C8!@!#F8E6FF!@!#1A0B24!@!#8E3A8C!@!#4B155D!@!#FFD6E0!@!#1A0B24!@!#3A1F52!@!#4B155D!@!#FFD6E0!@!#FF8FA3!@!normal!@!18px!@!#2D2B72!@!#5B1B75!@!14px!@!16px
   --&SBMTheme|[:SBMSettings("theme")]
   --?"[&SBMTheme]" -eq "" -or "[&SBMTheme]" -eq "undefined"|&SBMTheme;2014
   --&SBMTC|[&SBMTheme]
   --~SBMTC|string;tolowercase;[&SBMTC]
-  --?",2014,2024,ad&d2e,verdant,radiant,arcane,eldritch,brasswork,prismatic," -ninc ",[&SBMTC],"|&SBMTC;2014
+  --?",2014,r20 2024,2024 core,ad&d 2e,2e revised,d&d 3e,verdant,radiant,arcane,eldritch,brasswork,prismatic," -ninc ",[&SBMTC],"|&SBMTC;2014
   --&SBMThemePacked|[:SBMThemeData("[&SBMTC]")]
   --~SBMThemeSplit|string;split;!@!;[&SBMThemePacked]
   --&SBMTheme|[&SBMThemeSplit1] --&BFF|[&SBMThemeSplit2] --#buttonfontface|[&SBMThemeSplit3]
@@ -210,18 +212,27 @@
   --&TTT|text-transform:[&SBMThemeSplit8];
   --&DescRed|[&SBMThemeSplit9] --&DescGrey|[&SBMThemeSplit10] --&DescWhite|[&SBMThemeSplit11] --&DescBG|[&SBMThemeSplit12] --&DBor|[&SBMThemeSplit13]
   --&TitleBG|[&SBMThemeSplit14] --&TitleText|[&SBMThemeSplit15] --&OddRowBG|[&SBMThemeSplit16] --&EvenRowBG|[&SBMThemeSplit17]
-  --#buttonbackground|[&SBMThemeSplit18] --#buttontextcolor|[&SBMThemeSplit19] --#buttonbordercolor|[&SBMThemeSplit20] --#lineheight|[&SBMThemeSplit21]
+  --#buttonfontsize|[&SBMThemeSplit25] --#buttonbackground|[&SBMThemeSplit18]; box-shadow:inset 0 0 0 1px [&SBMThemeSplit20] --#buttontextcolor|[&SBMThemeSplit19] --#buttonbordercolor|[&TitleBG] --#lineheight|[&SBMThemeSplit21]
   --&TFS|[&SBMThemeSplit22]
   --?"[&TFS]" -eq "" -or "[&TFS]" -eq "undefined"|&TFS;18px
+  --&SHFS|[&SBMThemeSplit26]
+  --?"[&SHFS]" -eq "" -or "[&SHFS]" -eq "undefined"|&SHFS;14px
+  --&SectionBG|[&SBMThemeSplit23] --&SpellHeaderBG|[&SBMThemeSplit24]
+  --?"[&SectionBG]" -eq "" -or "[&SectionBG]" -eq "undefined"|&SectionBG;[&EvenRowBG]
+  --?"[&SpellHeaderBG]" -eq "" -or "[&SpellHeaderBG]" -eq "undefined"|&SpellHeaderBG;[&TitleBG]
   --#bodyfontface|[&BFF] --#tablebgcolor|transparent --#oddrowbackground|transparent
   --#evenrowbackground|transparent --#oddrowfontcolor|[&DescWhite] --#evenrowfontcolor|[&DescWhite]
   --&CRP|2px 3px
   --&B0|border:none; --&RP|padding:[&CRP]; --&CW|color:[&DescWhite]; --&CR|color:[&DescRed]; --&TC|text-align:center; --&W6|font-weight:600; --&TF|border-collapse:collapse; table-layout:fixed;
+  --&BGI|
+  --?"[&SBMTC]" -eq "2014"|[ --&BGI|background-image:url("https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png"); background-size:100% 100%; background-position:center center; background-repeat:no-repeat; --]|
+  --?"[&SBMTC]" -eq "2024 core"|[ --&BGI|background-image:radial-gradient(circle at 18% 12%,rgba(255,255,255,0.55) 0%,rgba(255,255,255,0) 38%),radial-gradient(circle at 82% 82%,rgba(224,221,216,0.42) 0%,rgba(224,221,216,0) 44%),linear-gradient(135deg,#F3F3F7 0%,#F1F1F1 34%,#EDEDED 68%,#E0DDD8 100%); background-color:#F1F1F1; background-size:100% 100%; --]|
+  --?"[&SBMTC]" -eq "2e revised"|[ --&BGI|background-image:linear-gradient(135deg,#F6F2C9 0%,#F7E7D9 20%,#F2E4F2 38%,#E1EEF8 56%,#DDF3EB 74%,#F6F0CD 100%); background-color:#F8F6DF; background-size:100% 100%; --]|
   --&GT|style='width:100%; [&B0] [&TF]'
   --&GCS|width:33%; [&B0] [&RP] [&TC]
   --&MGCS|width:50%; [&B0] [&RP] [&TC]
   --&CardAppTitle|Spell Book Manager
-  --&HomeButton|[rbutton:[&TitleText]:[&TitleBG]:16px][F:Tahoma:16]&#x2302;[/F]::CharacterSelect;BACK[/rbutton]
+  --&HomeButton|[rbutton:[&TitleText]:[&TitleBG]:16px][F:Arial Black:20]&#x2302;[/F]::CharacterSelect;BACK[/rbutton]
   --&BackIcon|&#x2B9C;
   --&SettingsIcon|&#x2699;
   --&BackBtn|[rbutton:[&TitleText]:[&TitleBG]:16px][F:Tahoma:16][&BackIcon][/F]::
@@ -231,18 +242,18 @@
   --&NoNPCSheetsText|No 2014 NPC sheets were found.
   --&NoRow|NoRepeatingAttributeLoaded
   --&TBD|[/td][td style='width:2px; min-width:2px; max-width:2px; height:28px; font-size:1px; line-height:28px; padding:0; vertical-align:middle; background-color:[&DescBG]; color:[&DescBG];']&nbsp;[/td][td style='[&TC] width:30px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
-  --&CTBO|[t style='width:100%; [&TF]'][tr style='height:28px;'][td style='[&TC] width:28px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
-  --&CTBM|[/td][td style='[&TC] width:100%; height:28px; font-size:[&TFS]; border-left:2px solid [&DescBG]; border-right:0px solid [&TitleBG]; padding:0 4px; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText]; [&TitleFont]; [&TTT]']
+  --&CTBO|[t style='width:100%; [&TF] vertical-align:middle;'][tr style='height:28px; vertical-align:middle;'][td style='[&TC] width:28px; height:28px; font-size:18px; white-space:nowrap; padding:0; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText];']
+  --&CTBM|[/td][td style='width:2px; min-width:2px; max-width:2px; height:28px; font-size:1px; line-height:28px; padding:0; vertical-align:middle; background-color:[&DescBG]; color:[&DescBG];']&nbsp;[/td][td style='[&TC] width:100%; height:28px; font-size:[&TFS]; border-left:0; border-right:0; padding:0 4px; vertical-align:middle; background-color:[&TitleBG]; color:[&TitleText]; [&TitleFont]; [&TTT]']
   --&CTBR|[&TBD]
   --&CTBC|[/td][/tr][/t]
-  --&CO|style='width:300px; position:relative; left:-30px; border:1px solid [&DBor]; border-radius:8px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; [&CW] overflow:hidden;'
+  --&CO|style='width:300px; position:relative; left:-30px; border:1px solid [&DBor]; border-radius:8px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; [&BGI] [&CW] overflow:hidden;'
   --&COC|style='[&B0] padding:10px 5px 4px 5px; background-color:[&DescBG];'
   --&CT|style='width:100%; [&B0] [&TF] background-color:[&DescBG]; [&CW]'
   --&CardOpen|[t [&CO]][tr][td [&COC]][t [&CT]]
   --&CardClose|[/t][/td][/tr][/t]
   --&CTi|style='width:100%; border:0; padding:10px 0 3px; [&CR] [&TitleFont]; font-size:20px; [&TTT]'
-  --&CSH|style='border:1px solid [&DBor]; border-radius:5px; padding:3px 4px; [&TC] background-color:[&EvenRowBG]; [&CR] font-weight:bold; [&TitleFont]; [&TTT]'
-  --&CSe|style='[&B0] [&RP] [&CR] font-weight:bold;'
+  --&CSH|style='border:0; border-radius:5px; padding:3px 4px; [&TC] background-color:[&TitleBG]; color:[&TitleText]; font-weight:bold; font-size:[&SHFS]; [&TitleFont]; [&TTT]'
+  --&CSe|style='border:0; border-radius:5px; [&RP] [&TC] background-color:[&SectionBG]; [&CR] font-weight:bold; font-size:[&SHFS]; [&TitleFont]; [&TTT]'
   --&CTX|style='[&B0] [&RP] [&CW] [&W6]'
   --&CCe|style='[&B0] [&RP] [&CW] [&W6] [&TC]'
   --&RowEnd|[/td][/tr]
@@ -250,16 +261,20 @@
   --&CTR|[tr][td [&CTX]] --&CCR|[tr][td [&CCe]]
   --&SRO|style='[&B0] padding:0px; background-color:[&SpellRowBG];'
   --&SRI|style='width:100%; table-layout:fixed; [&B0] border-collapse:collapse; background-color:[&SpellRowBG]; [&CW]'
-  --&SHT|style='width:100%; table-layout:fixed; border:1px solid [&DBor]; border-radius:5px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; [&CW]'
+  --&SHT|style='width:100%; table-layout:fixed; border:0; border-radius:5px; border-collapse:separate; border-spacing:0; background-color:[&SpellHeaderBG]; [&CW] overflow:hidden;'
   --&SHTd|style='width:25%; [&B0] text-align:left; [&RP] vertical-align:middle; [&CR] font-weight:bold;'
+  --?"[&SBMTC]" -eq "d&d 3e"|[
+    --&SHT|style='width:100%; table-layout:fixed; border:0; border-radius:5px; border-collapse:separate; border-spacing:0; background-color:[&SpellHeaderBG]; color:#FFEFCA; overflow:hidden;'
+    --&SHTd|style='width:25%; [&B0] text-align:left; [&RP] vertical-align:middle; color:#FFEFCA; font-weight:bold;'
+  --]|
   --&SITd|style='width:24px; min-width:24px; [&B0] [&TC] white-space:nowrap; [&RP] [&CR]'
   --&SNTd|style='width:100%; [&B0] text-align:left; [&RP] vertical-align:middle; [&CW] font-weight:bold;'
   --?"[&SBMTC]" -eq "eldritch"|[
     --&SNTd|style='width:100%; [&B0] text-align:left; [&RP] vertical-align:middle; [&CW] font-weight:bold; font-family:[&BFF]; font-size:15px;'
   --]|
-  --&SATd|style='width:115px; min-width:115px; [&B0] [&TC] white-space:nowrap; [&RP] [&CR]'
+  --&SATd|style='width:115px; min-width:115px; [&B0] text-align:right; white-space:nowrap; [&RP] [&CR]'
   --&DLP|6px
-  --&SDO|style='width:100%; border:1px solid [&DBor]; border-radius:8px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; [&CW] font-family:[&BFF]; font-style:normal; overflow:hidden;'
+  --&SDO|style='width:100%; border:1px solid [&DBor]; border-radius:8px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; [&BGI] [&CW] font-family:[&BFF]; font-style:normal; overflow:hidden;'
   --&SDOC|style='[&B0] padding:10px 15px 4px 15px; background-color:[&DescBG];'
   --&SDT|[&CT]
   --&SDTi|style='width:100%; border:0; border-bottom:1px solid [&DBor]; padding:10px 6px 10px [&DLP]; text-align:left; background-color:[&TitleBG]; color:[&TitleText]; [&TitleFont]; font-size:20px; [&TTT]'
@@ -395,9 +410,14 @@
       --?"[= [$MuleSectionCount.Raw] \ 2 % 2 ]" -eq "1"|&MBG;[&EvenRowBG]
       --&MuleName|[*O:[&SBMMuleSectionLoop]:character:name]
       --~MuleName|string;replaceall;SBM_;;[&MuleName]
+      --&MuleRemoveFlag|0
+      --?"[&MSTog]" -eq "class" -and "[&MSM]" -eq "ASSIGNED"|&MuleRemoveFlag;1
+      --?"[&MSTog]" -eq "include" -and "[&MSM]" -eq "ADDED"|&MuleRemoveFlag;1
+      --?"[&MSTog]" -eq "exclude" -and "[&MSM]" -eq "BLOCKED"|&MuleRemoveFlag;1
+      --?"[&MSTog]" -eq "spellbook" -and "[&MSM]" -eq "ADDED"|&MuleRemoveFlag;1
       --?"[&MSTog]" -eq "class"|&MuleToggleData;class!@![&SelClass]!@![&SBMMuleSectionLoop]
       --?"[&MSTog]" -ne "class"|&MuleToggleData;[&MOM]!@![&SelectedChar]!@![&MSTog]!@![&SBMMuleSectionLoop]
-      --&MSO|+[td style='[&MGCS] background-color:[&MBG];'][rbutton][&MuleName]::ToggleMule;[&MuleToggleData][/rbutton][/td]
+      --&MSO|+[td style='[&MGCS] background-color:[&MBG];'][rbutton][?"[&MuleRemoveFlag]" -eq "1"|&#x2715; |][&MuleName]::ToggleMule;[&MuleToggleData][/rbutton][/td]
       --=MuleSectionCount|[$MuleSectionCount.Raw] + 1
     --]|
   --%|
@@ -461,7 +481,7 @@
 --:AppendAlphaNav|Mode;Letters;ActiveLetter;PageTarget;SectionMode
   --&ANM|[%1%] --&ANL|[%2%] --&ANA|[%3%] --&ANPT|[%4%] --&ANSM|[%5%]
   --?"[&ANSM]" -eq "undefined"|&ANSM;
-  --~|array;define;ANAZ;A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z
+  --~|array;define;ANAZ;0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z
   --&ANO|[t [&GT]][tr]
   --=ANC|0
   --%ANLoop|foreach;ANAZ
@@ -774,7 +794,7 @@
   --~NPCEntrySplit|string;split;!@!;[@SBMValidNPCList(0)]
   --&NLDefaultLetter|[&NPCEntrySplit1(0,1)]
   --~NLDefaultLetter|string;touppercase;[&NLDefaultLetter]
-  --?"[&NLP]" -eq "" -or "[&NLP]" -eq "undefined" -or "[&NLP]" -eq "0" -or "[&NLP]" -eq "START" -or "[&NLP]" -eq "BACK"|&NLP;[&NLDefaultLetter]
+  --?"[&NLP]" -eq "" -or "[&NLP]" -eq "undefined" -or "[&NLP]" -eq "START" -or "[&NLP]" -eq "BACK"|&NLP;[&NLDefaultLetter]
   --~NLP|string;touppercase;[&NLP]
   --?"[&NLLetters]" -ninc ",[&NLP],"|&NLP;[&NLDefaultLetter]
   --&CardHTML|+[&CSR][&NLST][/td][/tr]
@@ -1090,7 +1110,7 @@
     --~|array;sort;SortedLevelSpells
     --?"[&LevelLoop]" -ne "cantrip"|[ --&LvlName|LEVEL [&LevelLoop] --]|[ --&LvlName|CANTRIP --]|
     --&Hbutton|
-    --?"[&WhatDo]" -eq "CHOOSE"|[ --&Hbutton|[td [&SATd] title="Description"][r][button][F::12]Spell Description Handout[/F]::http://journal.roll20.net/handout/[&SDHID][/button][/r][/td] --]|
+    --?"[&WhatDo]" -eq "CHOOSE"|[ --&Hbutton|[td style='width:115px; min-width:115px; [&B0] text-align:right; white-space:nowrap; [&RP] [&CR]' title="Description"][r][button][F::12]Spell Description Handout[/F]::http://journal.roll20.net/handout/[&SDHID][/button][/r][/td] --]|
     --&CardHTML|+[tr][td][t [&SHT]][tr][td [&SHTd]][&LvlName][/td][&Hbutton][/tr][/t][/td][/tr]
     --%SpellLoop|foreach;SortedLevelSpells
       --~SortedSpellSplit|string;split;!@!;[&SpellLoop]
@@ -1101,10 +1121,11 @@
       --?"[&LevelLoop]" -ne "cantrip" -and "[&WhatDo]" -eq "MOVE" -and "[&LevelLoop]" -ne "1"|[ --&UpButton|[td [&SITd]][rbutton]&#x2B9D;::TransferSpell;UP!@![&LevelLoop]!@![&SIdx][/rbutton][/td] --]|
       --?"[&LevelLoop]" -ne "cantrip" -and "[&WhatDo]" -eq "MOVE" -and "[&LevelLoop]" -ne "9"|[ --&DownButton|[td [&SITd]][rbutton]&#x2B9F;::TransferSpell;DOWN!@![&LevelLoop]!@![&SIdx][/rbutton][/td] --]|
       --?"[&WhatDo]" -eq "CHOOSE"|[ --&DescButton|[td [&SITd] title="Description"][rbutton][F::12]&#x1F56E;[/F]::SpellDescription;[&SMID]!@![&SpellName]!@![&LevelLoop][/rbutton][/td] --]|
-      --&CSBText|[F::12]Copy to Character[/F]
-      --?"[&IMCM]" -eq "1"|&CSBText;[F::12]Copy to Mule[/F]
-      --?"[&IPSB]" -eq "1"|&CSBText;[F::12]Copy to Spell Book[/F]
-      --?"[&IPSB]" -eq "1" -and ",eldritch,radiant," -inc ",[&SBMTC],"|&CSBText;[F::10]Copy to Spell Book[/F]
+      --&CSBF|12
+      --?",eldritch,radiant," -inc ",[&SBMTC],"|&CSBF;10
+      --&CSBText|[F::[&CSBF]]Copy to Character[/F]
+      --?"[&IMCM]" -eq "1"|&CSBText;[F::[&CSBF]]Copy to Mule[/F]
+      --?"[&IPSB]" -eq "1"|&CSBText;[F::[&CSBF]]Copy to Spell Book[/F]
       --?"[&WhatDo]" -eq "CHOOSE" -and "[&AKnown]" -eq "0"|[ --&CSpells|[td [&SATd]][rbutton][&CSBText]::TransferSpell;[&SMID]!@![&LevelLoop]!@![&SIdx][/rbutton][/td] --]|
       --?"[&WhatDo]" -eq "CHOOSE" -and "[&AKnown]" -eq "1"|[ --&CSpells|[td style='width:115px; min-width:115px; [&B0] [&TC] white-space:nowrap; [&RP] [&CR] font-family:[&BFF];'][F::14][b][i]Already Known[/i][/b][/F][/td] --]|
       --=SpellDisplayRow|[$SpellDisplayRow.Raw] + 1

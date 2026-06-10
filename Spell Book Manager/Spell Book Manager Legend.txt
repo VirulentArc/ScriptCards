@@ -42,6 +42,10 @@ CMS      = CanMoveSpells
            Flag used to determine whether the current character/spell context
            should offer Move Spells in addition to Choose Spells.
 
+CSBF     = CopySpellButtonFont
+           Font size used for spell-list copy buttons. Some themes use a
+           smaller value so longer copy button text stays inside the card.
+
 CSBText  = CopySpellButtonText
            Text used on copy buttons. May vary depending on whether copying to a
            character, spell book, NPC, or another spell source.
@@ -136,6 +140,9 @@ CSe      = CardSection_CSS
 CSH      = CardSubHeader_CSS
            CSS for the subheader that says where the user is, such as Choose a
            Character or DM Settings.
+
+SectionBG = SectionHeaderBackground
+            Theme color used behind card section headers and subheaders.
 
 CSR      = CardSectionRow
            HTML/card row used for section headers or section blocks.
@@ -300,6 +307,9 @@ MGCS     = MuleGridCellStyle
 SMSBG    = SpellMuleSelectBG
            Background color used while building the spell-source selection page.
 
+SpellHeaderBG = SpellHeaderBackground
+                Theme color used behind spell level headers on spell list cards.
+
 SSI      = SmallSettingsIcon
            Small settings icon used where the full settings button would be too
            large or visually disruptive.
@@ -363,7 +373,7 @@ ANA      = AlphaNavActiveLetter
            Currently selected letter for the current alpha navigation row.
 
 ANAZ     = AlphaNavAlphabet
-           A-Z helper array used by AppendAlphaNav.
+           0-9 and A-Z helper array used by AppendAlphaNav.
 
 ANC      = AlphaNavCount
            Counter used while building the shared alpha navigation row.
@@ -626,7 +636,7 @@ NLBT     = NPCListButtonTarget
 
 NLDefaultLetter = NPCListDefaultLetter
                   First available letter used when the selected picker letter is
-                  blank, invalid, START, BACK, or 0.
+                  blank, invalid, START, or BACK.
 
 NLL      = NPCListLetter
            First letter of the current NPC/source picker display name while
@@ -954,6 +964,11 @@ SBMRet   = SBMSettingsReturn
 
 SBMTBG   = SBMThemeButtonBG
            Background color used for theme selection buttons.
+
+SBMThemeButtonText = SBMThemeButtonText
+                     Display text used for a theme selection button. Some theme
+                     setting keys use compact internal names but display longer
+                     user-facing names.
 
 SBMTC    = SBMThemeCheck
            Theme name currently being checked by theme conditionals.

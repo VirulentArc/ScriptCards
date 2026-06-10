@@ -280,9 +280,9 @@ A character inherits spell mules from any matching class names found on their sh
 
 After assigning or removing a class spell mule, use the back button in the Spell Book Manager menu to return to the class list before choosing another class. Do not scroll back to an older class list in chat and click a different class from there; Roll20 may not pass the new selection correctly from an older menu.
 
-Large available spell mule lists use A-Z navigation so the GM does not need to scroll through every `SBM_` character at once.
+Large available spell mule lists use 0-9 and A-Z navigation so the GM does not need to scroll through every `SBM_` character at once.
 
-![Class mule A-Z navigation](images/class_source_alpha_nav.png)
+![Class mule alphanumeric navigation](images/class_source_alpha_nav.png)
 
 ---
 
