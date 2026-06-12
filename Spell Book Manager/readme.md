@@ -336,13 +336,30 @@ NPC Spell Manager is intended for the official D&D 5E 2014 NPC sheet. It is sepa
 
 When the GM clicks a player character from the GM main card, Spell Book Manager opens that character's management card.
 
-The GM can usually see:
+The GM always has access to the full character management card for any valid player character. This lets the GM manage the character directly, using the same character-use tools described in the next section.
 
-- **Choose Spells** to open the spell list for that character.
-- **Move Spells** to move existing leveled spells on that character sheet.
-- **Copy to Spell Book** if the character has an assigned spell book.
+---
 
-The GM can access Move Spells for any valid PC. Normal players only see Move Spells for Warlocks.
+## Player and Character Use
+
+![Character choice](images/character_choice.png)
+
+This section covers the spell-copying and character-management tools used by both players and GMs. Players normally reach these tools by running the macro from the macro bar or collections tab. GMs can reach the same character tools by choosing a player character from the GM main card.
+
+If a player controls more than one valid character, Spell Book Manager first asks which character to manage. If the player only controls one valid character, this step is skipped.
+
+For most non-Warlock player characters, Spell Book Manager opens directly to the available spell list.
+
+From the spell list, players can normally:
+
+1. Click **Copy to Character** to copy a spell onto the character sheet.
+2. Click the &#x1F56E; description button beside a spell to write that spell's formatted description to the Spell Book Manager handout.
+
+If the character is a Warlock, Spell Book Manager shows a character options page first. From there, **Choose Spells** opens the spell list, and **Move Spells** allows existing spells on the character sheet to be moved between spell levels.
+
+If the character has an assigned spell book, the character options page can also show **Copy to Spell Book**. This lets the user copy spells from approved spell mules into the assigned spell book rather than directly onto the character.
+
+Players only see spell mules approved by the GM through class assignments, character-specific assignments, or the character's assigned spell book setup. The GM can access the same tools without the player-facing restrictions.
 
 ---
 
@@ -436,29 +453,6 @@ Notes:
 When moving Warlock-style scaling spells, Spell Book Manager attempts to preserve the spell's original baseline level and adjust simple dice expressions when appropriate.
 
 See **Custom Spell Notes** for suggestions about custom Warlock spells.
-
----
-
-## Player Use
-
-![Character choice](images/character_choice.png)
-
-Players run Spell Book Manager from the macro bar or collections tab.
-
-If the player controls more than one valid character, Spell Book Manager first asks which character to manage. If the player only controls one valid character, this step is skipped.
-
-For most player characters, Spell Book Manager opens directly to the available spell list.
-
-From the spell list, players can normally:
-
-1. Click **Copy to Character** to copy a spell onto the character sheet.
-2. Click the &#x1F56E; description button beside a spell to write that spell's formatted description to the Spell Book Manager handout.
-
-If the character is a Warlock, Spell Book Manager shows a character options page first. From there, **Choose Spells** opens the spell list, and **Move Spells** allows existing spells on the character sheet to be moved between spell levels.
-
-If the character has an assigned spell book, the character options page can also show **Copy to Spell Book**. This lets a player copy spells from their approved spell mules into the assigned spell book rather than directly onto the character.
-
-Players only see spell mules approved by the GM through class assignments, character-specific assignments, or the character's assigned spell book setup.
 
 ---
 
