@@ -258,28 +258,6 @@ For example, if the GM adds a custom class named `Eldritch Knight`, then assigns
 
 ---
 
-## Themes
-
-![Theme selection](images/theme_selection.png)
-
-Spell Book Manager includes multiple visual themes.
-
-Current themes:
-
-- 2014
-- 2024
-- AD&D2E
-- Arcane
-- Brasswork
-- Eldritch
-- Prismatic
-- Radiant
-- Verdant
-
-Theme selection is stored per user. Players can choose their own display theme without changing the theme for other users.
-
----
-
 ## Copy Between Mules
 
 ![Copy Between Mules destination](images/copy_between_mules_destination.png)
@@ -348,14 +326,14 @@ This section covers the spell-copying and character-management tools used by bot
 
 If a player controls more than one valid character, Spell Book Manager first asks which character to manage. If the player only controls one valid character, this step is skipped.
 
-For most non-Warlock player characters, Spell Book Manager opens directly to the available spell list.
+All non-Warlock player characters without an assigned spell book open directly to the available spell list.
 
 From the spell list, players can normally:
 
 1. Click **Copy to Character** to copy a spell onto the character sheet.
 2. Click the &#x1F56E; description button beside a spell to write that spell's formatted description to the Spell Book Manager handout.
 
-If the character is a Warlock, Spell Book Manager shows a character options page first. From there, **Choose Spells** opens the spell list, and **Move Spells** allows existing spells on the character sheet to be moved between spell levels.
+If the character is a Warlock, or if the character has an assigned spell book, Spell Book Manager shows a character options page first. From there, **Choose Spells** opens the spell list. **Move Spells** appears for Warlocks, and **Copy to Spell Book** appears for characters with an assigned spell book.
 
 If the character has an assigned spell book, the character options page can also show **Copy to Spell Book**. This lets the user copy spells from approved spell mules into the assigned spell book rather than directly onto the character.
 
@@ -369,7 +347,7 @@ Players only see spell mules approved by the GM through class assignments, chara
 
 The spell list is the shared spell-copying screen used by several parts of Spell Book Manager.
 
-Players with most non-Warlock characters may go directly to the spell list after choosing their character. Warlocks and GMs may reach the same spell list by clicking **Choose Spells** from the character management card.
+All non-Warlock player characters without an assigned spell book go directly to the spell list after choosing their character. Warlocks, GMs, and characters with an assigned spell book reach the same spell list by clicking **Choose Spells** from the character management card.
 
 From the spell list, users can:
 
@@ -469,6 +447,28 @@ The handout updates live. If the handout is already open when a description butt
 The spell's **Class** field will appear in handouts when it is filled in. 2014 compendium spells often do not use this field, even though it is part of the D&D 5E 2014 spell card.
 
 The spell's **Type** field will also appear in handouts when it is filled in. This is an extra field available in the spell settings and can be used however the GM finds useful.
+
+---
+
+## Themes
+
+![Theme selection](images/theme_selection.png)
+
+Spell Book Manager includes multiple visual themes.
+
+Current themes:
+
+- 2014
+- 2024
+- AD&D2E
+- Arcane
+- Brasswork
+- Eldritch
+- Prismatic
+- Radiant
+- Verdant
+
+Theme selection is stored per user. Players can choose their own display theme without changing the theme for other users.
 
 ---
 
