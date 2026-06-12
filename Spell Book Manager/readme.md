@@ -201,7 +201,7 @@ To manage character-specific spell mules:
 4. Choose a character.
 5. Use the available, added, inherited, and blocked lists to control that character's spell mule access.
 
-Only valid player character sheets are shown here. NPCs, `SBM_` spell mule characters, and ScriptCards mule characters are filtered out.
+Only valid player character are shown here. NPCs, `SBM_` spell mule characters, and ScriptCards mule characters are filtered out.
 
 Character-specific mule settings can:
 
