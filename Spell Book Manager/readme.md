@@ -16,45 +16,15 @@ The script is designed for the official D&D 5E 2014 by Roll20 character sheet an
 - The official D&D 5E 2014 by Roll20 character sheet.
 - One or more spell mule characters whose names begin with `SBM_`.
 
-### Installing ScriptCards
-
-If the Roll20 One-Click version of ScriptCards is 3.0.22 or newer, install it from **Game Settings** > **Mod Scripts** > **Script Library**.
-
-If Roll20 One-Click has an older version, install ScriptCards manually from the [ScriptCards GitHub repository](https://github.com/kjaegers/ScriptCards):
-
-1. Open the [ScriptCards_API folder](https://github.com/kjaegers/ScriptCards/tree/main/ScriptCards_API).
-2. Open `scriptcards.js`.
-3. Copy the full script code.
-4. In Roll20, open **Game Settings** > **Mod Scripts**.
-5. Create a new script, paste the ScriptCards code, save it, and restart the Mod sandbox if needed.
-
----
-
-## Getting Spell Book Manager
-
-Spell Book Manager is installed as a Roll20 macro, not as a separate Mod/API script. The file you need is `Spell_Book_Manager.scard`.
-
-The latest version is available in the [Spell Book Manager folder on GitHub](https://github.com/VirulentArc/ScriptCards/tree/main/Spell%20Book%20Manager).
-
-To copy the script:
-
-1. Open the [raw Spell_Book_Manager.scard file](https://raw.githubusercontent.com/VirulentArc/ScriptCards/refs/heads/main/Spell%20Book%20Manager/Spell_Book_Manager.scard).
-2. Select all of the text on the page.
-3. Copy the selected text.
-4. Paste that full text into the Roll20 macro created in the Installation steps below. Make sure to paste as plain text; ctrl+shift+v
-
-If you open the normal GitHub preview page instead, click **Raw** before copying. The raw page is the safest way to make sure you only copy the script text.
-
 ---
 
 ## Installation
 
 1. Install ScriptCards in your Roll20 game.
-2. Copy the full `Spell_Book_Manager.scard` script from the raw GitHub source.
-3. Create a new Macro named `Spell-Book-Manager`.
-4. Paste the full Spell Book Manager script into that macro.
-5. Run the script once as the GM.
-6. On first run, the script will create these handouts automatically:
+2. Create a new Macro named `Spell-Book-Manager`.
+3. Paste the full `Spell_Book_Manager.scard` script into that macro.
+4. Run the script once as the GM.
+5. On first run, the script will create these handouts automatically:
    - `Spell Book Manager Settings`
    - `Spell Book Manager [PlayerID]`
 
@@ -73,58 +43,55 @@ GMs will see a string of characters in the GM Notes of the handouts. Do not manu
 
 Run Spell Book Manager from the macro bar or collections tab.
 
-If the player controls more than one valid character, Spell Book Manager first asks which character to manage. If the player only controls one valid character, this step is skipped.<br>
+If the player controls only one valid PC, the script will go directly to that character's spell options. If the player controls more than one valid PC, the script will ask which character to manage.
+
+Players can normally:
+
+1. Choose a character.
+2. Click **Choose Spells** to browse available spells.
+3. Click **Copy to Character** to copy a spell onto the character sheet.
+4. Click the &#x1F56E; description button beside a spell to write that spell's formatted description to the Spell Book Manager handout.
+
 ![Character choice](images/character_choice.png)
 
-For most player characters, Spell Book Manager opens directly to the available spell list.
+If the character is a Warlock, or if the GM is managing the character, the **Move Spells** button is also available.
 
-From the spell list, players can normally:
-
-1. Click **Copy to Character** to copy a spell onto the character sheet.
-2. Click the &#x1F56E; description button beside a spell to write that spell's formatted description to the Spell Book Manager handout.
-
-If the character is a Warlock, or if the GM is managing the character, Spell Book Manager shows a character options page first. From there, **Choose Spells** opens the spell list, and **Move Spells** allows existing spells on the character sheet to be moved between spell levels.<br>
 ![Choose and move buttons](images/choose_move.png)
 
-If the character has an assigned spell book, the character options page can also show **Copy to Spell Book**. This lets a player copy spells from their approved spell mules into the assigned spell book rather than directly onto the character.<br>
+If the character has an assigned spell book, the character options page can also show **Copy to Spell Book**. This lets a player copy spells from their approved spell mules into the assigned spell book rather than directly onto the character.
+
 ![Copy to Spell Book button](images/copy_to_spell_book_button.png)
 
 If the character already knows a spell with the same name, Spell Book Manager marks that spell as **Already Known** instead of offering another copy button. The spell list may need to be refreshed before this status updates after a copy.
 
-Some Spell Book Manager menus can be long. If Roll20 does not automatically jump to the newest menu after you click a button, manually scroll to the bottom of chat. Roll20 will sometimes stop auto-scrolling when the chat window is already scrolled upward.
-
 ---
 
-## Browsing and Copying Spells
+## Choose Spells
 
-![Spell list](images/spell_choice.png)
+![Choose Spells](images/spell_choice.png)
 
-For most player characters, Spell Book Manager opens directly to the available spell list after the character is chosen.
-
-From the spell list, players can:
+**Choose Spells** shows spells available to the selected character.
 
 1. Click **Spell Description Handout** to open the Spell Book Manager handout.
 2. Click the &#x1F56E; button beside a spell to write that spell's formatted description to the handout.
 3. Click **Copy to Character** to copy a spell onto the character sheet.
-
-For Warlocks, or when the GM is managing a character, Spell Book Manager shows a character options page before the spell list. In that case, **Choose Spells** opens the available spell list.
 
 Spell availability normally comes from two kinds of spell mule assignments:
 
 1. Class spell mules assigned by the GM.
 2. Character-specific spell mules assigned by the GM.
 
-If more than one spell mule is available, Spell Book Manager shows a spell mule selection page before displaying the spell list. Players can choose **All Spells** or a specific assigned mule.
+If more than one spell mule is available, Spell Book Manager shows a spell mule selection page. Players can choose **All Spells** or a specific assigned mule.
 
 ![Spell mule choice](images/spell_source_choice.png)
 
-Spells are grouped by spell level and sorted alphabetically. If multiple assigned mules contain a spell with the same name at the same level, the spell is only shown once in the list.
+Spells are grouped by spell level and sorted alphabetically. If multiple assigned mules contain a spell with the same name at the same level, the spell is only shown once in the chooser.
 
 When a spell is copied, the script copies the full spell row to the character sheet and preserves important spell text fields such as name, description, and At Higher Levels text.
 
 ### Characters with assigned spell books
 
-If the selected character has an assigned spell book, the available spell list comes from that assigned spell book instead of the character's normal assigned spell mules. In that setup, the spell book acts as the character's curated or prepared spell list, and **Copy to Character** copies from the spell book onto the actual character sheet.
+If the selected character has an assigned spell book, **Choose Spells** uses that assigned spell book instead of showing the normal spell mule picker. In that setup, the spell book acts as the character's curated or prepared list, and **Choose Spells** copies from the spell book onto the actual character sheet.
 
 Use **Copy to Spell Book** to add spells into the assigned spell book first.
 
@@ -132,7 +99,7 @@ Use **Copy to Spell Book** to add spells into the assigned spell book first.
 
 ## Copy to Spell Book
 
-![Copy to Spell Book mule choice](images/spell_source_choice.png)
+![Copy to Spell Book mule choice](images/copy_to_spell_book_source_choice.png)
 
 **Copy to Spell Book** appears when a character has a spell book assigned by the GM.
 
@@ -234,7 +201,7 @@ SBM_Custom Warlock Spells
 SBM_Huxley Spell Book
 ```
 
-Put spells on the spell mule as normal spell rows at the correct spell level. Spell Book Manager reads those spell rows and offers them depending on whether the mule is assigned by class, assigned directly to a character, assigned as a spell book, used for Copy Between Mules, or used by the NPC Spell Manager.
+Put spells on the spell mule as normal spell rows at the correct spell level. Spell Book Manager reads those spell rows and offers them to characters based on class, character, spell book, GM copy, or NPC manager workflows.
 
 The `SBM_` prefix is only for identifying Spell Book Manager spell mule characters. The prefix is removed from button display names inside the settings menu.
 
@@ -278,11 +245,9 @@ To assign spell mules by class:
 
 A character inherits spell mules from any matching class names found on their sheet, including multiclass fields.
 
-After assigning or removing a class spell mule, use the back button in the Spell Book Manager menu to return to the class list before choosing another class. Do not scroll back to an older class list in chat and click a different class from there; Roll20 may not pass the new selection correctly from an older menu.
+Large available spell mule lists use A-Z navigation so the GM does not need to scroll through every `SBM_` character at once.
 
-Large available spell mule lists use 0-9 and A-Z navigation so the GM does not need to scroll through every `SBM_` character at once.
-
-![Class mule alphanumeric navigation](images/class_source_alpha_nav.png)
+![Class mule A-Z navigation](images/class_source_alpha_nav.png)
 
 ---
 
@@ -299,8 +264,6 @@ To manage character-specific spell mules:
 3. Click **Character Assignments**.
 4. Choose a character.
 5. Use the available, added, inherited, and blocked lists to control that character's spell mule access.
-
-Characters controlled by **All Players** are not shown in the available character list. Assign the character to specific players if it needs character-specific Spell Book Manager settings.
 
 Character-specific mule settings can:
 
@@ -332,14 +295,12 @@ To assign a spell book to a character:
 
 A character can have one assigned spell book. If a spell book is already assigned, the Spell Book Assignment page shows the assigned spell book instead of the available list. Click the assigned spell book to remove it, then choose a different one if needed.
 
-Assigned spell books change how players choose and copy spells:
+Assigned spell books change the normal player workflow:
 
 - **Copy to Spell Book** copies from approved spell mules into the assigned spell book.
 - **Choose Spells** copies from the assigned spell book onto the actual character sheet.
 
-This makes it possible to support a wizard-style setup where the player has a separate spell book character and only moves selected spells onto the playable character sheet.
-
-For a wizard named Gandalf, for example, you could create an `SBM_Gandalf's Spellbook` character and assign that character as Gandalf's spell book. The player can then use **Copy to Spell Book** to add approved spells to that spell book, and **Choose Spells** to copy prepared or selected spells from the spell book onto Gandalf's actual character sheet.
+This makes it possible to support a wizard-style workflow where the player has a separate spell book character and only moves selected spells onto the playable character sheet.
 
 ---
 
@@ -437,8 +398,6 @@ In Choose Spells mode, each spell level header has a **Spell Description Handout
 
 Each spell has a &#x1F56E; description button. Clicking it writes the formatted spell description to that user's Spell Book Manager handout.
 
-The handout includes the spell row's **Class** and **Type** fields when they are filled in. Official 2014 compendium spells often leave **Class** blank, even though the field exists on the 2014 spell card. **Type** is an additional spell settings field; use it only if you want that extra information shown in the handout.
-
 The handout updates live. If the handout is already open when a description button is clicked, the visible handout content should update after Roll20 refreshes the handout display.
 
 ---
@@ -469,8 +428,6 @@ For custom description-roll spells:
 
 For custom Warlock spells that place their damage roll directly in the spell description, make sure **At Higher Levels** and higher-level damage fields are blank unless you intentionally want Roll20's normal upcast behavior to run as well.
 
-Some custom spells that contain embedded rolls or sheet references may produce a console error when their description is written to the handout. This is a known Roll20/API limitation and is not something Spell Book Manager can fully prevent. If the handout still updates correctly, the console message can usually be ignored.
-
 ### Example: Hellish Rebuke Warlock scaling
 
 ```text
@@ -487,7 +444,7 @@ This uses `@{spelllevel}` so the roll follows the spell row's current level inst
 
 Make sure the character is a PC, not an NPC, and that the character sheet has normal class attributes. For normal players, the character must be controlled by that player. For GMs, all valid PCs should appear.
 
-Spell Book Manager excludes NPCs, `SBM_` spell mules, ScriptCards mule characters, and characters controlled by **All Players** from the normal player character picker.
+Spell Book Manager excludes NPCs, `SBM_` spell mules, and ScriptCards mule characters from the normal player character picker.
 
 ### No spell mules are assigned
 
@@ -495,7 +452,7 @@ Open settings as the GM and assign one or more `SBM_` spell mules to the charact
 
 ### Choose Spells only shows the assigned spell book
 
-This is expected if the character has a spell book assigned. With that setup, **Choose Spells** copies from the assigned spell book onto the character sheet. Use **Copy to Spell Book** to add spells from approved spell mules into the spell book first.
+This is expected if the character has a spell book assigned. In that workflow, **Choose Spells** copies from the assigned spell book onto the character sheet. Use **Copy to Spell Book** to add spells from approved spell mules into the spell book first.
 
 ### Copy to Spell Book does not appear
 
@@ -516,12 +473,3 @@ Make sure the sheet is a 2014 NPC sheet and not a player character sheet. NPC Sp
 ### A spell mule does not appear in an available spell mule list
 
 If an `SBM_` character is already assigned as a spell book, it is excluded from normal available class or character mule lists. Remove it as a spell book first if you want to reuse it as a normal shared spell mule.
-
-
-### A new menu appears to be missing
-
-Spell Book Manager sends a new chat menu each time a button is clicked. If the chat window is scrolled upward, Roll20 may not automatically jump to the newest menu. Scroll to the bottom of chat and use the most recent menu.
-
-### A custom spell creates a console error when written to the handout
-
-Some custom spells with embedded rolls or sheet references can create console errors when their descriptions are written to the Spell Book Manager handout. This is expected for some custom spell formatting. If the handout updates and the spell text is usable, no action is needed.
