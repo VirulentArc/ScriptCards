@@ -71,17 +71,24 @@ GMs will see a string of characters in the GM Notes of the handouts. Do not manu
 
 ## First Run as the GM
 
-After installation, run the `Spell-Book-Manager` macro as the GM.
+After installation, run the `Spell-Book-Manager` macro once as the GM.
 
-On the first run, Spell Book Manager creates the required handouts and then opens the main GM card in chat. This card is the starting point for both setup and GM management.
+On first run, Spell Book Manager creates the handouts it needs:
 
-The GM main card can include:
+- `Spell Book Manager Settings`
+- `Spell Book Manager [PlayerID]`
 
-- A list of valid player characters.
-- A settings button in the title bar.
-- GM-only tools such as **NPC Spell Manager** and **Copy Between Mules**.
+The settings handout stores GM configuration. The player-specific handout is used to display formatted spell descriptions when the spell description button is clicked.
 
-![GM main menu](images/gm_tools.png)
+The first time each player runs the script, Spell Book Manager creates that player's own `Spell Book Manager [PlayerID]` handout.
+
+All automatically created handouts are archived so they do not clutter the Journal.
+
+![Installation handouts](images/handouts.png)
+
+GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text stores Spell Book Manager settings and player theme information.
+
+![Settings JSON](images/JSON.png)
 
 Some Spell Book Manager menus can be long. If Roll20 does not automatically jump to the newest menu after you click a button, manually scroll to the bottom of chat. Roll20 will sometimes stop auto-scrolling when the chat window is already scrolled upward.
 
@@ -89,16 +96,18 @@ Some Spell Book Manager menus can be long. If Roll20 does not automatically jump
 
 ## GM Main Card
 
-The GM main card is where the GM starts after running the macro.
+After the first-run setup is complete, the GM main card is the starting point for Spell Book Manager setup and management.
 
 From this card, the GM can:
 
-- Click a player character to manage that character.
-- Click the settings button to open GM Settings.
-- Click **NPC Spell Manager** to copy spells onto NPC sheets.
-- Click **Copy Between Mules** to copy spells from one spell mule to another.
+- click a player character to manage that character
+- click the settings button to open GM Settings
+- click **NPC Spell Manager** to copy spells onto NPC sheets
+- click **Copy Between Mules** to copy spells from one spell mule to another
 
-The sections below follow those buttons in the same order a GM would normally use them while setting up the script.
+![GM main card](images/gm_tools.png)
+
+The sections below follow those buttons in the same general order a GM would use them while setting up the script.
 
 ---
 
