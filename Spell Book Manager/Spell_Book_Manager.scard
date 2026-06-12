@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC 1.1
+  --/| RC 1.2
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SDHN|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SDHN]
@@ -73,8 +73,7 @@
     --?"[= [&SBMTCnt] % 3 ]" -eq "0" -and "[&SBMTCnt]" -ne "0"|&SBMTO;+[/tr][tr]
     --&SBMTBG|[&OddRowBG]
     --?"[= [&SBMTCnt] \ 3 % 2 ]" -eq "1"|&SBMTBG;[&EvenRowBG]
-    --&SBMThemeButtonText|[&SBMThemeLoop]
-    --&SBMTO|+[td style='[&GCS] background-color:[&SBMTBG];'][rbutton][&SBMThemeButtonText]::SBMSetTheme;[&SBMThemeLoop][/rbutton][/td]
+    --&SBMTO|+[td style='[&GCS] background-color:[&SBMTBG];'][rbutton][&SBMThemeLoop]::SBMSetTheme;[&SBMThemeLoop][/rbutton][/td]
     --&SBMTCnt|[= [&SBMTCnt] + 1]
   --%|
   --&SBMTO|+[/tr][/t]
@@ -237,7 +236,6 @@
   --&SettingsIcon|&#x2699;
   --&BackBtn|[rbutton:[&TitleText]:[&TitleBG]:16px][F:Tahoma:16][&BackIcon][/F]::
   --&SettingsBtn|[rbutton:[&TitleText]:[&TitleBG]:16px][F:Tahoma:16][&SettingsIcon][/F]::SBMSettings;
-  --&SSI|[F:Tahoma:14]&#x2699;[/F]
   --&NSMFText|No spell mule characters found. Create one or more character sheets with names beginning with SBM_ and run this settings page again.
   --&NoNPCSheetsText|No 2014 NPC sheets were found.
   --&NoRow|NoRepeatingAttributeLoaded
@@ -259,8 +257,6 @@
   --&RowEnd|[/td][/tr]
   --&CTiR|[tr][td [&CTi]] --&CSR|[tr][td [&CSe]]
   --&CTR|[tr][td [&CTX]] --&CCR|[tr][td [&CCe]]
-  --&SRO|style='[&B0] padding:0px; background-color:[&SpellRowBG];'
-  --&SRI|style='width:100%; table-layout:fixed; [&B0] border-collapse:collapse; background-color:[&SpellRowBG]; [&CW]'
   --&SHT|style='width:100%; table-layout:fixed; border:0; border-radius:5px; border-collapse:separate; border-spacing:0; background-color:[&SpellHeaderBG]; [&CW] overflow:hidden;'
   --&SHTd|style='width:25%; [&B0] text-align:left; [&RP] vertical-align:middle; [&CR] font-weight:bold;'
   --?"[&SBMTC]" -eq "d&d 3e"|[
@@ -421,9 +417,12 @@
       --=MuleSectionCount|[$MuleSectionCount.Raw] + 1
     --]|
   --%|
+  --?"[= [$MuleSectionCount.Raw] % 2 ]" -eq "1" -and "[&MSTog]" -ne "spellbook"|[
+    --&MSO|+[td style='[&MGCS] background-color:[&MBG]; color:[&MBG]; font-size:1px; line-height:1px;']X[/td]
+  --]|
   --&MSO|+[/tr][/t]
   --?[$MuleSectionCount.Raw] -eq 0|[ --&CardHTML|+[&CTR][i][&MSET][/i][/td][/tr] --]|
-  --?[$MuleSectionCount.Raw] -gt 0|[ --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&MBG];'][&MSO][/td][/tr] --]|
+  --?[$MuleSectionCount.Raw] -gt 0|[ --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&DescBG];'][&MSO][/td][/tr] --]|
   --^AfterMuleSection|
   --:AppendMuleSectionAlphaPath|
   --~|array;define;MASItems;dummy
@@ -466,9 +465,12 @@
     --&MSO|+[td style='[&MGCS] background-color:[&MBG];'][rbutton][&MuleName]::ToggleMule;[&MuleToggleData][/rbutton][/td]
     --=MuleSectionCount|[$MuleSectionCount.Raw] + 1
   --%|
+  --?"[= [$MuleSectionCount.Raw] % 2 ]" -eq "1"|[
+    --&MSO|+[td style='[&MGCS] background-color:[&MBG]; color:[&MBG]; font-size:1px; line-height:1px;']X[/td]
+  --]|
   --&MSO|+[/tr][/t]
   --?[$MuleSectionCount.Raw] -eq 0|[ --&CardHTML|+[&CTR][i][&MSET][/i][/td][/tr] --]|
-  --?[$MuleSectionCount.Raw] -gt 0|[ --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&MBG];'][&MSO][/td][/tr] --]|
+  --?[$MuleSectionCount.Raw] -gt 0|[ --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&DescBG];'][&MSO][/td][/tr] --]|
   --&MASPT|SBMCharacterMules
   --?"[&MSTog]" -eq "spellbook"|&MASPT;SBMCharacterSpellBook
   --?"[&MSTog]" -eq "class"|&MASPT;SBMClassMules
@@ -482,16 +484,18 @@
   --&ANM|[%1%] --&ANL|[%2%] --&ANA|[%3%] --&ANPT|[%4%] --&ANSM|[%5%]
   --?"[&ANSM]" -eq "undefined"|&ANSM;
   --~|array;define;ANAZ;0;1;2;3;4;5;6;7;8;9;A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z
+  --&ANCS|width:8.33%; [&B0] padding:1px 0px; [&TC] white-space:nowrap;
   --&ANO|[t [&GT]][tr]
   --=ANC|0
   --%ANLoop|foreach;ANAZ
     --?"[&ANL]" -ninc ",[&ANLoop],"|%
-    --?"[= [$ANC.Raw] % 13 ]" -eq "0" -and "[$ANC.Raw]" -ne "0"|&ANO;+[/tr][tr]
+    --?"[= [$ANC.Raw] % 12 ]" -eq "0" -and "[$ANC.Raw]" -ne "0"|&ANO;+[/tr][tr]
     --&ANData|[&ANLoop]
     --?"[&ANM]" -eq "MULE"|&ANData;MAL!@![&ANSM]!@![&ANLoop]
-    --&ANText|[rbutton][&ANLoop]::[&ANPT];[&ANData][/rbutton]
-    --?"[&ANLoop]" -eq "[&ANA]"|&ANText;[b][&ANLoop][/b]
-    --&ANO|+[td style='[&GCS] background-color:[&OddRowBG];'][&ANText][/td]
+    --&ANLabel|[F:monospace:11][&ANLoop][/F]
+    --&ANText|[rbutton][&ANLabel]::[&ANPT];[&ANData][/rbutton]
+    --?"[&ANLoop]" -eq "[&ANA]"|&ANText;[b][&ANLabel][/b]
+    --&ANO|+[td style='[&ANCS] background-color:[&OddRowBG];'][&ANText][/td]
     --=ANC|[$ANC.Raw] + 1
   --%|
   --&ANO|+[/tr][/t]
@@ -556,21 +560,18 @@
     --%|
     --:NextCharacterClassLookup|
   --%|
-  -->AppendActiveDirectMules|
+  --~|array;fromstring;SBMCharacterIncludeMuleIDs;,;[&CIM]
+  --%SBMActiveDirectLoop|foreach;SBMCharacterIncludeMuleIDs
+    --?"[&SBMActiveDirectLoop]" -eq "" -or "[&SBMActiveDirectLoop]" -eq "undefined"|%
+    --&SBMActiveDirectMuleName|[*O:[&SBMActiveDirectLoop]:character:name]
+    --?"[&SBMActiveDirectMuleName]" -imatch "^SBM_" -and "[&ASMS]" -ninc ",[&SBMActiveDirectLoop],"|&ASMS;+[&SBMActiveDirectLoop],
+  --%|
   --~|array;fromstring;SBMCharacterExcludeMuleIDs;,;[&CEM]
   --%SBMCEL|foreach;SBMCharacterExcludeMuleIDs
     --&ExcludeEntry|[&SBMCEL],
     --?"[&SBMCEL]" -ne "" -and "[&SBMCEL]" -ne "undefined"|[
       --~ASMS|string;replaceall;[&ExcludeEntry];;[&ASMS]
     --]|
-  --%|
---<|
---:AppendActiveDirectMules|
-  --~|array;fromstring;SBMCharacterIncludeMuleIDs;,;[&CIM]
-  --%SBMActiveDirectLoop|foreach;SBMCharacterIncludeMuleIDs
-    --?"[&SBMActiveDirectLoop]" -eq "" -or "[&SBMActiveDirectLoop]" -eq "undefined"|%
-    --&SBMActiveDirectMuleName|[*O:[&SBMActiveDirectLoop]:character:name]
-    --?"[&SBMActiveDirectMuleName]" -imatch "^SBM_" -and "[&ASMS]" -ninc ",[&SBMActiveDirectLoop],"|&ASMS;+[&SBMActiveDirectLoop],
   --%|
 --<|
 --:SBMCharacterMules|
@@ -582,12 +583,7 @@
   -->BuildCharacterMuleLists|[&SelectedChar]
   --&MOM|character
   --~|array;objects:character;SBMAvailableMules;SBM_
-  --&AssignedSpellBooks|,
-  --~|array;objects:character;SBMSpellBookCharacters;
-  --%SBMSpellBookLoop|foreach;SBMSpellBookCharacters
-    --&SpellBookCheck|[:SBMSettings("char_[&SBMSpellBookLoop]_spellbook")]
-    --?"[&SpellBookCheck]" -ne "" -and "[&SpellBookCheck]" -ne "undefined" -and "[&AssignedSpellBooks]" -ninc "[&SpellBookCheck]"|&AssignedSpellBooks;+[&SpellBookCheck]
-  --%|
+  -->BASB|
   --&BackButton|[&BackBtn]SBMCharacterSelectMules;BACK[/rbutton]
   --&SettingsButton|[&SettingsBtn]SBMCharacterMules[/rbutton]
   -->OpenSBMCard|[&SelectedCharName] Spell Mules
@@ -749,7 +745,7 @@
   --&NPCPageValid|0
   --?"[&NLP]" -match "^[0-9]+$"|&NPCPageValid;1
   --?"[&NPCPageValid]" -ne "1"|&NLP;0
-  --=NPCPageSize|42
+  --=NPCPageSize|5
   --=NPCStartIndex|[&NLP] * [$NPCPageSize.Raw]
   --?[$NPCStartIndex.Raw] -ge [$NPCCount.Raw]|[ --&NLP|0 --=NPCStartIndex|0 --]|
   --&CardHTML|+[&CSR][&NLST][/td][/tr]
@@ -770,6 +766,12 @@
     --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG];'][rbutton][&NPCName]::[&NLBT];[&NPCID][/rbutton][/td]
     --=NPCPageCount|[$NPCPageCount.Raw] + 1
   --%|
+  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "1"|[
+    --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td][td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td]
+  --]|
+  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "2"|[
+    --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td]
+  --]|
   --&NPCOutput|+[/tr][/t]
   --&CardHTML|+[&CCR][&NPCOutput][/td][/tr]
   --?[$NPCCount.Raw] -le [$NPCPageSize.Raw]|AfterNPCPageNav
@@ -815,6 +817,12 @@
     --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG];'][rbutton][&NPCName]::[&NLBT];[&NPCID][/rbutton][/td]
     --=NPCPageCount|[$NPCPageCount.Raw] + 1
   --%|
+  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "1"|[
+    --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td][td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td]
+  --]|
+  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "2"|[
+    --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td]
+  --]|
   --&NPCOutput|+[/tr][/t]
   --&CardHTML|+[&CCR][&NPCOutput][/td][/tr]
   -->AppendAlphaNav|PICKER;[&NLLetters];[&NLP];[&NLPT];
@@ -981,15 +989,8 @@
   --~ModeSplit|string;split;!@!;[&reentryval]
   --&WhatDo|[&ModeSplit1] --&ChosenChar|[&ModeSplit2]
   --&SSM| --&SBCM|0 --&IMCM|0 --&IPSB|0 --&IsNPCSpellManager|0
-  --&CharID|[*[&ChosenChar]:character_id]
   --?"[&WhatDo]" -ne "CHOOSE"|SpellList
-  -->BuildCharacterMuleLists|[&CharID]
-  --?"[&CSB]" -eq ""|SpellMuleSelect
-  --?"[&CSB]" -eq "undefined"|SpellMuleSelect
-  --~SBCID|string;before;,;[&CSB]
-  --&SSM|[&SBCID]
-  --&SBCM|1
-  --^SpellList|
+  --^SpellMuleSelect|
 --:SetSpellSourceBackButton|
   --&BackButton|&nbsp;
   --?"[&IsNPCSpellManager]" -eq "1"|[ --&BackButton|[&BackBtn]NPCSpellManager;[&NLP][/rbutton] --]|
@@ -1000,7 +1001,7 @@
   --&CharID|[*[&ChosenChar]:character_id]
   --&WhatDo|CHOOSE
   -->BuildCharacterMuleLists|[&CharID]
-  --?"[&IsNPCSpellManager]" -ne "1" -and "[&IMCM]" -ne "1" -and "[&WhatDo]" -eq "CHOOSE" -and "[&CSB]" -ne "" -and "[&CSB]" -ne "undefined"|[ --~SBCID|string;before;,;[&CSB] --&SSM|[&SBCID] --&SBCM|1 --^SpellList| --]|
+  --?"[&IsNPCSpellManager]" -ne "1" -and "[&IMCM]" -ne "1" -and "[&CSB]" -ne "" -and "[&CSB]" -ne "undefined"|[ --~SBCID|string;before;,;[&CSB] --&SSM|[&SBCID] --&SBCM|1 --^SpellList| --]|
   --?"[&ASMS]" -eq ","|NoAssignedSpellMules
   --~|array;fromstring;SpellMuleIDs;,;[&ASMS]
   -->SetSpellSourceBackButton|
@@ -1010,7 +1011,8 @@
   --&CardHTML|+[&CSR]Choose Spell List[/td][/tr]
   --&SMSO|[t [&GT]][tr]
   --=SpellMuleSelectCount|0
-  --&SMSO|+[td style='[&MGCS] background-color:[&OddRowBG];'][rbutton]All Spells::SetSpellMuleSource;ALL[/rbutton][/td]
+  --&SMSBG|[&OddRowBG]
+  --&SMSO|+[td style='[&MGCS] background-color:[&SMSBG];'][rbutton]All Spells::SetSpellMuleSource;ALL[/rbutton][/td]
   --=SpellMuleSelectCount|1
   --%SpellMuleSelectLoop|foreach;SpellMuleIDs
     --&SMID|[&SpellMuleSelectLoop]
@@ -1023,6 +1025,9 @@
     --&SMSO|+[td style='[&MGCS] background-color:[&SMSBG];'][rbutton][&SMName]::SetSpellMuleSource;[&SMID][/rbutton][/td]
     --=SpellMuleSelectCount|[$SpellMuleSelectCount.Raw] + 1
   --%|
+  --?"[= [$SpellMuleSelectCount.Raw] % 2 ]" -eq "1"|[
+    --&SMSO|+[td style='[&MGCS] background-color:[&SMSBG]; color:[&SMSBG]; font-size:1px; line-height:1px;']X[/td]
+  --]|
   --&SMSO|+[/tr][/t]
   --&CardHTML|+[&CCR][&SMSO][/td][/tr]
   -->ShowSBMCard|
@@ -1131,9 +1136,7 @@
       --=SpellDisplayRow|[$SpellDisplayRow.Raw] + 1
       --&SpellRowBG|[&OddRowBG]
       --?"[= [$SpellDisplayRow.Raw] % 2 ]" -eq "0"|&SpellRowBG;[&EvenRowBG]
-      --&SRO|style='[&B0] padding:0px; background-color:[&SpellRowBG];'
-      --&SRI|style='width:100%; table-layout:fixed; [&B0] border-collapse:collapse; background-color:[&SpellRowBG]; [&CW]'
-      --&CardHTML|+[tr][td [&SRO]][t [&SRI]][tr][&UpButton][&DownButton][td [&SNTd]][&SpellName].[/td][&DescButton][&CSpells][/tr][/t][/td][/tr]
+      --&CardHTML|+[tr][td style='[&B0] padding:0px; background-color:[&SpellRowBG];'][t style='width:100%; table-layout:fixed; [&B0] border-collapse:collapse; background-color:[&SpellRowBG]; [&CW]'][tr][&UpButton][&DownButton][td [&SNTd]][&SpellName].[/td][&DescButton][&CSpells][/tr][/t][/td][/tr]
     --%|
     --:NextLevel|
   --%|
