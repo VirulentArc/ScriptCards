@@ -183,8 +183,6 @@ After assigning or removing a class spell mule, use the back button in the Spell
 
 Large available spell mule lists use 0-9 and A-Z navigation so the GM does not need to scroll through every `SBM_` character at once.
 
-![Class mule alphanumeric navigation](images/class_source_alpha_nav.png)
-
 ---
 
 ## Character Assignments
