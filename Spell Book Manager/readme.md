@@ -244,7 +244,7 @@ Assigned spell books change how the character uses Spell Book Manager:
 
 ## Custom Classes
 
-![Custom classes](images/custom_classes.png)
+![Custom classes](images/gm_settings.png)
 
 The GM can add custom class names from the settings menu. Do so by clicking the + symbol in the class list on the settings page.
 
