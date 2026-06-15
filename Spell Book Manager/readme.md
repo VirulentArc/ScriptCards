@@ -246,7 +246,7 @@ Assigned spell books change how the character uses Spell Book Manager:
 
 ![Custom classes](images/custom_classes.png)
 
-The GM can add custom class names from the settings menu.
+The GM can add custom class names from the settings menu. Do so by clicking the + symbol in the class list on the settings page.
 
 Use this if your game has a homebrew class, a sheet class name that is not part of the default class list, or a subclass that should have its own spell mule assignments.
 
