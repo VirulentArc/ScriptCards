@@ -403,9 +403,6 @@ To use Copy to Spell Book:
 5. The spell is copied into the assigned spell book character.
 6. The character can then copy from that spell book onto their actual character sheet.
 
-![Copy to Spell Book mule choice](images/copy_to_spell_book_source_choice.png)
-![Copy spell into spell book](images/copy_to_spell_book_spell_list.png)
-
 Only one spell book can be assigned to a character at a time.
 
 ---
