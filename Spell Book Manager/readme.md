@@ -282,7 +282,7 @@ This is useful for building smaller campaign-specific, subclass-specific, or pla
 
 ## NPC Spell Manager
 
-![NPC Spell Manager](images/npc_spell_manager.png)
+![NPC Spell Manager](images/gm_tools.png)
 
 **NPC Spell Manager** is a GM-only tool reached from the GM main card. It copies spells from active `SBM_` spell mules onto NPC sheets.
 

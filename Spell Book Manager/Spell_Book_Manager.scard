@@ -745,7 +745,7 @@
   --&NPCPageValid|0
   --?"[&NLP]" -match "^[0-9]+$"|&NPCPageValid;1
   --?"[&NPCPageValid]" -ne "1"|&NLP;0
-  --=NPCPageSize|5
+  --=NPCPageSize|42
   --=NPCStartIndex|[&NLP] * [$NPCPageSize.Raw]
   --?[$NPCStartIndex.Raw] -ge [$NPCCount.Raw]|[ --&NLP|0 --=NPCStartIndex|0 --]|
   --&CardHTML|+[&CSR][&NLST][/td][/tr]
