@@ -14,6 +14,11 @@
   -->LoadSBMSettings| -->ParseSBMSettings| -->LoadSBMPlayerTheme| -->ApplySBMTheme|
 --:CharacterSelect|
   --&IMCM|0 --&IPSB|0
+  --&ChP|[&reentryval]
+  --?"[&ChP]" -eq "" -or "[&ChP]" -eq "undefined" -or "[&ChP]" -eq "START" -or "[&ChP]" -eq "BACK"|&ChP;0
+  --&ChPageValid|0
+  --?"[&ChP]" -match "^[0-9]+$"|&ChPageValid;1
+  --?"[&ChPageValid]" -ne "1"|&ChP;0
   --&BackButton|&nbsp;
   --&SettingsButton|[&SettingsBtn]CharacterSelect[/rbutton]
   -->OpenSBMCard|Choose a Character
@@ -30,21 +35,44 @@
     --?"[*[&PlayerLoop]:npc]" -eq "1"|%
     --&ChName|[*[&PlayerLoop]:character_name]
     --?"[&ChName]" -imatch "^SBM_" -or "[&ChName]" -imatch "^ScriptCards"|%
-    --&SBMValidPCList(99999)|[&PlayerLoop]
+    --~ChSortKey|string;tolowercase;[&ChName]
+    --&SBMValidPCList(99999)|[&ChSortKey]!@![&ChName]!@![&PlayerLoop]
     --&SinglePC|[&PlayerLoop]
     --=PCCount|[$PCCount.Raw] + 1
   --%|
   --?"[$PCCount.Raw]" -eq "1" -and "[&SendingPlayerIsGM]" -ne "1" -and "[&reentryval]" -ne "BACK"|[ --&ChosenChar|[&SinglePC] --^SelectCharacterReady| --]|
   --?"[$PCCount.Raw]" -eq "0"|[ --&CardHTML|+[&CTR]No controlled player characters were found.[/td][/tr] --]|
   --?"[$PCCount.Raw]" -gt "0"|[
-    --&ChCnt|0
+    --~|array;sort;SBMValidPCList
+    --=ChPageSize|10
+    --=ChStartIndex|[&ChP] * [$ChPageSize.Raw]
+    --?[$ChStartIndex.Raw] -ge [$PCCount.Raw]|[ --&ChP|0 --=ChStartIndex|0 --]|
+    --&ChOut|[t style='width:100%; [&B0] [&TF] background-color:transparent;']
+    --=ChEntryIndex|-1 --=ChPageCount|0
     --%PlayerLoop|foreach;SBMValidPCList
-      --&ChName|[*[&PlayerLoop]:character_name]
-      --&ChRowBG|[&OddRowBG]
-      --?"[= [&ChCnt] % 2 ]" -eq "1"|&ChRowBG;[&EvenRowBG]
-      --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&ChRowBG];'][rbutton][&ChName]::SelectCharacter;[&PlayerLoop][/rbutton][/td][/tr]
-      --&ChCnt|[= [&ChCnt] + 1]
+      --?"[&PlayerLoop]" -eq "" -or "[&PlayerLoop]" -eq "undefined"|%
+      --=ChEntryIndex|[$ChEntryIndex.Raw] + 1
+      --?[$ChEntryIndex.Raw] -lt [$ChStartIndex.Raw]|%
+      --?[$ChPageCount.Raw] -ge [$ChPageSize.Raw]|%
+      --~ChEntry|string;split;!@!;[&PlayerLoop]
+      --&ChName|[&ChEntry2]
+      --&ChID|[&ChEntry3]
+      --?"[&ChName]" -eq "" -or "[&ChName]" -eq "undefined" -or "[&ChID]" -eq "" -or "[&ChID]" -eq "undefined"|%
+      --&ChBG|[&OddRowBG]
+      --?"[= [$ChPageCount.Raw] % 2 ]" -eq "1"|&ChBG;[&EvenRowBG]
+      --&ChOut|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&ChBG];'][rbutton][&ChName]::SelectCharacter;[&ChID][/rbutton][/td][/tr]
+      --=ChPageCount|[$ChPageCount.Raw] + 1
     --%|
+    --&ChOut|+[/t]
+    --&CardHTML|+[&CCR][&ChOut][/td][/tr]
+    --?[$PCCount.Raw] -le [$ChPageSize.Raw]|AfterCharacterPageNav
+    --=ChDisplayPage|[&ChP] + 1 --=ChPrevPage|[&ChP] - 1 --=ChNextPage|[&ChP] + 1 --&ChNav|[t [&GT]][tr]
+    --?[$ChPrevPage.Raw] -ge 0|[ --&ChNav|+[td style='[&GCS] background-color:[&OddRowBG];'][rbutton][&BackIcon] Prev::CharacterSelect;[$ChPrevPage.Raw][/rbutton][/td] --]|[ --&ChNav|+[td style='[&GCS] background-color:[&OddRowBG];']&nbsp;[/td] --]|
+    --&ChNav|+[td style='[&GCS] background-color:[&OddRowBG];']Page [$ChDisplayPage.Raw][/td]
+    --?[= [$ChStartIndex.Raw] + [$ChPageSize.Raw] ] -lt [$PCCount.Raw]|[ --&ChNav|+[td style='[&GCS] background-color:[&OddRowBG];'][rbutton]Next &#x2B9E;::CharacterSelect;[$ChNextPage.Raw][/rbutton][/td] --]|[ --&ChNav|+[td style='[&GCS] background-color:[&OddRowBG];']&nbsp;[/td] --]|
+    --&ChNav|+[/tr][/t]
+    --&CardHTML|+[&CCR][&ChNav][/td][/tr]
+    --:AfterCharacterPageNav|
   --]|
   --?"[&SendingPlayerIsGM]" -eq "1"|[
     --&CardHTML|+[&CSR]GM Tools[/td][/tr]
@@ -745,7 +773,7 @@
   --&NPCPageValid|0
   --?"[&NLP]" -match "^[0-9]+$"|&NPCPageValid;1
   --?"[&NPCPageValid]" -ne "1"|&NLP;0
-  --=NPCPageSize|42
+  --=NPCPageSize|5
   --=NPCStartIndex|[&NLP] * [$NPCPageSize.Raw]
   --?[$NPCStartIndex.Raw] -ge [$NPCCount.Raw]|[ --&NLP|0 --=NPCStartIndex|0 --]|
   --&CardHTML|+[&CSR][&NLST][/td][/tr]
@@ -971,7 +999,7 @@
   --?"[&SendingPlayerIsGM]" -ne "1" -and "[&ClassCheck]" -ninc "warlock" -and "[$PSBCt.Raw]" -eq "0"|[ --&CMS|0 --&WhatDo|CHOOSE --&SSM| --^SpellMuleSelect| --]|
   --?"[&SendingPlayerIsGM]" -ne "1" -and "[&ClassCheck]" -ninc "warlock"|&CMS;0
   --&BackButton|&nbsp;
-  --?"[$PCCount.Raw]" -gt "1"|[ --&BackButton|[&BackBtn]CharacterSelect;BACK[/rbutton] --]|
+  --?"[$PCCount.Raw]" -gt "1"|[ --&BackButton|[&BackBtn]CharacterSelect;[&ChP][/rbutton] --]|
   --&SettingsButton|[&SettingsBtn]SelectCharacterReady[/rbutton]
   -->OpenSBMCard|[*[&CharID]:character_name]
   --?"[&CMS]" -eq "1"|[ --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&OddRowBG];'][t style='width:100%; [&B0] [&TF]'][tr][td style='[&B0] padding:0; [&TC]'][rbutton]Choose Spells::SetSpellMode;CHOOSE!@![&ChosenChar][/rbutton][/td][td style='[&B0] padding:0; [&TC]'][rbutton]Move Spells::SMMO;[&ChosenChar][/rbutton][/td][/tr][/t][/td][/tr] --]|
@@ -995,7 +1023,7 @@
   --&BackButton|&nbsp;
   --?"[&IsNPCSpellManager]" -eq "1"|[ --&BackButton|[&BackBtn]NPCSpellManager;[&NLP][/rbutton] --]|
   --?"[&IsNPCSpellManager]" -ne "1" -and "[&CMS]" -eq "1"|[ --&BackButton|[&BackBtn]SelectCharacterReady;BACK[/rbutton] --]|
-  --?"[&IsNPCSpellManager]" -ne "1" -and "[&CMS]" -ne "1" -and "[$PCCount.Raw]" -gt "1"|[ --&BackButton|[&BackBtn]CharacterSelect;BACK[/rbutton] --]|
+  --?"[&IsNPCSpellManager]" -ne "1" -and "[&CMS]" -ne "1" -and "[$PCCount.Raw]" -gt "1"|[ --&BackButton|[&BackBtn]CharacterSelect;[&ChP][/rbutton] --]|
 --<|
 --:SpellMuleSelect|
   --&CharID|[*[&ChosenChar]:character_id]
@@ -1081,7 +1109,7 @@
   --?"[&WhatDo]" -eq "CHOOSE" -and "[&IsNPCSpellManager]" -eq "1"|[ --&BackButton|[&BackBtn]NPCSpellSourceSelect;BACK[/rbutton] --]|
   --?"[&WhatDo]" -ne "CHOOSE" -and "[&IsNPCSpellManager]" -eq "1"|[ --&BackButton|[&BackBtn]NPCSpellManager;[&NLP][/rbutton] --]|
   --?"[&WhatDo]" -ne "CHOOSE" -and "[&IsNPCSpellManager]" -ne "1" -and "[&CMS]" -eq "1"|[ --&BackButton|[&BackBtn]SelectCharacterReady;BACK[/rbutton] --]|
-  --?"[&WhatDo]" -ne "CHOOSE" -and "[&IsNPCSpellManager]" -ne "1" -and "[&CMS]" -ne "1" -and "[$PCCount.Raw]" -gt "1"|[ --&BackButton|[&BackBtn]CharacterSelect;BACK[/rbutton] --]|
+  --?"[&WhatDo]" -ne "CHOOSE" -and "[&IsNPCSpellManager]" -ne "1" -and "[&CMS]" -ne "1" -and "[$PCCount.Raw]" -gt "1"|[ --&BackButton|[&BackBtn]CharacterSelect;[&ChP][/rbutton] --]|
   --&SettingsButton|[&SettingsBtn]SpellList[/rbutton]
   -->OpenSBMCard|[&Title]
   --=SpellDisplayRow|0

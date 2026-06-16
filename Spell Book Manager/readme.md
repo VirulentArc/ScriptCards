@@ -64,7 +64,7 @@ The first time each player runs the script, a new `Spell Book Manager [PlayerID]
 All automatically created handouts are archived so they do not interfere with game journals.<br>
 ![Installation handouts](images/handouts.png)
 
-GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text is a JSON string that stores spell mule assignment information and player theme information.<br>
+GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text is a JSON string that stores spell mule assignment information and player theme information. Also, do not delete the settings handout unless you are resetting all settings.<br>
 ![Settings JSON](images/JSON.png)
 
 ---
