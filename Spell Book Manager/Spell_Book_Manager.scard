@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC 1.3
+  --/| RC 1.4
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SDHN|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SDHN]
@@ -30,9 +30,12 @@
   --~|array;removeat;SBMValidPCList;0
   --=PCCount|0 --&SinglePC|
   --%PlayerLoop|foreach;PlayerArray
+    --~|array;attributes;CharacterClassAttrs;[&PlayerLoop];class
+    --~|array;attributes;CharacterCustomClassAttrs;[&PlayerLoop];custom_class
+    --~|array;attributes;CharacterCustClassNameAttrs;[&PlayerLoop];cust_classname
+    --?"[@CharacterClassAttrs(maxindex)]" -lt "0" -and "[@CharacterCustomClassAttrs(maxindex)]" -lt "0" -and "[@CharacterCustClassNameAttrs(maxindex)]" -lt "0"|%
     --~|array;attributes;CharacterNPCAttrs;[&PlayerLoop];npc
-    --?"[@CharacterNPCAttrs(maxindex)]" -lt "0"|%
-    --?"[*[&PlayerLoop]:npc]" -eq "1"|%
+    --?"[@CharacterNPCAttrs(maxindex)]" -ge "0" -and "[*[&PlayerLoop]:npc]" -eq "1"|%
     --&ChName|[*[&PlayerLoop]:character_name]
     --?"[&ChName]" -imatch "^SBM_" -or "[&ChName]" -imatch "^ScriptCards"|%
     --~ChSortKey|string;tolowercase;[&ChName]
@@ -539,9 +542,12 @@
   --&ChCnt|0
   --&ChOut|[t [&GT]][tr]
   --%SBMCharacterLoop|foreach;SBMAvailableCharacters
+    --~|array;attributes;CharacterClassAttrs;[&SBMCharacterLoop];class
+    --~|array;attributes;CharacterCustomClassAttrs;[&SBMCharacterLoop];custom_class
+    --~|array;attributes;CharacterCustClassNameAttrs;[&SBMCharacterLoop];cust_classname
+    --?"[@CharacterClassAttrs(maxindex)]" -lt "0" -and "[@CharacterCustomClassAttrs(maxindex)]" -lt "0" -and "[@CharacterCustClassNameAttrs(maxindex)]" -lt "0"|%
     --~|array;attributes;CharacterNPCAttrs;[&SBMCharacterLoop];npc
-    --?"[@CharacterNPCAttrs(maxindex)]" -lt "0"|%
-    --?"[*[&SBMCharacterLoop]:npc]" -eq "1"|%
+    --?"[@CharacterNPCAttrs(maxindex)]" -ge "0" -and "[*[&SBMCharacterLoop]:npc]" -eq "1"|%
     --&ChName|[*O:[&SBMCharacterLoop]:character:name]
     --?"[&ChName]" -imatch "^SBM_" -or "[&ChName]" -imatch "^ScriptCards"|%
     --?"[= [&ChCnt] % 3 ]" -eq "0" -and "[&ChCnt]" -ne "0"|&ChOut;+[/tr][tr]
@@ -571,7 +577,7 @@
   --?"[&CEM]" -eq "undefined"|&CEM;
   --?"[&CSB]" -eq "undefined"|&CSB;
   --&IMules|, --&ASMS|,
-  --&CharacterClassText|[*[&CMCID]:class] [*[&CMCID]:subclass] [*[&CMCID]:custom_class]
+  --&CharacterClassText|[*[&CMCID]:class] [*[&CMCID]:subclass] [*[&CMCID]:cust_classname]
   --?"[*[&CMCID]:multiclass1_flag]" -eq "1"|&CharacterClassText;+ [*[&CMCID]:multiclass1] [*[&CMCID]:multiclass1_subclass]
   --?"[*[&CMCID]:multiclass2_flag]" -eq "1"|&CharacterClassText;+ [*[&CMCID]:multiclass2] [*[&CMCID]:multiclass2_subclass]
   --?"[*[&CMCID]:multiclass3_flag]" -eq "1"|&CharacterClassText;+ [*[&CMCID]:multiclass3] [*[&CMCID]:multiclass3_subclass]
@@ -989,7 +995,7 @@
 --:SelectCharacterReady|
   --&CharID|[*[&ChosenChar]:character_id]
   --&CMS|1
-  --&ClassCheck|[*[&CharID]:class] [*[&CharID]:subclass] [*[&CharID]:custom_class]
+  --&ClassCheck|[*[&CharID]:class] [*[&CharID]:subclass] [*[&CharID]:cust_classname]
   --?"[*[&CharID]:multiclass1_flag]" -eq "1"|&ClassCheck;+ [*[&CharID]:multiclass1] [*[&CharID]:multiclass1_subclass]
   --?"[*[&CharID]:multiclass2_flag]" -eq "1"|&ClassCheck;+ [*[&CharID]:multiclass2] [*[&CharID]:multiclass2_subclass]
   --?"[*[&CharID]:multiclass3_flag]" -eq "1"|&ClassCheck;+ [*[&CharID]:multiclass3] [*[&CharID]:multiclass3_subclass]
