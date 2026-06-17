@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC 1.4
+  --/| RC 1.5
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SDHN|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SDHN]
@@ -30,14 +30,15 @@
   --~|array;removeat;SBMValidPCList;0
   --=PCCount|0 --&SinglePC|
   --%PlayerLoop|foreach;PlayerArray
-    --~|array;attributes;CharacterClassAttrs;[&PlayerLoop];class
-    --~|array;attributes;CharacterCustomClassAttrs;[&PlayerLoop];custom_class
-    --~|array;attributes;CharacterCustClassNameAttrs;[&PlayerLoop];cust_classname
-    --?"[@CharacterClassAttrs(maxindex)]" -lt "0" -and "[@CharacterCustomClassAttrs(maxindex)]" -lt "0" -and "[@CharacterCustClassNameAttrs(maxindex)]" -lt "0"|%
-    --~|array;attributes;CharacterNPCAttrs;[&PlayerLoop];npc
-    --?"[@CharacterNPCAttrs(maxindex)]" -ge "0" -and "[*[&PlayerLoop]:npc]" -eq "1"|%
     --&ChName|[*[&PlayerLoop]:character_name]
     --?"[&ChName]" -imatch "^SBM_" -or "[&ChName]" -imatch "^ScriptCards"|%
+    --?"[*O:[&PlayerLoop]:character:archived]" -eq "true"|%
+    --?"[*O:[&PlayerLoop]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|%
+    --?"[*[&PlayerLoop]:npc]" -eq "1"|%
+    --&ChClassCheck|[*[&PlayerLoop]:class] [*[&PlayerLoop]:custom_class] [*[&PlayerLoop]:cust_classname]
+    --~ChClassCheck|string;replaceall;undefined;;[&ChClassCheck]
+    --~ChClassCheck|string;trim;[&ChClassCheck]
+    --?"[&ChClassCheck]" -eq ""|%
     --~ChSortKey|string;tolowercase;[&ChName]
     --&SBMValidPCList(99999)|[&ChSortKey]!@![&ChName]!@![&PlayerLoop]
     --&SinglePC|[&PlayerLoop]
@@ -46,7 +47,7 @@
   --?"[$PCCount.Raw]" -eq "1" -and "[&SendingPlayerIsGM]" -ne "1" -and "[&reentryval]" -ne "BACK"|[ --&ChosenChar|[&SinglePC] --^SelectCharacterReady| --]|
   --?"[$PCCount.Raw]" -eq "0"|[ --&CardHTML|+[&CTR]No controlled player characters were found.[/td][/tr] --]|
   --?"[$PCCount.Raw]" -gt "0"|[
-    --~|array;sort;SBMValidPCList
+    --?[$PCCount.Raw] -gt 1|[ --~|array;sort;SBMValidPCList --]|
     --=ChPageSize|10
     --=ChStartIndex|[&ChP] * [$ChPageSize.Raw]
     --?[$ChStartIndex.Raw] -ge [$PCCount.Raw]|[ --&ChP|0 --=ChStartIndex|0 --]|
@@ -385,8 +386,12 @@
   --&AssignedSpellBooks|,
   --~|array;objects:character;SBMSpellBookCharacters;
   --%SBMSpellBookLoop|foreach;SBMSpellBookCharacters
+    --?"[*O:[&SBMSpellBookLoop]:character:archived]" -eq "true"|%
     --&SpellBookCheck|[:SBMSettings("char_[&SBMSpellBookLoop]_spellbook")]
-    --?"[&SpellBookCheck]" -ne "" -and "[&SpellBookCheck]" -ne "undefined" -and "[&AssignedSpellBooks]" -ninc "[&SpellBookCheck]"|&AssignedSpellBooks;+[&SpellBookCheck]
+    --?"[&SpellBookCheck]" -ne "" -and "[&SpellBookCheck]" -ne "undefined"|[
+      --~SpellBookCheckID|string;before;,;[&SpellBookCheck]
+      --?"[*O:[&SpellBookCheckID]:character:archived]" -ne "true" -and "[&AssignedSpellBooks]" -ninc "[&SpellBookCheck]"|&AssignedSpellBooks;+[&SpellBookCheck]
+    --]|
   --%|
 --<|
 --:SBMClassMules|
@@ -422,6 +427,8 @@
   --&MSO|[t [&GT]][tr]
   --%SBMMuleSectionLoop|foreach;SBMAvailableMules
     --&ME|[&SBMMuleSectionLoop],
+    --?"[*O:[&SBMMuleSectionLoop]:character:archived]" -eq "true"|%
+    --?"[*O:[&SBMMuleSectionLoop]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|%
     --&ShowMule|0
     --?"[&MSTog]" -eq "class" -and "[&MSM]" -eq "UNASSIGNED" -and "[&AMules]" -ninc "[&ME]" -and "[&AssignedSpellBooks]" -ninc "[&ME]"|&ShowMule;1
     --?"[&MSTog]" -eq "class" -and "[&MSM]" -eq "ASSIGNED" -and "[&AMules]" -inc "[&ME]"|&ShowMule;1
@@ -461,6 +468,8 @@
   --&MASLetters|,
   --%MASLoop|foreach;SBMAvailableMules
     --&ME|[&MASLoop],
+    --?"[*O:[&MASLoop]:character:archived]" -eq "true"|%
+    --?"[*O:[&MASLoop]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|%
     --&ShowMule|0
     --?"[&MSTog]" -eq "class" -and "[&MSM]" -eq "UNASSIGNED" -and "[&AMules]" -ninc "[&ME]" -and "[&AssignedSpellBooks]" -ninc "[&ME]"|&ShowMule;1
     --?"[&MSTog]" -ne "class" -and "[&MSTog]" -ne "spellbook" -and "[&MSM]" -eq "AVAILABLE" -and "[&CIM]" -ninc "[&ME]" -and "[&IMules]" -ninc "[&ME]" -and "[&CEM]" -ninc "[&ME]" -and "[&AssignedSpellBooks]" -ninc "[&ME]"|&ShowMule;1
@@ -542,14 +551,15 @@
   --&ChCnt|0
   --&ChOut|[t [&GT]][tr]
   --%SBMCharacterLoop|foreach;SBMAvailableCharacters
-    --~|array;attributes;CharacterClassAttrs;[&SBMCharacterLoop];class
-    --~|array;attributes;CharacterCustomClassAttrs;[&SBMCharacterLoop];custom_class
-    --~|array;attributes;CharacterCustClassNameAttrs;[&SBMCharacterLoop];cust_classname
-    --?"[@CharacterClassAttrs(maxindex)]" -lt "0" -and "[@CharacterCustomClassAttrs(maxindex)]" -lt "0" -and "[@CharacterCustClassNameAttrs(maxindex)]" -lt "0"|%
-    --~|array;attributes;CharacterNPCAttrs;[&SBMCharacterLoop];npc
-    --?"[@CharacterNPCAttrs(maxindex)]" -ge "0" -and "[*[&SBMCharacterLoop]:npc]" -eq "1"|%
     --&ChName|[*O:[&SBMCharacterLoop]:character:name]
     --?"[&ChName]" -imatch "^SBM_" -or "[&ChName]" -imatch "^ScriptCards"|%
+    --?"[*O:[&SBMCharacterLoop]:character:archived]" -eq "true"|%
+    --?"[*O:[&SBMCharacterLoop]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|%
+    --&ChClassCheck|[*[&SBMCharacterLoop]:class] [*[&SBMCharacterLoop]:custom_class] [*[&SBMCharacterLoop]:cust_classname]
+    --~ChClassCheck|string;replaceall;undefined;;[&ChClassCheck]
+    --~ChClassCheck|string;trim;[&ChClassCheck]
+    --?"[&ChClassCheck]" -eq ""|%
+    --?"[*[&SBMCharacterLoop]:npc]" -eq "1"|%
     --?"[= [&ChCnt] % 3 ]" -eq "0" -and "[&ChCnt]" -ne "0"|&ChOut;+[/tr][tr]
     --&ChBG|[&OddRowBG]
     --?"[= [&ChCnt] \ 3 % 2 ]" -eq "1"|&ChBG;[&EvenRowBG]
@@ -576,6 +586,11 @@
   --?"[&CIM]" -eq "undefined"|&CIM;
   --?"[&CEM]" -eq "undefined"|&CEM;
   --?"[&CSB]" -eq "undefined"|&CSB;
+  --?"[&CSB]" -ne "" -and "[&CSB]" -ne "undefined"|[
+    --~CSBCheckID|string;before;,;[&CSB]
+    --?"[*O:[&CSBCheckID]:character:archived]" -eq "true"|&CSB;
+    --?"[*O:[&CSBCheckID]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|&CSB;
+  --]|
   --&IMules|, --&ASMS|,
   --&CharacterClassText|[*[&CMCID]:class] [*[&CMCID]:subclass] [*[&CMCID]:cust_classname]
   --?"[*[&CMCID]:multiclass1_flag]" -eq "1"|&CharacterClassText;+ [*[&CMCID]:multiclass1] [*[&CMCID]:multiclass1_subclass]
@@ -588,6 +603,8 @@
     --~|array;fromstring;SBMClassMuleIDs;,;[&SBMClassMules]
     --%SBMCCML|foreach;SBMClassMuleIDs
       --?"[&SBMCCML]" -eq "" -or "[&SBMCCML]" -eq "undefined"|%
+      --?"[*O:[&SBMCCML]:character:archived]" -eq "true"|%
+      --?"[*O:[&SBMCCML]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|%
       --&SBMCCMN|[*O:[&SBMCCML]:character:name]
       --?"[&SBMCCMN]" -imatch "^SBM_" -and "[&IMules]" -ninc ",[&SBMCCML],"|&IMules;+[&SBMCCML],
       --?"[&SBMCCMN]" -imatch "^SBM_" -and "[&ASMS]" -ninc ",[&SBMCCML],"|&ASMS;+[&SBMCCML],
@@ -597,6 +614,8 @@
   --~|array;fromstring;SBMCharacterIncludeMuleIDs;,;[&CIM]
   --%SBMActiveDirectLoop|foreach;SBMCharacterIncludeMuleIDs
     --?"[&SBMActiveDirectLoop]" -eq "" -or "[&SBMActiveDirectLoop]" -eq "undefined"|%
+    --?"[*O:[&SBMActiveDirectLoop]:character:archived]" -eq "true"|%
+    --?"[*O:[&SBMActiveDirectLoop]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|%
     --&SBMActiveDirectMuleName|[*O:[&SBMActiveDirectLoop]:character:name]
     --?"[&SBMActiveDirectMuleName]" -imatch "^SBM_" -and "[&ASMS]" -ninc ",[&SBMActiveDirectLoop],"|&ASMS;+[&SBMActiveDirectLoop],
   --%|
@@ -721,6 +740,8 @@
     --&NPCID|[&BPLL] --&BPLADD|0
     --&NPCName|[*O:[&NPCID]:character:name]
     --?"[&NPCName]" -eq "" -or "[&NPCName]" -eq "undefined"|%
+    --?"[*O:[&NPCID]:character:archived]" -eq "true"|%
+    --?"[&BPLM]" -eq "MULE" -and "[*O:[&NPCID]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|%
     --?"[&BPLM]" -eq "MULE" -and "[&NPCID]" -eq "[&BPLEX]"|%
     --?"[&BPLM]" -eq "MULE" -and "[&AssignedSpellBooks]" -inc ",[&NPCID],"|%
     --?"[&BPLM]" -eq "MULE" -and "[&NPCName]" -imatch "^SBM_"|BPLMuleCandidate
@@ -762,6 +783,8 @@
   --%PSBL|foreach;PSBIDs
     --&NPCID|[&PSBL]
     --?"[&NPCID]" -eq "" -or "[&NPCID]" -eq "undefined"|%
+    --?"[*O:[&NPCID]:character:archived]" -eq "true"|%
+    --?"[*O:[&NPCID]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|%
     --?"[&PSBLM]" -eq "SOURCE" -and "[&NPCID]" -eq "[&PSBSX]"|%
     --&NPCName|[*O:[&NPCID]:character:name]
     --?"[&NPCName]" -imatch "^SBM_"|[
