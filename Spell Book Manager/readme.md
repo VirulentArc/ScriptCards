@@ -18,14 +18,14 @@ The script is designed for the official D&D 5E 2014 by Roll20 character sheet an
 
 ### Installing ScriptCards
 
-If the Roll20 One-Click version of ScriptCards is 3.0.22 or newer, install it from **Game Settings** > **Mod Scripts** > **Script Library**.
+If the Roll20 One-Click version of ScriptCards is 3.0.22 or newer, install it from **Settings** > **Mod (API) Scripts ** > **Script Library**.
 
 If Roll20 One-Click has an older version, install ScriptCards manually from the [ScriptCards GitHub repository](https://github.com/kjaegers/ScriptCards):
 
 1. Open the [ScriptCards_API folder](https://github.com/kjaegers/ScriptCards/tree/main/ScriptCards_API).
 2. Open `scriptcards.js`.
 3. Copy the full script code.
-4. In Roll20, open **Game Settings** > **Mod Scripts**.
+4. In Roll20, open **Settings** > **Mod (API) Scripts **.
 5. Create a new script, paste the ScriptCards code, save it, and restart the Mod sandbox if needed.
 
 ---
