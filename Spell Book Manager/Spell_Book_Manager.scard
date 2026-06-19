@@ -1,5 +1,5 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC 1.5
+  --/| RC 1.6
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SDHN|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SDHN]
@@ -9,12 +9,12 @@
   --~|array;objects:handout;SBMSettingsHandoutIDs;[&SBMHN]
   --?"[@SBMSettingsHandoutIDs(maxindex)]" -eq "-1"|[ --!oh:SBMHID|name:"[&SBMHN]"|gmnotes:""|archived:true --]|
   --?"[@SBMSettingsHandoutIDs(maxindex)]" -ne "-1"|&SBMHID;[@SBMSettingsHandoutIDs(0)]
+  --&SBMBHN|Spell Book Manager Settings Backups
   --~|array;define;SBMThemeList;2014;2024 Core;R20 2024;AD&D 2E;2E Revised;D&D 3E;Arcane;Brasswork;Eldritch;Prismatic;Radiant;Verdant
   --~|array;define;SBMClassList;artificer;barbarian;bard;cleric;druid;fighter;monk;paladin;ranger;rogue;sorcerer;warlock;wizard
-  -->LoadSBMSettings| -->ParseSBMSettings| -->LoadSBMPlayerTheme| -->ApplySBMTheme|
+  -->LoadSBMSettings| -->ParseSBMSettings| -->LoadSBMPlayerTheme| -->ApplySBMTheme| -->EnsureSBMDocumentationHandout|
 --:CharacterSelect|
-  --&IMCM|0 --&IPSB|0
-  --&ChP|[&reentryval]
+  --&IMCM|0 --&IPSB|0 --&ChP|[&reentryval]
   --?"[&ChP]" -eq "" -or "[&ChP]" -eq "undefined" -or "[&ChP]" -eq "START" -or "[&ChP]" -eq "BACK"|&ChP;0
   --&ChPageValid|0
   --?"[&ChP]" -match "^[0-9]+$"|&ChPageValid;1
@@ -98,7 +98,7 @@
 --:SBMSettings|
   --#hidecard|0
   --&SBMRet|[&reentryval]
-  --?",CharacterSelect,SelectCharacterReady,SpellMuleSelect,SpellList,NoAssignedSpellMules,SBMClassMules,SBMCharacterSelectMules,SBMCharacterMules,SBMCharacterSpellBook,NPCSpellManager,NPCSpellSourceSelect,MCCD,MCCS,PSBCD,PSBCS," -ninc ",[&SBMRet],"|&SBMRet;CharacterSelect
+  --?",CharacterSelect,SelectCharacterReady,SpellMuleSelect,SpellList,NoAssignedSpellMules,SBMClassMules,SBMCharacterSelectMules,SBMCharacterMules,SBMCharacterSpellBook,NPCSpellManager,NPCSpellSourceSelect,MCCD,MCCS,PSBCD,PSBCS,SBMPermissionsReport,SBMSettingsBackup," -ninc ",[&SBMRet],"|&SBMRet;CharacterSelect
   --&SBMTCnt|0
   --&SBMTO|[t [&GT]][tr]
   --%SBMThemeLoop|foreach;SBMThemeList
@@ -154,12 +154,302 @@
   --]|
   --&CardHTML|+[&CSR]Character Spell Mules[/td][/tr]
   --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&OddRowBG];'][rbutton]Character Assignments::SBMCharacterSelectMules;START[/rbutton][/td][/tr]
+  --&CardHTML|+[&CSR]Diagnostics[/td][/tr]
+  --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&EvenRowBG];'][rbutton]Assignments Overview::SBMPermissionsReport;START[/rbutton][/td][/tr]
+  --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&OddRowBG];'][rbutton]Settings Backup / Restore::SBMSettingsBackup;START[/rbutton][/td][/tr]
   --:SkipSettingsClassMules|
   --&CardHTML|+[&CSR]Theme[/td][/tr]
   --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] background-color:[&OddRowBG];']Current:&nbsp;&nbsp;[&SBMTheme][/td][/tr]
   --&CardHTML|+[&CCR][&SBMTO][/td][/tr]
   -->ShowSBMCard|
 --X|
+--:SBMPermissionsReport|
+  --?"[&SendingPlayerIsGM]" -ne "1"|CharacterSelect
+  --&BackButton|[&BackBtn]SBMSettings;CharacterSelect[/rbutton]
+  --&SettingsButton|[&SettingsBtn]SBMPermissionsReport[/rbutton]
+  -->OpenSBMCard|Permissions Report
+  --&CardHTML|+[&CTR][i]Read-only report of stored Spell Book Manager assignments. This does not repair or change settings.[/i][/td][/tr]
+  --~|array;objects:character;SBMReportCharacters;
+  --&CardHTML|+[&CSR]Assigned Spell Books[/td][/tr]
+  --=PRSBCount|0
+  --%PRSpellBookOwnerLoop|foreach;SBMReportCharacters
+    --&PRCSB|[:SBMSettings("char_[&PRSpellBookOwnerLoop]_spellbook")]
+    --?"[&PRCSB]" -eq "" -or "[&PRCSB]" -eq "undefined"|%
+    --~PRSpellBookID|string;before;,;[&PRCSB]
+    --?"[&PRSpellBookID]" -eq "" -or "[&PRSpellBookID]" -eq "undefined"|%
+    -->BuildPermissionOwnerInfo|[&PRSpellBookOwnerLoop]
+    -->BuildPermissionMuleInfo|[&PRSpellBookID]
+    --&PRRowBG|[&OddRowBG]
+    --?"[= [$PRSBCount.Raw] % 2 ]" -eq "1"|&PRRowBG;[&EvenRowBG]
+    --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] background-color:[&PRRowBG];'][b][&PROwnerName][/b][&PROwnerFlags] &#x2192; [&PRMuleDisplay][&PRMuleFlags][/td][/tr]
+    --=PRSBCount|[$PRSBCount.Raw] + 1
+  --%|
+  --?[$PRSBCount.Raw] -eq 0|[ --&CardHTML|+[&CTR][i]No assigned spell books found.[/i][/td][/tr] --]|
+  --&CardHTML|+[&CSR]Class Spell Mules[/td][/tr]
+  --=PRClassCount|0
+  --%PRClassLoop|foreach;SBMClassList
+    --&PRClass|[&PRClassLoop]
+    --&PRClassMules|[:SBMSettings("[&PRClass]")]
+    --?"[&PRClassMules]" -eq "" -or "[&PRClassMules]" -eq "undefined"|%
+    --&PRClassMuleList|
+    --=PRClassMuleCount|0
+    --~|array;fromstring;SBMReportClassMuleIDs;,;[&PRClassMules]
+    --%PRClassMuleLoop|foreach;SBMReportClassMuleIDs
+      --?"[&PRClassMuleLoop]" -eq "" -or "[&PRClassMuleLoop]" -eq "undefined"|%
+      -->BuildPermissionMuleInfo|[&PRClassMuleLoop]
+      --?[$PRClassMuleCount.Raw] -gt 0|[ --&PRClassMuleList|+,&#32; --]|
+      --&PRClassMuleList|+[&PRMuleDisplay][&PRMuleFlags]
+      --=PRClassMuleCount|[$PRClassMuleCount.Raw] + 1
+    --%|
+    --?[$PRClassMuleCount.Raw] -eq 0|%
+    --&PRRowBG|[&OddRowBG]
+    --?"[= [$PRClassCount.Raw] % 2 ]" -eq "1"|&PRRowBG;[&EvenRowBG]
+    --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] background-color:[&PRRowBG];'][b][&PRClass(totitlecase)][/b] &#x2192; [&PRClassMuleList][/td][/tr]
+    --=PRClassCount|[$PRClassCount.Raw] + 1
+  --%|
+  --?[$PRClassCount.Raw] -eq 0|[ --&CardHTML|+[&CTR][i]No class spell mule assignments found.[/i][/td][/tr] --]|
+  --&CardHTML|+[&CSR]Character Overrides[/td][/tr]
+  --=PROverrideCount|0
+  --%PROwnerLoop|foreach;SBMReportCharacters
+    -->BuildPermissionOwnerInfo|[&PROwnerLoop]
+    --&PRInclude|[:SBMSettings("char_[&PROwnerLoop]_include")]
+    --&PRIncludeMuleList|
+    --=PRIncludeMuleCount|0
+    --~|array;fromstring;SBMReportIncludeMuleIDs;,;[&PRInclude]
+    --%PRIncludeMuleLoop|foreach;SBMReportIncludeMuleIDs
+      --?"[&PRIncludeMuleLoop]" -eq "" -or "[&PRIncludeMuleLoop]" -eq "undefined"|%
+      -->BuildPermissionMuleInfo|[&PRIncludeMuleLoop]
+      --?[$PRIncludeMuleCount.Raw] -gt 0|[ --&PRIncludeMuleList|+,&#32; --]| 
+      --&PRIncludeMuleList|+[&PRMuleDisplay][&PRMuleFlags]
+      --=PRIncludeMuleCount|[$PRIncludeMuleCount.Raw] + 1
+    --%|
+    --?[$PRIncludeMuleCount.Raw] -gt 0|[
+      --&PRRowBG|[&OddRowBG]
+      --?"[= [$PROverrideCount.Raw] % 2 ]" -eq "1"|&PRRowBG;[&EvenRowBG]
+      --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] background-color:[&PRRowBG];'][b][&PROwnerName][/b][&PROwnerFlags] Added &#x2192; [&PRIncludeMuleList][/td][/tr]
+      --=PROverrideCount|[$PROverrideCount.Raw] + 1
+    --]|
+    --&PRExclude|[:SBMSettings("char_[&PROwnerLoop]_exclude")]
+    --&PRExcludeMuleList|
+    --=PRExcludeMuleCount|0
+    --~|array;fromstring;SBMReportExcludeMuleIDs;,;[&PRExclude]
+    --%PRExcludeMuleLoop|foreach;SBMReportExcludeMuleIDs
+      --?"[&PRExcludeMuleLoop]" -eq "" -or "[&PRExcludeMuleLoop]" -eq "undefined"|%
+      -->BuildPermissionMuleInfo|[&PRExcludeMuleLoop]
+      --?[$PRExcludeMuleCount.Raw] -gt 0|[ --&PRExcludeMuleList|+,&#32; --]| 
+      --&PRExcludeMuleList|+[&PRMuleDisplay][&PRMuleFlags]
+      --=PRExcludeMuleCount|[$PRExcludeMuleCount.Raw] + 1
+    --%|
+    --?[$PRExcludeMuleCount.Raw] -gt 0|[
+      --&PRRowBG|[&OddRowBG]
+      --?"[= [$PROverrideCount.Raw] % 2 ]" -eq "1"|&PRRowBG;[&EvenRowBG]
+      --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] background-color:[&PRRowBG];'][b][&PROwnerName][/b][&PROwnerFlags] Blocked &#x2192; [&PRExcludeMuleList][/td][/tr]
+      --=PROverrideCount|[$PROverrideCount.Raw] + 1
+    --]|
+  --%|
+  --?[$PROverrideCount.Raw] -eq 0|[ --&CardHTML|+[&CTR][i]No character-specific added or blocked mules found.[/i][/td][/tr] --]|
+  -->ShowSBMCard|
+--X|
+--:BuildPermissionOwnerInfo|CharacterID
+  --&PROwnerID|[%1%] --&PROwnerFlags|
+  --&PROwnerName|[*O:[&PROwnerID]:character:name]
+  --?"[&PROwnerName]" -eq "" -or "[&PROwnerName]" -eq "undefined"|[ --&PROwnerName|Missing character --&PROwnerFlags|+ (missing character ID [&PROwnerID]) --]|
+  --?"[*O:[&PROwnerID]:character:archived]" -eq "true"|&PROwnerFlags;+ (archived character)
+  --?"[*O:[&PROwnerID]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|&PROwnerFlags;+ (2024 sheet)
+--<|
+--:BuildPermissionMuleInfo|MuleID
+  --&PRMuleID|[%1%]
+  --&PRMuleFlags|
+  --&PRMuleName|[*O:[&PRMuleID]:character:name]
+  --?"[&PRMuleName]" -eq "" -or "[&PRMuleName]" -eq "undefined"|[ --&PRMuleName|Missing mule --&PRMuleFlags|+ (missing mule ID [&PRMuleID]) --]|
+  --?"[*O:[&PRMuleID]:character:archived]" -eq "true"|&PRMuleFlags;+ (archived mule)
+  --?"[*O:[&PRMuleID]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|&PRMuleFlags;+ (2024 sheet)
+  --&PRIsSBM|0
+  --?"[&PRMuleName]" -imatch "^SBM_"|&PRIsSBM;1
+  --?"[&PRIsSBM]" -ne "1" -and "[&PRMuleName]" -ninc "Missing mule"|&PRMuleFlags;+ (not SBM_)
+  --&PRMuleDisplay|[&PRMuleName]
+  --~PRMuleDisplay|string;replaceall;SBM_;;[&PRMuleDisplay]
+--<|
+--:EnsureSBMBackupHandout|
+  --?"[&SBMBHID]" -ne "" -and "[&SBMBHID]" -ne "undefined"|<
+  --~|array;objects:handout;SBMBackupHandoutIDs;[&SBMBHN]
+  --?"[@SBMBackupHandoutIDs(maxindex)]" -eq "-1"|[ --!oh:SBMBHID|name:"[&SBMBHN]"|gmnotes:""|notes:"Spell Book Manager manual and automatic settings backups."|archived:true --]|
+  --?"[@SBMBackupHandoutIDs(maxindex)]" -ne "-1"|&SBMBHID;[@SBMBackupHandoutIDs(0)]
+--<|
+--:LoadSBMBackupStore|
+  -->EnsureSBMBackupHandout|
+  --&SBMBRaw|[*O:[&SBMBHID]:handout:gmnotes]
+  --?"[&SBMBRaw]" -eq "undefined"|&SBMBRaw;
+  --&SBMBManualDate| --&SBMBManualData| --&SBMBAutoList|
+  --?"[&SBMBRaw]" -ninc "!SBMB_MANUAL_START!" -or "[&SBMBRaw]" -ninc "!SBMB_MANUAL_DATA!" -or "[&SBMBRaw]" -ninc "!SBMB_MANUAL_END!"|SkipSBMBManualLoad
+  --~SBMBWork|string;after;!SBMB_MANUAL_START!;[&SBMBRaw]
+  --~SBMBManualDate|string;before;!SBMB_MANUAL_DATA!;[&SBMBWork]
+  --~SBMBWork|string;after;!SBMB_MANUAL_DATA!;[&SBMBWork]
+  --~SBMBManualData|string;before;!SBMB_MANUAL_END!;[&SBMBWork]
+  --:SkipSBMBManualLoad|
+  --?"[&SBMBRaw]" -ninc "!SBMB_AUTO_START!" -or "[&SBMBRaw]" -ninc "!SBMB_AUTO_END!"|SkipSBMBAutoLoad
+  --~SBMBAutoWork|string;after;!SBMB_AUTO_START!;[&SBMBRaw]
+  --~SBMBAutoList|string;before;!SBMB_AUTO_END!;[&SBMBAutoWork]
+  --:SkipSBMBAutoLoad|
+--<|
+--:WriteSBMBackupStore|
+  --&SBMBOut|
+  --?"[&SBMBManualData]" -ne "" -and "[&SBMBManualData]" -ne "undefined"|[ --&SBMBOut|+!SBMB_MANUAL_START![&SBMBManualDate]!SBMB_MANUAL_DATA![&SBMBManualData]!SBMB_MANUAL_END! --]|
+  --&SBMBOut|+!SBMB_AUTO_START![&SBMBAutoList]!SBMB_AUTO_END!
+  --!h:[&SBMBHID]|gmnotes:"[&SBMBOut]"
+--<|
+--:CreateSBMManualBackup|
+  -->LoadSBMBackupStore|
+  --~SBMBStamp|system;date;getdatetime
+  --&SBMBManualDate|[&SBMBStamp]
+  --&SBMBManualData|[*O:[&SBMHID]:handout:gmnotes]
+  --?"[&SBMBManualData]" -eq "" -or "[&SBMBManualData]" -eq "undefined"|[ --&SBMBManualData|[&SBMR] --]|
+  -->WriteSBMBackupStore|
+--<|
+--:CreateSBMAutoBackup|
+  --?"[&SBMAutoSource]" -eq "" -or "[&SBMAutoSource]" -eq "undefined"|<
+  --?"[&SBMAutoSource]" -ninc "!$!" -or "[&SBMAutoSource]" -ninc "!%!"|<
+  -->LoadSBMBackupStore|
+  --~SBMBStamp|system;date;getdatetime
+  --&SBMBNewAutoList|!SBMB_ENTRY![&SBMBStamp]!SBMB_DATA![&SBMAutoSource]
+  --~|array;fromstring;SBMOldAutoEntries;!SBMB_ENTRY!;[&SBMBAutoList]
+  --=SBMBAutoKeep|0
+  --%SBMBKeepAutoLoop|foreach;SBMOldAutoEntries
+    --&SBMOldAutoEntry|[&SBMBKeepAutoLoop]
+    --?"[&SBMOldAutoEntry]" -eq "" -or "[&SBMOldAutoEntry]" -eq "undefined"|%
+    --?"[&SBMOldAutoEntry]" -ninc "!SBMB_DATA!"|%
+    --?[$SBMBAutoKeep.Raw] -ge 9|%
+    --&SBMBNewAutoList|+!SBMB_ENTRY![&SBMOldAutoEntry]
+    --=SBMBAutoKeep|[$SBMBAutoKeep.Raw] + 1
+  --%|
+  --&SBMBAutoList|[&SBMBNewAutoList]
+  -->WriteSBMBackupStore|
+--<|
+--:WriteSBMSettings|BackupMode
+  --?"[%1%]" -ne "AUTO"|SkipSBMSettingsAutoBackup
+  --&SBMAutoSource|[*O:[&SBMHID]:handout:gmnotes]
+  --?"[&SBMAutoSource]" -eq "" -or "[&SBMAutoSource]" -eq "undefined" -or "[&SBMAutoSource]" -eq "[&SBMR]"|SkipSBMSettingsAutoBackup
+  -->CreateSBMAutoBackup|
+  --:SkipSBMSettingsAutoBackup|
+  --!h:[&SBMHID]|gmnotes:"[&SBMR]"
+--<|
+--:SBMSettingsBackup|
+  --?"[&SendingPlayerIsGM]" -ne "1"|CharacterSelect
+  -->LoadSBMBackupStore|
+  --&BackButton|[&BackBtn]SBMSettings;CharacterSelect[/rbutton]
+  --&SettingsButton|[&SettingsBtn]SBMSettingsBackup[/rbutton]
+  -->OpenSBMCard|Settings Backup / Restore
+  --&CardHTML|+[&CTR]Manual backup saves the current GM settings on demand. Auto-backups are created before GM settings changes and keep the last ten settings states. Theme changes are not included.[/td][/tr]
+  --&ManualBackupStatus|No manual backup saved.
+  --?"[&SBMBManualData]" -ne "" -and "[&SBMBManualData]" -ne "undefined"|[ --&ManualBackupStatus|[&SBMBManualDate] --]|
+  --&CardHTML|+[&CSR]Manual Backup[/td][/tr]
+  --&CardHTML|+[&CTR]Current manual backup: [b][&ManualBackupStatus][/b][br][rbutton]Create / Replace Manual Backup::SBMCreateManualBackup;START[/rbutton][/td][/tr]
+  --&CardHTML|+[&CSR]Restore Backup[/td][/tr]
+  --=SBMBackupRestoreCount|0
+  --?"[&SBMBManualData]" -ne "" -and "[&SBMBManualData]" -ne "undefined"|[ --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&OddRowBG];'][rbutton]Manual Backup - [&SBMBManualDate]::SBMRestoreBackup;MANUAL[/rbutton][/td][/tr] --=SBMBackupRestoreCount|[$SBMBackupRestoreCount.Raw] + 1 --]|
+  --~|array;fromstring;SBMBackupAutoEntries;!SBMB_ENTRY!;[&SBMBAutoList]
+  --=SBMBackupAutoIndex|0
+  --%SBMBackupDisplayLoop|foreach;SBMBackupAutoEntries
+    --&SBMBackupAutoEntry|[&SBMBackupDisplayLoop]
+    --?"[&SBMBackupAutoEntry]" -eq "" -or "[&SBMBackupAutoEntry]" -eq "undefined"|%
+    --?"[&SBMBackupAutoEntry]" -ninc "!SBMB_DATA!"|%
+    --~SBMBackupAutoDate|string;before;!SBMB_DATA!;[&SBMBackupAutoEntry]
+    --=SBMBackupAutoIndex|[$SBMBackupAutoIndex.Raw] + 1
+    --?[$SBMBackupAutoIndex.Raw] -gt 10|%
+    --&SBMBackupRowBG|[&OddRowBG]
+    --?"[= [$SBMBackupRestoreCount.Raw] % 2 ]" -eq "1"|&SBMBackupRowBG;[&EvenRowBG]
+    --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&SBMBackupRowBG];'][rbutton]Auto Backup [$SBMBackupAutoIndex.Raw] - [&SBMBackupAutoDate]::SBMRestoreBackup;AUTO!@![$SBMBackupAutoIndex.Raw][/rbutton][/td][/tr]
+    --=SBMBackupRestoreCount|[$SBMBackupRestoreCount.Raw] + 1
+  --%|
+  --?[$SBMBackupRestoreCount.Raw] -eq 0|[ --&CardHTML|+[&CTR]No restorable backups were found.[/td][/tr] --]|
+  -->ShowSBMCard|
+--X|
+--:SBMCreateManualBackup|
+  --?"[&SendingPlayerIsGM]" -ne "1"|CharacterSelect
+  -->CreateSBMManualBackup|
+  --&BackButton|[&BackBtn]SBMSettingsBackup;START[/rbutton]
+  --&SettingsButton|[&SettingsBtn]SBMSettingsBackup[/rbutton]
+  -->OpenSBMCard|Settings Backup
+  --&CardHTML|+[&CTR]Manual settings backup created successfully.[/td][/tr]
+  --&CardHTML|+[&CSR]Next Step[/td][/tr]
+  --&CardHTML|+[&CTR][rbutton]Back to Backup / Restore::SBMSettingsBackup;START[/rbutton][/td][/tr]
+  -->ShowSBMCard|
+--X|
+--:SBMRestoreBackup|
+  --?"[&SendingPlayerIsGM]" -ne "1"|CharacterSelect
+  -->LoadSBMBackupStore|
+  --&RestoreSlot|[&reentryval]
+  --&RestoreRaw|
+  --&RestoreLabel|Selected backup
+  --?"[&RestoreSlot]" -eq "MANUAL"|[ --&RestoreRaw|[&SBMBManualData] --&RestoreLabel|Manual Backup --]|
+  --?"[&RestoreSlot]" -ninc "AUTO!@!"|AfterRestoreAutoLookup
+  --~RestoreSlotInfo|string;split;!@!;[&RestoreSlot]
+  --=RestoreAutoIndex|0
+  --~|array;fromstring;SBMRestoreAutoEntries;!SBMB_ENTRY!;[&SBMBAutoList]
+  --%SBMRestoreAutoLoop|foreach;SBMRestoreAutoEntries
+    --&RestoreAutoEntry|[&SBMRestoreAutoLoop]
+    --?"[&RestoreAutoEntry]" -eq "" -or "[&RestoreAutoEntry]" -eq "undefined"|%
+    --?"[&RestoreAutoEntry]" -ninc "!SBMB_DATA!"|%
+    --=RestoreAutoIndex|[$RestoreAutoIndex.Raw] + 1
+    --?"[$RestoreAutoIndex.Raw]" -ne "[&RestoreSlotInfo2]"|%
+    --~RestoreRaw|string;after;!SBMB_DATA!;[&RestoreAutoEntry]
+    --&RestoreLabel|Auto Backup [&RestoreSlotInfo2]
+  --%|
+  --:AfterRestoreAutoLookup|
+  --?"[&RestoreRaw]" -eq "" -or "[&RestoreRaw]" -eq "undefined" -or "[&RestoreRaw]" -ninc "!$!" -or "[&RestoreRaw]" -ninc "!%!"|SBMRestoreBackupInvalid
+  --?"[&RestoreRaw]" -ninc "!q!customclasses!q!:!q!"|SBMRestoreBackupInvalid
+  --%SBMRestoreClassCheck|foreach;SBMClassList --?"[&RestoreRaw]" -ninc "!q![&SBMRestoreClassCheck]!q!:!q!"|SBMRestoreBackupInvalid --%|
+  --&SBMAutoSource|[*O:[&SBMHID]:handout:gmnotes]
+  -->CreateSBMAutoBackup|
+  --&SBMR|[&RestoreRaw]
+  -->WriteSBMSettings|NOAUTO
+  -->ParseSBMSettings|
+  --&BackButton|[&BackBtn]SBMSettingsBackup;START[/rbutton]
+  --&SettingsButton|[&SettingsBtn]SBMSettingsBackup[/rbutton]
+  -->OpenSBMCard|Settings Restore
+  --&CardHTML|+[&CTR][&RestoreLabel] restored successfully.[br]The previous current settings were saved as the newest auto-backup before restore.[/td][/tr]
+  --&CardHTML|+[&CSR]Next Step[/td][/tr]
+  --&CardHTML|+[&CTR][rbutton]Back to Backup / Restore::SBMSettingsBackup;START[/rbutton][/td][/tr]
+  -->ShowSBMCard|
+--X|
+--:SBMRestoreBackupInvalid|
+  --&BackButton|[&BackBtn]SBMSettingsBackup;START[/rbutton]
+  --&SettingsButton|[&SettingsBtn]SBMSettingsBackup[/rbutton]
+  -->OpenSBMCard|Settings Restore Failed
+  --&CardHTML|+[&CTR]The selected backup is missing required settings markers or default class keys, so it was not restored.[/td][/tr]
+  --&CardHTML|+[&CSR]Next Step[/td][/tr]
+  --&CardHTML|+[&CTR][rbutton]Back to Backup / Restore::SBMSettingsBackup;START[/rbutton][/td][/tr]
+  -->ShowSBMCard|
+--X|
+--:EnsureSBMDocumentationHandout|
+  --?"[&SendingPlayerIsGM]" -ne "1"|<
+  --&SBMDHN|Spell Book Manager Documentation
+  --~|array;objects:handout;SBMDocHandoutIDs;[&SBMDHN]
+  --?"[@SBMDocHandoutIDs(maxindex)]" -ne "-1"|<
+  --&SBMDocNotes|[t [&SDO]][tr][td [&SDOC]][t [&SDT]][tr][td [&SDTi]]Spell Book Manager Guide[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDS]]A compact in-game guide for players and GMs.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]What Spell Book Manager Does[/b][/td][/tr][tr][td [&SDTx]]Spell Book Manager is a ScriptCards utility for Roll20 games using the official D&D 5E 2014 character sheet. It lets the GM maintain approved spell source characters and lets players copy those spells onto their own character sheets.[br]It can also manage assigned spell book characters, copy spells between spell mules, add spells to NPC sheets, move existing leveled spells between spell levels, and display formatted spell descriptions in player handouts.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Required Setup[/b][/td][/tr][tr][td [&SDTx]]The game needs ScriptCards installed, a Roll20 Pro game with Mod/API access, the official D&D 5E 2014 by Roll20 sheet, and one or more spell mule characters whose names begin with SBM_.[br]Spell Book Manager is installed as a Roll20 macro. The GM should paste the full Spell_Book_Manager.scard text into a macro, preferably as plain text.[br]On first run, the script creates the settings handout and the current player's Spell Book Manager handout. Player handouts are used for spell descriptions. The settings handout stores GM configuration.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Spell Mule Characters[/b][/td][/tr][tr][td [&SDTx]]A spell mule is a normal Roll20 character sheet with a name beginning with SBM_. Examples include SBM_Wizard Spells, SBM_Cleric Spells, SBM_Xanathar Spells, or SBM_Gandalf's Spellbook.[br]Put spells on the spell mule as normal spell rows at the correct spell level. Spell Book Manager reads those spell rows and offers them through the menus based on GM assignments.[br]SBM_ spell mules can be class spell mules, character-specific spell mules, assigned spell books, Copy Between Mules sources or destinations, and NPC Spell Manager sources. The SBM_ prefix is only used so the script can identify spell source characters and is removed from most button display names.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Basic Player Use[/b][/td][/tr][tr][td [&SDTx]]Players run the Spell Book Manager macro from the macro bar or collections tab. If the player controls one valid character, that character opens automatically. If the player controls more than one valid character, the player chooses which character to manage.[br]For most characters, the script opens directly to the spell list. Click Copy to Character beside a spell to copy it to the selected character sheet. Click the &#x1F56E; spell description button beside a spell to write that spell's formatted description to the player's Spell Book Manager handout.[br]If a spell with the same name is already on the destination sheet, Spell Book Manager marks it as Already Known instead of offering another copy button. Refreshing the list may be needed after copying.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Spell Lists[/b][/td][/tr][tr][td [&SDTx]]Spell availability normally comes from class spell mules assigned by the GM and character-specific spell mules assigned by the GM. If more than one spell source is available, users can choose All Spells or a specific spell mule.[br]Spells are grouped by spell level and sorted alphabetically. If multiple assigned mules contain a spell with the same name at the same level, the spell is shown only once.[br]When a spell is copied, the script copies the full spell row and preserves important spell text fields such as name, description, and At Higher Levels text.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Assigned Spell Books[/b][/td][/tr][tr][td [&SDTx]]A character can have one assigned spell book. This should be an SBM_ character used as that character's personal spell book, preparation list, research list, or curated collection.[br]When a character has an assigned spell book, Copy to Spell Book copies approved spells into that assigned spell book. Choose Spells then copies from the assigned spell book onto the actual character sheet.[br]This supports wizard-style workflows where a player maintains a separate spell book and only copies prepared or selected spells onto the playable character sheet. Assigned spell books are still character sheets and count toward Roll20 sheet size and performance like any other spell mule.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Move Spells[/b][/td][/tr][tr][td [&SDTx]]Move Spells lets existing leveled spells be moved up or down one spell level on the same character sheet. This is mainly for Warlocks or other cases where a spell needs to live at a different slot level.[br]Cantrips cannot be moved. Level 1 spells cannot move down. Level 9 spells cannot move up. Non-GM players normally see Move Spells only for Warlocks. GMs can access move mode for any valid PC.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]GM Main Card[/b][/td][/tr][tr][td [&SDTx]]The GM main card is the setup hub. From there the GM can manage player characters, open settings, use NPC Spell Manager, and use Copy Between Mules.[br]When the GM clicks a player character, the GM gets the full character management card for that character. This lets the GM use the same Choose Spells, Move Spells, and Copy to Spell Book tools the character can use, with GM permissions.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]GM Settings[/b][/td][/tr][tr][td [&SDTx]]GM Settings controls class spell mule assignments, character-specific spell mule assignments, character spell book assignments, custom classes, themes, diagnostics, and settings backups.[br]Player settings only include theme selection. Only the GM sees class mule, character mule, spell book assignment, custom class management, diagnostics, and backup controls.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Class Spell Mules[/b][/td][/tr][tr][td [&SDTx]]Class Spell Mules are the normal way to give a class access to a spell list. In GM Settings, choose a class, then click an unassigned spell mule to assign it or an assigned spell mule to remove it.[br]Characters inherit spell mules from matching class names and multiclass fields on their sheet. Custom classes can also be used for subclass or homebrew matching.[br]After assigning or removing a class spell mule, use the current card's back button before choosing another class. Do not scroll up and reuse older class menus in chat. Large spell mule lists use 0-9 and A-Z navigation so the GM does not need to scroll every SBM_ character at once.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Character Assignments[/b][/td][/tr][tr][td [&SDTx]]Character Assignments let the GM adjust spell access for one specific player character. The GM can add extra mules, block inherited class mules, remove added mules, unblock blocked mules, or assign one spell book.[br]Only valid player characters are shown. NPCs, SBM_ spell mules, and ScriptCards mule characters are filtered out. Characters controlled by All Players may not appear for character-specific assignment workflows.[br]Assigned spell books are kept out of normal available spell mule lists so they are not accidentally assigned as shared spell sources.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Custom Classes[/b][/td][/tr][tr][td [&SDTx]]Custom classes let the GM add sheet class or subclass names that are not part of the default class list. If a custom class matches a character's class or subclass name, that character can inherit the assigned mules for that custom class.[br]For example, a custom class named Eldritch Knight can be assigned its own spell mule and then match characters with Eldritch Knight as their subclass.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Copy Between Mules[/b][/td][/tr][tr][td [&SDTx]]Copy Between Mules is a GM-only tool that copies selected spells from one active SBM_ spell mule to another. Choose a destination mule, choose a source mule, then click Copy to Mule beside the spells to copy.[br]The source picker excludes the already-selected destination mule so the GM does not accidentally copy a mule into itself. This is useful for building smaller campaign, subclass, sourcebook, or player-specific spell mules from larger ones.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]NPC Spell Manager[/b][/td][/tr][tr][td [&SDTx]]NPC Spell Manager is a GM-only tool that copies spells from active SBM_ spell mules onto NPC sheets. Choose an NPC, choose a spell mule, then click Copy to Character beside spells to add.[br]When a spell is copied to an NPC, Spell Book Manager enables the NPC spellcasting flag if needed so the spell section can appear on the NPC sheet. NPC Spell Manager is separate from player character assignment settings and does not use class assignments.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Settings Backup and Restore[/b][/td][/tr][tr][td [&SDTx]]Settings Backup / Restore is in GM Settings. Manual backup saves the current GM settings on demand. Auto-backups are created before GM settings changes and keep recent settings states.[br]Theme changes are not included in settings backups. Restoring a backup saves the current settings as a new auto-backup before applying the restored settings.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Themes[/b][/td][/tr][tr][td [&SDTx]]Spell Book Manager includes multiple visual themes. Theme selection is stored per user, so players can choose their own display theme without changing the theme for other users.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Performance Notes[/b][/td][/tr][tr][td [&SDTx]]Avoid creating one giant spell mule with every spell in the game. Split large spell libraries into smaller SBM_ spell mules such as class-based, sourcebook-based, subclass-based, campaign-specific, or player-specific mules.[br]Very large character sheets can make Roll20 slower or less reliable. This includes player characters, NPCs, spell mule characters, and assigned spell book characters.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Important Notes[/b][/td][/tr][tr][td [&SDTx]]Only one GM should edit Spell Book Manager settings at a time. Settings are stored in a shared handout, and simultaneous writes can overwrite or confuse each other.[br]Do not manually edit the GM Notes of Spell Book Manager settings handouts unless intentionally repairing or resetting stored data. Do not delete the settings handout unless resetting all settings.[br]Do not reuse old menu cards in chat after changing settings. Use the current card or navigate back through the current menu so the script receives the correct selection. If Roll20 does not jump to the newest menu after a button click, scroll to the bottom of chat manually.[/td][/tr]
+  --&SBMDocNotes|+[tr][td [&SDSe]][b]Troubleshooting[/b][/td][/tr][tr][td [&SDTx]][b]No characters appear:[/b]&nbsp;&nbsp;Make sure the character is a PC, not an NPC, and that it is controlled by the player. NPCs, SBM_ spell mules, and ScriptCards mule characters are excluded from the normal picker.[br][b]No spell mules are assigned:[/b]&nbsp;&nbsp;Open Settings as GM and assign one or more SBM_ spell mules to the character's class or directly to the character.[br][b]A spell mule does not appear:[/b]&nbsp;&nbsp;Make sure its character name begins with SBM_. If it is assigned as a character spell book, it is intentionally removed from normal available mule lists.[br][b]The spell list only shows the assigned spell book:[/b]&nbsp;&nbsp;This is expected if the character has a spell book assigned. Use Copy to Spell Book to add approved spells into the spell book first.[br][b]Copy to Spell Book does not appear:[/b]&nbsp;&nbsp;The selected character does not have an assigned spell book. Open Character Assignments in GM Settings and assign one SBM_ character under Spell Book Assignment.[br][b]NPC Spell Manager does not list an NPC:[/b]&nbsp;&nbsp;Make sure the NPC is using the official D&D 5E 2014 NPC sheet.[br][b]Class selection acts like it chose the wrong class:[/b]&nbsp;&nbsp;Use the current back button after assigning or removing a class mule. Do not scroll up to an older class list and click from there.[/td][/tr]
+  --&SBMDocNotes|+[/t][/td][/tr][/t]
+  --!oh:SBMDHID|name:"[&SBMDHN]"|notes:"[&SBMDocNotes]"|inplayerjournals:"all"
+--<|
 --:LoadSBMSettings|
   --?"[&SBMHID]" -eq "" -or "[&SBMHID]" -eq "undefined"|[ --~|array;objects:handout;SBMSettingsHandoutIDs;[&SBMHN] --&SBMHID|[@SBMSettingsHandoutIDs(0)] --]|
   --&SBMDef|!$!!q!customclasses!q!:!q!!q!
@@ -176,7 +466,7 @@
 --<|
   --:LoadSBMSettingsDefault|
   --&SBMR|[&SBMDef]
-  --!h:[&SBMHID]|gmnotes:"[&SBMR]"
+  -->WriteSBMSettings|NOAUTO
 --<|
 --:ParseSBMSettings|
   --&SBMJ|[&SBMR]
@@ -253,19 +543,14 @@
   --?"[&SpellHeaderBG]" -eq "" -or "[&SpellHeaderBG]" -eq "undefined"|&SpellHeaderBG;[&TitleBG]
   --#bodyfontface|[&BFF] --#tablebgcolor|transparent --#oddrowbackground|transparent
   --#evenrowbackground|transparent --#oddrowfontcolor|[&DescWhite] --#evenrowfontcolor|[&DescWhite]
-  --&CRP|2px 3px
-  --&B0|border:none; --&RP|padding:[&CRP]; --&CW|color:[&DescWhite]; --&CR|color:[&DescRed]; --&TC|text-align:center; --&W6|font-weight:600; --&TF|border-collapse:collapse; table-layout:fixed;
-  --&BGI|
+  --&CRP|2px 3px --&B0|border:none; --&RP|padding:[&CRP]; --&CW|color:[&DescWhite]; --&CR|color:[&DescRed]; --&TC|text-align:center; --&W6|font-weight:600; --&TF|border-collapse:collapse; table-layout:fixed; --&BGI|
   --?"[&SBMTC]" -eq "2014"|[ --&BGI|background-image:url("https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png"); background-size:100% 100%; background-position:center center; background-repeat:no-repeat; --]|
   --?"[&SBMTC]" -eq "2024 core"|[ --&BGI|background-image:radial-gradient(circle at 18% 12%,rgba(255,255,255,0.55) 0%,rgba(255,255,255,0) 38%),radial-gradient(circle at 82% 82%,rgba(224,221,216,0.42) 0%,rgba(224,221,216,0) 44%),linear-gradient(135deg,#F3F3F7 0%,#F1F1F1 34%,#EDEDED 68%,#E0DDD8 100%); background-color:#F1F1F1; background-size:100% 100%; --]|
   --?"[&SBMTC]" -eq "2e revised"|[ --&BGI|background-image:linear-gradient(135deg,#F6F2C9 0%,#F7E7D9 20%,#F2E4F2 38%,#E1EEF8 56%,#DDF3EB 74%,#F6F0CD 100%); background-color:#F8F6DF; background-size:100% 100%; --]|
-  --&GT|style='width:100%; [&B0] [&TF]'
-  --&GCS|width:33%; [&B0] [&RP] [&TC]
-  --&MGCS|width:50%; [&B0] [&RP] [&TC]
+  --&GT|style='width:100%; [&B0] [&TF]' --&GCS|width:33%; [&B0] [&RP] [&TC] --&MGCS|width:50%; [&B0] [&RP] [&TC]
   --&CardAppTitle|Spell Book Manager
   --&HomeButton|[rbutton:[&TitleText]:[&TitleBG]:16px][F:Arial Black:20]&#x2302;[/F]::CharacterSelect;BACK[/rbutton]
-  --&BackIcon|&#x2B9C;
-  --&SettingsIcon|&#x2699;
+  --&BackIcon|&#x2B9C; --&SettingsIcon|&#x2699;
   --&BackBtn|[rbutton:[&TitleText]:[&TitleBG]:16px][F:Tahoma:16][&BackIcon][/F]::
   --&SettingsBtn|[rbutton:[&TitleText]:[&TitleBG]:16px][F:Tahoma:16][&SettingsIcon][/F]::SBMSettings;
   --&NSMFText|No spell mule characters found. Create one or more character sheets with names beginning with SBM_ and run this settings page again.
@@ -284,11 +569,8 @@
   --&CTi|style='width:100%; border:0; padding:10px 0 3px; [&CR] [&TitleFont]; font-size:20px; [&TTT]'
   --&CSH|style='border:0; border-radius:5px; padding:3px 4px; [&TC] background-color:[&TitleBG]; color:[&TitleText]; font-weight:bold; font-size:[&SHFS]; [&TitleFont]; [&TTT]'
   --&CSe|style='border:0; border-radius:5px; [&RP] [&TC] background-color:[&SectionBG]; [&CR] font-weight:bold; font-size:[&SHFS]; [&TitleFont]; [&TTT]'
-  --&CTX|style='[&B0] [&RP] [&CW] [&W6]'
-  --&CCe|style='[&B0] [&RP] [&CW] [&W6] [&TC]'
-  --&RowEnd|[/td][/tr]
-  --&CTiR|[tr][td [&CTi]] --&CSR|[tr][td [&CSe]]
-  --&CTR|[tr][td [&CTX]] --&CCR|[tr][td [&CCe]]
+  --&CTX|style='[&B0] [&RP] [&CW] [&W6]' --&CCe|style='[&B0] [&RP] [&CW] [&W6] [&TC]' --&RowEnd|[/td][/tr]
+  --&CTiR|[tr][td [&CTi]] --&CSR|[tr][td [&CSe]] --&CTR|[tr][td [&CTX]] --&CCR|[tr][td [&CCe]]
   --&SHT|style='width:100%; table-layout:fixed; border:0; border-radius:5px; border-collapse:separate; border-spacing:0; background-color:[&SpellHeaderBG]; [&CW] overflow:hidden;'
   --&SHTd|style='width:25%; [&B0] text-align:left; [&RP] vertical-align:middle; [&CR] font-weight:bold;'
   --?"[&SBMTC]" -eq "d&d 3e"|[
@@ -297,9 +579,7 @@
   --]|
   --&SITd|style='width:24px; min-width:24px; [&B0] [&TC] white-space:nowrap; [&RP] [&CR]'
   --&SNTd|style='width:100%; [&B0] text-align:left; [&RP] vertical-align:middle; [&CW] font-weight:bold;'
-  --?"[&SBMTC]" -eq "eldritch"|[
-    --&SNTd|style='width:100%; [&B0] text-align:left; [&RP] vertical-align:middle; [&CW] font-weight:bold; font-family:[&BFF]; font-size:15px;'
-  --]|
+  --?"[&SBMTC]" -eq "eldritch"|[ --&SNTd|style='width:100%; [&B0] text-align:left; [&RP] vertical-align:middle; [&CW] font-weight:bold; font-family:[&BFF]; font-size:15px;' --]|
   --&SATd|style='width:115px; min-width:115px; [&B0] text-align:right; white-space:nowrap; [&RP] [&CR]'
   --&DLP|6px
   --&SDO|style='width:100%; border:1px solid [&DBor]; border-radius:8px; border-collapse:separate; border-spacing:0; background-color:[&DescBG]; [&BGI] [&CW] font-family:[&BFF]; font-style:normal; overflow:hidden;'
@@ -366,7 +646,7 @@
     --~StringTail|string;after;!q!;[&String2]
     --&SBMR|[&String3]!q![&StringTail]
   --]|
-  --!h:[&SBMHID]|gmnotes:"[&SBMR]"
+  -->WriteSBMSettings|AUTO
   --h:SBMSettings("customclasses")|[&NewCC]
   --h:SBMSettings("[&CCName]")|
   --?"[&CCMode]" -eq "ADD"|[ --~|array;add;SBMClassList;[&CCName] --]|
@@ -379,7 +659,7 @@
   --:SBMModifyCustomClassStorageError|
   --#hidecard|0
   --&SBMR|[&SBMDef]
-  --!h:[&SBMHID]|gmnotes:"[&SBMR]"
+  -->WriteSBMSettings|AUTO
   --+Spell Book Manager Settings|The custom class settings text was invalid and has been reset. Open Settings again to add custom classes.
 --X|
 --:BASB|
@@ -698,7 +978,7 @@
   --~NTD|string;replaceall;[&Entry];;[&ToggleData]
   --:ToggleWriteSettings|
   --&SBMR|[&String3][&NTD]!q![&StringTail]
-  --!h:[&SBMHID]|gmnotes:"[&SBMR]"
+  -->WriteSBMSettings|AUTO
   --h:SBMSettings("[&TSK]")|[&NTD]
   --?"[&TMode]" -eq "class"|[ --&SelClass|[&TOwner] --^SBMClassMules| --]|
   --&SelectedChar|[&TOwner]
@@ -707,7 +987,7 @@
   --:ToggleMuleStorageError|
   --#hidecard|0
   --&SBMR|[&SBMDef]
-  --!h:[&SBMHID]|gmnotes:"[&SBMR]"
+  -->WriteSBMSettings|AUTO
   --+Spell Book Manager Settings|The mule assignment settings text was invalid and has been reset. Open Settings again and re-assign the mule.
 --X|
 --:SBMSetTheme|
@@ -802,7 +1082,7 @@
   --&NPCPageValid|0
   --?"[&NLP]" -match "^[0-9]+$"|&NPCPageValid;1
   --?"[&NPCPageValid]" -ne "1"|&NLP;0
-  --=NPCPageSize|5
+  --=NPCPageSize|10
   --=NPCStartIndex|[&NLP] * [$NPCPageSize.Raw]
   --?[$NPCStartIndex.Raw] -ge [$NPCCount.Raw]|[ --&NLP|0 --=NPCStartIndex|0 --]|
   --&CardHTML|+[&CSR][&NLST][/td][/tr]
@@ -823,12 +1103,8 @@
     --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG];'][rbutton][&NPCName]::[&NLBT];[&NPCID][/rbutton][/td]
     --=NPCPageCount|[$NPCPageCount.Raw] + 1
   --%|
-  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "1"|[
-    --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td][td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td]
-  --]|
-  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "2"|[
-    --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td]
-  --]|
+  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "1"|[ --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td][td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td] --]|
+  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "2"|[ --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td] --]|
   --&NPCOutput|+[/tr][/t]
   --&CardHTML|+[&CCR][&NPCOutput][/td][/tr]
   --?[$NPCCount.Raw] -le [$NPCPageSize.Raw]|AfterNPCPageNav
@@ -874,12 +1150,8 @@
     --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG];'][rbutton][&NPCName]::[&NLBT];[&NPCID][/rbutton][/td]
     --=NPCPageCount|[$NPCPageCount.Raw] + 1
   --%|
-  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "1"|[
-    --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td][td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td]
-  --]|
-  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "2"|[
-    --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td]
-  --]|
+  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "1"|[ --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td][td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td] --]|
+  --?"[= [$NPCPageCount.Raw] % 3 ]" -eq "2"|[ --&NPCOutput|+[td style='[&GCS] background-color:[&NPCBG]; color:[&NPCBG]; font-size:1px; line-height:1px;']X[/td] --]|
   --&NPCOutput|+[/tr][/t]
   --&CardHTML|+[&CCR][&NPCOutput][/td][/tr]
   -->AppendAlphaNav|PICKER;[&NLLetters];[&NLP];[&NLPT];
@@ -900,8 +1172,7 @@
   --&IMCM|1 --&IPSB|0 --&IsNPCSpellManager|0 --&CMS|0 --&WhatDo|CHOOSE
 --<|
 --:VPSBC|Mode; Mule ID; Excluded Mule ID
-  --&PSBA|0
-  --&PSBCX|[%3%]
+  --&PSBA|0 --&PSBCX|[%3%]
   --?"[&PSBCX]" -eq "undefined"|&PSBCX;
   --?"[&PSBCID]" -eq "" -or "[&PSBCID]" -eq "undefined"|<
   -->BPSBL|[&PSBCID];[%1%];[&PSBCX]
@@ -950,8 +1221,7 @@
   -->SMCM| --&MCSID|[&reentryval] --&SSM|[&MCSID] --&ChosenChar|[&MCDID] --&CharID|[&MCDID] --^SpellList|
 --:PSBCD|
   -->SMCM|
-  --&IPSB|1 --&MCDID| --&MCSID| --&SSM|
-  --&PSBRE|[&reentryval]
+  --&IPSB|1 --&MCDID| --&MCSID| --&SSM| --&PSBRE|[&reentryval]
   --?"[&PSBRE]" -inc "!@!"|[ --~PSBSP|string;split;!@!;[&PSBRE] --&PSBCID|[&PSBSP1] --&ChosenChar|[&PSBCID] --]|
   --?"[&PSBCID]" -eq "" -or "[&PSBCID]" -eq "undefined"|CharacterSelect
   -->BPSBL|[&PSBCID];DEST;
@@ -966,8 +1236,7 @@
   --?"[&MCDID]" -eq "" -or "[&MCDID]" -eq "undefined"|PSBCD
   --?"[&PSBCID]" -eq "" -or "[&PSBCID]" -eq "undefined"|CharacterSelect
   -->SMCM|
-  --&IPSB|1
-  --&NLP|[&reentryval]
+  --&IPSB|1 --&NLP|[&reentryval]
   --?",START,BACK," -inc ",[&NLP],"|&NLP;0
   -->BPSBL|[&PSBCID];SOURCE;[&MCDID]
   --&MCDN|[*O:[&MCDID]:character:name]
@@ -995,8 +1264,7 @@
 --:NPCSpellSourceSelect|
   --?"[&SendingPlayerIsGM]" -ne "1"|CharacterSelect
   --?"[&ChosenChar]" -eq "" -or "[&ChosenChar]" -eq "undefined"|NPCSpellManager
-  --&CharID|[&ChosenChar]
-  --&NLP|[&reentryval]
+  --&CharID|[&ChosenChar] --&NLP|[&reentryval]
   --?",START,BACK," -inc ",[&NLP],"|&NLP;0
   -->BNPL|MULE
   --&NPCDisplayName|[*O:[&CharID]:character:name]
@@ -1012,12 +1280,9 @@
   --&WhatDo|CHOOSE --&IMCM|0 --&IsNPCSpellManager|1 --&CMS|0 --&ASMS|[&SSM],
   --^SpellList|
 --:SelectCharacter|
-  --&IMCM|0
-  --&ChosenChar|[&reentryval]
-  --&IsNPCSpellManager|0
+  --&IMCM|0 --&ChosenChar|[&reentryval] --&IsNPCSpellManager|0
 --:SelectCharacterReady|
-  --&CharID|[*[&ChosenChar]:character_id]
-  --&CMS|1
+  --&CharID|[*[&ChosenChar]:character_id] --&CMS|1
   --&ClassCheck|[*[&CharID]:class] [*[&CharID]:subclass] [*[&CharID]:cust_classname]
   --?"[*[&CharID]:multiclass1_flag]" -eq "1"|&ClassCheck;+ [*[&CharID]:multiclass1] [*[&CharID]:multiclass1_subclass]
   --?"[*[&CharID]:multiclass2_flag]" -eq "1"|&ClassCheck;+ [*[&CharID]:multiclass2] [*[&CharID]:multiclass2_subclass]
