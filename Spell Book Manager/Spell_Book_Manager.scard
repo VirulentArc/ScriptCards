@@ -155,8 +155,8 @@
   --&CardHTML|+[&CSR]Character Spell Mules[/td][/tr]
   --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&OddRowBG];'][rbutton]Character Assignments::SBMCharacterSelectMules;START[/rbutton][/td][/tr]
   --&CardHTML|+[&CSR]Diagnostics[/td][/tr]
-  --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&EvenRowBG];'][rbutton]Assignments Overview::SBMPermissionsReport;START[/rbutton][/td][/tr]
-  --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&OddRowBG];'][rbutton]Settings Backup / Restore::SBMSettingsBackup;START[/rbutton][/td][/tr]
+  --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&OddRowBG];'][rbutton]Assignments Overview::SBMPermissionsReport;START[/rbutton][/td][/tr]
+  --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] [&TC] background-color:[&EvenRowBG];'][rbutton]Settings Backup / Restore::SBMSettingsBackup;START[/rbutton][/td][/tr]
   --:SkipSettingsClassMules|
   --&CardHTML|+[&CSR]Theme[/td][/tr]
   --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] [&W6] background-color:[&OddRowBG];']Current:&nbsp;&nbsp;[&SBMTheme][/td][/tr]
