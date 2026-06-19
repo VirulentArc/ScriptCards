@@ -56,15 +56,16 @@ If you open the normal GitHub preview page instead, click **Raw** before copying
 5. Run the script once as the GM.
 6. On first run, the script will create these handouts automatically:
    - `Spell Book Manager Settings`
+   - `Spell Book Manager Settings Backups`
    - `Spell Book Manager [PlayerID]`
 
-The settings handout stores GM configuration. The player-specific handout is used to display spell descriptions when the spell description button is clicked.
+The settings handout stores GM configuration. The backup handout stores GM settings backups. The player-specific handout is used to display spell descriptions when the spell description button is clicked.
 
 The first time each player runs the script, a new `Spell Book Manager [PlayerID]` handout will be created.<br>
 All automatically created handouts are archived so they do not interfere with game journals.<br>
 ![Installation handouts](images/handouts.png)
 
-GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text is a JSON string that stores spell mule assignment information and player theme information. Also, do not delete the settings handout unless you are resetting all settings.<br>
+GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text stores spell mule assignment information, settings backup information, and player theme information. Also, do not delete the settings or backup handouts unless you are intentionally resetting settings or removing saved backups.<br>
 ![Settings JSON](images/JSON.png)
 
 ---
@@ -76,9 +77,10 @@ After installation, run the `Spell-Book-Manager` macro once as the GM.
 On first run, Spell Book Manager creates the handouts it needs:
 
 - `Spell Book Manager Settings`
+- `Spell Book Manager Settings Backups`
 - `Spell Book Manager [PlayerID]`
 
-The settings handout stores GM configuration. The player-specific handout is used to display formatted spell descriptions when the spell description button is clicked.
+The settings handout stores GM configuration. The backup handout stores manual and automatic GM settings backups. The player-specific handout is used to display formatted spell descriptions when the spell description button is clicked.
 
 The first time each player runs the script, Spell Book Manager creates that player's own `Spell Book Manager [PlayerID]` handout.
 
@@ -86,7 +88,7 @@ All automatically created handouts are archived so they do not clutter the Journ
 
 ![Installation handouts](images/handouts.png)
 
-GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text stores Spell Book Manager settings and player theme information.
+GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text stores Spell Book Manager settings, settings backups, and player theme information.
 
 ![Settings JSON](images/JSON.png)
 
@@ -158,8 +160,28 @@ GM Settings is where the GM configures how players get access to spells. The GM 
 - Character spell book assignments.
 - Custom class names.
 - Theme selection.
+- Settings backup and restore.
 
-Player settings only include theme selection. Only the GM sees class mule, character mule, spell book assignment, and custom class management options.
+Player settings only include theme selection. Only the GM sees class mule, character mule, spell book assignment, custom class management, and settings backup/restore options.
+
+---
+
+## Settings Backup and Restore
+
+Settings Backup / Restore is a GM-only tool reached from the GM Settings card under **Diagnostics**. It protects the GM settings stored in `Spell Book Manager Settings`.
+
+The backup tool can:
+
+- create or replace one manual backup on demand;
+- automatically save a backup before GM settings are changed;
+- keep the ten most recent automatic backups;
+- restore the manual backup or one of the automatic backups.
+
+Automatic backups are created before changes to GM-managed settings such as class spell mule assignments, character assignments, spell book assignments, and custom class settings. Theme changes are not included in the GM settings backup system.
+
+When a backup is restored, Spell Book Manager first saves the current settings as the newest automatic backup, then writes the selected backup back into the settings handout. This gives the GM a way to undo a restore if the wrong backup was selected.
+
+The backup data is stored in the archived `Spell Book Manager Settings Backups` handout. Do not manually edit that handout's GM Notes. Deleting the backup handout removes saved backups, but Spell Book Manager will recreate an empty backup handout the next time it needs one.
 
 ---
 
@@ -548,6 +570,14 @@ This is expected if the character has a spell book assigned. In that setup, the 
 ### Copy to Spell Book does not appear
 
 The selected character does not have an assigned spell book. Open **GM Settings**, go to **Character Assignments**, choose the character, and assign one `SBM_` character under **Spell Book Assignment**.
+
+### Settings Backup / Restore has no backups listed
+
+Create a manual backup from **GM Settings** > **Settings Backup / Restore**, or make a GM settings change to generate an automatic backup. Automatic backups are created before GM settings changes, so the first automatic backup appears only after a setting has been changed.
+
+### The backup handout is missing
+
+Spell Book Manager recreates `Spell Book Manager Settings Backups` when it needs it. If the handout was deleted, previously saved backups are gone, but the current settings in `Spell Book Manager Settings` are not deleted.
 
 ### A spell says Already Known
 
