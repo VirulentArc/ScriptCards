@@ -1,0 +1,269 @@
+{
+    "comments": {
+        "lineComment": "--/|"
+    },
+    "brackets": [
+        [
+            "{",
+            "}"
+        ],
+        [
+            "[",
+            "]"
+        ],
+        [
+            "(",
+            ")"
+        ]
+    ],
+    "autoClosingPairs": [
+        [
+            "{",
+            "}"
+        ],
+        [
+            "[",
+            "]"
+        ],
+        [
+            "(",
+            ")"
+        ],
+        [
+            "'",
+            "'"
+        ],
+        [
+            "\"",
+            "\""
+        ],
+        {
+            "open": "--@",
+            "close": "|"
+        },
+        {
+            "open": "--a",
+            "close": "|"
+        },
+        {
+            "open": "--A",
+            "close": "|"
+        },
+        {
+            "open": "--:",
+            "close": "|"
+        },
+        {
+            "open": "--^",
+            "close": "|"
+        },
+        {
+            "open": "--~",
+            "close": "|"
+        },
+        {
+            "open": "--c",
+            "close": "|"
+        },
+        {
+            "open": "--C",
+            "close": "|"
+        },
+        {
+            "open": "--/",
+            "close": "|"
+        },
+        {
+            "open": "--?",
+            "close": "|"
+        },
+        {
+            "open": "--]",
+            "close": "|"
+        },
+        {
+            "open": "--e",
+            "close": "|"
+        },
+        {
+            "open": "--X",
+            "close": "|"
+        },
+        {
+            "open": "--x",
+            "close": "|"
+        },
+        {
+            "open": "--*",
+            "close": "|"
+        },
+        {
+            "open": "--i",
+            "close": "|"
+        },
+        {
+            "open": "--I",
+            "close": "|"
+        },
+        {
+            "open": "--l",
+            "close": "|"
+        },
+        {
+            "open": "--L",
+            "close": "|"
+        },
+        {
+            "open": "--%",
+            "close": "|"
+        },
+        {
+            "open": "--!",
+            "close": "|"
+        },
+        {
+            "open": "--+",
+            "close": "|"
+        },
+        {
+            "open": "--#",
+            "close": "|"
+        },
+        {
+            "open": "-->",
+            "close": "|"
+        },
+        {
+            "open": "--<",
+            "close": "|"
+        },
+        {
+            "open": "--R",
+            "close": "|"
+        },
+        {
+            "open": "--r",
+            "close": "|"
+        },
+        {
+            "open": "--=",
+            "close": "|"
+        },
+        {
+            "open": "--&",
+            "close": "|"
+        },
+        {
+            "open": "--s",
+            "close": "|"
+        },
+        {
+            "open": "--S",
+            "close": "|"
+        },
+        {
+            "open": "--v",
+            "close": "|"
+        },
+        {
+            "open": "--V",
+            "close": "|"
+        },
+        {
+            "open": "--\\",
+            "close": "|"
+        },
+        {
+            "open": "--d",
+            "close": "|"
+        },
+        {
+            "open": "--D",
+            "close": "|"
+        },
+        {
+            "open": "--h",
+            "close": "|"
+        },
+        {
+            "open": "--H",
+            "close": "|"
+        },
+        {
+            "open": "--P",
+            "close": "|"
+        },
+        {
+            "open": "--p",
+            "close": "|"
+        },
+        {
+            "open": "--w",
+            "close": "|"
+        },
+        {
+            "open": "--W",
+            "close": "|"
+        },
+        {
+            "open": "--z",
+            "close": "|"
+        },
+        {
+            "open": "--Z",
+            "close": "|"
+        }
+    ],
+    "surroundingPairs": [
+        [
+            "{",
+            "}"
+        ],
+        [
+            "[",
+            "]"
+        ],
+        [
+            "(",
+            ")"
+        ],
+        [
+            "\"",
+            "\""
+        ],
+        [
+            "'",
+            "'"
+        ]
+    ],
+    "onEnterRules": [
+        {
+            "beforeText": "--(@|:|\\\\^|~|[cC]|[dD]|[hH]|[pP]|[rR]|[wW]|[zZ]|\\\\\\\\|\\\\*|[lL]|!|#|\\\\>|=|&|[sS]|[vV]|[xX]|a|A|\\\\+|%)",
+            "action": {
+                "indent": "none",
+                "appendText": "--"
+            }
+        },
+        {
+            "beforeText": "^\\\\s*--%(.+)\\\\|.*$",
+            "action": {
+                "indent": "indent",
+                "appendText": "--\\n--%|"
+            }
+        },
+        {
+            "beforeText": "^--$",
+            "action": {
+                "indent": "none",
+                "removeText": 2
+            }
+        },
+        {
+            "beforeText": "^--\\\\?.+(?=\\\\|\\\\[$)",
+            "action": {
+                "indent": "indent",
+                "appendText": "--\\n--]|"
+            }
+        }
+    ]
+}

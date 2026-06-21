@@ -1,0 +1,339 @@
+{
+  "editor.tokenColorCustomizations": {
+    "[ENTER_YOUR_THEME_NAME_HERE]": {
+      "textMateRules": [
+        {
+          "scope": "doubledash.scriptcards",
+          "settings": {
+            "foreground": "#616161"
+          }
+        },
+        {
+          "scope": "_string.reference.scriptcards",
+          "settings": {
+            "foreground": "#66bb6a"
+          }
+        },
+        {
+          "scope": "_string.tag.scriptcards",
+          "settings": {
+            "foreground": "#66bb6a"
+          }
+        },
+        {
+          "scope": "_string.identifier.scriptcards",
+          "settings": {
+            "foreground": "#66bb6a"
+          }
+        },
+        {
+          "scope": "parameter.reference.scriptcards",
+          "settings": {
+            "foreground": "#ab47bc"
+          }
+        },
+        {
+          "scope": "token.reference.scriptcards",
+          "settings": {
+            "foreground": "#47bca5"
+          }
+        },
+        {
+          "scope": "repeatingattribute.reference.scriptcards",
+          "settings": {
+            "foreground": "#47bca5"
+          }
+        },
+        {
+          "scope": "parameter.tag.scriptcards",
+          "settings": {
+            "foreground": "#ce93d8"
+          }
+        },
+        {
+          "scope": "parameter.identifier.scriptcards",
+          "settings": {
+            "foreground": "#ce93d8"
+          }
+        },
+        {
+          "scope": "condition.statement.scriptcards",
+          "settings": {
+            "foreground": "#4fc3f7"
+          }
+        },
+        {
+          "scope": "repeating.reference.scriptcards",
+          "settings": {
+            "foreground": "#ffb74d"
+          }
+        },
+        {
+          "scope": "selected.reference.scriptcards",
+          "settings": {
+            "foreground": "#ffb74d"
+          }
+        },
+        {
+          "scope": "roll.reference.scriptcards",
+          "settings": {
+            "foreground": "#6a5bd6"
+          }
+        },
+        {
+          "scope": "roll.tag.scriptcards",
+          "settings": {
+            "foreground": "#9a6700"
+          }
+        },
+        {
+          "scope": "roll.identifier.scriptcards",
+          "settings": {
+            "foreground": "#9a6700"
+          }
+        },
+        {
+          "scope": "condition.statement.scriptcards quoted.scriptcards",
+          "settings": {
+            "foreground": "#374151"
+          }
+        },
+        {
+          "scope": "_comment.statement.scriptcards",
+          "settings": {
+            "foreground": "#616161"
+          }
+        },
+        {
+          "scope": "branchlabel.statement.scriptcards",
+          "settings": {
+            "foreground": "#e57373"
+          }
+        },
+        {
+          "scope": "exit.statement.scriptcards",
+          "settings": {
+            "foreground": "#e53935"
+          }
+        },
+        {
+          "scope": "operator.scriptcards",
+          "settings": {
+            "foreground": "#e53935"
+          }
+        },
+        {
+          "scope": "separatorpipe.scriptcards",
+          "settings": {
+            "foreground": "#616161"
+          }
+        },
+        {
+          "scope": "branch.target.scriptcards",
+          "settings": {
+            "foreground": "#ce93d8"
+          }
+        },
+        {
+          "scope": "function.result.scriptcards",
+          "settings": {
+            "foreground": "#ba68c8"
+          }
+        },
+        {
+          "scope": "support.variable.property.loopname.scriptcards",
+          "settings": {
+            "foreground": "#00E5FF"
+          }
+        },
+        {
+          "scope": "loop.type.scriptcards",
+          "settings": {
+            "foreground": "#ff9800"
+          }
+        },
+        {
+          "scope": "function.category.array.scriptcards",
+          "settings": {
+            "foreground": "#4fc3f7"
+          }
+        },
+        {
+          "scope": "function.method.array.scriptcards",
+          "settings": {
+            "foreground": "#81d4fa"
+          }
+        },
+        {
+          "scope": "array.reference.scriptcards",
+          "settings": {
+            "foreground": "#4fc3f7"
+          }
+        },
+        {
+          "scope": "function.category.string.scriptcards",
+          "settings": {
+            "foreground": "#66bb6a"
+          }
+        },
+        {
+          "scope": "function.category.scriptcards",
+          "settings": {
+            "foreground": "#80cbc4"
+          }
+        },
+        {
+          "scope": "function.category.repeatingrow.scriptcards",
+          "settings": {
+            "foreground": "#80cbc4"
+          }
+        },
+        {
+          "scope": "function.category.hashtable.scriptcards",
+          "settings": {
+            "foreground": "#f48fb1"
+          }
+        },
+        {
+          "scope": "function.category.roll.scriptcards",
+          "settings": {
+            "foreground": "#fff176"
+          }
+        },
+        {
+          "scope": "function.method.scriptcards",
+          "settings": {
+            "foreground": "#ffd54f"
+          }
+        },
+        {
+          "scope": "function.method.loop.scriptcards",
+          "settings": {
+            "foreground": "#ffcc80"
+          }
+        },
+        {
+          "scope": "function.argument.scriptcards",
+          "settings": {
+            "foreground": "#374151"
+          }
+        },
+        {
+          "scope": "object.reference.scriptcards",
+          "settings": {
+            "foreground": "#4dd0e1"
+          }
+        },
+        {
+          "scope": "hashtable.name.scriptcards",
+          "settings": {
+            "foreground": "#f48fb1"
+          }
+        },
+        {
+          "scope": "hashtable.key.scriptcards",
+          "settings": {
+            "foreground": "#f8bbd0"
+          }
+        },
+        {
+          "scope": "hashtable.reference.scriptcards",
+          "settings": {
+            "foreground": "#f48fb1"
+          }
+        },
+        {
+          "scope": "color.reference.scriptcards",
+          "settings": {
+            "foreground": "#90caf9"
+          }
+        },
+        {
+          "scope": "keyword.control.branch.target.scriptcards",
+          "settings": {
+            "foreground": "#d6a3ff"
+          }
+        },
+        {
+          "scope": "support.variable.property.loopname.scriptcards",
+          "settings": {
+            "foreground": "#00E5FF"
+          }
+        },
+        {
+          "scope": "keyword.control.loop.scriptcards",
+          "settings": {
+            "foreground": "#ff9f43"
+          }
+        },
+        {
+          "scope": "variable.parameter.loop.scriptcards",
+          "settings": {
+            "foreground": "#ffd166"
+          }
+        },
+        {
+          "scope": "variable.other.function.result.scriptcards",
+          "settings": {
+            "foreground": "#8be9fd"
+          }
+        },
+        {
+          "scope": "support.function.scriptcards",
+          "settings": {
+            "foreground": "#ffd866"
+          }
+        },
+        {
+          "scope": "variable.parameter.function.scriptcards",
+          "settings": {
+            "foreground": "#b8c7ff"
+          }
+        },
+        {
+          "scope": "variable.other.object.reference.scriptcards",
+          "settings": {
+            "foreground": "#4dd0e1"
+          }
+        },
+        {
+          "scope": "variable.other.array.reference.scriptcards",
+          "settings": {
+            "foreground": "#64b5f6"
+          }
+        },
+        {
+          "scope": "variable.other.hashtable.reference.scriptcards",
+          "settings": {
+            "foreground": "#f48fb1"
+          }
+        },
+        {
+          "scope": "entity.name.type.hashtable.scriptcards",
+          "settings": {
+            "foreground": "#ff79c6"
+          }
+        },
+        {
+          "scope": "string.quoted.hashtable.key.scriptcards",
+          "settings": {
+            "foreground": "#f8bbd0"
+          }
+        },
+        {
+          "scope": "variable.other.calculation.reference.scriptcards",
+          "settings": {
+            "foreground": "#a5d6a7"
+          }
+        },
+        {
+          "scope": "constant.other.color.reference.scriptcards",
+          "settings": {
+            "foreground": "#ffcc80"
+          }
+        }
+      ]
+    },
+    "textMateRules": []
+  }
+}
