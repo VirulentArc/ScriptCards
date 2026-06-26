@@ -245,7 +245,9 @@ To manage character-specific spell mules:
 4. Choose a character.
 5. Use the available, added, inherited, and blocked lists to control that character's spell mule access.
 
-Only valid player character are shown here. NPCs, `SBM_` spell mule characters, and ScriptCards mule characters are filtered out.
+Only valid player characters are shown here. NPCs, `SBM_` spell mule characters, and ScriptCards mule characters are filtered out.
+
+Newly created characters must have a class selected before using Character Assignments. Characters without class information will not appear as valid player characters.
 
 Character-specific mule settings can:
 
@@ -585,6 +587,8 @@ The exact spell text can be adjusted, but the important part is using `@{spellle
 ### No characters appear
 
 Make sure the character is a PC, not an NPC, and that the character sheet has normal class attributes. For normal players, the character must be controlled by that player. For GMs, all valid PCs should appear.
+
+If this is a newly created character, select a class on the character sheet before using Spell Book Manager. Characters without class information will not appear as valid player characters.
 
 Spell Book Manager excludes NPCs, `SBM_` spell mules, and ScriptCards mule characters from the normal player character picker.
 
