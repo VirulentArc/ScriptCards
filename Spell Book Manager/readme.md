@@ -11,23 +11,20 @@ The script is designed for the official D&D 5E 2014 by Roll20 character sheet an
 ## Requirements
 
 - A Roll20 Pro account with Mod/API access.
-- ScriptCards installed.
-- ScriptCards 3.0.22 or newer is required. If Roll20 One-Click has an older ScriptCards version, install ScriptCards manually before using Spell Book Manager.
+- ScriptCards 3.0.23d or newer, installed from Roll20 One-Click.
 - The normal/default Roll20 Mod sandbox. The Experimental sandbox is currently known to interfere with spell copying; this is being investigated.
 - The official D&D 5E 2014 by Roll20 character sheet.
 - One or more spell mule characters whose names begin with `SBM_`.
 
 ### Installing ScriptCards
 
-If the Roll20 One-Click version of ScriptCards is 3.0.22 or newer, install it from **Settings** > **Mod (API) Scripts ** > **Script Library**.
+Install ScriptCards from Roll20 One-Click:
 
-If Roll20 One-Click has an older version, install ScriptCards manually from the [ScriptCards GitHub repository](https://github.com/kjaegers/ScriptCards):
-
-1. Open the [ScriptCards_API folder](https://github.com/kjaegers/ScriptCards/tree/main/ScriptCards_API).
-2. Open `scriptcards.js`.
-3. Copy the full script code.
-4. In Roll20, open **Settings** > **Mod (API) Scripts **.
-5. Create a new script, paste the ScriptCards code, save it, and restart the Mod sandbox if needed.
+1. In Roll20, open **Settings** > **Mod (API) Scripts**.
+2. Open the **Script Library** tab.
+3. Search for **ScriptCards**.
+4. Add ScriptCards to the game.
+5. Restart the Mod sandbox if Roll20 does not do so automatically.
 
 ---
 
