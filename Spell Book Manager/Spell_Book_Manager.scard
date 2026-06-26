@@ -3,8 +3,8 @@
   --/| Spell Book Manager
   --/| Version: v1.0.0
   --/| Author: Timothy Beasley
-  --/|Requested by: Gauss
-  --/|Special thanks: Gauss for feature guidance and testing
+  --/| Requested by: Gauss
+  --/| Special thanks: Gauss for feature guidance and testing
   --/| GitHub: https://github.com/VirulentArc/ScriptCards/tree/main/Spell%20Book%20Manager
   --/| ==========================================================================
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
