@@ -13,6 +13,7 @@ The script is designed for the official D&D 5E 2014 by Roll20 character sheet an
 - A Roll20 Pro account with Mod/API access.
 - ScriptCards installed.
 - ScriptCards 3.0.22 or newer is required. If Roll20 One-Click has an older ScriptCards version, install ScriptCards manually before using Spell Book Manager.
+- The normal/default Roll20 Mod sandbox. The Experimental sandbox is currently known to interfere with spell copying; this is being investigated.
 - The official D&D 5E 2014 by Roll20 character sheet.
 - One or more spell mule characters whose names begin with `SBM_`.
 
@@ -56,16 +57,16 @@ If you open the normal GitHub preview page instead, click **Raw** before copying
 5. Run the script once as the GM.
 6. On first run, the script will create these handouts automatically:
    - `Spell Book Manager Settings`
-   - `Spell Book Manager Settings Backups`
+   - `Spell Book Manager Documentation`
    - `Spell Book Manager [PlayerID]`
 
-The settings handout stores GM configuration. The backup handout stores GM settings backups. The player-specific handout is used to display spell descriptions when the spell description button is clicked.
+The settings handout stores GM configuration. The documentation handout is an in-game guide visible to all players. The player-specific handout is used to display spell descriptions when the spell description button is clicked. The backup handout, `Spell Book Manager Settings Backups`, is created later when Settings Backup / Restore is opened or when an automatic settings backup is needed.
 
 The first time each player runs the script, a new `Spell Book Manager [PlayerID]` handout will be created.<br>
-All automatically created handouts are archived so they do not interfere with game journals.<br>
+The settings, backup, and player-specific handouts are archived so they do not interfere with game journals. The documentation handout is visible in player journals so players can open the guide from inside Roll20.<br>
 ![Installation handouts](images/handouts.png)
 
-GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text stores spell mule assignment information, settings backup information, and player theme information. Also, do not delete the settings or backup handouts unless you are intentionally resetting settings or removing saved backups.<br>
+GMs will see a string of characters in the GM Notes of the settings, backup, and player-specific handouts. Do not manually edit the GM Notes. That text stores spell mule assignment information, settings backup information, and player theme information. Also, do not delete the settings or backup handouts unless you are intentionally resetting settings or removing saved backups.<br>
 ![Settings JSON](images/JSON.png)
 
 ---
@@ -74,25 +75,35 @@ GMs will see a string of characters in the GM Notes of the handouts. Do not manu
 
 After installation, run the `Spell-Book-Manager` macro once as the GM.
 
-On first run, Spell Book Manager creates the handouts it needs:
+On first run, Spell Book Manager creates the handouts it needs immediately:
 
 - `Spell Book Manager Settings`
-- `Spell Book Manager Settings Backups`
+- `Spell Book Manager Documentation`
 - `Spell Book Manager [PlayerID]`
 
-The settings handout stores GM configuration. The backup handout stores manual and automatic GM settings backups. The player-specific handout is used to display formatted spell descriptions when the spell description button is clicked.
+The settings handout stores GM configuration. The documentation handout is a compact in-game guide visible to all players. The player-specific handout is used to display formatted spell descriptions when the spell description button is clicked. The backup handout, `Spell Book Manager Settings Backups`, is created later when Settings Backup / Restore is opened or when an automatic settings backup is needed.
 
 The first time each player runs the script, Spell Book Manager creates that player's own `Spell Book Manager [PlayerID]` handout.
 
-All automatically created handouts are archived so they do not clutter the Journal.
+The settings, backup, and player-specific handouts are archived so they do not clutter the Journal. The documentation handout is visible in player journals.
 
 ![Installation handouts](images/handouts.png)
 
-GMs will see a string of characters in the GM Notes of the handouts. Do not manually edit the GM Notes. That text stores Spell Book Manager settings, settings backups, and player theme information.
+GMs will see a string of characters in the GM Notes of the settings, backup, and player-specific handouts. Do not manually edit the GM Notes. That text stores Spell Book Manager settings, settings backups, and player theme information.
 
 ![Settings JSON](images/JSON.png)
 
 Some Spell Book Manager menus can be long. If Roll20 does not automatically jump to the newest menu after you click a button, manually scroll to the bottom of chat. Roll20 will sometimes stop auto-scrolling when the chat window is already scrolled upward.
+
+---
+
+## Documentation Handout
+
+On GM run, Spell Book Manager creates an in-game handout named `Spell Book Manager Documentation` if it does not already exist.
+
+This handout is visible to all players and contains a compact guide covering setup, spell mules, basic player use, assigned spell books, Move Spells, GM tools, backups, themes, and troubleshooting. It is meant as a quick Roll20-side reference, not as a replacement for this README.
+
+If the documentation handout is deleted, Spell Book Manager will recreate it the next time the GM runs the macro. If the script has been updated and you want the newest generated guide, delete the old `Spell Book Manager Documentation` handout and run the macro once as the GM.
 
 ---
 
@@ -160,9 +171,25 @@ GM Settings is where the GM configures how players get access to spells. The GM 
 - Character spell book assignments.
 - Custom class names.
 - Theme selection.
+- Assignments Overview diagnostics.
 - Settings backup and restore.
 
-Player settings only include theme selection. Only the GM sees class mule, character mule, spell book assignment, custom class management, and settings backup/restore options.
+Player settings only include theme selection. Only the GM sees class mule, character mule, spell book assignment, custom class management, diagnostics, and settings backup/restore options.
+
+---
+
+## Assignments Overview
+
+Assignments Overview is a GM-only diagnostics report reached from the GM Settings card under **Diagnostics**. The card title shown in chat is **Permissions Report**.
+
+The report shows:
+
+- assigned spell books by character;
+- class spell mule assignments;
+- character-specific added and blocked mules;
+- warning flags for archived characters, archived mules, 2024 sheets, and stored spell mules that no longer have the `SBM_` prefix.
+
+If the report finds a stored mule ID for a mule that no longer exists, Spell Book Manager removes that missing ID automatically and shows a short cleanup note at the bottom of the report. The most likely cause is that a mule was deleted before being unassigned.
 
 ---
 
@@ -476,8 +503,11 @@ Spell Book Manager includes multiple visual themes.
 Current themes:
 
 - 2014
-- 2024
-- AD&D2E
+- 2024 Core
+- R20 2024
+- AD&D 2E
+- 2E Revised
+- D&D 3E
 - Arcane
 - Brasswork
 - Eldritch
@@ -500,6 +530,14 @@ There is no exact universal spell limit. Some sheets may work fine with a large 
 For best results, do not create one giant spell mule containing every spell in the game. Split large spell libraries into smaller `SBM_` spell mules, such as class-based, sourcebook-based, subclass-based, player-specific, or campaign-specific spell mules.
 
 If a character sheet or spell mule starts loading slowly, failing to update correctly, or behaving strangely, reduce the number of spell rows on that sheet.
+
+---
+
+## Sandbox Compatibility
+
+Use the normal/default Roll20 Mod sandbox with Spell Book Manager. The Experimental sandbox is currently known to interfere with spell copying, causing copied spells to fail or copy incompletely. This compatibility issue is being investigated.
+
+If spells are not copying correctly, switch the game back to the normal/default sandbox, restart the Mod sandbox, and test again before troubleshooting spell mule setup.
 
 ---
 
@@ -556,6 +594,12 @@ Characters controlled by **All Players** are not shown in the available characte
 ### No spell mules are assigned
 
 Open settings as the GM and assign one or more `SBM_` spell mules to the character's class or directly to the character.
+
+### Spells do not copy properly
+
+Make sure the game is using the normal/default Roll20 Mod sandbox. Spell Book Manager currently has a known compatibility issue with the Experimental sandbox where spell copying may fail or copy incomplete spell data.
+
+After switching back to the normal/default sandbox, restart the Mod sandbox and test spell copying again.
 
 ### A spell mule does not appear in an available spell mule list
 
