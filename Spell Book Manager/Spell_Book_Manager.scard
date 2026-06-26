@@ -1,5 +1,12 @@
 !scriptcards {{ --/|{& skip}
-  --/| RC 1.6
+  --/| ==========================================================================
+  --/| Spell Book Manager
+  --/| Version: v1.0.0
+  --/| Author: Timothy Beasley
+  --/|Requested by: Gauss
+  --/|Special thanks: Gauss for feature guidance and testing
+  --/| GitHub: https://github.com/VirulentArc/ScriptCards/tree/main/Spell%20Book%20Manager
+  --/| ==========================================================================
   --#Whisper|self --#emoteState|0 --#Debug|0 --#reentrant|SBM [&SendingPlayerID] --#hidetitlecard|1
   --&SDHN|Spell Book Manager [&SendingPlayerID]
   --~|array;objects:handout;HandoutID;[&SDHN]
@@ -168,7 +175,8 @@
   --&BackButton|[&BackBtn]SBMSettings;CharacterSelect[/rbutton]
   --&SettingsButton|[&SettingsBtn]SBMPermissionsReport[/rbutton]
   -->OpenSBMCard|Permissions Report
-  --&CardHTML|+[&CTR][i]Read-only report of stored Spell Book Manager assignments. This does not repair or change settings.[/i][/td][/tr]
+  --=PRRemovedMissingCount|0
+  --&PRRemovedMissingReport|
   --~|array;objects:character;SBMReportCharacters;
   --&CardHTML|+[&CSR]Assigned Spell Books[/td][/tr]
   --=PRSBCount|0
@@ -178,7 +186,10 @@
     --~PRSpellBookID|string;before;,;[&PRCSB]
     --?"[&PRSpellBookID]" -eq "" -or "[&PRSpellBookID]" -eq "undefined"|%
     -->BuildPermissionOwnerInfo|[&PRSpellBookOwnerLoop]
+    --&PRRepairKey|char_[&PRSpellBookOwnerLoop]_spellbook
+    --&PRCleanupContext|[&PROwnerName]: assigned spell book
     -->BuildPermissionMuleInfo|[&PRSpellBookID]
+    --?"[&PRMuleDisplay]" -eq ""|%
     --&PRRowBG|[&OddRowBG]
     --?"[= [$PRSBCount.Raw] % 2 ]" -eq "1"|&PRRowBG;[&EvenRowBG]
     --&CardHTML|+[tr][td style='[&B0] [&RP] [&CW] background-color:[&PRRowBG];'][b][&PROwnerName][/b][&PROwnerFlags] &#x2192; [&PRMuleDisplay][&PRMuleFlags][/td][/tr]
@@ -194,11 +205,20 @@
     --&PRClassMuleList|
     --=PRClassMuleCount|0
     --~|array;fromstring;SBMReportClassMuleIDs;,;[&PRClassMules]
+    --~|array;define;PRSortedMuleRows;dummy
+    --~|array;removeat;PRSortedMuleRows;0
     --%PRClassMuleLoop|foreach;SBMReportClassMuleIDs
       --?"[&PRClassMuleLoop]" -eq "" -or "[&PRClassMuleLoop]" -eq "undefined"|%
+      --&PRRepairKey|[&PRClass]
+      --&PRCleanupContext|[&PRClass(totitlecase)]: class spell mule
       -->BuildPermissionMuleInfo|[&PRClassMuleLoop]
+      --?"[&PRMuleDisplay]" -eq ""|%
+      --&PRSortedMuleRows(99999)|[&PRMuleDisplay][&PRMuleFlags]
+    --%|
+    --~|array;sort;PRSortedMuleRows
+    --%PRSortedMuleLoop|foreach;PRSortedMuleRows
       --?[$PRClassMuleCount.Raw] -gt 0|[ --&PRClassMuleList|+,&#32; --]|
-      --&PRClassMuleList|+[&PRMuleDisplay][&PRMuleFlags]
+      --&PRClassMuleList|+[&PRSortedMuleLoop]
       --=PRClassMuleCount|[$PRClassMuleCount.Raw] + 1
     --%|
     --?[$PRClassMuleCount.Raw] -eq 0|%
@@ -216,11 +236,20 @@
     --&PRIncludeMuleList|
     --=PRIncludeMuleCount|0
     --~|array;fromstring;SBMReportIncludeMuleIDs;,;[&PRInclude]
+    --~|array;define;PRSortedMuleRows;dummy
+    --~|array;removeat;PRSortedMuleRows;0
     --%PRIncludeMuleLoop|foreach;SBMReportIncludeMuleIDs
       --?"[&PRIncludeMuleLoop]" -eq "" -or "[&PRIncludeMuleLoop]" -eq "undefined"|%
+      --&PRRepairKey|char_[&PROwnerLoop]_include
+      --&PRCleanupContext|[&PROwnerName]: added character mule
       -->BuildPermissionMuleInfo|[&PRIncludeMuleLoop]
+      --?"[&PRMuleDisplay]" -eq ""|%
+      --&PRSortedMuleRows(99999)|[&PRMuleDisplay][&PRMuleFlags]
+    --%|
+    --~|array;sort;PRSortedMuleRows
+    --%PRSortedMuleLoop|foreach;PRSortedMuleRows
       --?[$PRIncludeMuleCount.Raw] -gt 0|[ --&PRIncludeMuleList|+,&#32; --]| 
-      --&PRIncludeMuleList|+[&PRMuleDisplay][&PRMuleFlags]
+      --&PRIncludeMuleList|+[&PRSortedMuleLoop]
       --=PRIncludeMuleCount|[$PRIncludeMuleCount.Raw] + 1
     --%|
     --?[$PRIncludeMuleCount.Raw] -gt 0|[
@@ -233,11 +262,20 @@
     --&PRExcludeMuleList|
     --=PRExcludeMuleCount|0
     --~|array;fromstring;SBMReportExcludeMuleIDs;,;[&PRExclude]
+    --~|array;define;PRSortedMuleRows;dummy
+    --~|array;removeat;PRSortedMuleRows;0
     --%PRExcludeMuleLoop|foreach;SBMReportExcludeMuleIDs
       --?"[&PRExcludeMuleLoop]" -eq "" -or "[&PRExcludeMuleLoop]" -eq "undefined"|%
+      --&PRRepairKey|char_[&PROwnerLoop]_exclude
+      --&PRCleanupContext|[&PROwnerName]: blocked character mule
       -->BuildPermissionMuleInfo|[&PRExcludeMuleLoop]
+      --?"[&PRMuleDisplay]" -eq ""|%
+      --&PRSortedMuleRows(99999)|[&PRMuleDisplay][&PRMuleFlags]
+    --%|
+    --~|array;sort;PRSortedMuleRows
+    --%PRSortedMuleLoop|foreach;PRSortedMuleRows
       --?[$PRExcludeMuleCount.Raw] -gt 0|[ --&PRExcludeMuleList|+,&#32; --]| 
-      --&PRExcludeMuleList|+[&PRMuleDisplay][&PRMuleFlags]
+      --&PRExcludeMuleList|+[&PRSortedMuleLoop]
       --=PRExcludeMuleCount|[$PRExcludeMuleCount.Raw] + 1
     --%|
     --?[$PRExcludeMuleCount.Raw] -gt 0|[
@@ -248,6 +286,10 @@
     --]|
   --%|
   --?[$PROverrideCount.Raw] -eq 0|[ --&CardHTML|+[&CTR][i]No character-specific added or blocked mules found.[/i][/td][/tr] --]|
+  --?[$PRRemovedMissingCount.Raw] -gt 0|[
+    -->WriteSBMSettings|AUTO
+    --&CardHTML|+[&CTR][i][$PRRemovedMissingCount.Raw] missing mule ID(s) removed. The most likely cause is that a mule was deleted before being unassigned.[/i][&PRRemovedMissingReport][/td][/tr]
+  --]|
   -->ShowSBMCard|
 --X|
 --:BuildPermissionOwnerInfo|CharacterID
@@ -261,14 +303,42 @@
   --&PRMuleID|[%1%]
   --&PRMuleFlags|
   --&PRMuleName|[*O:[&PRMuleID]:character:name]
-  --?"[&PRMuleName]" -eq "" -or "[&PRMuleName]" -eq "undefined"|[ --&PRMuleName|Missing mule --&PRMuleFlags|+ (missing mule ID [&PRMuleID]) --]|
+  --?"[&PRMuleName]" -eq "" -or "[&PRMuleName]" -eq "undefined"|BuildMissingPermissionMuleInfo
   --?"[*O:[&PRMuleID]:character:archived]" -eq "true"|&PRMuleFlags;+ (archived mule)
   --?"[*O:[&PRMuleID]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|&PRMuleFlags;+ (2024 sheet)
   --&PRIsSBM|0
   --?"[&PRMuleName]" -imatch "^SBM_"|&PRIsSBM;1
-  --?"[&PRIsSBM]" -ne "1" -and "[&PRMuleName]" -ninc "Missing mule"|&PRMuleFlags;+ (not SBM_)
+  --?"[&PRIsSBM]" -ne "1"|&PRMuleFlags;+ (not SBM_)
   --&PRMuleDisplay|[&PRMuleName]
   --~PRMuleDisplay|string;replaceall;SBM_;;[&PRMuleDisplay]
+--<|
+--:BuildMissingPermissionMuleInfo|
+  --&PRMuleDisplay|
+  --&PRMuleFlags|
+  --?"[&PRRepairKey]" -eq "" -or "[&PRRepairKey]" -eq "undefined"|<
+  -->CleanMissingPermissionMuleID|[&PRRepairKey];[&PRMuleID]
+--<|
+--:CleanMissingPermissionMuleID|SettingsKey;MuleID
+  --&RMKey|[%1%]
+  --&RMID|[%2%]
+  --~RMKey|string;trim;[&RMKey]
+  --~RMID|string;trim;[&RMID]
+  --?"[&RMKey]" -eq "" -or "[&RMKey]" -eq "undefined" -or "[&RMID]" -eq "" -or "[&RMID]" -eq "undefined"|<
+  --&RMString1|[&SBMR]
+  --&RMNeedle|!q![&RMKey]!q!:!q!
+  --?"[&RMString1]" -ninc "[&RMNeedle]"|<
+  --~RMString2|string;after;[&RMNeedle];[&RMString1]
+  --?"[&RMString2]" -eq ""|<
+  --~RMString3|string;before;[&RMString2];[&RMString1]
+  --~RMData|string;before;!q!;[&RMString2]
+  --~RMStringTail|string;after;!q!;[&RMString2]
+  --&RMEntry|[&RMID],
+  --?"[&RMData]" -ninc "[&RMEntry]"|<
+  --~RMNewData|string;replaceall;[&RMEntry];;[&RMData]
+  --&SBMR|[&RMString3][&RMNewData]!q![&RMStringTail]
+  --h:SBMSettings("[&RMKey]")|[&RMNewData]
+  --=PRRemovedMissingCount|[$PRRemovedMissingCount.Raw] + 1
+  --&PRRemovedMissingReport|+[br]&#x2022; [&PRCleanupContext]
 --<|
 --:EnsureSBMBackupHandout|
   --?"[&SBMBHID]" -ne "" -and "[&SBMBHID]" -ne "undefined"|<
