@@ -370,6 +370,8 @@ This section covers the spell-copying and character-management tools used by bot
 
 If a player controls more than one valid character, Spell Book Manager first asks which character to manage. If the player only controls one valid character, this step is skipped.
 
+If the character was just created, close the character sheet and reopen it before copying or moving spells. Roll20 can fail to show newly copied spell rows on a character sheet that is still open from character creation.
+
 All non-Warlock player characters without an assigned spell book open directly to the available spell list.
 
 From the spell list, players can normally:
@@ -597,6 +599,12 @@ Open settings as the GM and assign one or more `SBM_` spell mules to the charact
 Make sure the game is using the normal/default Roll20 Mod sandbox. Spell Book Manager currently has a known compatibility issue with the Experimental sandbox where spell copying may fail or copy incomplete spell data.
 
 After switching back to the normal/default sandbox, restart the Mod sandbox and test spell copying again.
+
+### Copied spells do not appear on a newly created character
+
+If the character was just created and the copied spells do not appear on the sheet, close the character sheet and reopen it. Roll20 can fail to refresh newly added repeating spell rows while a freshly created character sheet is still open.
+
+For best results, after creating a character, close the sheet, reopen it, and then start copying or moving spells with Spell Book Manager.
 
 ### A spell mule does not appear in an available spell mule list
 
