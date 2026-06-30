@@ -1,7 +1,7 @@
 !scriptcards {{ --/|{& skip}
   --/| ==========================================================================
   --/| Spell Book Manager
-  --/| Version: v1.0.0
+  --/| Version: v1.0.1
   --/| Author: Timothy Beasley
   --/| Requested by: Gauss
   --/| Special thanks: Gauss for feature guidance and testing
@@ -745,7 +745,8 @@
   --%|
 --<|
 --:SBMClassMules|
-  --&MALMSM| --&MALL|
+  --?"[&PreserveMAL]" -ne "1"|[ --&MALMSM| --&MALL| --]|
+  --&PreserveMAL|
   --?"[&reentryval]" -inc "MAL!@!"|[ --~MALSP|string;split;!@!;[&reentryval] --&MALMSM|[&MALSP2] --&MALL|[&MALSP3] --]|
   --?"[&reentryval]" -ninc "MAL!@!" -and "[&SelClass]" -eq ""|&SelClass;[&reentryval]
   --?"[&reentryval]" -ninc "MAL!@!" -and "[&SelClass]" -eq "undefined"|&SelClass;[&reentryval]
@@ -850,8 +851,8 @@
     --?"[= [$MuleSectionCount.Raw] % 2 ]" -eq "0" -and "[$MuleSectionCount.Raw]" -ne "0"|&MSO;+[/tr][tr]
     --&MBG|[&OddRowBG]
     --?"[= [$MuleSectionCount.Raw] \ 2 % 2 ]" -eq "1"|&MBG;[&EvenRowBG]
-    --?"[&MSTog]" -eq "class"|&MuleToggleData;class!@![&SelClass]!@![&MASID]
-    --?"[&MSTog]" -ne "class"|&MuleToggleData;[&MOM]!@![&SelectedChar]!@![&MSTog]!@![&MASID]
+    --?"[&MSTog]" -eq "class"|&MuleToggleData;class!@![&SelClass]!@![&MASID]!@![&MASID]!@![&MSM]!@![&MASAL]
+    --?"[&MSTog]" -ne "class"|&MuleToggleData;[&MOM]!@![&SelectedChar]!@![&MSTog]!@![&MASID]!@![&MSM]!@![&MASAL]
     --&MSO|+[td style='[&MGCS] background-color:[&MBG];'][rbutton][&MuleName]::ToggleMule;[&MuleToggleData][/rbutton][/td]
     --=MuleSectionCount|[$MuleSectionCount.Raw] + 1
   --%|
@@ -979,7 +980,8 @@
 --<|
 --:SBMCharacterMules|
   --?"[&reentryval]" -ninc "!@!" -and "[&reentryval]" -ne "BACK" -and "[&reentryval]" -ne "START"|&SelectedChar;[&reentryval]
-  --&MALMSM| --&MALL|
+  --?"[&PreserveMAL]" -ne "1"|[ --&MALMSM| --&MALL| --]|
+  --&PreserveMAL|
   --?"[&reentryval]" -inc "MAL!@!"|[ --~MALSP|string;split;!@!;[&reentryval] --&MALMSM|[&MALSP2] --&MALL|[&MALSP3] --]|
   --?"[&SelectedChar]" -eq "" -or "[&SelectedChar]" -eq "undefined"|SBMCharacterSelectMules
   --&SelectedCharName|[*O:[&SelectedChar]:character:name]
@@ -1005,7 +1007,8 @@
 --X|
 --:SBMCharacterSpellBook|
   --?"[&reentryval]" -ninc "!@!" -and "[&reentryval]" -ne "BACK" -and "[&reentryval]" -ne "START"|&SelectedChar;[&reentryval]
-  --&MALMSM| --&MALL|
+  --?"[&PreserveMAL]" -ne "1"|[ --&MALMSM| --&MALL| --]|
+  --&PreserveMAL|
   --?"[&reentryval]" -inc "MAL!@!"|[ --~MALSP|string;split;!@!;[&reentryval] --&MALMSM|[&MALSP2] --&MALL|[&MALSP3] --]|
   --?"[&SelectedChar]" -eq "" -or "[&SelectedChar]" -eq "undefined"|SBMCharacterSelectMules
   --&SelectedCharName|[*O:[&SelectedChar]:character:name]
@@ -1030,6 +1033,8 @@
 --:ToggleMule|
   --~ToggleInfo|string;split;!@!;[&reentryval]
   --&TMode|[&ToggleInfo1] --&TOwner|[&ToggleInfo2] --&TLT|[&ToggleInfo3] --&TMID|[&ToggleInfo4]
+  --&TAlphaSection|[&ToggleInfo5] --&TAlphaLetter|[&ToggleInfo6]
+  --?"[&TAlphaSection]" -ne "" -and "[&TAlphaSection]" -ne "undefined"|[ --&PreserveMAL|1 --&MALMSM|[&TAlphaSection] --&MALL|[&TAlphaLetter] --]|
   --?"[&TMode]" -eq "npc"|SBMSettings
   --?"[&TMode]" -ne "class" -and "[&TMode]" -ne "character"|ToggleMuleStorageError
   --?"[&TMode]" -eq "class"|[ --&TSK|[&TOwner] --&TMID|[&TLT] --]|[ --&TSK|char_[&TOwner]_[&TLT] --]|
