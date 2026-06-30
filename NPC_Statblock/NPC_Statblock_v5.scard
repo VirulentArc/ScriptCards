@@ -1,0 +1,357 @@
+!Script{{ --/|{& skip}
+  --/| ==========================================================================
+  --/| Script Name : Tim's NPC Stat Block Mod v5 for D&D 5E 2014
+  --/| Version     : 5.2.0
+  --/| Author      : Timothy Beasley
+  --/| API Mods    : ScriptCards
+  --/| ==========================================================================
+  --/| Displays an NPC stat block in chat that mimics the 2014 Monster Manual, 
+  --/| with clickable buttons for Ability Scores, Saves, Skills, Traits, and 
+  --/| Actions (Bonus, Reaction, Legendary, Mythic).
+  --/| FEATURES:
+  --/| * One-click rolls for all stats, saves, skills, traits & actions
+  --/| * Tooltips with full descriptions on traits and attacks
+  --/| * Spell casting buttons when spells are present
+  --/| * Quick skill button grid at the bottom for easy access
+  --/| SETUP:
+  --/| 1. Create a character named exactly: ScriptCards_TemplateMule
+  --/| 2. Install ScriptCards API Mod (Pro account required)
+  --/| 3. Select an NPC token on the 2014 D&D 5E sheet and run the script
+  --/|    (first run initializes styles; subsequent runs show the stat block)
+  --/| ==========================================================================
+  --~|array;objects:character;TemplateID;ScriptCards_TemplateMule
+  --?"[@TemplateID(0)]" -eq ""|[ --#title|NPC Stat Block Setup --+|[c]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for the NPC Stat Block will be kept.[/c] --X| --]|
+  --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4
+  --?"[&IsTemplate]" -eq "AbilityNotFound"|[
+    --+|[c]The style information has been written, please run the Mod again.[/c]
+    --&StatBlock|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; position: relative ; left: -30px ;'}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
+    --!ob:StyleSaveResult:[@TemplateID(0)]:statblockv4:0|[&StatBlock]
+    --@sc-reloadtemplates|
+    --X|
+  --]|
+  --#Debug|0 --#overridetemplate|statblockv4 --#Whisper|self --#emoteState|0 --#title|
+  --?"[@SC_SelectedTokens()]" -eq "undefined array"|NoSelectedToken
+  --?"[@SC_SelectedTokens()]" -gt "1"|MultipleSelectedTokens
+  --&TokenID|[@SC_SelectedTokens(0)]
+  --#sourceToken|[&TokenID]
+  --&SelectedTokenName|[*S:t-name]
+  --#reentrant|NPCBlock- [&TokenID]
+  --?"[*S:t-represents]" -eq "" -or "[*S:t-represents]" -eq "undefined"|NoLinkedCharacter
+  --?"[*S:npc]" -ne "1"|NotNPC|Continue
+  --:NoLinkedCharacter| --#title|NPC Stat Block --+No Character Sheet|[&SelectedTokenName] is not linked to a character sheet. Please select a token that represents an NPC character. --X|
+  --:NotNPC| --#title|NPC Stat Block --+Wrong Token Type|[&SelectedTokenName] is not an NPC character. Please select an NPC token to continue. --X|
+  --:NoSelectedToken| --#title|NPC Stat Block --+No Token Selected|Please select an NPC token to continue. --X|
+  --:MultipleSelectedTokens| --#title|NPC Stat Block --+Multiple Tokens Selected|Please select only one NPC token to continue. --X|
+  --:Continue| --#title|
+  -->LoadNSBSettings|
+  --:NSBRebuildFromCurrentSettings| --#hidecard|0
+  --&NPC_Name|[*S:npc_name] --&CharID|[*S:character_id] --&SAB|[*S:spell_attack_bonus] --&NPCactype| --&BaseHP|
+  --?"[*S:npc_actype]" -ne ""|[ --&NPCactype|([*S:npc_actype]) --]|
+  --?"[*S:hp]" -ne ""|&BaseHP; [*S:hp] /
+  --&ButtonStyle|width: 1%; white-space: nowrap; background-color: #FFEFD5; border-radius: 4px; box-shadow: 0px 1px 2px rgba(0,0,0,0.3), inset 0px 1px 1px rgba(0,0,0,0.1), inset 0px -1px 1px rgba(0,0,0,0.1); padding: 0px 4px ; 
+  --&Divider|[t][tr][td height=5px][/td][/tr][/t][t][tr][td width=100% style="border: none; border-top: 0.10em solid transparent; border-bottom: 0.25em solid transparent; border-left: 16em solid #910900; line-height: 1.25em; font-size: 1.4em; display: block; pointer-events: none;"][/td][/tr][/t][t][tr][td height=5px][/td][/tr][/t]
+  --&StatBlockTitleFont|Georgia, 'Noto Serif', 'Liberation Serif', 'Nimbus Roman No9 L', 'Nimbus Roman', 'DejaVu Serif', 'Times New Roman', serif
+  --&HRStyle|style="background-image:linear-gradient(#7A2008,#7A2008);background-size:100% 2px;background-repeat:no-repeat;background-position:bottom;padding-bottom:2px; letter-spacing: .8px; text-shadow: 0.6px 0 0 currentColor;"
+  --&FullWidthStyle|style="width:100%;"
+  --&HeaderTableStyle|style="width:100%; font-size: 12px;"
+  --&InfoCellStyle|style="width: 260px; display: block; font-size: 12px;"
+  --&BodyCellStyle|style="font-size: 12px;"
+  --&ClipCellStyle|style="width: 90%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"
+  --&CenterTableStyle|style="width: 100%; text-align: center;"
+  --&ActionTableStyle|style="line-height: 1.1em;"
+  --&StatTableStyle|style="text-align: center; border-collapse: collapse;"
+  --&ButtonGridStyle|style="width: 100%; border-collapse: separate; border-spacing: 0px 2px;"
+  --&CenterButtonCell|style="[&ButtonStyle] text-align: center;"
+  --&RightButtonCell|style="[&ButtonStyle] text-align:center; vertical-align:middle; width:14px; min-width:14px; max-width:14px; height:14px; line-height:14px; padding:0; box-sizing:border-box;"
+  --&SpellClipCellStyleSingle|style="width: 90%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"
+  --&SpellClipCellStyleDouble|style="width: 82%; max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; pointer-events: auto; cursor: help;"
+  --&SpellButtonCell|style="[&ButtonStyle] text-align:center; vertical-align:middle; width:18px; min-width:18px; max-width:18px; height:16px; line-height:16px; padding:0; box-sizing:border-box;"
+  --&RuleSpacer|[tr][td style="line-height:4px;"]&nbsp;[/td][/tr]
+  --&TightRuleSpacer|[tr][td style="line-height:2px;"]&nbsp;[/td][/tr]
+  --&SectionRule|[t width=100%][&RuleSpacer][tr][td [&HRStyle]][/td][/tr][&RuleSpacer][/t]
+  --&NPCNameStyle|style="font-family: [&StatBlockTitleFont]; font-variant: small-caps; font-variant-caps: small-caps; font-feature-settings: 'smcp' 1; font-size: 24px; font-weight: bold; font-style: normal; color: #7A2008; line-height: .9em; letter-spacing: .4px;"
+  --&NSBWhisperIcon|&#128488;&#65038; --&NSBWhisperNext|1 --&NSBWhisperTitle|Toggle Whisper to GM On
+  --?"[&NSBWhisper]" -ne "1"|NSBSkipWhisperActive
+  --&NSBWhisperIcon|&#128483;&#65038; --&NSBWhisperNext|0 --&NSBWhisperTitle|Toggle Whisper to GM Off
+  --:NSBSkipWhisperActive|
+  --&NSBBtnDBorder|none --&NSBBtnNBorder|none --&NSBBtnABorder|none --&NSBBtnCBorder|none
+  --?"[&NSBAdvantage]" -eq "disadvantage"|&NSBBtnDBorder;1px solid #7A2008
+  --?"[&NSBAdvantage]" -eq "normal"|&NSBBtnNBorder;1px solid #7A2008
+  --?"[&NSBAdvantage]" -eq "advantage"|&NSBBtnABorder;1px solid #7A2008
+  --?"[&NSBAdvantage]" -eq "classic"|&NSBBtnCBorder;1px solid #7A2008
+  --&NSBBtnCellStyle|[&ButtonStyle] text-align:center; width:18px; min-width:18px; max-width:18px; height:15px; line-height:15px; vertical-align:middle; background-color:#FFEFD5; color:#7A2008; font-family:'Segoe UI Symbol','Noto Sans Symbols 2','Noto Sans Symbols','DejaVu Sans',sans-serif; padding:0;
+  --&NSBSpacerCellStyle|width:6px; min-width:6px; max-width:6px; padding:0; border:none; background-color:transparent; font-size:1px; line-height:1px;
+  --&NSBTitleControls|[t style="border-collapse:separate; border-spacing:0; table-layout:fixed; margin-left:auto;"][tr][td title="[&NSBWhisperTitle]" style="[&NSBBtnCellStyle]"][rbutton:#7A2008:#FFEFD5:11px][F::12][&NSBWhisperIcon][/F]::SetNSBOption;whisper!@![&NSBWhisperNext][/rbutton][/td][td style="[&NSBSpacerCellStyle]"]&nbsp;[/td][td title="Disadvantage" style="[&NSBBtnCellStyle] border:[&NSBBtnDBorder];"][rbutton:#7A2008:#FFEFD5:11px][F:Tahoma:11]D[/F]::SetNSBOption;advantage!@!disadvantage[/rbutton][/td][td title="Normal Roll" style="[&NSBBtnCellStyle] border:[&NSBBtnNBorder];"][rbutton:#7A2008:#FFEFD5:11px][F:Tahoma:11]N[/F]::SetNSBOption;advantage!@!normal[/rbutton][/td][td title="Advantage" style="[&NSBBtnCellStyle] border:[&NSBBtnABorder];"][rbutton:#7A2008:#FFEFD5:11px][F:Tahoma:11]A[/F]::SetNSBOption;advantage!@!advantage[/rbutton][/td][td style="[&NSBSpacerCellStyle]"]&nbsp;[/td][td title="Classic Roll" style="[&NSBBtnCellStyle] border:[&NSBBtnCBorder];"][rbutton:#7A2008:#FFEFD5:11px][F:Tahoma:11]C[/F]::SetNSBOption;advantage!@!classic[/rbutton][/td][/tr][/t]
+  --+|[t width=100% [&FullWidthStyle]][tr][td [&NPCNameStyle]][&NPC_Name][/td][td style="text-align:right; width:112px; vertical-align:top; white-space:nowrap;"][&NSBTitleControls][/td][/tr][/t]
+  --+|[t width=100% [&HeaderTableStyle]][tr][td][#000][i][*S:npc_type]&nbsp;[/i][/#][/td][/tr][tr][td][&Divider][/td][/tr][tr][td][b]Armor&nbsp;Class[/b]&nbsp;[*S:npc_ac]&nbsp;[&NPCactype][br][b]Hit&nbsp;Points[/b][&BaseHP]&nbsp;[*S:hp^]&nbsp;([*S:npc_hpformula])[br][b]Speed[/b]&nbsp;[*S:npc_speed][/td][/tr][/t]
+  --+|[&Divider]
+  --~|array;define;StatArray;strength;dexterity;constitution;intelligence;wisdom;charisma
+  --&StatsPerRow|3 --&StatsCounter|0
+  --&StatsBlock|[t width=100% [&StatTableStyle]][tr]
+  --%StatLoop|foreach;StatArray
+    --&StatSpace| --&ModPart|
+    --?"[= [&StatsCounter] % [&StatsPerRow] ]" -eq "0" -and "[&StatsCounter]" -ne "0"|&StatsBlock;+[/tr][tr]
+    --&SaveButton|[&StatLoop(0,3)]
+    --&StatName|[&SaveButton(touppercase)]
+    --=ThisMod|[*S:[&StatLoop]_mod]
+    --&StatNum|[*S:[&StatLoop]]
+    --?[$ThisMod.Raw] -ge 0|[ --&ModPart|&#43;[$ThisMod.Raw] --]|
+    --?[$ThisMod.Raw] -lt 0|[ --=AbsMod|[$ThisMod.Raw] {ABS} --&ModPart|&minus;[$AbsMod.Raw] --]|
+    --?"[&StatNum]" -lt "10"|[ --&StatSpace|&nbsp; --]|
+    --&CheckMod|[$ThisMod.Raw]
+    --&SaveMod|[*S:npc_[&SaveButton]_save_base]
+    --?"[&SaveMod]" -eq "" -or "[&SaveMod]" -eq "undefined"|&SaveMod;[$ThisMod.Raw]
+    --~SaveMod|string;numericonly;[&SaveMod]
+      --&NSBStatCheckButton|[rbutton][&StatName]&nbsp;[&StatNum][&StatSpace]&nbsp;([&ModPart])::NSBRunRoll;[&StatName] Check!@![&CheckMod][/rbutton]
+    --&NSBStatSaveButton|[rbutton]save::NSBRunRoll;[&StatName] Save!@![&SaveMod][/rbutton]
+    --?"[&NSBAdvantage]" -eq "classic"|[ --&NSBStatCheckButton|[sheetbutton][&StatName]&nbsp;[&StatNum][&StatSpace]&nbsp;([&ModPart])::[*S:character_name]::npc_[&SaveButton][/sheetbutton] --&NSBStatSaveButton|[sheetbutton]save::[*S:character_name]::npc_[&SaveButton]_save[/sheetbutton] --]|
+    --&StatsBlock|+[td][t [&ButtonGridStyle]][tr][td [&CenterButtonCell]][F::14][b][&NSBStatCheckButton][/b][/F][/td][/tr][tr][td [&CenterButtonCell]][&NSBStatSaveButton][/td][/tr][/t][/td]
+    --&StatsCounter|[= [&StatsCounter] + 1 ]
+  --%|
+  --&StatsBlock|+[/tr][/t]
+  --+|[&StatsBlock]
+  --+|[&Divider]
+  --&SecondBlock|[t width=100%][tr][td [&InfoCellStyle]]
+  --&AddSave|
+  --~|array;define;SaveArray;str;dex;con;int;wis;cha
+  --%SaveLoop|foreach;SaveArray
+    --?"[*S:npc_[&SaveLoop]_save_base]" -ne ""|[ --&AddSave|+[&SaveLoop(totitlecase)]&nbsp;[*S:npc_[&SaveLoop]_save_base],&nbsp; --]|
+  --%|
+  --?"[&AddSave]" -ne ""|[ --=SecondBlockCalc|[&AddSave(length)] - 7 --&SecondBlock|+[b]Saving&nbsp;Throws&nbsp;[/b][&AddSave(0,[$SecondBlockCalc.Raw])][/td][/tr][/t] --+|[&SecondBlock] --]|
+  --&ThirdBlock|[t width=100%][tr][td [&InfoCellStyle]]
+  --&AddSkill|
+  --~|array;define;SkillArray;initiative!@!dexterity_mod;acrobatics!@!dexterity_mod;animal_handling!@!wisdom_mod;arcana!@!intelligence_mod;athletics!@!strength_mod;history!@!intelligence_mod;insight!@!wisdom_mod;intimidation!@!charisma_mod;investigation!@!intelligence_mod;medicine!@!wisdom_mod;nature!@!intelligence_mod;perception!@!wisdom_mod;performance!@!charisma_mod;persuasion!@!charisma_mod;religion!@!intelligence_mod;sleight_of_hand!@!dexterity_mod;stealth!@!dexterity_mod;survival!@!wisdom_mod
+  --&SkillsPerRow|3 --&SkillCounter|0
+  --&SkillOutput|[t [&ButtonGridStyle]][tr]
+  --%SkillLoop|foreach;SkillArray
+    --~SkillInfo|string;split;!@!;[&SkillLoop]
+    --&RawSkill|[&SkillInfo1] --&SkillAbilityMod|[&SkillInfo2]
+    --&SkillLabel|[&RawSkill(replaceall,_, )] --&SkillLabel|[&SkillLabel(totitlecase)]
+    --?"[&RawSkill]" -eq "initiative"|SKIP_NPC_SKILL_BASE
+    --?"[*S:npc_[&RawSkill]_base]" -ne ""|[ --&AddSkill|+[&SkillLabel]&nbsp;[*S:npc_[&RawSkill]_base],&nbsp; --]|
+    --:SKIP_NPC_SKILL_BASE|
+    --?"[= [&SkillCounter] % [&SkillsPerRow] ]" -eq "0" -and "[&SkillCounter]" -ne "0"|&SkillOutput;+[/tr][tr]
+    --?"[&SkillLabel]" -eq "Animal Handling"|&SkillLabel;Animal Hand.
+    --&SkillMod|[*S:[&SkillAbilityMod]]
+    --&NSBSheetSkillMod|
+    --?"[&RawSkill]" -eq "initiative"|SkillInitiativeMod
+    --&NSBSheetSkillMod|[*S:npc_[&RawSkill]_base]
+    --?"[&NSBSheetSkillMod]" -ne "" -and "[&NSBSheetSkillMod]" -ne "undefined"|&SkillMod;[&NSBSheetSkillMod]
+    --^SkillModReady|
+    --:SkillInitiativeMod|
+    --&SkillMod|[*S:initiative_bonus]
+    --?"[&SkillMod]" -eq ""|&SkillMod;[*S:dexterity_mod]
+    --?"[&SkillMod]" -eq "undefined"|&SkillMod;[*S:dexterity_mod]
+    --:SkillModReady|
+    --?"[&SkillMod]" -eq "" -or "[&SkillMod]" -eq "undefined"|&SkillMod;0
+    --~SkillMod|string;numericonly;[&SkillMod]
+    --&NSBSkillButton|[rbutton][&SkillLabel]::NSBRunRoll;[&SkillLabel] Check!@![&SkillMod]!@!skill[/rbutton]
+    --?"[&RawSkill]" -eq "initiative"|[ --&NSBSkillButton|[rbutton][&SkillLabel]::NSBRunRoll;Initiative!@![&SkillMod]!@!initiative[/rbutton] --]|
+    --&NSBClassicSkillRoll|npc_[&RawSkill]
+    --?"[&RawSkill]" -eq "initiative"|&NSBClassicSkillRoll;initiative
+    --?"[&NSBAdvantage]" -eq "classic"|[ --&NSBSkillButton|[sheetbutton][&SkillLabel]::[*S:character_name]::~selected|[&NSBClassicSkillRoll][/sheetbutton] --]|
+    --&SkillOutput|+[td [&CenterButtonCell]][&NSBSkillButton][/td]
+    --&SkillCounter|[= [&SkillCounter] + 1 ]
+  --%|
+  --&SkillOutput|+[/tr][/t]
+  --?"[&AddSkill]" -ne ""|[ --=ThirdBlockCalc|[&AddSkill(length)] - 7 --&ThirdBlock|+[b]Skills&nbsp;[/b][&AddSkill(0,[$ThirdBlockCalc.Raw])][/td][/tr][/t] --+|[&ThirdBlock] --]|
+  --~|array;define;FourthRows;npc_vulnerabilities!@!Damage Vulnerabilities!@!normal;npc_resistances!@!Damage Resistances!@!normal;npc_immunities!@!Damage Immunities!@!normal;npc_condition_immunities!@!Condition Immunities!@!normal;npc_senses!@!Senses!@!normal;npc_languages!@!Languages!@!normal;npc_challenge!@!Challenge!@!challenge;pb!@!Proficiency Bonus!@!pb
+  --&FourthBlock|[t width=100%]
+  --%FourthLoop|foreach;FourthRows
+    --~FourthInfo|string;split;!@!;[&FourthLoop]
+    --&InfoAttr|[&FourthInfo1] --&InfoLabel|[&FourthInfo2] --&InfoType|[&FourthInfo3] --&InfoValue|[*S:[&InfoAttr]]
+    --?"[&InfoType]" -eq "normal" -and "[&InfoValue(length)]" -gt "0"|[ --&FourthBlock|+[tr][td [&BodyCellStyle]][b][&InfoLabel][/b]&nbsp;[&InfoValue][/td][/tr] --]|
+    --?"[&InfoType]" -eq "challenge" -and "[&InfoValue(length)]" -gt "0"|[ --&FourthBlock|+[tr][td [&BodyCellStyle]][b][&InfoLabel][/b]&nbsp;[&InfoValue]&nbsp;([*S:npc_xp]xp)[/td][/tr] --]|
+    --?"[&InfoType]" -eq "pb" -and "[&InfoValue]" -ne "0" -and "[&InfoValue(length)]" -gt "0"|[ --&FourthBlock|+[tr][td [&BodyCellStyle]][b][&InfoLabel][/b]&nbsp;&#43;[&InfoValue][/td][/tr] --]|
+  --%|
+  --&FourthBlock|+[/t]
+  --+|[&FourthBlock]
+  --+|[&Divider]
+  --~|array;define;SectionTypes;trait;action;bonusaction;reaction;action-l;action-m
+  --%SectionLoop|foreach;SectionTypes
+    -->ActionLoop|[&SectionLoop]
+  --%|
+  --+|[&SectionRule]
+  --+|[&SkillOutput]
+  --?"[&SAB]" -ne "0" -and "[&SAB]" -ne ""|[ --+|[&SectionRule] --+|[t [&CenterTableStyle]][tr][td][/td][td [&CenterButtonCell]][rbutton]Spells::SpellBlock;OPEN[/rbutton][/td][td][/td][/tr][/t] --]|
+--X|
+--:ActionLoop|
+  --&Action|[%1%]
+  --Rfirst|[&CharID];repeating_npc[&Action]
+  --?"[*R:name]" -eq "NoRepeatingAttributeLoaded"|[ --<| --]|
+  --&ActionLabel|ACTIONS
+  --C[&Action]|action-l:&ActionLabel;LEGENDARY ACTIONS|action-m:&ActionLabel;MYTHIC ACTIONS|bonusaction:&ActionLabel;BONUS ACTIONS|reaction:&ActionLabel;REACTIONS
+  --&ActionName|[F::20][&ActionLabel(0,1)][/F][F::15][&ActionLabel(1,99)][/F]
+  --&ActionOutput|[t width=100% [&ActionTableStyle]]
+  --?"[&Action]" -eq "trait"|SkipActionHeader
+  --&ActionOutput|+[&RuleSpacer][tr][td colspan=100% [&HRStyle]][&ActionName][/td][/tr][&RuleSpacer]
+  --:SkipActionHeader|
+  --?"[&Action]" -eq "action-l"|[ --&CleanedText|[*S:npc_legendary_actions_desc] -->CleanText| --&ActionOutput|+[tr][td colspan=100% [&BodyCellStyle]][&CleanedText][/td][/tr] --]|
+  --?"[&Action]" -eq "action-m"|[ --&CleanedText|[*S:npc_mythic_actions_desc] -->CleanText| --&ActionOutput|+[tr][td colspan=100% [&BodyCellStyle]][&CleanedText][/td][/tr] --]|
+  --%ActionLoop|while;"[*R:name]" -ne "NoRepeatingAttributeLoaded"
+    --&CleanedText|
+    --&ButtonURL|[*R>npc_action] --&ButtonSize|18 --&ButtonEmote|&#x2694;
+    --?"[&Action]" -eq "reaction" -or "[&Action]" -eq "trait"|&ButtonURL;[*R>npc_roll_output]
+    --?"[&Action]" -eq "trait"|[ --&ButtonSize|14 --&ButtonEmote|&#x1F5CE;&#65038; --]|
+    --&Name|[*R:name] --&Description|[*R:description] --&AttackType|[*R:attack_type]
+    --?"[&AttackType]" -inc "ranged"|&RangeType;range|&RangeType;reach
+    --&AttDesc| --&ToHitText|
+    --?"[&Description(length)]" -ne "0"|ActionHasDescription
+    --&ToHitText|[&AttackType] Weapon Attack:
+    --&AttDesc|&#43;[*R:attack_tohit] to hit, [&RangeType] [*R:attack_range], [*R:attack_target]. [*R:attack_onhit].
+    --&CleanedText|[&AttDesc]
+    -->CleanText|
+    --&AttDesc|[&CleanedText] --&CleanedText|
+    --^ActionDescriptionDone|
+    --:ActionHasDescription|
+    --&CleanedText|[&Description]
+    -->CleanText|
+    --:ActionDescriptionDone|
+    --&ActionText|[&CleanedText]
+    --&ActionToolTip|[&Name]&nbsp;&#x2666;&nbsp;[&ActionText][&ToHitText] [&AttDesc]
+    --&CleanedText|[&ActionToolTip] -->CleanText| --&ActionToolTip|[&CleanedText]
+    --&NSBActionButton|[sheetbutton][F::[&ButtonSize]][&ButtonEmote][/F]::[*S:character_name]::[&ButtonURL][/sheetbutton]
+    --&NSBActionMod|[*R:attack_tohit]
+    --?"[&NSBActionMod]" -ne "" -and "[&NSBActionMod]" -ne "undefined" -and "[&NSBAdvantage]" -ne "classic"|[ --~NSBActionMod|string;numericonly;[&NSBActionMod] --&NSBActionData|[&Name]!@![&NSBActionMod]!@!action!@![*R:attack_damage]!@![*R:attack_damagetype]!@![*R:attack_damage2]!@![*R:attack_damagetype2]!@![*R:attack_crit]!@![*R:attack_crit2] --&NSBActionButton|[rbutton][F::[&ButtonSize]][&ButtonEmote][/F]::NSBRunRoll;[&NSBActionData][/rbutton] --]|
+    --?"[&Name(length)]" -gt "0"|[ --&ActionOutput|+[tr title="[&ActionToolTip]"][td [&ClipCellStyle]][b][i][&Name].[/i][/b] [&ActionText][&ToHitText] [&AttDesc][/td][td [&RightButtonCell]][&NSBActionButton][/td][/tr] --]|
+    --Rnext|
+  --%|
+  --&ActionOutput|+[/t]
+  --+|[&ActionOutput]
+--<|
+--:SpellBlock|
+  --+|[t width=100% [&FullWidthStyle]][tr][td [&NPCNameStyle]][&NPC_Name] Spells[/td][/tr][/t]
+  --+|[&Divider]
+  --~|array;define;SpellLevels;cantrip;1;2;3;4;5;6;7;8;9
+  --%LevelLoop|foreach;SpellLevels
+    --&SpellIndex|0
+    --Rfirst|[&CharID];repeating_spell-[&LevelLoop];spellname
+    --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|NextLevel
+    --?"[&LevelLoop]" -ne "cantrip"|&LvlName;Level [&LevelLoop]|&LvlName;[&LevelLoop(totitlecase)]
+    --+|[t width=100% [&HRStyle]][&TightRuleSpacer][tr][td][&LvlName][/td][/tr][&TightRuleSpacer][/t]
+    --%SpellLoop|while;"[*R:spellname]" -ne "NoRepeatingAttributeLoaded"
+      --&CastSpell| --&SpellDesc| --&ToolComponents| --&SpellOutput|[*R:spelloutput]
+      --&SpellSchool|[*R:spellschool] --&SpellTarget|[*R:spelltarget] --&SpellDescription|[*R:spelldescription] --&CleanedText|[&SpellDescription] -->CleanText| --&SpellDescription|[&CleanedText]
+      --&Innate|[*R:innate] --&SpellHigherLevels|[*R:spellathigherlevels]
+      --?"[&SpellTarget]" -ne "undefined" -and "[&SpellTarget]" -ne ""|[ --&CleanedText|[&SpellTarget] -->CleanText| --&SpellTarget|[&CleanedText] --]|
+      --?"[&Innate]" -ne "undefined" -and "[&Innate]" -ne ""|[ --&CleanedText|[&Innate] -->CleanText| --&Innate|[&CleanedText] --]|
+      --?"[&SpellHigherLevels]" -ne "undefined" -and "[&SpellHigherLevels]" -ne ""|[ --&CleanedText|[&SpellHigherLevels] -->CleanText| --&SpellHigherLevels|[&CleanedText] --]|
+      --&ToolTip|[&SpellSchool(totitlecase)]&nbsp;&#x2666;&nbsp;CASTING&nbsp;TIME:&nbsp;[*R:spellcastingtime]&nbsp;&#x2666;&nbsp;RANGE:&nbsp;[*R:spellrange]
+      --?"[&SpellTarget]" -ne "undefined" -and "[&SpellTarget]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;TARGET:&nbsp;[&SpellTarget] --]|
+      --?"[*R:spellcomp_v]" -ne "0"|&ToolComponents;+V --?"[*R:spellcomp_s]" -ne "0"|&ToolComponents;+,S --?"[*R:spellcomp_m]" -ne "0"|[ --&CleanedText|[*R:spellcomp_materials] -->CleanText| --&ToolComponents|+,M([&CleanedText]) --]|
+      --?"[&ToolComponents(0,1)]" -eq ","|&ToolComponents;[&ToolComponents(1)]
+      --?"[&ToolComponents]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;[&ToolComponents] --]|
+      --?"[*R:spellritual]" -eq "Yes"|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;(r) --]|
+      --?"[*R:spellconcentration]" -inc "1"|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;(c) --]|
+      --&ToolTip|+&nbsp;&#x2666;&nbsp;DURATION:&nbsp;[*R:spellduration]
+      --?"[&Innate]" -ne "undefined" -and "[&Innate]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;[&Innate] --]|
+      --&ToolTip|+&nbsp;&#x2666;&nbsp;[&SpellDescription]
+      --?"[&SpellHigherLevels]" -ne "undefined" -and "[&SpellHigherLevels]" -ne ""|[ --&ToolTip|+&nbsp;&#x2666;&nbsp;AT HIGHER LEVELS: [&SpellHigherLevels] --]|
+      --&CleanedText|[&ToolTip] -->CleanText| --&ToolTip|[&CleanedText]
+      --?"[&SpellOutput]" -inc "ATTACK"|[ --&CastSpell|[td title="Cast Spell" [&SpellButtonCell]][sheetbutton][F::16]&#x2694;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_spell[/sheetbutton][/td] --]|
+      --?"[&SpellOutput]" -inc "ATTACK" -or "[&SpellOutput]" -inc "SPELLCARD"|[ --&SpellDesc|[td title="Description" [&SpellButtonCell]][sheetbutton][F::15]&#x1F56E;&#65038;[/F]::[*S:character_name]::repeating_spell-[&LevelLoop]_$[&SpellIndex]_output[/sheetbutton][/td] --]|
+      --?"[&SpellOutput]" -inc "ATTACK"|[ --+|[t width=100%][tr][td title="[&ToolTip]" [&SpellClipCellStyleDouble]][#000][b][i][*R:spellname].[/i][/b] [&SpellDescription][/#][/td][&CastSpell][&SpellDesc][/tr][/t] --]|
+      --?"[&SpellOutput]" -ninc "ATTACK" -and "[&SpellOutput]" -inc "SPELLCARD"|[ --+|[t width=100%][tr][td title="[&ToolTip]" [&SpellClipCellStyleSingle]][#000][b][i][*R:spellname].[/i][/b] [&SpellDescription][/#][/td][&SpellDesc][/tr][/t] --]|
+      --?"[&SpellOutput]" -ninc "ATTACK" -and "[&SpellOutput]" -ninc "SPELLCARD"|[ --+|[t width=100%][tr][td title="[&ToolTip]" [&ClipCellStyle]][#000][b][i][*R:spellname].[/i][/b] [&SpellDescription][/#][/td][/tr][/t] --]|
+      --&SpellIndex|[= [&SpellIndex] + 1 ]
+      --Rnext|
+    --%|
+    --:NextLevel|
+  --%|
+--X|
+--:LoadNSBSettings|
+  --&NSBHN|NPC Stat Block Settings
+  --&NSBWhisper|1
+  --&NSBAdvantage|normal
+  --&NSBNativePrefix|
+  --&NSBTemplateSkeleton|!PREFIX!!AMP!!OB!template:simple!CB! !OB!!OB!rname=!RNAME!!CB!!CB! !OB!!OB!mod=!MODTEXT!!CB!!CB! !OB!!OB!r1=!LB!!LB!!FORMULA!!RB!!RB!!CB!!CB! !MODE! !OB!!OB!charname=!CHARNAME!!CB!!CB!
+  --~|array;objects:handout;NSBSettingsHandouts;[&NSBHN]
+  --?"[@NSBSettingsHandouts(maxindex)]" -eq "-1"|[ --!oh:NSBHID|name:"[&NSBHN]"|gmnotes:"whisper=1,advantage=normal!NSBTEMPLATE![&NSBTemplateSkeleton]"|archived:true --]|
+  --?"[@NSBSettingsHandouts(maxindex)]" -ne "-1"|&NSBHID;[@NSBSettingsHandouts(0)]
+  --&NSBSettingsRaw|[*O:[&NSBHID]:handout:gmnotes]
+  --?"[&NSBSettingsRaw]" -eq "" -or "[&NSBSettingsRaw]" -eq "undefined"|[ --&NSBSettingsRaw|whisper=1,advantage=normal!NSBTEMPLATE![&NSBTemplateSkeleton] --!h:[&NSBHID]|gmnotes:"[&NSBSettingsRaw]" --]|
+  --?"[&NSBSettingsRaw]" -ninc "!NSBTEMPLATE!"|[ --&NSBSettingsRaw|[&NSBSettingsRaw]!NSBTEMPLATE![&NSBTemplateSkeleton] --!h:[&NSBHID]|gmnotes:"[&NSBSettingsRaw]" --]|
+  --?"[&NSBSettingsRaw]" -inc "whisper=0"|&NSBWhisper;0
+  --?"[&NSBSettingsRaw]" -inc "whisper=1"|&NSBWhisper;1
+  --?"[&NSBSettingsRaw]" -inc "advantage=classic"|&NSBAdvantage;classic
+  --?"[&NSBSettingsRaw]" -inc "advantage=normal"|&NSBAdvantage;normal
+  --?"[&NSBSettingsRaw]" -inc "advantage=advantage"|&NSBAdvantage;advantage
+  --?"[&NSBSettingsRaw]" -inc "advantage=disadvantage"|&NSBAdvantage;disadvantage
+  --?"[&NSBWhisper]" -eq "1"|&NSBNativePrefix;/w gm 
+  -->SyncNSBWhisperSheet|
+--<|
+--:SyncNSBWhisperSheet|
+  --&NSBSpace|X X
+  --&NSBSpace|[&NSBSpace(1,1)]
+  --?"[&NSBWhisper]" -eq "1" -and "[*S:wtype]" -ninc "/w gm"|[ --!a:[*S:character_id]|!wtype:/w gm[&NSBSpace] --]|
+  --?"[&NSBWhisper]" -eq "0" -and "[*S:wtype]" -inc "/w gm"|[ --!a:[*S:character_id]|!wtype: --]|
+--<|
+--:WriteNSBSettings|
+  --&NSBSettingsRaw|whisper=[&NSBWhisper],advantage=[&NSBAdvantage]!NSBTEMPLATE![&NSBTemplateSkeleton]
+  --!h:[&NSBHID]|gmnotes:"[&NSBSettingsRaw]"
+--<|
+--:NSBSettings|
+  --^Continue|
+--:SetNSBOption|
+  -->LoadNSBSettings|
+  --~NSBOptionData|string;split;!@!;[&reentryval]
+  --?"[&NSBOptionData1]" -eq "whisper"|&NSBWhisper;[&NSBOptionData2]
+  --?"[&NSBOptionData1]" -eq "advantage"|&NSBAdvantage;[&NSBOptionData2]
+  -->WriteNSBSettings|
+  -->SyncNSBWhisperSheet|
+  --^NSBRebuildFromCurrentSettings|
+--:NSBRunRoll|
+  --#hidecard|1
+  -->LoadNSBSettings|
+  --&NSBRollData1| --&NSBRollData2| --&NSBRollData3| --&NSBRollData4| --&NSBRollData5| --&NSBRollData6| --&NSBRollData7| --&NSBRollData8| --&NSBRollData9|
+  --~NSBRollData|string;split;!@!;[&reentryval]
+  --&NSBRollLabel|[&NSBRollData1] --&NSBRollMod|[&NSBRollData2] --&NSBRollType|[&NSBRollData3]
+  --?"[&NSBRollType]" -eq "" -or "[&NSBRollType]" -eq "undefined"|&NSBRollType;roll
+  --?"[&NSBRollMod]" -eq "" -or "[&NSBRollMod]" -eq "undefined"|&NSBRollMod;0
+  --=NSBRollModNum|[&NSBRollMod] --&NSBRollMod|[$NSBRollModNum.Raw] --&NSBModText|[&NSBRollMod] --&NSBRollFormula|1d20 + [$NSBRollModNum.Raw]
+  --?"[$NSBRollModNum.Raw]" -lt "0"|&NSBRollFormula;1d20 [$NSBRollModNum.Raw]
+  --&NSBModeBlock|!OB!!OB!normal=1!CB!!CB!
+  --?"[&NSBAdvantage]" -eq "advantage"|&NSBModeBlock;!OB!!OB!advantage=1!CB!!CB! !OB!!OB!r2=!LB!!LB![&NSBRollFormula]!RB!!RB!!CB!!CB!
+  --?"[&NSBAdvantage]" -eq "disadvantage"|&NSBModeBlock;!OB!!OB!disadvantage=1!CB!!CB! !OB!!OB!r2=!LB!!LB![&NSBRollFormula]!RB!!RB!!CB!!CB!
+  --?"[&NSBRollType]" -eq "initiative"|[ --&NSBModeBlock|!OB!!OB!normal=1!CB!!CB! --&NSBInitDie|1d20 --]|
+  --?"[&NSBRollType]" -eq "initiative" -and "[&NSBAdvantage]" -eq "advantage"|&NSBInitDie;2d20kh1
+  --?"[&NSBRollType]" -eq "initiative" -and "[&NSBAdvantage]" -eq "disadvantage"|&NSBInitDie;2d20kl1
+  --?"[&NSBRollType]" -eq "initiative" -and "[$NSBRollModNum.Raw]" -ge "0"|&NSBRollFormula;[&NSBInitDie] + [$NSBRollModNum.Raw]
+  --?"[&NSBRollType]" -eq "initiative" -and "[$NSBRollModNum.Raw]" -lt "0"|&NSBRollFormula;[&NSBInitDie] [$NSBRollModNum.Raw]
+  --?"[&NSBRollType]" -eq "initiative"|[ --=NSBInitRoll|[&NSBRollFormula] --~|turnorder;replacetoken;[&TokenID];[$NSBInitRoll.Raw];[&NPC_Name];[&NSBRollFormula] --]|
+  --&NSBCmd|[&NSBTemplateSkeleton]
+  --?"[&NSBRollType]" -ne "action"|NSBCommandTemplateReady
+  --&NSBActionDamage1|[&NSBRollData4] --&NSBActionDamageType1|[&NSBRollData5] --&NSBActionDamage2|[&NSBRollData6]
+  --&NSBActionDamageType2|[&NSBRollData7] --&NSBActionCrit1|[&NSBRollData8] --&NSBActionCrit2|[&NSBRollData9]
+  --?"[&NSBActionDamage1]" -eq "" -or "[&NSBActionDamage1]" -eq "undefined"|&NSBActionDamage1;0
+  --?"[&NSBActionDamageType1]" -eq "undefined"|&NSBActionDamageType1;
+  --?"[&NSBActionDamageType2]" -eq "undefined"|&NSBActionDamageType2;
+  --&NSBDamageBlock|!OB!!OB!damage=1!CB!!CB! !OB!!OB!dmg1flag=1!CB!!CB! !OB!!OB!dmg1=!LB!!LB![&NSBActionDamage1]!RB!!RB!!CB!!CB! !OB!!OB!dmg1type=[&NSBActionDamageType1]!CB!!CB!
+  --?"[&NSBActionCrit1]" -ne "" -and "[&NSBActionCrit1]" -ne "undefined"|&NSBDamageBlock;+ !OB!!OB!crit1=!LB!!LB![&NSBActionCrit1]!RB!!RB!!CB!!CB!
+  --?"[&NSBActionDamage2]" -ne "" -and "[&NSBActionDamage2]" -ne "undefined"|&NSBDamageBlock;+ !OB!!OB!dmg2flag=1!CB!!CB! !OB!!OB!dmg2=!LB!!LB![&NSBActionDamage2]!RB!!RB!!CB!!CB! !OB!!OB!dmg2type=[&NSBActionDamageType2]!CB!!CB!
+  --?"[&NSBActionCrit2]" -ne "" -and "[&NSBActionCrit2]" -ne "undefined"|&NSBDamageBlock;+ !OB!!OB!crit2=!LB!!LB![&NSBActionCrit2]!RB!!RB!!CB!!CB!
+  --&NSBCmd|!PREFIX!!AMP!!OB!template:atkdmg!CB! !OB!!OB!rname=!RNAME!!CB!!CB! !OB!!OB!mod=!MODTEXT!!CB!!CB! !OB!!OB!r1=!LB!!LB!!FORMULA!!RB!!RB!!CB!!CB! !MODE! !OB!!OB!attack=1!CB!!CB! !DAMAGE! !OB!!OB!charname=!CHARNAME!!CB!!CB!
+  --~NSBCmd|string;replaceall;!DAMAGE!;[&NSBDamageBlock];[&NSBCmd]
+  --:NSBCommandTemplateReady|
+  --~NSBCmd|string;replaceall;!PREFIX!;[&NSBNativePrefix];[&NSBCmd]
+  --~NSBCmd|string;replaceall;!RNAME!;[&NSBRollLabel];[&NSBCmd]
+  --~NSBCmd|string;replaceall;!MODTEXT!;[&NSBModText];[&NSBCmd]
+  --~NSBCmd|string;replaceall;!FORMULA!;[&NSBRollFormula];[&NSBCmd]
+  --~NSBCmd|string;replaceall;!MODE!;[&NSBModeBlock];[&NSBCmd]
+  --~NSBCmd|string;replaceall;!CHARNAME!;[&NPC_Name];[&NSBCmd]
+  --&DAMP|& --&DOB|{ --&DCB|} --&DLB|[ --&DRB|]
+  --~NSBCmd|string;replaceall;!AMP!;[&DAMP];[&NSBCmd]
+  --~NSBCmd|string;replaceall;!OB!;[&DOB];[&NSBCmd]
+  --~NSBCmd|string;replaceall;!CB!;[&DCB];[&NSBCmd]
+  --~NSBCmd|string;replaceall;!LB!;[&DLB];[&NSBCmd]
+  --~NSBCmd|string;replaceall;!RB!;[&DRB];[&NSBCmd]
+  --e[&NPC_Name]|[&NSBCmd]
+  --X|
+--:CleanText|
+  --#parameterdelimiter|$$$
+  --~CleanedText|string$$$striplinefeeds$$$[&CleanedText] --~CleanedText|string$$$replaceall$$$&#13;$$$ $$$[&CleanedText] --~CleanedText|string$$$replaceall$$$&#10;$$$ $$$[&CleanedText]
+  --~CleanedText|string$$$striphtml$$$[&CleanedText] --~CleanedText|string$$$replaceall$$$’$$$&#39;$$$[&CleanedText] --~CleanedText|string$$$replaceall$$$"$$$&quot;$$$[&CleanedText]
+  --~CleanedText|string$$$stripchars$$$[]*|$$$[&CleanedText] --~CleanedText|string$$$replaceall$$$,$$$&#44;$$$[&CleanedText]
+  --#parameterdelimiter|;
+--<|
+}}
