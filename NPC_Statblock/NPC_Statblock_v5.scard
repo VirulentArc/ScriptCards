@@ -1,7 +1,7 @@
 !Script{{ --/|{& skip}
   --/| ==========================================================================
   --/| Script Name : Tim's NPC Stat Block Mod v5 for D&D 5E 2014
-  --/| Version     : 5.3.0
+  --/| Version     : 5.3.1
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| ==========================================================================
@@ -34,7 +34,7 @@
   --&NSBAutoDamageNext|full --&NSBAutoDamageTitle|Toggle Auto Damage Roll On --&NSBAutoDamageBorder|none --?"[&NSBAutoDamage]" -eq "full"|[ --&NSBAutoDamageNext|pick --&NSBAutoDamageTitle|Toggle Auto Damage Roll Off --&NSBAutoDamageBorder|1px solid #7A2008 --]|
   --&NSBBtnDBorder|none --&NSBBtnNBorder|none --&NSBBtnABorder|none
   --C[&NSBAdvantage]|disadvantage:&NSBBtnDBorder;1px solid #7A2008|normal:&NSBBtnNBorder;1px solid #7A2008|advantage:&NSBBtnABorder;1px solid #7A2008
-  --&NSBBtnCellStyle|[&ButtonStyle] text-align:center; width:18px; min-width:18px; max-width:18px; height:15px; line-height:15px; vertical-align:middle; background-color:#FFEFD5; color:#7A2008; font-family:'Segoe UI Symbol','Noto Sans Symbols 2','Noto Sans Symbols','DejaVu Sans',sans-serif; padding:0;
+  --&NSBBtnCellStyle|[&ButtonStyle] text-align:center; width:18px; min-width:18px; max-width:18px; height:12px; line-height:12px; vertical-align:middle; background-color:#FFEFD5; color:#7A2008; font-family:'Segoe UI Symbol','Noto Sans Symbols 2','Noto Sans Symbols','DejaVu Sans',sans-serif; padding:0; font-size:10px;
   --&NSBSpacerCellStyle|width:6px; min-width:6px; max-width:6px; padding:0; border:none; background-color:transparent; font-size:1px; line-height:1px;
   --&NSBTitleControls|[t style="float:right; width:122px; border-collapse:separate; border-spacing:0; table-layout:fixed; margin-left:4px; margin-bottom:0;"][tr][td title="[&NSBWhisperTitle]" style="[&NSBBtnCellStyle]"][rbutton][F::12][&NSBWhisperIcon][/F]::SetNSBOption;whisper!@![&NSBWhisperNext][/rbutton][/td][td style="[&NSBSpacerCellStyle]"]&nbsp;[/td][td title="[&NSBAutoDamageTitle]" style="[&NSBBtnCellStyle] width:28px; min-width:28px; max-width:28px; border:[&NSBAutoDamageBorder];"][rbutton][F:Tahoma:10]DMG[/F]::SetNSBOption;autodamage!@![&NSBAutoDamageNext][/rbutton][/td][td style="[&NSBSpacerCellStyle]"]&nbsp;[/td][td title="Disadvantage" style="[&NSBBtnCellStyle] border:[&NSBBtnDBorder];"][rbutton][F:Tahoma:11]D[/F]::SetNSBOption;advantage!@!disadvantage[/rbutton][/td][td title="Normal Roll" style="[&NSBBtnCellStyle] border:[&NSBBtnNBorder];"][rbutton][F:Tahoma:11]N[/F]::SetNSBOption;advantage!@!normal[/rbutton][/td][td title="Advantage" style="[&NSBBtnCellStyle] border:[&NSBBtnABorder];"][rbutton][F:Tahoma:11]A[/F]::SetNSBOption;advantage!@!advantage[/rbutton][/td][/tr][/t]
   --&NSBRuleImageURL|https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png
