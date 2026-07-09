@@ -1,314 +1,303 @@
 # Tim's NPC Stat Block Mod v5
 
-Tim's NPC Stat Block Mod v5 is a ScriptCards macro for Roll20 D&D 5E 2014 games. It displays a compact, Monster Manual-style NPC stat block in chat from a selected NPC token, with clickable buttons for ability checks, saving throws, skills, initiative, NPC actions, traits, reactions, bonus actions, legendary actions, mythic actions, and spells.
+A compact NPC stat block for Roll20 D&D 5E 2014 games, built with ScriptCards.
 
-The current version no longer uses a ScriptCards template mule. You do **not** need `ScriptCards_TemplateMule`, `statblockv4`, stored ScriptCards templates, or `!sc-reloadtemplates` for this script.
+Select an NPC token, run the macro, and the script prints a Monster Manual-style stat block in chat with clickable buttons for checks, saves, skills, initiative, traits, actions, bonus actions, reactions, legendary actions, mythic actions, and spells.
 
-The script builds its own card layout directly in ScriptCards and uses the official 5E NPC roll templates for rolls, so the roll output looks and behaves like normal Roll20 sheet rolls instead of old custom ScriptCards roll rows.
+The roll buttons use Roll20's normal 5E NPC roll templates, so the output looks and behaves like rolls made from the official 2014 NPC sheet.
 
 ---
 
 ## Requirements
 
-- A Roll20 Pro account with Mod/API access.
+- A Roll20 Pro game with Mod/API access.
 - ScriptCards installed in the game.
 - The official **D&D 5E 2014 by Roll20** character sheet.
-- A token linked to an NPC character sheet.
-- The script installed as a Roll20 macro or character ability.
+- An NPC character sheet.
+- A token linked to that NPC sheet.
 
-This script is built for the 2014 Roll20 D&D 5E sheet attributes, such as `npc_name`, `npc_ac`, `npc_action`, `npcspellcastingflag`, and the repeating NPC action/spell sections. It is not intended for the 2024 Beacon sheet.
+This script is for the 2014 D&D 5E sheet. It is not designed for the 2024 Beacon sheet.
 
 ---
 
 ## Installation
 
 1. Install ScriptCards in your Roll20 game.
-2. Copy the full `NPC_Statblock_v5.scard` script.
-3. Create a new Roll20 macro, for example `NPC-Statblock`.
-4. Paste the full script into the macro.
-5. Save the macro.
-6. Select a token linked to an NPC character sheet.
-7. Run the macro.
+2. Copy the full contents of `NPC_Statblock_v5.scard`.
+3. In Roll20, open the **Collections** tab.
+4. Create a new macro, such as `NPC-Statblock`.
+5. Paste the full script into the macro.
+6. Save the macro.
+7. Select a token that represents an NPC character.
+8. Run the macro.
 
-The script is installed as a macro. It is not a separate Mod/API script.
+The script is installed as a Roll20 macro. It is not a separate Mod/API script.
 
-Updating the macro through Roll20's in-game macro editor can sometimes introduce formatting issues in large ScriptCards macros. The safest update method is to edit the file in an external editor, then replace the full macro contents in Roll20.
+For updates, replace the entire macro with the newest full script. Large ScriptCards macros are easiest to maintain in an external editor, then copied into Roll20 as one complete block.
 
 ---
 
-## No Template Mule Required
+## Quick Start
 
-Older versions of this project used a ScriptCards template mule and a custom stat block template. The current version does not.
+1. Select one NPC token.
+2. Run the `NPC-Statblock` macro.
+3. Use the buttons in the stat block.
 
-You do **not** need to create, maintain, or reload:
-
-- `ScriptCards_TemplateMule`
-- `statblockv4`
-- `overridetemplate`
-- `StyleSaveResult`
-- `!sc-reloadtemplates`
-
-The stat block is now assembled directly inside the script. This makes setup simpler and avoids template reload problems.
+The macro will show an error message if no token is selected, more than one token is selected, the token is not linked to a character sheet, or the linked sheet is not an NPC.
 
 ---
 
 ## First Run
 
-On first run, the script creates an archived handout named:
+The first time the macro runs, it creates an archived handout named:
 
 ```text
 NPC Stat Block Settings
 ```
 
-That handout stores global NPC Stat Block settings in GM Notes. The settings currently include:
+This handout stores the stat block's shared settings, such as whisper mode, roll mode, damage mode, and Full/Combat mode.
 
-```text
-whisper=1
-advantage=normal
-autodamage=pick
-```
-
-Do not manually edit the GM Notes unless you are intentionally resetting or repairing the stored settings.
-
-If the settings handout is deleted, the script will recreate it the next time the macro runs.
+Do not edit the GM Notes of this handout unless you are intentionally resetting or repairing the settings. If the handout is deleted, the script will recreate it the next time the macro runs.
 
 ---
 
-## Basic Use
+## Full Mode and Combat Mode
 
-1. Select one token.
-2. Make sure the token represents an NPC character sheet.
-3. Run the macro.
-4. Use the buttons in the generated stat block.
+The stat block has two display modes.
 
-The script will stop with a clear message if:
+### Full Mode
 
-- no token is selected;
-- more than one token is selected;
-- the selected token is not linked to a character sheet;
-- the linked character is not marked as an NPC.
+Full Mode is the complete stat block view. It includes the NPC's core stats, ability buttons, save buttons, full skill grid, saving throw and skill summaries, combat defenses, senses, languages, challenge, proficiency bonus, traits, actions, bonus actions, reactions, legendary actions, mythic actions, and spell access when available.
+
+Use Full Mode when you want the most complete version of the NPC entry.
+
+### Combat Mode
+
+Combat Mode is a tighter table-use view. It keeps the combat-relevant information visible while moving the full skill grid onto a separate **Skills** button.
+
+Combat Mode still includes important combat traits. Traits are not hidden, because many NPC traits are rules-critical in combat.
+
+Use Combat Mode when you want the card to stay smaller during play.
+
+### Switching Modes
+
+The mode button is in the lower-left area of the card.
+
+The button text shows where it will go next:
+
+- **Combat** means clicking it will switch to Combat Mode.
+- **Full** means clicking it will switch to Full Mode.
+
+The selected mode is saved in `NPC Stat Block Settings` and will be used the next time the macro runs.
 
 ---
 
-## Top Controls
+## Card Controls
 
-The top-right controls on the stat block are global settings. Clicking one updates the settings handout and immediately rebuilds the card.
+The lower-right buttons control how rolls behave.
 
 ### Whisper Button
 
-The speech-bubble button toggles whether native rolls are whispered to the GM.
+The speech-bubble button toggles whether rolls are whispered to the GM.
 
-- Whisper on: rolls are sent with `/w gm`.
+- Whisper on: rolls are sent to the GM.
 - Whisper off: rolls are public.
 
-The script also syncs the NPC sheet's `wtype` attribute so native sheet-style rolls follow the same whisper mode.
+This setting is shared for the game.
 
 ### DMG Button
 
-The **DMG** button toggles action damage behavior.
+The **DMG** button controls attack damage output.
 
-- Off / pick mode: action attack rolls use the NPC attack template with Roll20's normal damage buttons/links.
-- On / full mode: action attack rolls include damage directly in the roll output.
+- Off / pick damage: attack rolls use Roll20's normal damage buttons or links.
+- On / full damage: attack rolls include damage in the roll output automatically.
 
-The script also syncs the NPC sheet's `dtype` attribute to match the selected damage mode.
+Use pick damage if you want to roll damage only after confirming a hit. Use full damage if you prefer attacks to include damage immediately.
 
 ### D / N / A Buttons
 
-The **D**, **N**, and **A** buttons control roll mode:
+The **D**, **N**, and **A** buttons set the roll mode.
 
 - **D** = disadvantage.
-- **N** = normal roll.
+- **N** = normal.
 - **A** = advantage.
 
-Normal mode intentionally rolls one d20. Advantage and disadvantage roll two d20s in the normal Roll20 sheet style.
-
-The old separate classic-roll button has been removed. The D/N/A buttons now use the classic/native roll style.
+Normal mode rolls one d20. Advantage and disadvantage use the normal Roll20 two-d20 sheet style.
 
 ---
 
-## What the Stat Block Shows
+## Reading the Stat Block
 
-The main card includes:
+The card is designed to be compact. Long text is shortened on the visible row, but the full text is still available.
 
-- NPC name and type.
-- Armor Class.
-- Hit Points and HP formula.
-- Speed.
-- Ability scores and modifiers.
-- Saving throw buttons.
-- Skill buttons, including initiative.
-- Saving throw summary, if the NPC has save bonuses.
-- Skill summary, if the NPC has skill bonuses.
-- Damage vulnerabilities, resistances, and immunities.
-- Condition immunities.
-- Senses.
-- Languages.
-- Challenge Rating and XP.
-- Traits.
-- Actions.
-- Legendary Actions.
-- Mythic Actions.
-- Bonus Actions.
-- Reactions.
-- Spell list button, if the NPC has spellcasting data.
+Hover over long traits, actions, reactions, bonus actions, legendary actions, mythic actions, and spell rows to see the full cleaned text in a tooltip.
 
-Long action, trait, and spell text is displayed in a compact single-line row with a tooltip. Hover over the row to see the full cleaned text.
+The card can show:
+
+- name and creature type;
+- Armor Class;
+- Hit Points and HP formula;
+- speed;
+- ability scores and modifiers;
+- saving throw buttons;
+- skill buttons;
+- initiative;
+- damage vulnerabilities, resistances, and immunities;
+- condition immunities;
+- senses;
+- languages;
+- Challenge Rating and XP;
+- proficiency bonus;
+- traits;
+- actions;
+- bonus actions;
+- reactions;
+- legendary actions;
+- mythic actions;
+- spells, when available.
+
+Only sections with sheet data are shown.
 
 ---
 
-## Rolls
+## Rolling from the Card
 
-The script builds native Roll20 5E NPC roll output instead of custom ScriptCards roll rows.
+Most buttons roll using Roll20's official 5E NPC templates.
 
-### Ability Checks, Saving Throws, Skills, and Initiative
+### Ability Checks and Saving Throws
 
-These use the `&{template:npc}` template.
+Click an ability score button to roll an ability check. Click the **save** button below an ability to roll that ability's saving throw.
 
-The roll output includes:
+If the NPC has a listed saving throw bonus on the sheet, the save button uses that listed bonus. Otherwise it uses the ability modifier.
 
-- the NPC name flag;
-- the roll name;
-- the displayed modifier;
-- the main d20 roll;
-- normal, advantage, or disadvantage mode;
-- the roll type.
+### Skills and Initiative
 
-Initiative also updates the turn tracker for the selected token. The tracker value uses the selected roll result, including advantage or disadvantage when enabled.
+In Full Mode, skill buttons appear directly on the main card.
 
-### NPC Actions
+In Combat Mode, click **Skills** to open a separate skill card.
 
-Attack actions use native NPC roll templates.
+Initiative uses the NPC's initiative bonus when one is present. If the sheet does not have a separate initiative bonus, it uses the Dexterity modifier. Initiative rolls also update the turn tracker for the selected token.
 
-- Pick-damage mode uses `&{template:npcatk}`.
-- Full-damage mode uses `&{template:npcaction}`.
+### Actions
 
-The action button uses the repeating NPC action data from the sheet, including attack bonus, damage, damage types, and crit fields when available.
+Attack actions use native NPC attack roll output.
 
-### Traits and Non-Attack Entries
+Non-attack actions use the sheet's own action button. They still appear on the stat block, and their full text is available by hovering over the row.
 
-Traits and non-attack entries use sheet buttons when there is no attack roll to rebuild. Their row still appears in the compact stat block, with the full description available in the tooltip.
+### Traits
+
+Traits appear in both Full Mode and Combat Mode. This is intentional. Many NPC traits are important during combat, such as Magic Resistance, Legendary Resistance, Pack Tactics, Regeneration, or sunlight-related weaknesses.
+
+Trait buttons use the sheet's own output.
 
 ---
 
 ## Spells
 
-If the NPC has spellcasting data, the main card shows a **Spells** button.
+If the NPC has spellcasting data, the card shows a **Spells** button.
 
-The spell card lists spells by level:
+Click **Spells** to open a spell list card. Spells are grouped by level:
 
 - Cantrips.
-- Level 1 through Level 9 spells.
+- Level 1 through Level 9.
 
-Each spell row shows a compact spell name and description. Hover over the row to see spell details such as:
+Spell rows show the spell name and a compact description. Hover over a spell row to see details such as school, casting time, range, target, components, ritual or concentration tags, duration, innate text, description, and higher-level text.
 
-- school;
-- casting time;
-- range;
-- target;
-- components;
-- ritual and concentration flags;
-- duration;
-- innate text;
-- spell description;
-- higher-level text.
+When the sheet supports it, spell rows can include buttons to cast the spell or show the spell description using the sheet's normal output.
 
-Spell rows can include sheet buttons for casting and description output when the sheet row supports them.
+This script displays and rolls NPC spells. It does not manage spell slots or spell preparation.
 
 ---
 
-## Settings Handout
+## Shared Settings
 
-The settings handout is named:
+The script stores these settings in the `NPC Stat Block Settings` handout:
 
-```text
-NPC Stat Block Settings
-```
-
-It is archived automatically and stores settings in GM Notes. The current stored settings are:
-
-| Setting | Values | Purpose |
-| --- | --- | --- |
-| `whisper` | `0` or `1` | Controls whether rolls are public or whispered to the GM. |
-| `advantage` | `normal`, `advantage`, `disadvantage` | Controls D/N/A roll mode. |
-| `autodamage` | `pick` or `full` | Controls whether action damage is picked from links or included automatically. |
-
-The handout may also contain an internal native roll skeleton after the `!NSBTEMPLATE!` marker. That text is used by the script and should not be edited manually.
-
----
-
-## Sheet Attributes Touched by the Script
-
-The script mostly reads the selected NPC sheet. It intentionally writes only these sheet attributes when syncing global settings:
-
-| Attribute | Purpose |
+| Setting | What it controls |
 | --- | --- |
-| `wtype` | Matches the script's whisper setting. |
-| `dtype` | Matches the script's damage setting. |
+| Whisper | Whether rolls are public or whispered to the GM. |
+| Roll mode | Disadvantage, normal, or advantage. |
+| Damage mode | Pick damage or full damage. |
+| Display mode | Full Mode or Combat Mode. |
 
-The script does not write stat block data back to the character sheet.
+These settings are shared in the game. If one user changes the mode or roll setting, the next card uses that saved setting.
+
+---
+
+## What the Script Changes
+
+The script reads the selected NPC sheet and displays a chat card.
+
+It does not rewrite the NPC's stat block.
+
+To keep sheet-style buttons consistent with the card controls, the script may update the selected NPC sheet's normal whisper and damage roll settings. This is the same kind of setting changed by the 5E sheet's own whisper and damage controls.
+
+---
+
+## Updating from Older Versions
+
+Older versions of this project used a ScriptCards template mule and a custom stat block template. Version 5 no longer needs that setup.
+
+You do not need:
+
+- `ScriptCards_TemplateMule`
+- `statblockv4`
+- stored ScriptCards templates
+- `!sc-reloadtemplates`
+
+You can leave old template mule material in your game if other scripts still use it, but this NPC Stat Block script no longer depends on it.
+
+The old separate classic-roll button has also been removed. The **D**, **N**, and **A** buttons now control the native/classic-style roll mode directly.
 
 ---
 
 ## Troubleshooting
 
-### The macro says no token is selected
+### No token is selected
 
-Select exactly one token before running the macro.
+Select exactly one NPC token, then run the macro again.
 
-### The macro says the token is not linked to a character sheet
+### More than one token is selected
 
-Open the token settings and make sure **Represents Character** points to the NPC character.
+Deselect the extra tokens. The macro only works with one selected token at a time.
 
-### The macro says the selected character is not an NPC
+### The token is not linked to a character sheet
 
-Open the character sheet and make sure it is configured as an NPC on the D&D 5E 2014 sheet.
+Open the token settings and make sure **Represents Character** is set to the NPC character sheet.
+
+### The selected character is not an NPC
+
+Open the character sheet and make sure it is configured as an NPC on the official D&D 5E 2014 sheet.
+
+### The card does not show spells
+
+Make sure the NPC has spellcasting data on the NPC sheet. The **Spells** button only appears for NPCs with spell data the script can read.
 
 ### Rolls are whispered or public unexpectedly
 
-Use the speech-bubble button in the top-right controls. The setting is global and stored in the `NPC Stat Block Settings` handout.
+Use the speech-bubble button on the card. The setting is saved globally in `NPC Stat Block Settings`.
 
-### Damage output is not what you expect
+### Damage is not rolling the way you want
 
-Use the **DMG** button in the top-right controls.
+Use the **DMG** button.
 
-- Off / pick mode gives normal Roll20 damage links.
-- On / full mode includes damage directly in the roll output.
+Pick-damage mode gives Roll20's normal damage links. Full-damage mode includes damage directly in the roll output.
 
-### The title wraps strangely
+### The card is too large in chat
 
-The current layout uses a compact floated control bar beside the NPC name. Very long NPC names can still wrap, but the layout is tuned so the controls stay beside the first title line and the remaining name wraps below.
+Switch to Combat Mode. Combat Mode keeps combat-useful information, including traits, but moves the full skill grid behind the **Skills** button.
 
-### I deleted the settings handout
+### Long text is cut off
+
+Hover over the row. Long text is intentionally shortened on the card, and the full text is available in the tooltip.
+
+### The settings handout was deleted
 
 Run the macro again. The script will recreate `NPC Stat Block Settings` with default settings.
 
----
+### The macro behaves strangely after editing it in Roll20
 
-## Updating
-
-To update the script:
-
-1. Open the current `NPC_Statblock_v5.scard` source.
-2. Copy the full file contents.
-3. Open the Roll20 macro that contains the old version.
-4. Replace the entire macro with the new source.
-5. Save the macro.
-6. Run it once as the GM to confirm the settings handout still loads.
-
-Existing settings are stored in `NPC Stat Block Settings`, so replacing the macro does not normally reset whisper, roll mode, or damage mode.
-
----
-
-## Notes for Older Versions
-
-If you are updating from an older template-mule version:
-
-- You can leave `ScriptCards_TemplateMule` in the game, but this script no longer uses it.
-- You do not need to reload templates.
-- You do not need the old `statblockv4` template.
-- The old classic-roll button is gone.
-- D/N/A now control the native/classic-style roll mode directly.
-- Rolls are built to match the Roll20 5E NPC sheet templates instead of ScriptCards custom roll formatting.
+Replace the entire macro from a clean copy of `NPC_Statblock_v5.scard`. For large ScriptCards macros, editing in an external editor and then pasting the whole script back into Roll20 is usually safer than making piecemeal edits in the Roll20 macro editor.
 
 ---
 
