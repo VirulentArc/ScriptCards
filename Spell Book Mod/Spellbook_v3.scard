@@ -1,0 +1,888 @@
+!script {{ --/|{& skip}
+  --/| ==========================================================================
+  --/| Script Name : Tim's Spell Book Mod (Scriptcards) for D&D 5E 2014
+  --/| Version     : 3.7.0
+  --/| Author      : Timothy Beasley
+  --/| API Mods    : ScriptCards
+  --/| Github URL  : New URL TBD
+  --/| ==========================================================================
+  --:RestartBook|
+  --&ImgRoot|https://files.d20.io/images/
+  --&CasterToken|[@SC_SelectedTokens(0)]
+  --#reentrant|Spellbook- [*[&CasterToken]:character_id] --#Whisper|self --#sourceToken|[&CasterToken] --#emoteState|0 --#debug|0 --#functionbenchmarking|1
+  --?"[@SC_SelectedTokens()]" -eq "undefined array"|[ --#title|Spellbook Error --#titleCardBackground|#611b1c --#bodyBackgroundImage|url('[&ImgRoot]105716505/oymO0pnVyLCv-tQDw2vddA/med.png'); --+[c]No Token Selected|Please select the caster's token and run the Spellbook again.[/c] --X| --]|
+  --?"[@SC_SelectedTokens()]" -gt "1"|[ --#title|Spellbook Error --#titleCardBackground|#611b1c --#bodyBackgroundImage|url('[&ImgRoot]105716505/oymO0pnVyLCv-tQDw2vddA/med.png'); --+[c]Multiple Tokens Selected|Please select only one caster token and run the Spellbook again.[/c] --X| --]|
+  --&CharId_Attr|[*S:character_id]
+  --&CharName_Attr|[*S:character_name]
+  --?"[&CharName_Attr(-1,1)]" -eqi "s"|[ --&Owner|' --]|[ --&Owner|'s --]|
+  --&ClassName_Attr|[*S:class]
+  --&SubClass_Attr|[*S:subclass]
+  --?"[&SubClass_Attr]" -eq ""|[ --&SubClass_Attr|No Subclass --]|
+  --&CasterLevel_Attr|[*S:caster_level]
+  --&SCA_Attr|[*S:spellcasting_ability]
+  --~SCA_Attr|string;substring;3;3;[&SCA_Attr]
+  --=SCAbility|[*S:spell_attack_bonus] - [*S:pb]
+  --&AutoPrep|0 --&NoFullList|0
+  --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName_Attr];"|[ --&AutoPrep|1 --]|
+  --?";sorcerer;warlock;fighter;rogue;bard;" -inc ";[&ClassName_Attr];"|[ --&NoFullList|1 --]|
+  --~|array;define;SpellLevels;cantrip;1;2;3;4;5;6;7;8;9
+  --~|array;define;CacheStores;prepared;cantrip;full1;full2;full3;full4;full5;full6;full79
+  --~|hash;set;CacheLevelStoreDB;cantrip==cantrip;1==full1;2==full2;3==full3;4==full4;5==full5;6==full6;7==full79;8==full79;9==full79
+  --~|hash;set;CacheVarDB;prepared==PreparedCache;cantrip==CantripCache;full1==Level1FullCache;full2==Level2FullCache;full3==Level3FullCache;full4==Level4FullCache;full5==Level5FullCache;full6==Level6FullCache;full79==Level79FullCache
+  --~|hash;set;CacheHandoutNameDB;prepared==Spell Book Cache - [&CharId_Attr];cantrip==Spell Book Cache 0-1 - [&CharId_Attr];full1==Spell Book Cache 0-1 - [&CharId_Attr];full2==Spell Book Cache 2-3 - [&CharId_Attr];full3==Spell Book Cache 2-3 - [&CharId_Attr];full4==Spell Book Cache 4-5 - [&CharId_Attr];full5==Spell Book Cache 4-5 - [&CharId_Attr];full6==Spell Book Cache 6-9 - [&CharId_Attr];full79==Spell Book Cache 6-9 - [&CharId_Attr]
+  --~|hash;set;CacheHIDVarDB;prepared==CacheHID;cantrip==Cache01HID;full1==Cache01HID;full2==Cache23HID;full3==Cache23HID;full4==Cache45HID;full5==Cache45HID;full6==Cache69HID;full79==Cache69HID
+  --~|hash;set;CacheFieldDB;prepared==gmnotes;cantrip==notes;full1==gmnotes;full2==notes;full3==gmnotes;full4==notes;full5==gmnotes;full6==notes;full79==gmnotes
+  --?"[&DescWhisperMode]" -ne "1"|[ --&DescWhisperMode|0 --]|
+  -->LoadImageDB|
+  -->LoadSpellBookModData|
+  -->LoadCharacterSpellBookSettings|
+  --&CacheWritePending|0
+  -->ApplySpellBookCardStyle|
+  --&EmojiFont|font-family: 'Segoe UI Symbol', 'DejaVu Sans', 'Noto Sans Symbols 2', 'Noto Sans Symbols2', 'Noto Sans Symbols', 'Symbola', sans-serif ;
+  --&NoShadow|text-shadow: 0 1px 1px rgba(0,0,0,0) ;
+  --&TtlTbl_CSS|style="width: 100% ; margin: 0em .25em 0em .25em ; font-family: 'Palatino Linotype', 'FreeSerif', serif ; font-variant: small-caps ; letter-spacing: 0.02em ; font-size: 18px ; font-weight: bold ; line-height: 1em ; text-align: center ; position: relative ; top: -2px ; left: -4px ; color: #[&IconColor_Attr] ; "
+  --&BttnTd_CSS|style="background-color: transparent; background-image: none; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px; text-transform: uppercase; font-weight: bold ; margin: 2px ;"
+  --&HdrTbl_CSS|style="font-family: 'Palatino Linotype', 'Book Antiqua', serif ; margin: 0em auto .3em ; color: #[&SpellColor_Attr] ; font-size: 18px ; table-layout: fixed ; background-image: url([&tmpUI_Attr]) ; background-repeat: no-repeat ; background-size: 288px 30px ; background-position: left ; display: inline-block ; width: 310px ; height: 30px ; line-height: 18px ; position: relative ; left: 4px ; "
+  --&HdrTd_CSS|style="width: 80px ; height: 30px ; font-weight: bold ; text-align: center ; line-height: 18px ; color: #[&IconColor_Attr] ; "
+  --&HdrTdR_CSS|style="width: 40px ; height: 30px ; font-weight: bold ; text-align: left ; line-height: 18px ; "
+  --&HdrTdPrep_CSS|style="width: 40px ; height: 30px ; font-weight: bold ; text-align: left ; line-height: 18px ; "
+  --&HdrTdL_CSS|style="width: 40px ; height: 30px ; [&EmojiFont] font-weight: bold ; text-align: right ; line-height: 18px ; color: #[&IconColor_Attr] ; "
+  --&HdrTdRoll_CSS|style="width: 40px ; height: 30px ; font-family: 'dicefontd20' ; font-weight: bold ; text-align: right ;  color: #[&IconColor_Attr] ; text-shadow: 0.6px 0 0 currentColor, -0.6px 0 0 currentColor ; line-height: 18px ; padding: 0px 1px 0 0em ; "
+  --&HdrTdClass_CSS|style="width: 40px ;height: 30px ; [&EmojiFont] font-size: 18px ; font-weight: bold ; text-align: right ; color: #[&IconColor_Attr] ; vertical-align: middle ; line-height: 16px ; "
+  --&LvlTbl_CSS|style="background-image: url([&tmpSpellUI_Attr]) ; background-repeat: no-repeat ; background-size: 98% 40px ; display: inline-block ; width: 100% ; height: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: 4px ; "
+  --&LvlTd_CSS|style="position: relative ; top: -3px ; left: 2px ; font-weight: bold ; font-size: 20px ; color: #[&IconColor_Attr] ; "
+  --&MinusTd_CSS|style="position: relative ; top: -4px ; text-align: right ; font-weight: bold ; font-size: 30px ; "
+  --&EmptySlot|[img width=30][&ImgRoot]450522306/RyehAXy6s1QIFid2UYRBoQ/original.webp[/img]
+  --&MissingSlot|[img width=30][&ImgRoot]450522300/P-PGyu9BUz3bPQF7eWYe5A/original.webp[/img]
+  --&FullSlot|[img width=30][&SlotStyle_Attr][/img]
+  --&RollImage|t --&Infinity|&#x221E; --&BookImage|&#x1F56E; --&SpeechBubbleIcon|&#128488;&#65038; --&WhisperIcon|&#128483;&#65038; --&BlueDot|&#x25C9; --&BlankDot|&#x25CB; --&SettingsIcon|&#x2699;
+  --=PrepTotal|[&CasterLevel_Attr] + [$SCAbility.Raw] {FLOOR}
+  --&ClassImage|
+  --~SubClassKey|string;tolowercase;[&SubClass_Attr]
+  --~SubClassKey|string;replace;way of the;;[&SubClassKey]
+  --~SubClassKey|string;replace;oath of the;;[&SubClassKey]
+  --~SubClassKey|string;replace;circle of the;;[&SubClassKey]
+  --~SubClassKey|string;replace;way of;;[&SubClassKey]
+  --~SubClassKey|string;replace;oath of;;[&SubClassKey]
+  --~SubClassKey|string;replace;circle of;;[&SubClassKey]
+  --~SubClassKey|string;replace;school of;;[&SubClassKey]
+  --~SubClassKey|string;replace;domain;;[&SubClassKey]
+  --~SubClassKey|string;trim;[&SubClassKey]
+  --~SubClassKey|string;replaceall; ;_;[&SubClassKey]
+  --~|hash;set;ClassIconDB;abjuration==26E8;conjuration==169B9;divination==2135;enchantment==272F;evocation==2739;illusion==1F441;necromancy==2620;transmutation==21BB;wild_magic==1F3B2;draconic_bloodline==1F409;divine_soul==2728;storm_sorcery==26C8;shadow_magic==1F316;aberrant_mind==1F47D;clockwork_soul==231B;fiend==1F47F;great_old_one==1F419;archfey==1F33C;celestial==1F31F;undying==26B0;hexblade==2694;fathomless==1F30A;genie==1F9DE;undead==1F480;knowledge==1F4D6;life==2764;light==2600;nature==1F33F;tempest==26C8;trickery==1F47B;war==2694;twilight==1F317;order==2696;forge==1F528;grave==26B0;peace==1F54A;devotion==271D;vengeance==2694;ancients==1F33F;conquest==1F451;oathbreaker==2620;redemption==1F5E8;glory==1F3C6;watchers==1F441;crown==1F451;land==1F30F;moon==1F31C;dreams==1F4A4;shepherd==1F411;spores==1F344;stars==1F320;wildfire==1F525;fey_wanderer==1F33C;swarmkeeper==1F41D;monster_slayer==1F5E1;hunter==1F3F9;gloom_stalker==1F311;horizon_walker==1F30C;beast_master==1F43E;drakewarden==1F409;alchemist==2697;artillerist==1F52B;battle_smith==2699;armorer==1F6E1;arcane_trickster==1F4A8;assassin==1F5E1;thief==1F512;inquisitive==1F50E;mastermind==1F9E0;scout==1F43E;swashbuckler==1F45F;phantom==1F47B;soulknife==1F9D8;open_hand==270A;shadow==1F316;four_elements==1F30A;mercy==1F489;astral_self==1F9D8;drunken_master==1F37B;kensei==1F5E1;sun_soul==1F525;long_death==2620;ascendant_dragon==1F409;battle_master==2694;eldritch_knight==1F4A8;arcane_archer==1F3F9;cavalier==1F40E;samurai==1F5E1;psi_warrior==1F9E0;rune_knight==16B9C;echo_knight==1F47B;lore==1F4D6;valor==2694;glamour==1F33C;creation==2728;swords==1F5E1;whispers==1F47B;eloquence==1F5E8;spirits==2620
+  --&ClassImage|[:ClassIconDB("[&SubClassKey]")]
+  --?"[&ClassImage]" -eq "undefined"|&ClassImage;
+  --&ActionTitle| --&ActionImage| --&BonusTitle| --&BonusImage| --&ReactionTitle| --&ReactionImage|
+  --?"[&ActionToggle_Attr]" -eq "yes"|[ --&ActionTitle|Action&nbsp;-&nbsp; --&ActionImage|[F:Segoe UI Symbol:16][#[&ActionColor_Attr]]&#x25A0;[/#][/F] --]|
+  --?"[&BonusToggle_Attr]" -eq "yes"|[ --&BonusTitle|Bonus&nbsp;-&nbsp; --&BonusImage|[F:Segoe UI Symbol:16][#[&BonusColor_Attr]]&#x25C6;[/#][/F] --]|
+  --?"[&ReactionToggle_Attr]" -eq "yes"|[ --&ReactionTitle|Reaction&nbsp;-&nbsp; --&ReactionImage|[F:Segoe UI Symbol:16][#[&ReactionColor_Attr]]&#x2B22;[/#][/F] --]|
+  --?"[&ClassImage]" -ne ""|[ --&ClassImage|&#x[&ClassImage]; --]|[ --&ClassImage|&#x1F703; --]|
+  --?"[&AutoPrep]" -eq "1"|[ --&PrepTotal|[&Infinity] --&HdrTdPrep_CSS|style="width: 40px ; height: 30px ; font-family: 'Gabriola' ; font-size: 30px ; font-weight: bold ; text-align: left ; line-height: 18px ; " --]|[ --&PrepTotal|[$PrepTotal.Raw] --]|
+  --&Title|[t [&TtlTbl_CSS]][tr][td][&CharName_Attr][&Owner] Spell Book[/td][/tr][/t]
+  --&ThemePageOffset|0
+  --?";ember_core;gilded_vine;celestial_veil;stormcaller;" -inc ";[&tmpChosen_Attr];"|[ --&ThemePageOffset|4 --]|
+  --?";sacred_rose;chloromancy;bloodwake;neon_tides;" -inc ";[&tmpChosen_Attr];"|[ --&ThemePageOffset|8 --]|
+  --?";whisperveil;sanctum_aureum;verdant_veil;amber_hollow;" -inc ";[&tmpChosen_Attr];"|[ --&ThemePageOffset|12 --]|
+  --?";golden_quarry;stonecut_vault;feymist_bloom;circuit_tree;" -inc ";[&tmpChosen_Attr];"|[ --&ThemePageOffset|16 --]|
+  --&Header|[t [&HdrTbl_CSS]][tr][td title="Spellcasting Ability: Click to Change" [&HdrTd_CSS]]&#x272F;[rbutton:#[&SpellColor_Attr]:16px][&SCA_Attr(touppercase)]::SCAChoice[/rbutton][/td][td title="Spell Save DC" [&HdrTdL_CSS]]&#x26E8;[/td][td title="Spell Save DC" [&HdrTdR_CSS]][*S:spell_save_dc][/td][td title="Spellcasting Bonus" [&HdrTdRoll_CSS]][&RollImage][/td][td title="Spellcasting Bonus" [&HdrTdR_CSS]][*S:spell_attack_bonus][/td][td [&HdrTdClass_CSS] title="[&ClassName_Attr]: [&SubClass_Attr] &#x2666; Max Prepared Spells"][&ClassImage][/td][td [&HdrTdPrep_CSS] title="[&ClassName_Attr]: [&SubClass_Attr] &#x2666; Max Prepared Spells"][&PrepTotal][/td][td title="Settings"][rbutton::20px][&SettingsIcon]::SettingsCard;[&ThemePageOffset][/rbutton][/td][/tr][/t]
+  --?"[&ActionToggle_Attr]" -eq "yes" -or "[&BonusToggle_Attr]" -eq "yes" -or "[&ReactionToggle_Attr]" -eq "yes"|[ --&Header|+[t style="width: 100% ; text-align: center"][tr][td style='[&NoShadow] color: #[&SpellColor_Attr] ; '][&ActionTitle][&ActionImage]&nbsp;&nbsp;[&BonusTitle][&BonusImage]&nbsp;&nbsp;[&ReactionTitle][&ReactionImage][/td][/tr][/t] --]|
+  --~|array;define;SpellLevelsPresent
+  --%FullCacheInitLevel|foreach;SpellLevels
+    --~|array;define;FullCacheRows_[&FullCacheInitLevel]
+    --~|array;define;FullCachePrepRows_[&FullCacheInitLevel]
+  --%|
+  --~|array;define;FullCacheRepOrderAttrs
+  --~|array;attributes;FullCacheRepOrderAttrs;[&CharId_Attr];_reporder_repeating_spell-
+  --~|hash;clear;FullCacheRepOrderDB
+  --?"[@FullCacheRepOrderAttrs()]" -eq "0"|SkipFullCacheRepOrderScan
+  --%FullCacheRepOrderAttr|foreach;FullCacheRepOrderAttrs
+    --&FullCacheRepOrderLevel|[*O:[&FullCacheRepOrderAttr]:attribute:name]
+    --&FullCacheRepOrderLevel|[&FullCacheRepOrderLevel(after,_reporder_repeating_spell-)]
+    --h:FullCacheRepOrderDB("[&FullCacheRepOrderLevel]")|[*O:[&FullCacheRepOrderAttr]:attribute:current]
+  --%|
+  --:SkipFullCacheRepOrderScan|
+  --~|array;define;FullCacheSpellAttrs
+  --~|array;attributes;FullCacheSpellAttrs;[&CharId_Attr];repeating_spell-
+  --?"[@FullCacheSpellAttrs()]" -eq "0"|SkipFullCacheSpellAttrScan
+  --%FullCacheSpellAttr|foreach;FullCacheSpellAttrs
+    --&FullCacheSpellName|[*O:[&FullCacheSpellAttr]:attribute:name]
+    --?"[&FullCacheSpellName]" -ninc "_spellname" -and "[&FullCacheSpellName]" -ninc "_spellprepared"|%
+    --&FullCacheSpellLevel|[&FullCacheSpellName(after,repeating_spell-)]
+    --&FullCacheSpellLevel|[&FullCacheSpellLevel(before,_)]
+    --&FullCacheSpellRowID|[&FullCacheSpellName(after,repeating_spell-[&FullCacheSpellLevel]_)]
+    --&FullCacheSpellRowID|[&FullCacheSpellRowID(before,_spell)]
+    --?"[&FullCacheSpellName]" -inc "_spellname"|[ --~|array;add;FullCacheRows_[&FullCacheSpellLevel];[&FullCacheSpellRowID] --]|
+    --?"[&FullCacheSpellName]" -ninc "_spellprepared"|%
+    --?"[&AutoPrep]" -eq "1"|%
+    --?"[&FullCacheSpellLevel]" -eq "cantrip"|%
+    --?"[*O:[&FullCacheSpellAttr]:attribute:current]" -eq "1"|[ --~|array;add;FullCachePrepRows_[&FullCacheSpellLevel];[&FullCacheSpellRowID] --]|
+  --%|
+  --:SkipFullCacheSpellAttrScan|
+  --&FullCacheSignature|
+  --%FullCacheSignatureLevel|foreach;SpellLevels
+    --~|array;sort;FullCacheRows_[&FullCacheSignatureLevel]
+    --~FullCacheSectionRows|array;stringify;FullCacheRows_[&FullCacheSignatureLevel];,
+    --~|array;sort;FullCachePrepRows_[&FullCacheSignatureLevel]
+    --~FullCacheSectionPrep|array;stringify;FullCachePrepRows_[&FullCacheSignatureLevel];,
+    --&FullCacheRowCount|[@FullCacheRows_[&FullCacheSignatureLevel]()]
+    --&FullCacheSectionSignature|[&FullCacheRowCount]R[:FullCacheRepOrderDB("[&FullCacheSignatureLevel]")]I[&FullCacheSectionRows]%%%P%%%[&FullCacheSectionPrep]
+    --&SpellSectionRowCount_[&FullCacheSignatureLevel]|[&FullCacheRowCount]
+    --&FullCacheSignature|+_SEC[&FullCacheSignatureLevel]C[&FullCacheSectionSignature]_ENDSEC
+    --?"[&FullCacheRowCount]" -gt "0"|[ --~|array;add;SpellLevelsPresent;[&FullCacheSignatureLevel] --]|
+    --~|array;define;FullCacheRows_[&FullCacheSignatureLevel]
+    --~|array;define;FullCachePrepRows_[&FullCacheSignatureLevel]
+  --%|
+  --~|array;define;FullCacheRepOrderAttrs
+  --~|array;define;FullCacheSpellAttrs
+  --~|hash;clear;FullCacheRepOrderDB
+  --?"[&FullCacheSignature_Attr]" -eq "[&FullCacheSignature]"|SkipFullCachePrime
+  --?"[&FullCacheSignature_Attr]" -eq "none"|[ --&FullCacheBuildMessage|Initial Setup --&FullCacheBuildStatus|Building Cache... Please Wait --^FullCachePrimeRequired| --]|
+  --?"[&FullCacheSignature_Attr]" -eq "cleared"|[ --&FullCacheBuildMessage|Cache Refresh --&FullCacheBuildStatus|Rebuilding Cache... Please Wait --^FullCachePrimeRequired| --]|
+  --~|array;define;ChangedSpellLevels
+  --%FullCacheCompareLevel|foreach;SpellLevels
+    --&FullCacheStoredSectionSignature|[&FullCacheSignature_Attr]
+    --~FullCacheStoredSectionSignature|string;after;_SEC[&FullCacheCompareLevel]C;[&FullCacheStoredSectionSignature]
+    --~FullCacheStoredSectionSignature|string;before;_ENDSEC;[&FullCacheStoredSectionSignature]
+    --&FullCacheCurrentSectionSignature|[&FullCacheSignature]
+    --~FullCacheCurrentSectionSignature|string;after;_SEC[&FullCacheCompareLevel]C;[&FullCacheCurrentSectionSignature]
+    --~FullCacheCurrentSectionSignature|string;before;_ENDSEC;[&FullCacheCurrentSectionSignature]
+    --?"[&FullCacheStoredSectionSignature]" -ne "[&FullCacheCurrentSectionSignature]"|[ --~|array;add;ChangedSpellLevels;[&FullCacheCompareLevel] --]|
+  --%|
+  -->RefreshChangedSpellLevels|
+  --&FullCacheSignaturePending|1
+  --^RenderSpellBook|
+  --:FullCachePrimeRequired|
+  --?"[&NoFullList]" -ne "1"|ContinueFullCachePrime
+  --&PreparedCacheRaw| --&PreparedCacheLoaded|1 --&PreparedCacheDirty|1 --&CacheWritePending|1
+  --&FullCacheSignaturePending|1
+  --^RenderSpellBook|
+  --:ContinueFullCachePrime|
+  --&CacheNoticeLine|- --&CacheNoticeLine|+-
+  --eSpell Book|!script !{!{ [&CacheNoticeLine]#whisper|[&OriginalSendingPlayerName] [&CacheNoticeLine]#title|Spell Book Cache [&CacheNoticeLine]#titleCardBackground|#611b1c [&CacheNoticeLine]#bodyBackgroundImage|url('[&ImgRoot]105716505/oymO0pnVyLCv-tQDw2vddA/med.png'); [&CacheNoticeLine]+[c][&FullCacheBuildMessage]|[&FullCacheBuildStatus][/c] !}!}
+  --#whisper|[&OriginalSendingPlayerName]
+  --w0.25:eSpell Book|!sc-reentrant Spellbook- [&CharId_Attr]-|-ResumeFullCacheBuild
+  --#hidecard|1
+  --X|
+  --:ResumeFullCacheBuild|
+  --#hidecard|0
+  -->PrimeFullListCache|
+  --:SkipFullCachePrime|
+  --:RenderSpellBook|
+  --#hidecard|0
+  --&DescWhisperButton|[rbutton::16px:Whisper Spell Details to Self][&SpeechBubbleIcon]::ToggleDescriptionWhisper[/rbutton]
+  --?"[&DescWhisperMode]" -eq "1"|[ --&DescWhisperButton|[rbutton::16px:Show Spell Details Publicly][&WhisperIcon]::ToggleDescriptionWhisper[/rbutton] --]|
+  --+|[&TopBar][&Title][&Header]
+  --?"[&PrepToggle_Attr]" -eq "0"|[ -->SelectCacheStore| --]|
+  --%levelLoop|foreach;SpellLevelsPresent
+    -->ProcessSpellLevel|[&levelLoop]
+  --%|
+  --?"[&CacheWritePending]" -ne "1"|SkipCacheWrites
+  --%CacheWriteStore|foreach;CacheStores
+    --&CacheWriteBase|[:CacheVarDB("[&CacheWriteStore]")]
+    --&CacheWriteHIDVar|[:CacheHIDVarDB("[&CacheWriteStore]")]
+    --&CacheWriteField|[:CacheFieldDB("[&CacheWriteStore]")]
+    --?"[&[&CacheWriteBase]Dirty]" -eq "1"|[
+      --!h:[&[&CacheWriteHIDVar]]|[&CacheWriteField]:"[&[&CacheWriteBase]Raw]"
+      --&[&CacheWriteBase]Dirty|0
+    --]|
+  --%|
+  --&CacheWritePending|0
+  --:SkipCacheWrites|
+  --?"[&FullCacheSignaturePending]" -ne "1"|SkipFullCacheSignatureWrite
+  --&FullCacheSignature_Attr|[&FullCacheSignature]
+  -->WriteSBMRootSetting|fullcachesignature;[&FullCacheSignature_Attr]
+  --&FullCacheSignaturePending|0
+  --:SkipFullCacheSignatureWrite|
+  --&BottomFullListControls|
+  --?"[&PrepToggle_Attr]" -ne "1"|SkipBottomFullListControls
+  --?"[&NoFullList]" -eq "1"|SkipBottomFullListControls
+  --&BottomHeaderControls|[t width=70 style="position: relative ; top: 2px ; border-collapse: collapse ; table-layout: fixed ; "][tr][td width=13][/td][td width=22 style="text-align: center ; font-size: 20px ; font-weight: bold ; [&EmojiFont] " title="Show Prepared Spells Only"][rbutton]&#x2B9D;::ToggleShow;0[/rbutton][/td][td width=22 style="text-align: center ; font-size: 20px ; font-weight: bold ; [&EmojiFont] "][&DescWhisperButton][/td][td width=13][/td][/tr][/t]
+  --&BottomFullListControls|[t width=100%][tr][td style="line-height:2px;font-size:1px;padding:0;border:0;background:transparent;"]&nbsp;[/td][/tr][tr][td width=8 style="padding:0;border:0;background:transparent;"][/td][td style="border:0;border-bottom:2px solid #[&IconColor_Attr];padding:0;"][/td][td width=8 style="padding:0;border:0;background:transparent;"][/td][/tr][tr][td style="height:3px;line-height:1px;font-size:1px;padding:0;border:0;background:transparent;"]&nbsp;[/td][/tr][/t][t style="display: inline-block ; width: 100% ; text-align: center ; vertical-align: middle ; position: relative ; left: 3px ; table-layout: fixed ; "][tr][td width=30][/td][td width=80][/td][td width=140][/td][td width=70][&BottomHeaderControls][/td][/tr][/t]
+  --:SkipBottomFullListControls|
+  --+|[&BottomFullListControls][&BottomBar]
+--X|
+--:ProcessSpellLevel|
+  --&SpellLevel|[%1%]
+  --&SpellOutput| --&ShowPactRow|0
+  --&ArrowTd_CSS|style="font-size: 20px ; font-weight: bold ; " --&PrepShow| --&HeaderControls| --&SlotTd_CSS|
+  --?"[&SpellLevel]" -eq "cantrip"|[
+    --&SlotDisplay|[&Infinity]
+    --&PlusSlot| --&MinusSlot|
+    --&SpellLevelOutput|C
+    --&SlotTd_CSS|style="position: relative ; top: -2px ; font-family: 'Gabriola' ; font-size: 46px ; color: #[&IconColor_Attr] ; "
+    --#parameterDelimiter|$$$
+    --?"[&PrepToggle_Attr]" -eq "0"|&PrepShow$$$[rbutton]&#x2B9F;::ToggleShow;1[/rbutton]|&PrepShow$$$[rbutton]&#x2B9D;::ToggleShow;0[/rbutton]
+    --#parameterDelimiter|;
+    --?"[&NoFullList]" -eq "1"|&PrepShow;
+    --&ArrowTd_CSS|style="width: 70px ; font-size: 20px ; font-weight: bold ; [&EmojiFont] "
+    --&HeaderControls|[t width=70 style="border-collapse: collapse ; table-layout: fixed ; "][tr][td width=13][/td][td width=22 style="position: relative ; left: -1px ; text-align: center ; font-size: 20px ; font-weight: bold ; [&EmojiFont] " title="Show or Hide Unprepared Spells"][&PrepShow][/td][td width=22 style="text-align: center ; font-size: 20px ; font-weight: bold ; [&EmojiFont] "][&DescWhisperButton][/td][td width=13][/td][/tr][/t]
+    --^SkipSlotCalc|
+  --]|
+  --&SlotsRemaining|[*S:lvl[&SpellLevel]_slots_expended]
+  --&SlotsTotal|[*S:lvl[&SpellLevel]_slots_total]
+  --&MainSlotsTotal|[&SlotsTotal]
+  --&MainSlotsRemaining|[&SlotsRemaining]
+  --&MainSlotPool|normal
+  --&SlotDisplay| --&WarlockSlots| --&PactPlusSlot| --&PactMinusSlot|
+  --?"[&SpellLevel]" -eq "[&PactSlotLevel]" -and "[&PactSlotTotal]" -gt "0"|[
+    --=NormalSlotsTotalCalc|[&SlotsTotal] - [&PactSlotTotal]
+    --&MainSlotsTotal|[$NormalSlotsTotalCalc.Raw]
+    --=NormalSlotsRemainingCalc|[&SlotsRemaining] - [&PactSlotsRemaining_Attr]
+    --&MainSlotsRemaining|[$NormalSlotsRemainingCalc.Raw]
+  --]|
+  --?"[&SpellLevel]" -eq "[&PactSlotLevel]" -and "[&PactSlotTotal]" -gt "0" -and "[&MainSlotsTotal]" -gt "0"|[ --&ShowPactRow|1 --]|
+  --?"[&SpellLevel]" -eq "[&PactSlotLevel]" -and "[&PactSlotTotal]" -gt "0" -and "[&MainSlotsTotal]" -le "0"|[
+    --&MainSlotsTotal|[&PactSlotTotal]
+    --&MainSlotsRemaining|[&PactSlotsRemaining_Attr]
+    --&MainSlotPool|pact
+  --]|
+  --%slotPosition|1;4
+    --?"[&slotPosition]" -le "[&MainSlotsTotal]" -and "[&slotPosition]" -gt "[&MainSlotsRemaining]"|&SlotDisplay;+[&EmptySlot]
+    --?"[&slotPosition]" -le "[&MainSlotsTotal]" -and "[&slotPosition]" -le "[&MainSlotsRemaining]"|&SlotDisplay;+[&FullSlot]
+    --?"[&slotPosition]" -gt "[&MainSlotsTotal]"|&SlotDisplay;+[&MissingSlot]
+  --%|
+  --?"[&ShowPactRow]" -eq "1"|[
+    --%slotPosition|1;4
+      --?"[&slotPosition]" -le "[&PactSlotTotal]" -and "[&slotPosition]" -gt "[&PactSlotsRemaining_Attr]"|&WarlockSlots;+[&EmptySlot]
+      --?"[&slotPosition]" -le "[&PactSlotTotal]" -and "[&slotPosition]" -le "[&PactSlotsRemaining_Attr]"|&WarlockSlots;+[&FullSlot]
+      --?"[&slotPosition]" -gt "[&PactSlotTotal]"|&WarlockSlots;+[&MissingSlot]
+    --%|
+  --]|
+  --?"[&MainSlotsTotal]" -eq "[&MainSlotsRemaining]"|[ --&PlusSlot| --]|[ --&PlusSlot|[rbutton]+::ModifySlot;[&MainSlotPool]%%%[&SpellLevel]%%%plus[/rbutton] --]|
+  --?"[&MainSlotsRemaining]" -eq "0"|[ --&MinusSlot| --]|[ --&MinusSlot|[rbutton]-::ModifySlot;[&MainSlotPool]%%%[&SpellLevel]%%%minus[/rbutton] --]|
+  --?"[&ShowPactRow]" -eq "1" -and "[&PactSlotsRemaining_Attr]" -lt "[&PactSlotTotal]"|[ --&PactPlusSlot|[rbutton]+::ModifySlot;pact%%%[&SpellLevel]%%%plus[/rbutton] --]|
+  --?"[&ShowPactRow]" -eq "1" -and "[&PactSlotsRemaining_Attr]" -gt "0"|[ --&PactMinusSlot|[rbutton]-::ModifySlot;pact%%%[&SpellLevel]%%%minus[/rbutton] --]|
+  --&SpellLevelOutput|[&SpellLevel]
+  --:SkipSlotCalc|
+  --&LevelHeader|[t width=100% [&LvlTbl_CSS]][tr][td width=30 height=40 [&LvlTd_CSS]][br][&SpellLevelOutput][/td][td width=80 [&MinusTd_CSS]][&MinusSlot][/td][td [&SlotTd_CSS] width=140][&SlotDisplay][/td][td [&ArrowTd_CSS]][&PlusSlot][&HeaderControls][/td][/tr][/t]
+  --?"[&ShowPactRow]" -eq "1"|[ --&LevelHeader|+[t width=110% [&LvlTbl_CSS]][tr][td width=30 height=40 [&LvlTd_CSS]][br]W[/td][td width=80 [&MinusTd_CSS]][&PactMinusSlot][/td][td width=140][&WarlockSlots][/td][td [&ArrowTd_CSS]][&PactPlusSlot][/td][/tr][/t] --]|
+  --&CacheKey|TIMSPELLBOOK_CACHE_
+  --?"[&SpellLevel]" -eq "cantrip"|[ --&CacheKey|+Cantrips --]|[ --&CacheKey|+Level[&SpellLevel] --]|
+  --?"[&PrepToggle_Attr]" -eq "1"|[ -->SelectCacheStore| --]|
+  -->ReadCacheEntry|[&CacheKey]
+  --&CachedOutput|[&CacheRaw]
+  --?"[&CachedOutput]" -eq "" -or "[&CachedOutput]" -eq "undefined"|[ -->BuildAndCacheLevel| --]|
+  --#parameterdelimiter|$$$
+  --~CachedOutput|string$$$replaceall$$$TIMSBMACTIONIMAGE$$$[&ActionImage]$$$[&CachedOutput]
+  --~CachedOutput|string$$$replaceall$$$TIMSBMBONUSIMAGE$$$[&BonusImage]$$$[&CachedOutput]
+  --~CachedOutput|string$$$replaceall$$$TIMSBMREACTIONIMAGE$$$[&ReactionImage]$$$[&CachedOutput]
+  --#parameterdelimiter|;
+  --&CachedOutput|[&CachedOutput(replaceall,!#!,:)]
+  --&CachedOutput|[&CachedOutput(replaceall,!QUOTE!,")]
+  --&CachedOutput|[&CachedOutput(replaceall,TIMSBMSPELLCOLOR,[&SpellColor_Attr])]
+  --&CachedOutput|[&CachedOutput(replaceall,TIMSBMICONCOLOR,[&IconColor_Attr])]
+  --&SpellOutput|+[&CachedOutput]
+  --+|[&LevelHeader][&SpellOutput]
+--<|
+--:BuildAndCacheLevel|
+  --&R20At|@ --&R20OB|{ --&R20CB|}
+  --&R20SpellLevel|[&R20At][&R20OB]spelllevel[&R20CB]
+  --&R20SpellLevelPlusOne|[&R20SpellLevel]+1
+  --&R20SpellLevelPlusOneSpaced|[&R20SpellLevel] + 1
+  --&SLNum|[&SpellLevel]
+  --&IsCantrip|0
+  --?"[&SLNum]" -eq "cantrip"|[ --&SLNum|0 --&IsCantrip|1 --]|
+  --=SLPlusOne|[&SLNum] + 1
+  --&SpellRowCount|[&SpellSectionRowCount_[&SpellLevel]]
+  --Rfirst|[&CharId_Attr];repeating_spell-[&SpellLevel]
+  --&SpellTbl_CSS|style='width: 96% ; position: relative ; left: 6px ; table-layout: fixed ; font-family: Palatino Linotype, Book Antiqua, FreeSerif, serif ; letter-spacing: 0.01em ; color: #TIMSBMSPELLCOLOR ; '
+  --&SpellTd_CSS|style='width: 198px ; max-width: 198px ; white-space: nowrap ; overflow: hidden; text-overflow: ellipsis ; line-height: 16px ; '
+  --&SchlTd_CSS|style='width: 20px ; text-align: center ; font-family: Segoe UI Symbol, DejaVu Sans, Arial, monospace ; font-size: 18px ; color: #TIMSBMICONCOLOR ; '
+  --&RollTd_CSS|style='width: 22px ; border-right: 1px solid #TIMSBMSPELLCOLOR ; '
+  --&RollBtnTd_CSS|style='font-family: dicefontd20 ; width: 22px ; border-right: 1px solid #TIMSBMSPELLCOLOR ; font-size: 18px ; font-weight: bold ; text-shadow: 0.6px 0 0 currentColor, -0.6px 0 0 currentColor ; '
+  --&PrepTd_CSS|style='width: 22px ; text-align: center ; font-size: 20px ; color: #TIMSBMICONCOLOR ; '
+  --&BookTD_CSS|style='width: 22px ; text-align: center ; border-left: 1px solid #TIMSBMSPELLCOLOR ; font-size: 16px ; '
+  --&SpellOutput|+[t [&SpellTbl_CSS]]
+  --%SpellLoop|0;[= [&SpellRowCount] - 1]
+    --&SpellRowAttr|[*R>spellname]
+    --&SpellRowID|[&SpellRowAttr]
+    --~SpellRowID|string;after;repeating_spell-[&SpellLevel]_;[&SpellRowID]
+    --~SpellRowID|string;before;_spellname;[&SpellRowID]
+    --&SafeSpellLoop|[*R:spellname]%%%[*R:spellritual]%%%[*R:spellprepared]%%%[*R:spellconcentration]%%%[*R:spelloutput]%%%[*R:spellcastingtime]%%%[*R:innate]%%%[*R:spellschool]
+    --?"[&SafeSpellLoop(includes,[&R20SpellLevel])]" -eq "1"|[
+      --&SafeSpellLoop|[&SafeSpellLoop(replaceall,[&R20SpellLevelPlusOne],[$SLPlusOne.Raw])]
+      --&SafeSpellLoop|[&SafeSpellLoop(replaceall,[&R20SpellLevelPlusOneSpaced],[$SLPlusOne.Raw])]
+      --&SafeSpellLoop|[&SafeSpellLoop(replaceall,[&R20SpellLevel],[&SLNum])]
+    --]|
+    --#parameterdelimiter|$$$
+    --~|array$$$fromstring$$$SpellFields$$$%%%$$$[&SafeSpellLoop]
+    --#parameterdelimiter|;
+    --&SpellName|[@SpellFields(0)] --&SpellPrepared|[@SpellFields(2)]
+    --?"[&AutoPrep]" -ne "1" -and "[&SpellPrepared]" -ne "1" -and "[&IsCantrip]" -ne "1" -and "[&PrepToggle_Attr]" -ne "1"|SkipSpellBuildRow
+    --&SchoolIcon| --&CastingTime| --&SpellRoll| --&InnateDisplay| --&SpellFlags| --&RollCell_CSS|[&RollTd_CSS] --&RollTitle|
+    --&SpellOutputType|[@SpellFields(4)] --&SpellCastingTime|[@SpellFields(5)] --&Innate|[@SpellFields(6)] --&SpellSchool|[@SpellFields(7)]
+    --?"[&Innate]" -eq "undefined"|[ --&Innate| --]|
+    --?"[&Innate]" -ne ""|[ --&InnateDisplay|[F::12][&Innate][/F] --]|
+    --&SpellData|[&SpellLevel]%%%[&SpellRowID]
+    --&SpellDetail|[rbutton][&BookImage]::SpellDescription;[&SpellData][/rbutton]
+    --~MacroName|string;replaceall; ;-;[&SpellName]
+    --?"[&SpellMule]" -ne ""|[ --~MacroButton|system;findability;[&SpellMule];[&MacroName] --&CasterID|[&SpellMule] --]|[ --~MacroButton|system;findability;[&CharName_Attr];[&MacroName] --&CasterID|[&CharName_Attr] --]|
+    --?"[&MacroButton]" -ne "AbilityNotFound"|[ --&SpellRoll|[button][&RollImage]::~[&CasterID]|[&MacroButton][/button] --&SpellDetail|[button][&BookImage]::~[&CasterID]|[&MacroButton][/button] --&RollCell_CSS|[&RollBtnTd_CSS] --&RollTitle|title='Cast Spell' --]|
+    --?"[&MacroButton]" -eq "AbilityNotFound" -and "[&SpellOutputType]" -inc "ATTACK"|[ --&SpellRoll|[sheetbutton][&RollImage]::[&CharId_Attr]::repeating_spell-[&SpellLevel]_[&SpellRowID]_spell[/sheetbutton] --&RollCell_CSS|[&RollBtnTd_CSS] --&RollTitle|title='Cast Spell' --]|
+    --c[&SpellSchool]|Abjuration:&SchoolIcon;&#x26E8|Conjuration:&SchoolIcon;&#x169B9|Divination:&SchoolIcon;&#x2135|Enchantment:&SchoolIcon;&#x272F|Evocation:&SchoolIcon;&#x2739|Illusion:&SchoolIcon;&#x1F441|Necromancy:&SchoolIcon;&#x2620|Transmutation:&SchoolIcon;&#x21BB
+    --?"[&SpellSchool]" -eq "undefined"|[ --&SchoolIcon|&#x2370; --]|
+    --&SchoolIcon|+;
+    --&PreparedDot|[&BlankDot]
+    --?"[&AutoPrep]" -eq "1" -or "[&SpellPrepared]" -eq "1" -or "[&IsCantrip]" -eq "1"|[ --&PreparedDot|[&BlueDot] --]|
+    --&Prepared|[&PreparedDot]
+    --?"[&PrepToggle_Attr]" -eq "1" -and "[&AutoPrep]" -ne "1" -and "[&IsCantrip]" -ne "1"|[ --&Prepared|[rbutton][&PreparedDot]::PrepareToggle;[&SpellData][/rbutton] --]|
+    --&Ritual|
+    --?"[@SpellFields(1)]" -eq "Yes"|[ --&Ritual|(r) --]|
+    --&Concentration|
+    --?"[@SpellFields(3)]" -inc "1"|[ --&Concentration|(c) --]|
+    --?"[&Concentration]" -ne "" -or "[&Ritual]" -ne "" -or "[&InnateDisplay]" -ne ""|[ --&SpellFlags|&nbsp;[&Concentration]&nbsp;[&Ritual]&nbsp;[&InnateDisplay] --]|
+    --?"[&SpellCastingTime]" -inc "action" -and "[&SpellCastingTime]" -ninc "bonus"|[ --&CastingTime|&nbsp;TIMSBMACTIONIMAGE --]|
+    --?"[&SpellCastingTime]" -inc "bonus"|[ --&CastingTime|&nbsp;TIMSBMBONUSIMAGE --]|
+    --?"[&SpellCastingTime]" -inc "reaction"|[ --&CastingTime|&nbsp;TIMSBMREACTIONIMAGE --]|
+    --&SpellOutput|+[tr][td title='[&SpellSchool(totitlecase)]' [&SchlTd_CSS]][&SchoolIcon][/td][td [&SpellTd_CSS]][b][i][&SpellName][/i][/b][&CastingTime][i][&SpellFlags][/i][/td][td [&RollTitle] [&RollCell_CSS]][&SpellRoll][/td][td title='Prepared' [&PrepTd_CSS]][&Prepared][/td][td title='Spell Details' [&BookTD_CSS]][&SpellDetail][/td][/tr]
+    --:SkipSpellBuildRow|
+    --Rnext|
+  --%|
+  --&SpellOutput|+[/t]
+  --&CacheSave|[&SpellOutput(replaceall,:,!#!)]
+  --&CacheSave|[&CacheSave(replaceall,",!QUOTE!)]
+  -->UpdateCacheEntry|[&CacheKey];write
+  --&CachedOutput|[&CacheSave]
+  --&SpellOutput|
+--<|
+--:SettingsCard|
+  --#hidecard|0
+  --#whisper|self
+  -->LoadSpellBookModData|
+  -->LoadCharacterSpellBookSettings|
+  -->ApplySpellBookCardStyle|
+  --&GoldGlow|border: 2px solid #FFD700; box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8);
+  --&GridTblBase_CSS|text-align: center ; position: relative ; border-collapse: separate ; border-spacing: 2px ; table-layout: fixed ; [&NoShadow] 
+  --&CellBox_CSS|text-align: center ; vertical-align: middle ; border: 1px solid #[&SpellColor_Attr] ; box-sizing: border-box ; [&NoShadow] 
+  --&Cell30_CSS|height: 28px ; [&CellBox_CSS]
+  --&ColorBtnBase_CSS|width: 32px ; padding: 0 1px ; [&Cell30_CSS]
+  --&CacheTbl_CSS|style="width: 304px ; left: 2px ; border-spacing: 2px 0 ; [&GridTblBase_CSS]"
+  --&CacheTd_CSS|style="width: 238px ; line-height: 1em ; padding: 2px ; font-weight: bold ; [&Cell30_CSS] "
+  --&CacheBtnTd_CSS|style="width: 58px ; padding: 0 2px ; [&Cell30_CSS] "
+  --&PagesTbl_CSS|style="width: 304px ; margin: 2px auto ; color: #[&SpellColor_Attr] ; font-weight: bold ; text-align: center ; position: relative ; left: 2px ; "
+  --&PagesTd_CSS|style="border-right: 1px solid #[&IconColor_Attr] ; "
+  --&SettingsDarkTd_CSS|style="width: 304px ; background-color: rgba(0, 0, 0, 0.5) ; left: 2px ; [&GridTblBase_CSS]"
+  --&ThemeTd_CSS|style="width: 50% ; padding: 1px 2px ; vertical-align: top ; [&CellBox_CSS] "
+  --&SettingsSlotTbl_CSS|style="width: 292px ; margin: 0 auto ; background-color: rgba(0, 0, 0, 0.5) ; padding: 0 ; left: 0 ; [&GridTblBase_CSS]"
+  --&SlotPickTd_CSS|style="width: 25% ; height: 46px ; [&CellBox_CSS] "
+  --&ColorTbl_CSS|style="width: 292px ; left: 0 ; [&GridTblBase_CSS]"
+  --&ColorLabelTd_CSS|style="width: 184px ; padding: 2px ; font-weight: bold ; [&Cell30_CSS] border-right-color: transparent ; "
+  --&ActionColorLabelTd_CSS|style="width: 184px ; padding: 2px ; font-size: 16px ; [&Cell30_CSS] text-align: right ; "
+  --&ColorIconTd_CSS|style="[&ColorBtnBase_CSS] "
+  --&ColorEmojiTd_CSS|style="[&ColorBtnBase_CSS] [&EmojiFont] "
+  --&ColorLabelExtTd_CSS|style="[&ColorBtnBase_CSS] border-left-color: transparent ; "
+  --&UILvlTd_CSS|style="width: 25px ; height: 40px ; position: relative ; top: -3px ; left: 2px ; font-weight: bold ; "
+  --&UIMinusTd_CSS|style="width: 75px ; position: relative ; top: -4px ; text-align: right ; "
+  --&UISlotTd_CSS|style="width: 145px ; position: relative ; top: 2px ; "
+  --&UIArrowTd_CSS|style="width: 35px ; "
+  --~|array;define;ThemeChoice;dnd5e;abyssal_ink;astral_void;dark_arcane;ember_core;gilded_vine;celestial_veil;stormcaller;sacred_rose;chloromancy;bloodwake;neon_tides;whisperveil;sanctum_aureum;verdant_veil;amber_hollow;golden_quarry;stonecut_vault;feymist_bloom;circuit_tree
+  --&SettingsPageSize|4
+  --?",0,4,8,12,16," -inc ",[&reentryval],"|[ --&Pages|[&reentryval] --]|
+  --?",0,4,8,12,16," -ninc ",[&Pages],"|[ --&Pages|0 --]|
+  --&ThemeCounter|0
+  --&ArrayCounter|[= [&Pages] + [&SettingsPageSize] - 1]
+  --?"[&ArrayCounter]" -gt "[@ThemeChoice(maxindex)]"|[ --&ArrayCounter|[@ThemeChoice(maxindex)] --]|
+  --&PageNum|[= [&Pages] / [&SettingsPageSize] + 1]
+  --+|[&TopBar]
+  --+|[t [&TtlTbl_CSS]][tr][td][#[&IconColor_Attr]][&CharName_Attr][&Owner] Spell Book Settings Page [&PageNum][/#][/td][/tr][/t]
+  --+|[t [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&SpellColor_Attr]][F::12]Reset the spell cache if spells are missing, out of date, or custom spells were added.[/F][/#][/td][td [&CacheBtnTd_CSS] title="Clear Spellbook Cache"][rbutton::18px]&#9851;::ClearCache;restart[/rbutton][/td][/tr][/t]
+  --?"[&SpellMule]" -eq ""|[ --&SpellMuleDisplay|None --]|[ --&SpellMuleDisplay|[&SpellMule] --]|
+  --+|[t [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&SpellColor_Attr]][F::12]Spell Mule: [b][&SpellMuleDisplay][/b][br]Optional custom spell macros; ability names use dashes instead of spell-name spaces.[/F][/#][/td][td [&CacheBtnTd_CSS]][rbutton::18px:Change Spell Mule]&#x270E;::WriteSpellMule;edit[/rbutton][rbutton::18px:Clear Spell Mule]&#x2715;::WriteSpellMule;clear[/rbutton][/td][/tr][/t]
+  --&ThemeOutput|[t [&SettingsDarkTd_CSS]][tr]
+  --%ThemeLoop|[&Pages];[&ArrayCounter]
+    --&ChosenTheme|[&ThemeTd_CSS]
+    --&ThemeChosen|[@ThemeChoice([&ThemeLoop])]
+    --?"[&ThemeChosen]" -eq "[&tmpChosen_Attr]"|[ --&ChosenTheme|style="width: 50% ; padding: 1px 2px ; text-align: center ; vertical-align: top ; box-sizing: border-box ; [&NoShadow] [&GoldGlow] " --]|
+    --?"[= [&ThemeCounter] % 2 ]" -eq "0" -and "[&ThemeCounter]" -ne "0"|[ --&ThemeOutput|+[/tr][tr] --]|
+    --&ThemeName|[&ThemeChosen(replace,_, )]
+    --&ThemeOutput|+[td [&ChosenTheme]][rbutton][img width=90px][&ImgRoot][:ImageDB("[&ThemeChosen]")][/img]::ThemeChange;[&ThemeChosen][/rbutton][br][b][&ThemeName(totitlecase)][/b][/td]
+    --&ThemeCounter|[= [&ThemeCounter] + 1 ]
+  --%|
+  --&ThemeOutput|+[/tr][/t]
+  --+|[&ThemeOutput]
+  --%UILoop|[&Pages];[&ArrayCounter]
+    --&CurrentUI|[@ThemeChoice([&UILoop])]
+    --&ChosenUI|border-color: transparent ; box-shadow: none ;
+    --?"[&CurrentUI]" -eq "[&UITheme_Attr]"|[ --&ChosenUI|border-color: #FFD700 ; box-shadow: 0 0 8px 2px rgba(255, 215, 0, 0.8) ; --]|
+    --&UIThemeName|[&CurrentUI(replace,_, )]
+	  --&UITbl_CSS|style="width: 286px ; margin: 0 auto ; background-image: url([&ImgRoot][:ImageDB("UI_spell_[&CurrentUI]")]) ; background-repeat: no-repeat ; background-size: 95% 40px ; background-position: center center ; height: 40px ; text-align: center ; font-weight:bold ; vertical-align: middle ; border: 2px solid transparent ; box-sizing: border-box ; overflow: visible ; [&NoShadow] [&ChosenUI]"
+    --+|[t [&UITbl_CSS]][tr][td [&UILvlTd_CSS]][br][F::20][b][#[&IconColor_Attr]]&nbsp;&nbsp;&nbsp;1[/#][/b][/F][/td][td [&UIMinusTd_CSS]][b][F::30][#[&IconColor_Attr]][r]-[/r][/#][/F][/b][/td][td [&UISlotTd_CSS]][rbutton:#[&SpellColor_Attr]:14px][&UIThemeName(totitlecase)]::WriteImageChoice;uiTheme%%%[&CurrentUI][/rbutton][/td][td [&UIArrowTd_CSS] title="Show or Hide All Spells"][b][F::20][#[&IconColor_Attr]][l]+[/l][/#][/F][/b][/td][/tr][/t]
+  --%|
+  --&PagesOutput|[t [&PagesTbl_CSS]][tr]
+  --%SettingsPageLoop|0;[@ThemeChoice(maxindex)];[&SettingsPageSize]
+    --&SettingsPageNum|[= [&SettingsPageLoop] / [&SettingsPageSize] + 1]
+    --&SettingsPageTd|[&PagesTd_CSS]
+    --?"[= [&SettingsPageLoop] + [&SettingsPageSize] ]" -gt "[@ThemeChoice(maxindex)]"|[ --&SettingsPageTd| --]|
+    --&PagesOutput|+[td [&SettingsPageTd]][rbutton:#[&SpellColor_Attr]]Page [&SettingsPageNum]::SettingsCard;[&SettingsPageLoop][/rbutton][/td]
+  --%|
+  --&PagesOutput|+[/tr][/t]
+  --+|[&PagesOutput]
+  --+|[t [&ColorTbl_CSS]][tr][td [&ColorLabelTd_CSS]][#[&SpellColor_Attr]]Spell Color #[&SpellColor_Attr][/#][/td][td [&ColorLabelExtTd_CSS]]&nbsp;[/td][td [&ColorEmojiTd_CSS] title="Change Spell Font Color"][rbutton]&#x1F3A8;::UpdateColor;[&tmpChosen_Attr]%%%spell%%%custom[/rbutton][/td][td [&ColorIconTd_CSS] title="Reset to Current Theme Font Color"][rbutton]&#x21BB;::UpdateColor;[&tmpChosen_Attr]%%%spell%%%reset[/rbutton][/td][/tr][tr][td [&ColorLabelTd_CSS]][#[&IconColor_Attr]]Icon Color #[&IconColor_Attr][/#][/td][td [&ColorLabelExtTd_CSS]]&nbsp;[/td][td [&ColorEmojiTd_CSS] title="Change Icon Color"][rbutton]&#x1F3A8;::UpdateColor;[&tmpChosen_Attr]%%%icon%%%custom[/rbutton][/td][td [&ColorIconTd_CSS] title="Reset to Theme Icon Color"][rbutton]&#x21BB;::UpdateColor;[&tmpChosen_Attr]%%%icon%%%reset[/rbutton][/td][/tr][/t]
+  --~|array;define;ActionArray;action;bonus;reaction
+  --%ActionLoop|foreach;ActionArray
+    --c[&ActionLoop]|action:&ColorAction;[&ActionColor_Attr]|bonus:&ColorAction;[&BonusColor_Attr]|reaction:&ColorAction;[&ReactionColor_Attr]
+    --c[&ActionLoop]|action:&ActionToggleState;[&ActionToggle_Attr]|bonus:&ActionToggleState;[&BonusToggle_Attr]|reaction:&ActionToggleState;[&ReactionToggle_Attr]
+    --c[&ActionLoop]|action:&ActionsImage;&#x25A0|bonus:&ActionsImage;&#x25C6|reaction:&ActionsImage;&#x2B22
+    --?"[&ActionToggleState]" -eq "no"|[ --&Toggle|&#x2610 --]|[ --&Toggle|&#x2611 --]|
+    --+|[t [&ColorTbl_CSS]][tr][td [&ActionColorLabelTd_CSS]][#[&SpellColor_Attr]][&ActionLoop(totitlecase)] #[&ColorAction]&nbsp;-&nbsp;[/#][#[&ColorAction]][&ActionsImage];&nbsp;[/#][/td][td [&ColorIconTd_CSS]][rbutton::18px][&Toggle];::ActionToggle;[&ActionLoop]toggle[/rbutton][/td][td [&ColorEmojiTd_CSS] title="Change To Custom Color"][rbutton]&#x1F3A8;::UpdateColor;[&tmpChosen_Attr]%%%[&ActionLoop]%%%custom[/rbutton][/td][td [&ColorIconTd_CSS] title="Reset to Default Color"][rbutton]&#x21BB;::UpdateColor;[&tmpChosen_Attr]%%%[&ActionLoop]%%%reset[/rbutton][/td][/tr][/t]
+  --%|
+   --~|array;define;SlotChoice;default;red;orange;yellow;green;blue;purple;pink
+  --&SlotsCounter|1
+  --&SlotOutput|[t [&SettingsSlotTbl_CSS]][tr]
+  --%SlotLoop|foreach;SlotChoice
+    --&SttngSlotTd_CSS|[&SlotPickTd_CSS]
+    --?"[&SlotLoop]" -eq "[&SlotStyleKey_Attr]"|[ --&SttngSlotTd_CSS|style="width: 25% ; height: 46px ; text-align: center ; vertical-align: middle ; border: 1px solid #FFD700 ; box-shadow: 0 0 8px 2px rgba(255, 215, 0, 0.8) ; box-sizing: border-box ; [&NoShadow] " --]|
+    --&SlotOutput|+[td [&SttngSlotTd_CSS]][rbutton][img width=30][&ImgRoot][:ImageDB("slot_[&SlotLoop]")][/img]::WriteImageChoice;slotStyle%%%[&SlotLoop][/rbutton][br][b][&SlotLoop(totitlecase)][/b][/td]
+    --?[= [&SlotsCounter] % 4 ] -eq 0 -and "[&SlotsCounter]" -ne "[@SlotChoice(length)]"|[ --&SlotOutput|+[/tr][tr] --]|
+    --&SlotsCounter|[= [&SlotsCounter] + 1 ]
+  --%|
+  --&SlotOutput|+[/tr][/t]
+  --+|[&SlotOutput]
+  --+|[t style="width: 310px ; text-align: center;"][tr][td [&BttnTd_CSS]][rbutton:#[&SpellColor_Attr]]SpellBook::RestartBook[/rbutton][/td][/tr][/t]
+  --+|[&BottomBar]
+--X|
+--:UpdateColor|
+  --~tmpChoice|string;split;%%%;[&reentryval]
+  --&tmpChosen_Attr|[&tmpChoice1]
+  --&fontTarget|[&tmpChoice2]
+  --&colorMode|[&tmpChoice3]
+  --?"[&colorMode]" -eq "custom"|[ -->PromptButtonStyle| --I. ;Click Here to Change Color|q;UpdateColor;Input the HEX code of the color? --]|
+  --?"[&colorMode]" -eq "reset"|[
+    --&ThemeSpellColor|[:ThemeSpellColorDB("[&tmpChosen_Attr]")]
+    --&ThemeIconColor|[:ThemeIconColorDB("[&tmpChosen_Attr]")]
+    --c[&fontTarget]|spell:&UpdateColor;[&ThemeSpellColor]|icon:&UpdateColor;[&ThemeIconColor]|action:&UpdateColor;00FF00|bonus:&UpdateColor;0000FF|reaction:&UpdateColor;FF0000
+  --]|
+  --?"[&UpdateColor]" -ne ""|[
+    --&UpdateColor|[&UpdateColor(replace,#,)]
+    --c[&fontTarget]|spell:&SBMColorKey;spellColor|icon:&SBMColorKey;iconColor|action:&SBMColorKey;actionColor|bonus:&SBMColorKey;bonusColor|reaction:&SBMColorKey;reactionColor
+    -->WriteSBMCharSetting|[&SBMColorKey];[&UpdateColor];1
+  --]|
+  --^SettingsCard|
+--X|
+--:ActionToggle|
+  --&ToggleCurrent|
+  --&ToggleKey|
+  --c[&reentryval]|actiontoggle:&ToggleCurrent;[&ActionToggle_Attr]|bonustoggle:&ToggleCurrent;[&BonusToggle_Attr]|reactiontoggle:&ToggleCurrent;[&ReactionToggle_Attr]
+  --c[&reentryval]|actiontoggle:&ToggleKey;actionToggle|bonustoggle:&ToggleKey;bonusToggle|reactiontoggle:&ToggleKey;reactionToggle
+  --?"[&ToggleCurrent]" -inc "no"|[ --&UpdateToggle|yes --]|[ --&UpdateToggle|no --]|
+  -->WriteSBMCharSetting|[&ToggleKey];[&UpdateToggle];1
+  --^SettingsCard|
+--X|
+--:WriteImageChoice|
+  --~ImageChoice|string;split;%%%;[&reentryval]
+  -->WriteSBMCharSetting|[&ImageChoice1];[&ImageChoice2];1
+  --^SettingsCard|
+--X|
+--:ModifySlot|
+  --~SlotData|string;split;%%%;[&reentryval]
+  --&SlotPool|[&SlotData1]
+  --&SlotLevel|[&SlotData2]
+  --&SlotCalc|[&SlotData3]
+  --?"[&SlotCalc]" -eq "plus"|[ --&Adjustment|1 --]|[ --&Adjustment|-1 --]|
+  --&SlotsRemaining|[*S:lvl[&SlotLevel]_slots_expended]
+  --=SlotsLeft|[&SlotsRemaining] + [&Adjustment]
+  --!a:[&CharId_Attr]|lvl[&SlotLevel]_slots_expended:[$SlotsLeft.Raw]
+  --?"[&SlotPool]" -eq "pact"|[
+    --=PactSlotsLeft|[&PactSlotsRemaining_Attr] + [&Adjustment]
+    --&PactSlotsRemaining_Attr|[$PactSlotsLeft.Raw]
+    -->WriteSBMCharSetting|pactSlotsRemaining;[&PactSlotsRemaining_Attr];1
+  --]|
+  --^RestartBook|
+--X|
+--:ToggleDescriptionWhisper|
+  --?"[&DescWhisperMode]" -eq "1"|[ --&DescWhisperMode|0 --]|[ --&DescWhisperMode|1 --]|
+  --^RenderSpellBook|
+--X|
+--:SpellDescription|
+  --#hidecard|1
+  --&DescSpellLevel|[&reentryval(before,%%%)]
+  --&DescSpellRowID|[&reentryval(after,%%%)]
+  --&DescOB|{ --&DescCB|} --&DescVBAR||
+  --?"[&DescWhisperMode]" -eq "1"|SpellDescriptionWhisper
+  --&DescPERC|%
+  --&DescNativeRoll|[&DescPERC][&DescOB][&CharName_Attr][&DescVBAR]repeating_spell-[&DescSpellLevel]_[&DescSpellRowID]_output[&DescCB]
+  --e[&CharName_Attr]|[&DescNativeRoll]
+--X|
+--:SpellDescriptionWhisper|
+  --Rbysectionid|[&CharId_Attr];repeating_spell-[&DescSpellLevel];[&DescSpellRowID]
+  --&DescAMP|& --&DescAT|@
+  --&DescRoll|/w "[&SendingPlayerName]" [&DescAMP][&DescOB]template:spelloutput[&DescCB] [&DescOB][&DescOB]level=[*R:spellschool] [&DescSpellLevel][&DescCB][&DescCB] [&DescOB][&DescOB]name=[*R:spellname][&DescCB][&DescCB] [&DescOB][&DescOB]castingtime=[*R:spellcastingtime][&DescCB][&DescCB] [&DescOB][&DescOB]range=[*R:spellrange][&DescCB][&DescCB] [&DescOB][&DescOB]target=[*R:spelltarget][&DescCB][&DescCB] [&DescOB][&DescOB]v=[*R:spellcomp_v][&DescCB][&DescCB] [&DescOB][&DescOB]s=[*R:spellcomp_s][&DescCB][&DescCB] [&DescOB][&DescOB]m=[*R:spellcomp_m][&DescCB][&DescCB] [&DescOB][&DescOB]material=[*R:spellcomp_materials][&DescCB][&DescCB] [&DescOB][&DescOB]duration=[*R:spellduration][&DescCB][&DescCB] [&DescOB][&DescOB]description=[*R:spelldescription][&DescCB][&DescCB] [&DescOB][&DescOB]athigherlevels=[*R:spellathigherlevels][&DescCB][&DescCB] [*R:spellritual] [&DescOB][&DescOB]innate=[*R:innate][&DescCB][&DescCB] [&DescOB][&DescOB]savedc=[*S:spell_save_dc][&DescCB][&DescCB] [*R:spellconcentration] [&DescAT][&DescOB][&CharName_Attr][&DescVBAR]charname_output[&DescCB]
+  --e[&CharName_Attr]|[&DescRoll]
+--X|
+--:PrepareToggle|
+  --?"[&PrepToggle_Attr]" -eq "0"|[ -->RestartBook| --]|
+  --&SpellLevel|[&reentryval(before,%%%)]
+  --&SpellRowID|[&reentryval(after,%%%)]
+  --Rbysectionid|[&CharId_Attr];repeating_spell-[&SpellLevel];[&SpellRowID]
+  --&CurrentState|[*R:spellprepared]
+  --&NewState|1
+  --?"[&CurrentState]" -eq "1"|[ --&NewState|0 --]|
+  --!a:[&CharId_Attr]|[*R>spellprepared]:[&NewState]
+  --&OldFullCacheSectionSignature|[&FullCacheSignature(after,_SEC[&SpellLevel]C)]
+  --&OldFullCacheSectionSignature|[&OldFullCacheSectionSignature(before,_ENDSEC)]
+  --~|array;fromstring;PrepareTogglePrepRows;,;[&OldFullCacheSectionSignature(after,%%%P%%%)]
+  --~|array;remove;PrepareTogglePrepRows;;[&SpellRowID]
+  --?"[&NewState]" -eq "1"|[ --~|array;add;PrepareTogglePrepRows;[&SpellRowID] --~|array;sort;PrepareTogglePrepRows --]|
+  --~FullCachePrepSignature|array;stringify;PrepareTogglePrepRows;,
+  --&NewFullCacheSectionSignature|[&OldFullCacheSectionSignature(before,%%%P%%%)]%%%P%%%[&FullCachePrepSignature]
+  --~FullCacheSignature|string;replaceall;_SEC[&SpellLevel]C[&OldFullCacheSectionSignature]_ENDSEC;_SEC[&SpellLevel]C[&NewFullCacheSectionSignature]_ENDSEC;[&FullCacheSignature]
+  --&FullCacheSignaturePending|1
+  --&CacheKey|TIMSPELLBOOK_CACHE_Level[&SpellLevel]
+  --&PrepToggle_Attr|0
+  -->SelectCacheStore|
+  -->UpdateCacheEntry|[&CacheKey];invalidate
+  --&PrepToggle_Attr|1
+  -->SelectCacheStore|
+  -->ReadCacheEntry|[&CacheKey]
+  --&OldPrepDot|&#x25CB;
+  --&NewPrepDot|&#x25C9;
+  --?"[&CurrentState]" -eq "1"|[ --&OldPrepDot|&#x25C9; --&NewPrepDot|&#x25CB; --]|
+  --#parameterdelimiter|$$$
+  --~CacheRaw|string$$$replaceall$$$[rbutton][&OldPrepDot]!#!!#!PrepareToggle;[&reentryval][/rbutton]$$$[rbutton][&NewPrepDot]!#!!#!PrepareToggle;[&reentryval][/rbutton]$$$[&CacheRaw]
+  --#parameterdelimiter|;
+  --&CacheSave|[&CacheRaw]
+  -->UpdateCacheEntry|[&CacheKey];write
+  --^RenderSpellBook|
+--X|
+--:ToggleShow|
+  -->WriteSBMCharSetting|preparedOnly;[&reentryval];1
+  --^RestartBook|
+--X|
+--:WriteSpellMule|
+  --?"[&reentryval]" -eq "clear"|[ --&SpellMule|none --]|
+  --?"[&reentryval]" -eq "edit"|[ -->PromptButtonStyle| --ISet Spell Mule;Click Here to Continue|q;SpellMule;What is the name of the Spell Mule character? Leave blank to disable. --]|
+  --~SpellMule|string;trim;[&SpellMule]
+  --?"[&SpellMule]" -eq ""|[ --&SpellMule|none --]|
+  -->WriteSBMRootSetting|spellmule;[&SpellMule]
+  -->ClearCache|
+  --^SettingsCard|
+--X|
+--:PrimeFullListCache|
+  --~|array;define;FullCacheStores;cantrip;full1;full2;full3;full4;full5;full6;full79
+  --&FullCacheSavedPrepToggle|[&PrepToggle_Attr]
+  --&PrepToggle_Attr|1
+  --&PreparedCacheRaw| --&PreparedCacheLoaded|1 --&PreparedCacheDirty|1 --&CacheWritePending|1
+  --%CachePrimeStore|foreach;FullCacheStores
+    --&CachePrimeBase|[:CacheVarDB("[&CachePrimeStore]")]
+    --&[&CachePrimeBase]Primed|0
+  --%|
+  --%FullCachePrimeLevel|foreach;SpellLevelsPresent
+    --&SpellLevel|[&FullCachePrimeLevel]
+    --&SpellOutput|
+    --&CacheKey|TIMSPELLBOOK_CACHE_
+    --?"[&SpellLevel]" -eq "cantrip"|[ --&CacheKey|+Cantrips --]|[ --&CacheKey|+Level[&SpellLevel] --]|
+    -->SelectCacheStore|
+    --&CachePrimedVar|[&CacheVarBase]Primed
+    --?"[&[&CachePrimedVar]]" -ne "1"|[
+      --&[&CacheRawVar]|
+      --&CacheRawAll|
+      --&[&CachePrimedVar]|1
+    --]|
+    -->BuildAndCacheLevel|
+  --%|
+  --&PrepToggle_Attr|[&FullCacheSavedPrepToggle]
+  --&FullCacheSignaturePending|1
+--<|
+--:RefreshChangedSpellLevels|
+  --&RefreshSavedPrepToggle|[&PrepToggle_Attr]
+  --%ChangedSpellLevel|foreach;ChangedSpellLevels
+    --&SpellLevel|[&ChangedSpellLevel]
+    --&SpellOutput|
+    --&CacheKey|TIMSPELLBOOK_CACHE_
+    --?"[&SpellLevel]" -eq "cantrip"|[ --&CacheKey|+Cantrips --]|[ --&CacheKey|+Level[&SpellLevel] --]|
+    --&RefreshStoredSectionSignature|[&FullCacheSignature_Attr]
+    --~RefreshStoredSectionSignature|string;after;_SEC[&SpellLevel]C;[&RefreshStoredSectionSignature]
+    --~RefreshStoredSectionSignature|string;before;_ENDSEC;[&RefreshStoredSectionSignature]
+    --&RefreshCurrentSectionSignature|[&FullCacheSignature]
+    --~RefreshCurrentSectionSignature|string;after;_SEC[&SpellLevel]C;[&RefreshCurrentSectionSignature]
+    --~RefreshCurrentSectionSignature|string;before;_ENDSEC;[&RefreshCurrentSectionSignature]
+    --&RefreshStoredSectionBase|[&RefreshStoredSectionSignature(before,%%%P%%%)]
+    --&RefreshCurrentSectionBase|[&RefreshCurrentSectionSignature(before,%%%P%%%)]
+    --&RefreshPreparedAction|BuildAndCacheLevel --&RefreshFullAction|BuildAndCacheLevel --&RefreshUpdateMode| --&RefreshExistingFullOnly|0
+    --?"[&RefreshStoredSectionBase]" -eq "[&RefreshCurrentSectionBase]"|[ --&RefreshFullAction|UpdateCacheEntry --&RefreshUpdateMode|invalidate --&RefreshExistingFullOnly|1 --]|
+    --&RefreshRowCount|[&SpellSectionRowCount_[&SpellLevel]]
+    --?"[&RefreshStoredSectionBase]" -ne "[&RefreshCurrentSectionBase]" -and "[&RefreshRowCount]" -eq "0"|[ --&CacheSave| --&RefreshPreparedAction|UpdateCacheEntry --&RefreshFullAction|UpdateCacheEntry --&RefreshUpdateMode|write --]|
+    --&PrepToggle_Attr|0
+    -->SelectCacheStore|
+    -->[&RefreshPreparedAction]|[&CacheKey];[&RefreshUpdateMode]
+    --?"[&NoFullList]" -eq "1"|RefreshChangedSpellLevelDone
+    --?"[&RefreshExistingFullOnly]" -ne "1"|RefreshFullCacheReady
+    --&RefreshFullCacheStore|[:CacheLevelStoreDB("[&SpellLevel]")]
+    --&RefreshFullCacheHandoutName|[:CacheHandoutNameDB("[&RefreshFullCacheStore]")]
+    --&RefreshFullCacheHIDVar|[:CacheHIDVarDB("[&RefreshFullCacheStore]")]
+    -->ResolveCacheHandout|[&RefreshFullCacheHandoutName];&[&RefreshFullCacheHIDVar];[&[&RefreshFullCacheHIDVar]];0
+    --?"[&[&RefreshFullCacheHIDVar]]" -eq "" -or "[&[&RefreshFullCacheHIDVar]]" -eq "undefined"|RefreshChangedSpellLevelDone
+    --:RefreshFullCacheReady|
+    --&PrepToggle_Attr|1
+    -->SelectCacheStore|
+    -->[&RefreshFullAction]|[&CacheKey];[&RefreshUpdateMode]
+    --:RefreshChangedSpellLevelDone|
+  --%|
+  --&PrepToggle_Attr|[&RefreshSavedPrepToggle]
+--<|
+--:ClearCache|
+  -->ResolveCacheHandout|Spell Book Cache - [&CharId_Attr];&CacheHID;[&CacheHID];1
+  -->ResolveCacheHandout|Spell Book Cache 0-1 - [&CharId_Attr];&Cache01HID;[&Cache01HID];0
+  -->ResolveCacheHandout|Spell Book Cache 2-3 - [&CharId_Attr];&Cache23HID;[&Cache23HID];0
+  -->ResolveCacheHandout|Spell Book Cache 4-5 - [&CharId_Attr];&Cache45HID;[&Cache45HID];0
+  -->ResolveCacheHandout|Spell Book Cache 6-9 - [&CharId_Attr];&Cache69HID;[&Cache69HID];0
+  --%CacheClearStore|foreach;CacheStores
+    --&CacheClearBase|[:CacheVarDB("[&CacheClearStore]")]
+    --&[&CacheClearBase]Raw|
+    --&[&CacheClearBase]Loaded|0
+    --&[&CacheClearBase]Dirty|0
+  --%|
+  --!h:[&CacheHID]|gmnotes:""
+  --?"[&Cache01HID]" -ne ""|[ --!h:[&Cache01HID]|notes:""|gmnotes:"" --]|
+  --?"[&Cache23HID]" -ne ""|[ --!h:[&Cache23HID]|notes:""|gmnotes:"" --]|
+  --?"[&Cache45HID]" -ne ""|[ --!h:[&Cache45HID]|notes:""|gmnotes:"" --]|
+  --?"[&Cache69HID]" -ne ""|[ --!h:[&Cache69HID]|notes:""|gmnotes:"" --]|
+  --&FullCacheSignature_Attr|cleared
+  -->WriteSBMRootSetting|fullcachesignature;[&FullCacheSignature_Attr]
+  --?"[&reentryval]" -eq "restart"|[ -->RestartBook| --]|
+--<|
+--:ResolveCacheHandout|
+  --&CacheResolveName|[%1%]
+  --&CacheResolveHID|[%3%]
+  --?"[&CacheResolveHID]" -ne "" -and "[&CacheResolveHID]" -ne "undefined"|[ --^ResolveCacheHandoutDone| --]|
+  --~|array;objects:handout;SBMCacheResolveHandouts;[&CacheResolveName]
+  --?"[@SBMCacheResolveHandouts(maxindex)]" -ne "-1"|[ --&CacheResolveHID|[@SBMCacheResolveHandouts(0)] --]|
+  --?"[@SBMCacheResolveHandouts(maxindex)]" -eq "-1" -and "[%4%]" -eq "1"|[ --!oh:CacheResolveHID|name:"[&CacheResolveName]"|notes:""|gmnotes:""|archived:true --]|
+  --:ResolveCacheHandoutDone|
+  --[%2%]|[&CacheResolveHID]
+--<|
+--:SelectCacheStore|
+  --&CacheStore|prepared
+  --?"[&PrepToggle_Attr]" -eq "1"|[ --&CacheStore|[:CacheLevelStoreDB("[&SpellLevel]")] --]|
+  --&CacheVarBase|[:CacheVarDB("[&CacheStore]")]
+  --&CacheRawVar|[&CacheVarBase]Raw
+  --&CacheLoadedVar|[&CacheVarBase]Loaded
+  --&CacheDirtyVar|[&CacheVarBase]Dirty
+  --&CacheHandoutName|[:CacheHandoutNameDB("[&CacheStore]")]
+  --&CacheHIDVar|[:CacheHIDVarDB("[&CacheStore]")]
+  --&CacheField|[:CacheFieldDB("[&CacheStore]")]
+  --?"[&[&CacheLoadedVar]]" -eq "1"|SelectCacheStoreLoaded
+  -->ResolveCacheHandout|[&CacheHandoutName];&[&CacheHIDVar];[&[&CacheHIDVar]];1
+  --&CacheLoadRaw|
+  --?"[&CacheField]" -eq "notes"|[ --&CacheLoadRaw|[*O:[&CacheResolveHID]:handout:notes] --]|
+  --?"[&CacheField]" -eq "gmnotes"|[ --&CacheLoadRaw|[*O:[&CacheResolveHID]:handout:gmnotes] --]|
+  --?"[&CacheLoadRaw]" -eq "undefined"|[ --&CacheLoadRaw| --]|
+  --&[&CacheRawVar]|[&CacheLoadRaw]
+  --&[&CacheLoadedVar]|1
+  --:SelectCacheStoreLoaded|
+  --&CacheRawAll|[&[&CacheRawVar]]
+--<|
+--:ReadCacheEntry|
+  --&CacheBegin|SBMCACHEBEGIN_[%1%]
+  --&CacheEnd|SBMCACHEEND_[%1%]
+  --&CacheRaw|
+  --&CacheEntryFound|[&CacheRawAll(contains,[&CacheBegin])]
+  --?"[&CacheEntryFound]" -eq "1"|[ --&CacheAfterBegin|[&CacheRawAll(after,[&CacheBegin])] --&CacheRaw|[&CacheAfterBegin(before,[&CacheEnd])] --]|
+  --?"[&CacheRaw]" -eq "undefined"|[ --&CacheRaw| --]|
+--<|
+--:UpdateCacheEntry|
+  --&CacheUpdateMode|[%2%]
+  --&CacheBegin|SBMCACHEBEGIN_[%1%]
+  --&CacheEnd|SBMCACHEEND_[%1%]
+  --&CacheEntryFound|[&CacheRawAll(contains,[&CacheBegin])]
+  --?"[&CacheEntryFound]" -eq "1"|[
+    --&CacheBefore|[&CacheRawAll(before,[&CacheBegin])]
+    --&CacheAfterBegin|[&CacheRawAll(after,[&CacheBegin])]
+    --&CacheAfterEnd|[&CacheAfterBegin(after,[&CacheEnd])]
+  --]|
+  --?"[&CacheUpdateMode]" -eq "invalidate"|UpdateCacheEntryInvalidate
+  --&CacheWriteValue|[&CacheSave]
+  --?"[&CacheWriteValue]" -eq "undefined"|[ --&CacheWriteValue| --]|
+  --?"[&CacheEntryFound]" -eq "1"|[ --&CacheRawAll|[&CacheBefore][&CacheBegin][&CacheWriteValue][&CacheEnd][&CacheAfterEnd] --]|[ --&CacheRawAll|+[&CacheBegin][&CacheWriteValue][&CacheEnd] --]|
+  --&[&CacheRawVar]|[&CacheRawAll]
+  --&[&CacheDirtyVar]|1
+  --&CacheWritePending|1
+  --^UpdateCacheEntryDone|
+  --:UpdateCacheEntryInvalidate|
+  --?"[&CacheEntryFound]" -ne "1"|UpdateCacheEntryDone
+  --&CacheRawAll|[&CacheBefore][&CacheAfterEnd]
+  --&[&CacheRawVar]|[&CacheRawAll]
+  --&[&CacheDirtyVar]|1
+  --&CacheWritePending|1
+  --:UpdateCacheEntryDone|
+--<|
+--:SCAChoice|
+  --#hidecard|0
+  --&AbilityCardHTML|[&TopBar][t [&TtlTbl_CSS]][tr][td][#[&IconColor_Attr]][&CharName_Attr][&Owner] Spellcasting Ability[/#][/td][/tr][/t]
+  --~|array;define;AbilityArray;Intelligence;Wisdom;Charisma;Strength;Dexterity;Constitution
+  --~|hash;set;ClassAbilityDB;Artificer==Intelligence;Wizard==Intelligence;Rogue==Intelligence;Fighter==Intelligence;Bard==Charisma;Paladin==Charisma;Sorcerer==Charisma;Warlock==Charisma;Cleric==Wisdom;Druid==Wisdom;Ranger==Wisdom
+  --&ClassAbil|[:ClassAbilityDB("[&ClassName_Attr]")]
+  --?"[*S:multiclass1_flag]" -eq "1"|[ --&M1ClassAbil|[:ClassAbilityDB("[*S:multiclass1]")] --]|
+  --?"[*S:multiclass2_flag]" -eq "1"|[ --&M2ClassAbil|[:ClassAbilityDB("[*S:multiclass2]")] --]|
+  --?"[*S:multiclass3_flag]" -eq "1"|[ --&M3ClassAbil|[:ClassAbilityDB("[*S:multiclass3]")] --]|
+  --&AbilityOutput|[br][t style="width: 310px ; margin: 0 auto ; table-layout: fixed ; text-align: right ; "]
+  --%AbilityLoop|foreach;AbilityArray
+    --&UnderText|
+    --?"[&ClassAbil]" -eq "[&AbilityLoop]"|[ --&UnderText|+&nbsp;[&ClassName_Attr] --]|
+    --&Separator|&nbsp;
+    --?"[&M1ClassAbil]" -eq "[&AbilityLoop]" -and "[&M1ClassAbil]" -eq "[&ClassAbil]"|[ --&Separator|,&nbsp; --]|
+    --?"[&M1ClassAbil]" -eq "[&AbilityLoop]"|[ --&UnderText|+[&Separator][*S:multiclass1] --]|
+    --&Separator|&nbsp;
+    --?"[&M2ClassAbil]" -eq "[&AbilityLoop]" -and "[&M2ClassAbil]" -eq "[&M1ClassAbil]"|[ --&Separator|,&nbsp; --]|
+    --?"[&M2ClassAbil]" -eq "[&AbilityLoop]"|[ --&UnderText|+[&Separator][*S:multiclass2] --]|
+    --&Separator|&nbsp;
+    --?"[&M3ClassAbil]" -eq "[&AbilityLoop]" -and "[&M3ClassAbil]" -eq "[&M2ClassAbil]"|[ --&Separator|,&nbsp; --]|
+    --?"[&M3ClassAbil]" -eq "[&AbilityLoop]"|[ --&UnderText|+[&Separator][*S:multiclass3] --]|
+    --&AbilityOutput|+[tr][td [&BttnTd_CSS]][rbutton:#[&SpellColor_Attr]][&AbilityLoop]::WriteSCA;[&AbilityLoop][/rbutton][/td][td width=60% style="text-align: left ; vertical-align: middle ; line-height: 1em ; "][b][&UnderText][/b][/td][/tr]
+  --%|
+  --&AbilityOutput|+[/t]
+  --&AbilityCardHTML|+[&AbilityOutput][&BottomBar]
+  --+|[&AbilityCardHTML]
+--X|
+--:WriteSCA|
+  --&AT|@
+  --!a:[&CharId_Attr]|!spellcasting_ability:[&AT]{[&reentryval(tolowercase)]_mod}+
+  --=SAB|[*S:pb] + [*S:[&reentryval(tolowercase)]_mod]
+  --=SpellDC|8 + [$SAB.Raw]
+  --!a:[&CharId_Attr]|!spell_attack_bonus:[$SAB.Raw]
+  --!a:[&CharId_Attr]|!spell_save_dc:[$SpellDC.Raw]
+  --^RestartBook|
+--X|
+--:LoadImageDB|
+  --~|hash;set;ImageDB;dnd5e==450641007/vrepxKQpLqyR83i790-bwA/original.webp;abyssal_ink==450640549/nDEavdQ7tCvrfUlDANaOlQ/original.webp;astral_void==450434000/2u8QuPkaT_-qRqySeO2Yng/original.webp;dark_arcane==450640179/yeY1I9oyzMrVnaINwStSCw/original.webp;ember_core==450641164/7fwgIaqN4q5jso0RmNXU1Q/original.webp;gilded_vine==450641419/d0_OuO0Dbirn_P4FSphcdQ/original.webp;celestial_veil==450980875/KZICoXAiCqq6ndzmwtFB0Q/original.webp;stormcaller==450434304/equlMjj_24Lh2YEECX8RKw/original.webp;sacred_rose==450641834/KpMRaZIvZgU0hWLNWErz8A/original.webp;chloromancy==451082984/NpySiXC_jRd7ZjkkPw4TYw/original.webp;bloodwake==451147803/zm8LwFMAdiGtcnHa2KFqPg/original.webp;neon_tides==451149468/8DWWc4U8Sg1kTcjEunQGLQ/original.webp;whisperveil==459761436/ggXlv7FDl_MpvXKHPEoYmQ/original.webp;sanctum_aureum==459809418/f82c4-QQSD5TQY0GcsiOqg/original.webp;verdant_veil==459939017/30UZVKRE7HOb6afUb-yxDQ/original.webp;amber_hollow==459940875/eLQJkK2WcelGT2q14YcDDQ/original.webp;golden_quarry==471619838/9MPh5Lk07SFnyZR34AxlDQ/original.webp;stonecut_vault==471618874/owXNxUQjFPuHPQu4WAsXaA/original.webp;feymist_bloom==471656132/cUABhO5JnSHfsvxzauliAg/original.webp;circuit_tree==471665602/Kr0vh-kLAkNNed4cS3S92w/original.webp
+  --~|hash;set;ImageDB;UI_dnd5e==450559935/u5eIBjrmDj3lTMWxppChYA/original.webp;UI_abyssal_ink==450559808/mPJIa0Ii2_c8R4Y-30yQjg/original.webp;UI_astral_void==450560183/IEk_HjsPht63yD-nZ-xEug/original.webp;UI_dark_arcane==450561295/lb-skmgZ6psQ2ZADr9zMhA/original.webp;UI_ember_core==450561295/lb-skmgZ6psQ2ZADr9zMhA/original.webp;UI_gilded_vine==450561823/eupyB-HD1EkGLJcU0Vwdkg/original.webp;UI_celestial_veil==450562190/CkyI46tjWXAZN8kyKN4qjw/original.webp;UI_stormcaller==450562493/4y0IeLBH1SaHLP7wonvx7A/original.webp;UI_sacred_rose==450561295/lb-skmgZ6psQ2ZADr9zMhA/original.webp;UI_chloromancy==451147052/fWt_Y72_c7_7AKn-8QOOsQ/original.webp;UI_bloodwake==451152042/HcSJn7tY7wIE684mD6qMZQ/original.webp;UI_neon_tides==451151576/DAhrzCMJnmuaCeeTYl5XPA/original.webp;UI_whisperveil==459766138/mYetWR35jFad91FNwtjszQ/original.webp;UI_sanctum_aureum==459810533/UqzpFBxcPJXfOB29NBRktA/original.webp;UI_verdant_veil==459940225/fPkmVF8OGGozVI9R9hBiLg/original.webp;UI_amber_hollow==459940225/fPkmVF8OGGozVI9R9hBiLg/original.webp;UI_golden_quarry==450562190/CkyI46tjWXAZN8kyKN4qjw/original.webp;UI_stonecut_vault==450562493/4y0IeLBH1SaHLP7wonvx7A/original.webp;UI_feymist_bloom==451152042/HcSJn7tY7wIE684mD6qMZQ/original.webp;UI_circuit_tree==450561295/lb-skmgZ6psQ2ZADr9zMhA/original.webp
+  --~|hash;set;ImageDB;UI_spell_dnd5e==450554788/nh4hybJS9-nejMG2Sa5NpA/original.webp;UI_spell_abyssal_ink==450556695/6haCM_Bu4WyJx4RWMEQk9Q/original.webp;UI_spell_astral_void==450560184/DDFeLxEeO1ROqaG_nt907w/original.webp;UI_spell_dark_arcane==450561392/J6nDzCBEBWHB9iZalpczog/original.webp;UI_spell_ember_core==450561392/J6nDzCBEBWHB9iZalpczog/original.webp;UI_spell_gilded_vine==450561919/MElORW8Ly4h6cmwGssv63g/original.webp;UI_spell_celestial_veil==450562276/GloMRJOuggSTYkOjYn0BMA/original.webp;UI_spell_stormcaller==450562669/CAqhvDCapPVfTAdPxa9hSg/original.webp;UI_spell_sacred_rose==450561392/J6nDzCBEBWHB9iZalpczog/original.webp;UI_spell_chloromancy==451147053/h61VLLAItdWZ3FCW6MHN6A/original.webp;UI_spell_bloodwake==451152041/l773ue7fLTObeRv6zkAGrg/original.webp;UI_spell_neon_tides==451151577/MCK8zmGJD6qZfE5-LKhXuw/original.webp;UI_spell_whisperveil==459766011/lQsiJ7spVl-5XGs6v7n4ng/original.webp;UI_spell_sanctum_aureum==459810532/FpDbxBG-HgUG7TIi8xQI8w/original.webp;UI_spell_verdant_veil==459940226/Oo5nlVHjAEb7HJz3bAhmYg/original.webp;UI_spell_amber_hollow==459940226/Oo5nlVHjAEb7HJz3bAhmYg/original.webp;UI_spell_golden_quarry==450562276/GloMRJOuggSTYkOjYn0BMA/original.webp;UI_spell_stonecut_vault==450562669/CAqhvDCapPVfTAdPxa9hSg/original.webp;UI_spell_feymist_bloom==451152041/l773ue7fLTObeRv6zkAGrg/original.webp;UI_spell_circuit_tree==450561392/J6nDzCBEBWHB9iZalpczog/original.webp
+  --~|hash;set;ImageDB;slot_default==450522298/64BSHbeFMBOEyHr4scG0Vg/original.webp;slot_red==450522305/QuTbu_tFFpdQj64sfREMiA/original.webp;slot_orange==450522301/RzU3zN87Gt-2RxAYYnm3wg/original.webp;slot_yellow==450522307/_9FHldpatI9z7HWUqv2RwA/original.webp;slot_green==450522299/nQpkRpw4k_O0t9JAwjlVwQ/original.webp;slot_blue==450522297/aeMdts5aErkugLwq2e2RGA/original.webp;slot_purple==450522304/1XS2up9_jyQ-KT4fs4If_Q/original.webp;slot_pink==450522303/YWhi_Ya-XstU77ZVWD3mvQ/original.webp
+  --~|hash;set;ThemeSpellColorDB;dnd5e==000;abyssal_ink==CCF2FF;astral_void==D6FCFF;dark_arcane==D0F0C0;ember_core==9CA298;gilded_vine==DAD4C8;celestial_veil==F5F5DC;stormcaller==DBE9F1;sacred_rose==C2A3AD;chloromancy==C8A2C8;bloodwake==FFE4E1;neon_tides==A8FFB0;whisperveil==2B223A;sanctum_aureum==2A2E3B;verdant_veil==DDECCF;amber_hollow==DDECCF;golden_quarry==FFFFF0;stonecut_vault==C7D0D8;feymist_bloom==3B364A;circuit_tree==E8F0FF
+  --~|hash;set;ThemeIconColorDB;dnd5e==611b1c;abyssal_ink==D8B4F8;astral_void==FFD6EC;dark_arcane==B89B72;ember_core==897A4C;gilded_vine==B48C53;celestial_veil==B87333;stormcaller==5A9FCF;sacred_rose==A18F5F;chloromancy==2E8B8B;bloodwake==DC143C;neon_tides==1E90FF;whisperveil==5e2fe2;sanctum_aureum==1A3E7A;verdant_veil==B8C86B;amber_hollow==B8C86B;golden_quarry==E0A458;stonecut_vault==A9C8E2;feymist_bloom==6B1F45;circuit_tree==B89B72
+--<|
+--:LoadSpellBookModData|
+  -->ResolveCacheHandout|Spell Book Cache - [&CharId_Attr];&CacheHID;[&CacheHID];1
+  --&SBMRaw|[*O:[&CacheHID]:handout:notes]
+  --?"[&SBMRaw]" -eq "" -or "[&SBMRaw]" -eq "undefined" -or "[&SBMRaw]" -ninc "!q!version!q!:!q!2!q!"|[ --&SBMRaw|!$!!q!version!q!:!q!2!q!,!q!spellmule!q!:!q!none!q!,!q!fullcachesignature!q!:!q!none!q!!%! --!h:[&CacheHID]|notes:"[&SBMRaw]"|gmnotes:"" --]|
+  --&SBMJson|[&SBMRaw]
+  --~SBMJson|string;replaceall;!$!;{;[&SBMJson]
+  --~SBMJson|string;replaceall;!%!;};[&SBMJson]
+  --~SBMJson|string;replaceall;!q!;";[&SBMJson]
+  --~|hashtable;fromjson;SBMSettings;[&SBMJson]
+  --&SBMCharPath|[&CharId_Attr]_
+  --&SpellMule|[:SBMSettings("spellmule")]
+  --?"[&SpellMule]" -eq "" -or "[&SpellMule]" -eq "undefined" -or "[&SpellMule]" -eq "none"|[ --&SpellMule| --]|
+  --&FullCacheSignature_Attr|[:SBMSettings("fullcachesignature")]
+  --?"[&FullCacheSignature_Attr]" -eq "" -or "[&FullCacheSignature_Attr]" -eq "undefined"|[ --&FullCacheSignature_Attr|none --]|
+--<|
+--:WriteSBMRootSetting|
+  --&SBMWriteKey|[%1%]
+  --&SBMWriteValue|[%2%]
+  -->WriteSBMEntry|!q![&SBMWriteKey]!q!:!q!;[&SBMWriteValue]!q!;!q!
+--<|
+--:WriteSBMCharSetting|
+  --&SBMCharWriteKey|[%1%]
+  --&SBMCharWriteValue|[%2%]
+  --c[&SBMCharWriteKey]|theme:&tmpChosen_Attr;[&SBMCharWriteValue]|uiTheme:&UITheme_Attr;[&SBMCharWriteValue]|slotStyle:&SlotStyleKey_Attr;[&SBMCharWriteValue]|preparedOnly:&PrepToggle_Attr;[&SBMCharWriteValue]|spellColor:&SpellColor_Attr;[&SBMCharWriteValue]|iconColor:&IconColor_Attr;[&SBMCharWriteValue]|actionToggle:&ActionToggle_Attr;[&SBMCharWriteValue]|bonusToggle:&BonusToggle_Attr;[&SBMCharWriteValue]|reactionToggle:&ReactionToggle_Attr;[&SBMCharWriteValue]|actionColor:&ActionColor_Attr;[&SBMCharWriteValue]|bonusColor:&BonusColor_Attr;[&SBMCharWriteValue]|reactionColor:&ReactionColor_Attr;[&SBMCharWriteValue]|pactSlotsRemaining:&PactSlotsRemaining_Attr;[&SBMCharWriteValue]
+  --?"[%3%]" -eq "1"|[ -->WriteSBMCharacterObject| --]|
+--<|
+--:WriteSBMCharacterObject|
+  -->LoadSpellBookModData|
+  --&SBMCharObject|!$!!q!theme!q!:!q![&tmpChosen_Attr]!q!,!q!uiTheme!q!:!q![&UITheme_Attr]!q!,!q!slotStyle!q!:!q![&SlotStyleKey_Attr]!q!,!q!preparedOnly!q!:!q![&PrepToggle_Attr]!q!,!q!spellColor!q!:!q![&SpellColor_Attr]!q!,!q!iconColor!q!:!q![&IconColor_Attr]!q!,!q!actionToggle!q!:!q![&ActionToggle_Attr]!q!,!q!bonusToggle!q!:!q![&BonusToggle_Attr]!q!,!q!reactionToggle!q!:!q![&ReactionToggle_Attr]!q!,!q!actionColor!q!:!q![&ActionColor_Attr]!q!,!q!bonusColor!q!:!q![&BonusColor_Attr]!q!,!q!reactionColor!q!:!q![&ReactionColor_Attr]!q!,!q!pactSlotsRemaining!q!:!q![&PactSlotsRemaining_Attr]!q!!%!
+  -->WriteSBMEntry|!q![&CharId_Attr]!q!:;[&SBMCharObject];!%!
+--<|
+--:WriteSBMEntry|
+  --&SBMEntryKey|[%1%]
+  --&SBMEntryValue|[%2%]
+  --&SBMEntryEnd|[%3%]
+  --?"[&SBMRaw]" -ninc "[&SBMEntryKey]"|[
+    --&SBMNoClose|[&SBMRaw(0,-3)]
+    --&SBMRaw|[&SBMNoClose],[&SBMEntryKey][&SBMEntryValue]!%!
+  --]|[
+    --~SBMBefore|string;before;[&SBMEntryKey];[&SBMRaw]
+    --~SBMAfterKey|string;after;[&SBMEntryKey];[&SBMRaw]
+    --~SBMAfterValue|string;after;[&SBMEntryEnd];[&SBMAfterKey]
+    --&SBMRaw|[&SBMBefore][&SBMEntryKey][&SBMEntryValue][&SBMAfterValue]
+  --]|
+  --!h:[&CacheHID]|notes:"[&SBMRaw]"
+--<|
+--:ReadSBMCharSetting|
+  --&SBMCharReadDefault|[%1%]
+  --&SBMCharReadHashKey|[&SBMCharPath][&SBMCharReadKey]
+  --&SBMCharReadValue|[:SBMSettings("[&SBMCharReadHashKey]")]
+  --?"[&SBMCharReadValue]" -eq "" -or "[&SBMCharReadValue]" -eq "undefined"|[ --&SBMCharReadValue|[&SBMCharReadDefault] --]|
+--<|
+--:LoadCharacterSpellBookSettings|
+  --?";sorcerer;warlock;fighter;rogue;artificer;bard;cleric;druid;paladin;" -inc ";[&ClassName_Attr];"|[ --&DefaultPrepToggle|0 --]|[ --&DefaultPrepToggle|1 --]|
+  --&SBMCharReadKey|theme
+  -->ReadSBMCharSetting|dnd5e --&tmpChosen_Attr|[&SBMCharReadValue] --&SBMCharReadKey|uiTheme
+  -->ReadSBMCharSetting|[&tmpChosen_Attr] --&UITheme_Attr|[&SBMCharReadValue] --&SBMCharReadKey|slotStyle
+  -->ReadSBMCharSetting|default --&SlotStyleKey_Attr|[&SBMCharReadValue] --&SBMCharReadKey|preparedOnly
+  -->ReadSBMCharSetting|[&DefaultPrepToggle] --&PrepToggle_Attr|[&SBMCharReadValue] --&SBMCharReadKey|spellColor
+  -->ReadSBMCharSetting|000 --&SpellColor_Attr|[&SBMCharReadValue] --&SBMCharReadKey|iconColor
+  -->ReadSBMCharSetting|611b1c --&IconColor_Attr|[&SBMCharReadValue] --&SBMCharReadKey|actionToggle
+  -->ReadSBMCharSetting|no --&ActionToggle_Attr|[&SBMCharReadValue] --&SBMCharReadKey|bonusToggle
+  -->ReadSBMCharSetting|no --&BonusToggle_Attr|[&SBMCharReadValue] --&SBMCharReadKey|reactionToggle
+  -->ReadSBMCharSetting|no --&ReactionToggle_Attr|[&SBMCharReadValue] --&SBMCharReadKey|actionColor
+  -->ReadSBMCharSetting|00FF00 --&ActionColor_Attr|[&SBMCharReadValue] --&SBMCharReadKey|bonusColor
+  -->ReadSBMCharSetting|0000FF --&BonusColor_Attr|[&SBMCharReadValue] --&SBMCharReadKey|reactionColor
+  -->ReadSBMCharSetting|FF0000 --&ReactionColor_Attr|[&SBMCharReadValue] --&SBMCharReadKey|pactSlotsRemaining
+  -->ReadSBMCharSetting|-1 --&PactSlotsRemaining_Attr|[&SBMCharReadValue]
+  --&WarlockLevel|0
+  --?"[&ClassName_Attr]" -eqi "warlock"|[ --&WarlockLevel|[*S:base_level] --]|
+  --?"[*S:multiclass1_flag]" -eq "1" -and "[*S:multiclass1]" -eqi "warlock"|[ --&WarlockLevel|[*S:multiclass1_lvl] --]|
+  --?"[*S:multiclass2_flag]" -eq "1" -and "[*S:multiclass2]" -eqi "warlock"|[ --&WarlockLevel|[*S:multiclass2_lvl] --]|
+  --?"[*S:multiclass3_flag]" -eq "1" -and "[*S:multiclass3]" -eqi "warlock"|[ --&WarlockLevel|[*S:multiclass3_lvl] --]|
+  --&PactSlotLevel|0 --&PactSlotTotal|0
+  --?"[&WarlockLevel]" -eq "1"|[ --&PactSlotLevel|1 --&PactSlotTotal|1 --]|
+  --?"[&WarlockLevel]" -eq "2"|[ --&PactSlotLevel|1 --&PactSlotTotal|2 --]|
+  --?"[&WarlockLevel]" -ge "3" -and "[&WarlockLevel]" -le "4"|[ --&PactSlotLevel|2 --&PactSlotTotal|2 --]|
+  --?"[&WarlockLevel]" -ge "5" -and "[&WarlockLevel]" -le "6"|[ --&PactSlotLevel|3 --&PactSlotTotal|2 --]|
+  --?"[&WarlockLevel]" -ge "7" -and "[&WarlockLevel]" -le "8"|[ --&PactSlotLevel|4 --&PactSlotTotal|2 --]|
+  --?"[&WarlockLevel]" -ge "9" -and "[&WarlockLevel]" -le "10"|[ --&PactSlotLevel|5 --&PactSlotTotal|2 --]|
+  --?"[&WarlockLevel]" -ge "11" -and "[&WarlockLevel]" -le "16"|[ --&PactSlotLevel|5 --&PactSlotTotal|3 --]|
+  --?"[&WarlockLevel]" -ge "17"|[ --&PactSlotLevel|5 --&PactSlotTotal|4 --]|
+  --&OriginalPactSlotsRemaining|[&PactSlotsRemaining_Attr]
+  --?"[&PactSlotTotal]" -eq "0"|SkipPactSlotReconcile
+  --&PactSheetRemaining|[*S:lvl[&PactSlotLevel]_slots_expended]
+  --&PactSheetTotal|[*S:lvl[&PactSlotLevel]_slots_total]
+  --=NormalSlotsTotalCalc|[&PactSheetTotal] - [&PactSlotTotal]
+  --=PactMinimum|[&PactSheetRemaining] - [$NormalSlotsTotalCalc.Raw]
+  --?"[$PactMinimum.Raw]" -lt "0"|[ --=PactMinimum|0 --]|
+  --=PactMaximum|[&PactSheetRemaining]
+  --?"[$PactMaximum.Raw]" -gt "[&PactSlotTotal]"|[ --=PactMaximum|[&PactSlotTotal] --]|
+  --?"[&PactSlotsRemaining_Attr]" -eq "-1"|[ --&PactSlotsRemaining_Attr|[$PactMinimum.Raw] --]|
+  --?"[&PactSlotsRemaining_Attr]" -lt "[$PactMinimum.Raw]"|[ --&PactSlotsRemaining_Attr|[$PactMinimum.Raw] --]|
+  --?"[&PactSlotsRemaining_Attr]" -gt "[$PactMaximum.Raw]"|[ --&PactSlotsRemaining_Attr|[$PactMaximum.Raw] --]|
+  --:SkipPactSlotReconcile|
+  --&tmpUI_Attr|[&ImgRoot][:ImageDB("UI_[&UITheme_Attr]")]
+  --&tmpSpellUI_Attr|[&ImgRoot][:ImageDB("UI_spell_[&UITheme_Attr]")]
+  --&SlotStyle_Attr|[&ImgRoot][:ImageDB("slot_[&SlotStyleKey_Attr]")]
+  --?"[:SBMSettings("[&SBMCharPath]theme")]" -eq "" -or "[:SBMSettings("[&SBMCharPath]theme")]" -eq "undefined" -or "[&PactSlotsRemaining_Attr]" -ne "[&OriginalPactSlotsRemaining]"|[ -->WriteSBMCharacterObject| --]|
+--<|
+--:PromptButtonStyle|
+  --#buttonbackground|#58180D --#buttonbordercolor|#C9AD6A --#buttontextcolor|#FDF1DC
+  --#buttonfontface|Tahoma --#buttonfontsize|12px --#buttonpadding|5px
+--<|
+--:ApplySpellBookCardStyle|
+  --&tmpWrite|[&ImgRoot][:ImageDB("[&tmpChosen_Attr]")]
+  --?";dnd5e;chloromancy;bloodwake;whisperveil;verdant_veil;amber_hollow;" -inc ";[&tmpChosen_Attr];"|[ --&Stretch|100% --]|[ --&Stretch|auto --]|
+  --?";dnd5e;chloromancy;bloodwake;verdant_veil;amber_hollow;" -inc ";[&tmpChosen_Attr];"|[ --&Repeat|no-repeat --]|[ --&Repeat|repeat-y --]|
+  --c[&tmpChosen_Attr]|dnd5e:&ShadowColor;0 1px 1px rgba(0,0,0,0.3)|abyssal_ink:&ShadowColor;1px 1px 3px rgba(255,255,255,0.8)|astral_void:&ShadowColor;1px 1px 3px rgba(255,255,255,0.6)|dark_arcane:&ShadowColor;1px 1px 3px rgba(255,255,255,0.4)|ember_core:&ShadowColor;1px 1px 3px rgba(255,150,100,0.6)|gilded_vine:&ShadowColor;1px 1px 3px rgba(255,255,255,0.4)|celestial_veil:&ShadowColor;1px 1px 3px rgba(255,255,255,0.4)|stormcaller:&ShadowColor;1px 1px 3px rgba(255,255,255,0.6)|sacred_rose:&ShadowColor;1px 1px 3px rgba(255,255,255,0.4)|chloromancy:&ShadowColor;1px 1px 3px rgba(255,255,255,0.4)|bloodwake:&ShadowColor;1px 1px 3px rgba(255,255,255,0.5)|neon_tides:&ShadowColor;1px 1px 3px rgba(255,255,255,0.6)|whisperveil:&ShadowColor;1px 1px 2px rgba(0,0,0,0.4)|sanctum_aureum:&ShadowColor;1px 1px 2px rgba(0,0,0,0.4)|verdant_veil:&ShadowColor;1px 1px 3px rgba(255,255,255,0.5)|amber_hollow:&ShadowColor;1px 1px 3px rgba(255,255,255,0.6)|golden_quarry:&ShadowColor;0 1px 1px rgba(0,0,0,0.6)|stonecut_vault:&ShadowColor;1px 1px 3px rgba(255,255,255,0.6)|feymist_bloom:&ShadowColor;0 1px 1px rgba(0,0,0,0.4)|circuit_tree:&ShadowColor;1px 1px 3px rgba(255,255,255,0.5)
+  --?"[&ShadowColor]" -eq "" -or "[&ShadowColor]" -eq "undefined"|[ --&ShadowColor|0 1px 1px rgba(0,0,0,0.3) --]|
+  --?";dark_arcane;ember_core;gilded_vine;celestial_veil;sacred_rose;golden_quarry;circuit_tree;sanctum_aureum;verdant_veil;amber_hollow;" -inc ";[&tmpChosen_Attr];"|[ --&BarURL|[&ImgRoot]451067246/vh7nlY8sMJ8QeeA_lxm7aw/original.webp --]|[ --&BarURL|[&ImgRoot]451067259/0DVQGmoTgKlvLw17RBYm6w/original.webp --]|
+  --?"[&tmpChosen_Attr]" -eq "dnd5e"|[ --&BarURL|[&ImgRoot]105716694/59KW_4mBR3y_Iz45sQw2-g/med.png --]|
+  --&TopBar|[t style="width: 101% ; background-image: url([&BarURL]) ; background-size: 100% 4px ; height:4px; border: 1px solid #2f2112; border-radius: 2px ; position: relative ; top: -6px ; left: -2px ;"][tr][td style="height:4px; font-size:1px; line-height:4px; padding:0;"]&nbsp;[/td][/tr][/t]
+  --&BottomBar|[t style="width: 101% ; background-image: url([&BarURL]) ; background-size: 100% 4px ; height:4px; border: 1px solid #2f2112; border-radius: 2px ; position: relative ; bottom: -6px ; left: -2px ;"][tr][td style="height:4px; font-size:1px; line-height:4px; padding:0;"]&nbsp;[/td][/tr][/t]
+  --#title| --#hidetitlecard|1 --#tableborder|0
+  --#tableborderradius|0; width:315px; margin-left:-38px; max-width:315px; font-family:serif; font-size:14px; color:#[&SpellColor_Attr]; text-shadow:[&ShadowColor]
+  --#tableshadow|none --#tablebgcolor|transparent --#oddrowbackground|transparent
+  --#evenrowbackground|transparent --#oddrowfontcolor|inherit --#evenrowfontcolor|inherit
+  --#bodybackgroundimage|url([&tmpWrite]); background-size: 100% [&Stretch]; background-repeat: [&Repeat]; background-position: center top
+  --#bodyfontface|inherit --#bodyfontsize|inherit --#lineheight|0.5em
+  --#buttonbackground|transparent --#buttonbordercolor|transparent --#buttontextcolor|#[&IconColor_Attr]
+  --#buttonfontface|inherit --#buttonfontsize|inherit --#buttonpadding|2px
+--<|
+--:ThemeChange|
+    --&tmpChoice|[&reentryval]
+    -->WriteSBMCharSetting|theme;[&tmpChoice]
+    -->WriteSBMCharSetting|uiTheme;[&tmpChoice]
+    --&SpellColor_Attr|[:ThemeSpellColorDB("[&tmpChoice]")]
+    --&IconColor_Attr|[:ThemeIconColorDB("[&tmpChoice]")]
+    -->WriteSBMCharSetting|spellColor;[&SpellColor_Attr]
+    -->WriteSBMCharSetting|iconColor;[&IconColor_Attr]
+    -->WriteSBMCharacterObject|
+    --^SettingsCard|
+--X|
+}}
