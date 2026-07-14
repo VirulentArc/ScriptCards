@@ -9,7 +9,7 @@
   --:RestartBook|
   --&ImgRoot|https://files.d20.io/images/
   --&CasterToken|[@SC_SelectedTokens(0)]
-  --#reentrant|Spellbook- [*[&CasterToken]:character_id] --#Whisper|self --#sourceToken|[&CasterToken] --#emoteState|0 --#debug|0 --#functionbenchmarking|1
+  --#reentrant|Spellbook- [*[&CasterToken]:character_id] --#Whisper|self --#sourceToken|[&CasterToken] --#emoteState|0 --#debug|0 --#functionbenchmarking|0
   --?"[@SC_SelectedTokens()]" -eq "undefined array"|[ --#title|Spellbook Error --#titleCardBackground|#611b1c --#bodyBackgroundImage|url('[&ImgRoot]105716505/oymO0pnVyLCv-tQDw2vddA/med.png'); --+[c]No Token Selected|Please select the caster's token and run the Spellbook again.[/c] --X| --]|
   --?"[@SC_SelectedTokens()]" -gt "1"|[ --#title|Spellbook Error --#titleCardBackground|#611b1c --#bodyBackgroundImage|url('[&ImgRoot]105716505/oymO0pnVyLCv-tQDw2vddA/med.png'); --+[c]Multiple Tokens Selected|Please select only one caster token and run the Spellbook again.[/c] --X| --]|
   --&CharId_Attr|[*S:character_id]
@@ -18,10 +18,11 @@
   --&ClassName_Attr|[*S:class]
   --&SubClass_Attr|[*S:subclass]
   --?"[&SubClass_Attr]" -eq ""|[ --&SubClass_Attr|No Subclass --]|
-  --&CasterLevel_Attr|[*S:caster_level]
+  --&ClassLevel_Attr|[*S:base_level]
   --&SCA_Attr|[*S:spellcasting_ability]
   --~SCA_Attr|string;substring;3;3;[&SCA_Attr]
-  --=SCAbility|[*S:spell_attack_bonus] - [*S:pb]
+  --=SCAbility|0
+  --c[&SCA_Attr]|str:=SCAbility;[*S:strength_mod]|dex:=SCAbility;[*S:dexterity_mod]|con:=SCAbility;[*S:constitution_mod]|int:=SCAbility;[*S:intelligence_mod]|wis:=SCAbility;[*S:wisdom_mod]|cha:=SCAbility;[*S:charisma_mod]
   --&AutoPrep|0 --&NoFullList|0
   --?";warlock;sorcerer;bard;rogue;fighter;ranger;" -inc ";[&ClassName_Attr];"|[ --&AutoPrep|1 --]|
   --?";sorcerer;warlock;fighter;rogue;bard;" -inc ";[&ClassName_Attr];"|[ --&NoFullList|1 --]|
@@ -56,7 +57,9 @@
   --&MissingSlot|[img width=30][&ImgRoot]450522300/P-PGyu9BUz3bPQF7eWYe5A/original.webp[/img]
   --&FullSlot|[img width=30][&SlotStyle_Attr][/img]
   --&RollImage|t --&Infinity|&#x221E; --&BookImage|&#x1F56E; --&SpeechBubbleIcon|&#128488;&#65038; --&WhisperIcon|&#128483;&#65038; --&BlueDot|&#x25C9; --&BlankDot|&#x25CB; --&SettingsIcon|&#x2699;
-  --=PrepTotal|[&CasterLevel_Attr] + [$SCAbility.Raw] {FLOOR}
+  --=PrepClassLevel|[&ClassLevel_Attr]
+  --?";paladin;artificer;" -inc ";[&ClassName_Attr];"|[ --=PrepClassLevel|[&ClassLevel_Attr] / 2 {FLOOR} --]|
+  --=PrepTotal|[$PrepClassLevel.Raw] + [$SCAbility.Raw] {FLOOR}
   --&ClassImage|
   --~SubClassKey|string;tolowercase;[&SubClass_Attr]
   --~SubClassKey|string;replace;way of the;;[&SubClassKey]
@@ -317,8 +320,8 @@
     --&SpellDetail|[rbutton][&BookImage]::SpellDescription;[&SpellData][/rbutton]
     --~MacroName|string;replaceall; ;-;[&SpellName]
     --?"[&SpellMule]" -ne ""|[ --~MacroButton|system;findability;[&SpellMule];[&MacroName] --&CasterID|[&SpellMule] --]|[ --~MacroButton|system;findability;[&CharName_Attr];[&MacroName] --&CasterID|[&CharName_Attr] --]|
-    --?"[&MacroButton]" -ne "AbilityNotFound"|[ --&SpellRoll|[button][&RollImage]::~[&CasterID]|[&MacroButton][/button] --&SpellDetail|[button][&BookImage]::~[&CasterID]|[&MacroButton][/button] --&RollCell_CSS|[&RollBtnTd_CSS] --&RollTitle|title='Cast Spell' --]|
-    --?"[&MacroButton]" -eq "AbilityNotFound" -and "[&SpellOutputType]" -inc "ATTACK"|[ --&SpellRoll|[sheetbutton][&RollImage]::[&CharId_Attr]::repeating_spell-[&SpellLevel]_[&SpellRowID]_spell[/sheetbutton] --&RollCell_CSS|[&RollBtnTd_CSS] --&RollTitle|title='Cast Spell' --]|
+    --?"[&MacroButton]" -ne "AbilityNotFound"|[ --&SpellRoll|[button][&RollImage]::~[&CasterID]|[&MacroButton][/button] --&SpellDetail|[button][&BookImage]::~[&CasterID]|[&MacroButton][/button] --&RollCell_CSS|[&RollBtnTd_CSS] --&RollTitle|title="Cast [&SpellName]" --]|
+    --?"[&MacroButton]" -eq "AbilityNotFound" -and "[&SpellOutputType]" -inc "ATTACK"|[ --&SpellRoll|[sheetbutton][&RollImage]::[&CharId_Attr]::repeating_spell-[&SpellLevel]_[&SpellRowID]_spell[/sheetbutton] --&RollCell_CSS|[&RollBtnTd_CSS] --&RollTitle|title="Cast [&SpellName]" --]|
     --c[&SpellSchool]|Abjuration:&SchoolIcon;&#x26E8|Conjuration:&SchoolIcon;&#x169B9|Divination:&SchoolIcon;&#x2135|Enchantment:&SchoolIcon;&#x272F|Evocation:&SchoolIcon;&#x2739|Illusion:&SchoolIcon;&#x1F441|Necromancy:&SchoolIcon;&#x2620|Transmutation:&SchoolIcon;&#x21BB
     --?"[&SpellSchool]" -eq "undefined"|[ --&SchoolIcon|&#x2370; --]|
     --&SchoolIcon|+;
