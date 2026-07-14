@@ -549,6 +549,7 @@
 --X|
 --:ToggleShow|
   -->WriteSBMCharSetting|preparedOnly;[&reentryval];1
+  --?"[&PrepToggle_Attr]" -eq "0"|RenderSpellBook
   --^RestartBook|
 --X|
 --:WriteSpellMule|
