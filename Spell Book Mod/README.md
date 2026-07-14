@@ -125,31 +125,6 @@ By default, Spell Details are shown publicly in chat. Use the speech / whisper c
 
 The control can be changed without rebuilding the spell cache.
 
-### Spell Mule overrides
-
-Spell Book Mod can optionally check a separate character's Abilities for custom spell macros.
-
-Open **Settings** and enter the exact name of the Spell Mule character.
-
-Ability names use the spell name with spaces replaced by dashes.
-
-For example:
-
-```text
-Spell: Misty Step
-Ability: Misty-Step
-```
-
-If a matching ability is found, both the cast button and Spell Details button run that ability instead of the normal character-sheet spell output.
-
-This is useful for special-case spells, custom ScriptCards, summons, or any spell that needs behaviour beyond the standard Roll20 sheet roll.
-
-If no Spell Mule is configured, Spell Book Mod also checks the selected character for an ability using the same naming rule.
-
-Ability names must match exactly.
-
-After adding, deleting, or renaming an override ability, use **Clear Cache** in Spell Book Settings so the spell buttons are rebuilt.
-
 ---
 
 ## Spell Slot Tracking
@@ -207,6 +182,29 @@ Click the gear button in the spell book header to open the selected character's 
 ![Spell Book Settings](images/settings.png)
 
 Settings are stored per character.
+
+### Spell Mule
+
+The optional **Spell Mule** setting lets you specify a separate Roll20 character whose Abilities are used as custom spell overrides.
+
+Click the edit button beside Spell Mule and enter the exact character name. Click the clear button to remove the configured Spell Mule.
+
+Ability names use the spell name with spaces replaced by dashes.
+
+For example:
+
+```text
+Spell: Misty Step
+Ability: Misty-Step
+```
+
+When Spell Book Mod processes a spell, it checks the configured Spell Mule for a matching Ability. If one is found, both the cast button and Spell Details button run that Ability instead of the normal character-sheet spell output.
+
+This is useful for special-case spells, custom ScriptCards, summons, or any spell that needs behaviour beyond the standard Roll20 sheet roll.
+
+If no Spell Mule is configured, Spell Book Mod checks the selected character for an Ability using the same naming rule. Ability names must match exactly.
+
+Changing or clearing the Spell Mule automatically clears the spell cache. After adding, deleting, or renaming an override Ability on the current Spell Mule, use **Clear Cache** so the spell buttons are rebuilt.
 
 ### Themes
 
@@ -322,7 +320,7 @@ Known-spell classes are treated as having their listed spells available without 
 
 Prepared casters can switch to the full list and prepare or unprepare spells directly from Spell Book Mod.
 
-The maximum prepared spell value shown in the header is calculated from caster level and the character's spellcasting ability modifier. Classes treated as known-spell casters show an infinity symbol instead.
+The maximum prepared spell value shown in the header is calculated from the character's class level and current spellcasting ability modifier. Paladins and Artificers use half their class level for this calculation. Classes treated as known-spell casters show an infinity symbol instead.
 
 Subclass icons are displayed for a large selection of official 2014 subclasses. An alchemical symbol is used when no matching subclass icon is defined.
 
