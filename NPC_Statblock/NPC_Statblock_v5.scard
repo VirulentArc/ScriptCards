@@ -1,7 +1,7 @@
 !Script{{ --/|{& skip}
   --/| ==========================================================================
   --/| Script Name : Tim's NPC Stat Block Mod v5 for D&D 5E 2014
-  --/| Version     : 5.4.0
+  --/| Version     : 5.4.1
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| ==========================================================================
@@ -47,6 +47,7 @@
   --&ActionOutputTableOpen|[t style="width:100%;line-height:1.1em;table-layout:fixed;border-collapse:separate;border-spacing:0 1px;"]
   --&ActionPairSeparator|[t style="display:inline-table;float:left;margin:0;height:18px;line-height:18px;vertical-align:middle;"][tr][td style="height:18px;line-height:18px;padding:0;border:0;background:transparent;vertical-align:middle;text-align:center;"]&#8226;[/td][/tr][/t]
   --&CenterButtonCell|style="width:1%;[&ButtonChrome]padding:0 4px;text-align:center;vertical-align:middle;"
+  --&NSBSkillButtonCell|style="[&ButtonChrome]width:33.333%;box-sizing:border-box;padding:0 4px;text-align:center;vertical-align:middle;"
   --&RuleSpacer|[tr][td style="line-height:4px"]&nbsp;[/td][/tr] --&TightRuleSpacer|[tr][td style="line-height:2px"]&nbsp;[/td][/tr]
   --&NPCNameFontSize|24px --&NPCNameWhiteSpace|nowrap
   --?"[&NPC_Name(length)]" -gt "18"|[ --&NPCNameFontSize|22px --]|
@@ -116,10 +117,10 @@
   --?"[&NSBMode]" -ne "full"|SkipNSBMainSkillGrid
   --&AddSkill| --&SkillOutput|
   --&NSBHasSkills|[*S:npc_skills_flag]
-  --&ButtonGridStyle|style="width:100%;border-collapse:separate;border-spacing:0 2px;"
+  --&ButtonGridStyle|style="width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0 2px;"
   --&SkillCounter|1
   --&SkillOutput|[t [&ButtonGridStyle]][tr]
-  --&SkillOutput|+[td [&CenterButtonCell]][rbutton]Initiative::NSBRunRoll;Initiative!@![&NSBInitMod]!@!initiative!@!initiative!@!INIT[/rbutton][/td]
+  --&SkillOutput|+[td [&NSBSkillButtonCell]][rbutton]Initiative::NSBRunRoll;Initiative!@![&NSBInitMod]!@!initiative!@!initiative!@!INIT[/rbutton][/td]
   --~|array;define;SkillArray;acrobatics!@!Acrobatics!@!Acrobatics!@![&NSBDexMod]!@!DEX;animal_handling!@!Animal Handling!@!Animal Hand.!@![&NSBWisMod]!@!WIS;arcana!@!Arcana!@!Arcana!@![&NSBIntMod]!@!INT;athletics!@!Athletics!@!Athletics!@![&NSBStrMod]!@!STR;history!@!History!@!History!@![&NSBIntMod]!@!INT;insight!@!Insight!@!Insight!@![&NSBWisMod]!@!WIS;intimidation!@!Intimidation!@!Intimidation!@![&NSBChaMod]!@!CHA;investigation!@!Investigation!@!Investigation!@![&NSBIntMod]!@!INT;medicine!@!Medicine!@!Medicine!@![&NSBWisMod]!@!WIS;nature!@!Nature!@!Nature!@![&NSBIntMod]!@!INT;perception!@!Perception!@!Perception!@![&NSBWisMod]!@!WIS;performance!@!Performance!@!Performance!@![&NSBChaMod]!@!CHA;persuasion!@!Persuasion!@!Persuasion!@![&NSBChaMod]!@!CHA;religion!@!Religion!@!Religion!@![&NSBIntMod]!@!INT;sleight_of_hand!@!Sleight Of Hand!@!Sleight Of Hand!@![&NSBDexMod]!@!DEX;stealth!@!Stealth!@!Stealth!@![&NSBDexMod]!@!DEX;survival!@!Survival!@!Survival!@![&NSBWisMod]!@!WIS
   --%SkillLoop|foreach;SkillArray
     --~SkillInfo|string;split;!@!;[&SkillLoop]
@@ -129,7 +130,7 @@
     --?"[&NSBSheetSkillMod]" -ne ""|[ --&SkillMod|[&NSBSheetSkillMod] --&AddSkill|+[&SkillLabel]&nbsp;&#43;[&NSBSheetSkillMod],&nbsp; --]|
     --?"[= [&SkillCounter] % 3 ]" -eq "0" -and "[&SkillCounter]" -ne "0"|[ --&SkillOutput|+[/tr][tr] --]|
     --~SkillMod|string;numericonly;[&SkillMod]
-    --&SkillOutput|+[td [&CenterButtonCell]][rbutton][&SkillButtonLabel]::NSBRunRoll;[&SkillButtonLabel] Check!@![&SkillMod]!@!skill!@![&RawSkill]!@![&NSBSkillTag][/rbutton][/td]
+    --&SkillOutput|+[td [&NSBSkillButtonCell]][rbutton][&SkillButtonLabel]::NSBRunRoll;[&SkillButtonLabel] Check!@![&SkillMod]!@!skill!@![&RawSkill]!@![&NSBSkillTag][/rbutton][/td]
     --&SkillCounter|[= [&SkillCounter] + 1 ]
   --%|
   --&SkillOutput|+[/tr][/t]
@@ -263,10 +264,10 @@
   --&NSBCardHTML|+[&NSBDivider]
   --&NSBCardHTML|+[&ActionOutputTableOpen][&TightRuleSpacer][tr][td colspan=2 [&HRStyle]][F::20]S[/F][F::15]KILLS[/F][/td][/tr][&TightRuleSpacer][/t]
   --&NSBHasSkills|[*S:npc_skills_flag]
-  --&ButtonGridStyle|style="width:100%;border-collapse:separate;border-spacing:0 2px;"
+  --&ButtonGridStyle|style="width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0 2px;"
   --&SkillCounter|1
   --&SkillOutput|[t [&ButtonGridStyle]][tr]
-  --&SkillOutput|+[td [&CenterButtonCell]][rbutton]Initiative::NSBRunRoll;Initiative!@![&NSBInitMod]!@!initiative!@!initiative!@!INIT[/rbutton][/td]
+  --&SkillOutput|+[td [&NSBSkillButtonCell]][rbutton]Initiative::NSBRunRoll;Initiative!@![&NSBInitMod]!@!initiative!@!initiative!@!INIT[/rbutton][/td]
   --~|array;define;SkillArray;acrobatics!@!Acrobatics!@!Acrobatics!@![&NSBDexMod]!@!DEX;animal_handling!@!Animal Handling!@!Animal Hand.!@![&NSBWisMod]!@!WIS;arcana!@!Arcana!@!Arcana!@![&NSBIntMod]!@!INT;athletics!@!Athletics!@!Athletics!@![&NSBStrMod]!@!STR;history!@!History!@!History!@![&NSBIntMod]!@!INT;insight!@!Insight!@!Insight!@![&NSBWisMod]!@!WIS;intimidation!@!Intimidation!@!Intimidation!@![&NSBChaMod]!@!CHA;investigation!@!Investigation!@!Investigation!@![&NSBIntMod]!@!INT;medicine!@!Medicine!@!Medicine!@![&NSBWisMod]!@!WIS;nature!@!Nature!@!Nature!@![&NSBIntMod]!@!INT;perception!@!Perception!@!Perception!@![&NSBWisMod]!@!WIS;performance!@!Performance!@!Performance!@![&NSBChaMod]!@!CHA;persuasion!@!Persuasion!@!Persuasion!@![&NSBChaMod]!@!CHA;religion!@!Religion!@!Religion!@![&NSBIntMod]!@!INT;sleight_of_hand!@!Sleight Of Hand!@!Sleight Of Hand!@![&NSBDexMod]!@!DEX;stealth!@!Stealth!@!Stealth!@![&NSBDexMod]!@!DEX;survival!@!Survival!@!Survival!@![&NSBWisMod]!@!WIS
   --%SkillLoop|foreach;SkillArray
     --~SkillInfo|string;split;!@!;[&SkillLoop]
@@ -276,7 +277,7 @@
     --?"[&NSBSheetSkillMod]" -ne ""|[ --&SkillMod|[&NSBSheetSkillMod] --]|
     --?"[= [&SkillCounter] % 3 ]" -eq "0" -and "[&SkillCounter]" -ne "0"|[ --&SkillOutput|+[/tr][tr] --]|
     --~SkillMod|string;numericonly;[&SkillMod]
-    --&SkillOutput|+[td [&CenterButtonCell]][rbutton][&SkillButtonLabel]::NSBRunRoll;[&SkillButtonLabel] Check!@![&SkillMod]!@!skill!@![&RawSkill]!@![&NSBSkillTag][/rbutton][/td]
+    --&SkillOutput|+[td [&NSBSkillButtonCell]][rbutton][&SkillButtonLabel]::NSBRunRoll;[&SkillButtonLabel] Check!@![&SkillMod]!@!skill!@![&RawSkill]!@![&NSBSkillTag][/rbutton][/td]
     --&SkillCounter|[= [&SkillCounter] + 1 ]
   --%|
   --&SkillOutput|+[/tr][/t]
@@ -378,7 +379,7 @@
   --!h:[&NSBHID]|gmnotes:"[&NSBSettingsRaw]"
 --<|
 --:SetNSBOption|
-  -->LoadNSBSettingsFromID|
+  -->LoadNSBSettings|
   --~NSBOptionData|string;split;!@!;[&reentryval]
   --&NSBOptionCurrent|
   --C[&NSBOptionData1]|whisper:&NSBOptionCurrent;[&NSBWhisper]|advantage:&NSBOptionCurrent;[&NSBAdvantage]|autodamage:&NSBOptionCurrent;[&NSBAutoDamage]|mode:&NSBOptionCurrent;[&NSBMode]
@@ -387,7 +388,7 @@
   -->WriteNSBSettings|
   --^NSBRebuildFromCurrentSettings|
 --:NSBOptionNoChange|
-  --X|
+  --^NSBRebuildFromCurrentSettings|
 --:NSBRunRoll|
   --#hidecard|1
   --&CharName|[*[&CharID]:character_name]
