@@ -1,0 +1,120 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial: Writing Existing D&D 2024 Beacon Repeating Rows
+  --/|
+  --/| PURPOSE
+  --/| This tutorial shows two ways to change a field on an existing Beacon
+  --/| repeating row while keeping the familiar ScriptCards repeating commands.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a D&D 2024 Beacon NPC with at least one normal Action.
+  --/| 2. Run this ScriptCard.
+  --/| 3. The first Action is renamed temporarily in two different ways.
+  --/| 4. The original name is restored after each test.
+  --/|
+  --/| CLASSIC SHEETS
+  --/| On a classic sheet, a repeating row is made from Roll20 Attribute objects.
+  --/| The !a command is therefore the natural command for a traditional
+  --/| repeating attribute name such as:
+  --/|
+  --/| repeating_npcaction_ROWID_name
+  --/|
+  --/| BEACON SHEETS
+  --/| Beacon stores Actions as native records, not classic repeating Attribute
+  --/| rows. ScriptCards provides two useful ways to write an existing field.
+  --/|
+  --/| METHOD 1: !a COMPATIBILITY WRITE
+  --/| You can build the familiar repeating_section_ROWID_field name and use !a.
+  --/| ScriptCards finds the matching Beacon record and changes the real field
+  --/| instead of creating a fake legacy repeating Attribute.
+  --/|
+  --/| METHOD 2: R WRITABLE TARGET WITH !c
+  --/| When a repeating row is loaded, [*R>field] asks ScriptCards for a safe
+  --/| writable path to that field in the Beacon record.
+  --/|
+  --/| Because the returned value is a structured Beacon path, write it with !c.
+  --/|
+  --/| IMPORTANT
+  --/| Writable targets protect record identity fields such as the row ID,
+  --/| shortID, and uuid. They are meant for ordinary editable fields.
+  --/|
+  --/| This tutorial changes an Action name only long enough to verify each write,
+  --/| then restores the original name.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:npc_name] - Repeating Row Writes Tutorial
+
+  --&CharacterID|[*S:character_id]
+  --&RowCount|[*R:[&CharacterID]:repeating_npcaction:rowcount]
+
+  --+|[c][b]Section Overview[/b][/c]
+
+  --+Section|repeating_npcaction
+  --+Number of Rows|[&RowCount]
+
+  --?"[&RowCount]" -eq "0"|NoRows
+
+  --/| Load the first Action and save everything needed for both tests.
+  --Rfirst|[&CharacterID];repeating_npcaction
+  --&RowID|[*R:xxxActionIDxxxx]
+  --&OriginalName|[*R:name]
+  --&WritableNamePath|[*R>name]
+  --&CompatibilityName|repeating_npcaction_[&RowID]_name
+
+  --+|[c][b]Original Row[/b][/c]
+
+  --+Action Name|[&OriginalName]
+  --+Row ID|[&RowID]
+  --+Compatibility Name|[&CompatibilityName]
+  --+Writable Path|[&WritableNamePath]
+
+  --+|[c][b]Method 1: Beacon !a Compatibility Write[/b][/c]
+
+  --&ATestName|[&OriginalName] [!a Tutorial]
+
+  --/| The familiar repeating attribute-style name is accepted by Beacon !a.
+  --!a:[&CharacterID]|[&CompatibilityName]:[&ATestName]
+
+  --Rbysectionid|[&CharacterID];repeating_npcaction;[&RowID]
+  --+Name After !a|[*R:name]
+
+  --/| Restore the original name with the same compatibility route.
+  --!a:[&CharacterID]|[&CompatibilityName]:[&OriginalName]
+
+  --Rbysectionid|[&CharacterID];repeating_npcaction;[&RowID]
+  --+Name Restored|[*R:name]
+
+  --+|[c][b]Method 2: Writable Target with Beacon !c[/b][/c]
+
+  --/| Reload the row before asking for a fresh writable target.
+  --&WritableNamePath|[*R>name]
+  --&CTestName|[&OriginalName] [!c Tutorial]
+
+  --!c:[&CharacterID]|[&WritableNamePath]:[&CTestName]
+
+  --Rbysectionid|[&CharacterID];repeating_npcaction;[&RowID]
+  --+Name After !c|[*R:name]
+
+  --/| Get the writable target again after the row refreshes, then restore it.
+  --&WritableNamePath|[*R>name]
+  --!c:[&CharacterID]|[&WritableNamePath]:[&OriginalName]
+
+  --Rbysectionid|[&CharacterID];repeating_npcaction;[&RowID]
+  --+Final Name|[*R:name]
+
+  --+|[c][b]Which Form Should I Use?[/b][/c]
+
+  --+!a Compatibility|Useful when adapting existing scripts that already build repeating_section_ROWID_field names.
+  --+R Writable Target + !c|Useful when you already have the row loaded and want ScriptCards to give you the safe Beacon path.
+
+  --+|[c][b]Finished[/b][/c]
+
+  --+Result|The same Action field was written through both Beacon repeating-write routes and restored.
+  --X|
+
+  --:NoRows|
+  --+|[c][b]No Action Rows Found[/b][/c]
+  --+Result|Select an NPC with at least one normal Action and run the tutorial again.
+}}

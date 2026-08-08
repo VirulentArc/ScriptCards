@@ -1,0 +1,141 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial: Custom Attributes on D&D 2024 Beacon Characters
+  --/|
+  --/| PURPOSE
+  --/| Sometimes a ScriptCards script needs to save information that is not a
+  --/| normal field on the character sheet. Beacon provides custom attributes
+  --/| for this purpose. Their stored names use the user. namespace.
+  --/|
+  --/| Examples include a script setting, a counter, a note, or another small
+  --/| piece of information that belongs to your script.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select any D&D 2024 Beacon character.
+  --/| 2. Run this ScriptCard.
+  --/| 3. The script creates two temporary custom attributes, reads and changes
+  --/|    them, then deletes them before it finishes.
+  --/|
+  --/| WHY THIS TUTORIAL USES !a
+  --/| On classic Roll20 sheets, !a is the command that works with traditional
+  --/| Roll20 Attribute objects. The !c command works with Character properties.
+  --/|
+  --/| Beacon stores most sheet information differently, but ScriptCards keeps
+  --/| !a as the attribute-style compatibility command.
+  --/|
+  --/| In Beacon mode:
+  --/| !c is for existing native, structured, and typed sheet values.
+  --/| !a is the command that can work with custom user. values.
+  --/|
+  --/| The !c command deliberately refuses custom user. values and does not
+  --/| create missing custom fields.
+  --/|
+  --/| CREATING A NEW CUSTOM ATTRIBUTE
+  --/| A leading ! on the attribute name tells the !a command that it is allowed
+  --/| to create the value when it does not already exist.
+  --/|
+  --/| Example name used by this tutorial:
+  --/| !sc_tutorial_note
+  --/|
+  --/| Beacon stores that custom value as:
+  --/| user.sc_tutorial_note
+  --/|
+  --/| READING AN EXISTING CUSTOM ATTRIBUTE
+  --/| Once the custom attribute exists, both of these names can read it:
+  --/|
+  --/| sc_tutorial_note
+  --/| user.sc_tutorial_note
+  --/|
+  --/| The bare name is shorter.
+  --/| The user. form explicitly says "use the custom attribute."
+  --/|
+  --/| WRITING AN EXISTING CUSTOM ATTRIBUTE
+  --/| Once it exists, !a can also write it with either name.
+  --/|
+  --/| If a bare name is also the name of a real native Beacon value, the native
+  --/| value wins. Use user. when you specifically mean the custom value.
+  --/|
+  --/| CLASSIC SHEET NOTE
+  --/| The special user. routing described here is Beacon behavior. On a classic
+  --/| sheet, !a works with traditional Roll20 Attribute objects instead.
+  --/|
+  --/| += adds to an existing number or appends to existing text.
+  --/|
+  --/| This tutorial removes its temporary values at the end.
+  --/|
+  --/| FIRST-TIME CREATION MESSAGE
+  --/| Roll20 may write a "Could not find Custom Attribute" message to the Mod
+  --/| console while ScriptCards checks whether a new custom value already exists.
+  --/| That lookup message can be normal during first-time creation.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - Custom Attributes Tutorial
+
+  --&CharacterID|[*S:character_id]
+
+  --+|[c][b]Why !a Instead of !c?[/b][/c]
+
+  --+Beacon !c|Existing native, structured, and typed sheet values. It does not create custom values.
+  --+Beacon !a|Custom attributes, attribute-style repeating fields, and compatible existing native aliases.
+
+  --+|[c][b]Create a Text Value[/b][/c]
+
+  --/| The leading ! allows creation because this value does not exist yet.
+  --!a:[&CharacterID]|!sc_tutorial_note:Created by the custom attribute tutorial
+
+  --+Stored Beacon Name|user.sc_tutorial_note
+
+  --+|[c][b]Read the Same Value Two Ways[/b][/c]
+
+  --+Bare Name Read|[*S:sc_tutorial_note]
+  --+Explicit user. Read|[*S:user.sc_tutorial_note]
+
+  --+|[c][b]Write Using the Bare Name[/b][/c]
+
+  --/| This custom value already exists, so the bare name can find it.
+  --!a:[&CharacterID]|sc_tutorial_note:Updated using the bare name
+
+  --+Bare Name Read|[*S:sc_tutorial_note]
+  --+Explicit user. Read|[*S:user.sc_tutorial_note]
+
+  --+|[c][b]Write Using the Explicit user. Name[/b][/c]
+
+  --/| This form removes any doubt that the custom value is intended.
+  --!a:[&CharacterID]|user.sc_tutorial_note:Updated using user.
+
+  --+Bare Name Read|[*S:sc_tutorial_note]
+  --+Explicit user. Read|[*S:user.sc_tutorial_note]
+
+  --+|[c][b]Append Text[/b][/c]
+
+  --!a:[&CharacterID]|sc_tutorial_note:+= Extra text
+
+  --+After Text Append|[*S:sc_tutorial_note]
+
+  --+|[c][b]Create and Change a Number[/b][/c]
+
+  --!a:[&CharacterID]|!sc_tutorial_count:1
+
+  --+Bare Name Read|[*S:sc_tutorial_count]
+  --+Explicit user. Read|[*S:user.sc_tutorial_count]
+
+  --/| Numeric += performs arithmetic.
+  --!a:[&CharacterID]|user.sc_tutorial_count:+=1
+
+  --+After Adding One|[*S:sc_tutorial_count]
+
+  --+|[c][b]Clean Up the Tutorial Values[/b][/c]
+
+  --/| attribute;set can explicitly delete a custom value by setting it empty.
+  --~|attribute;set;[&CharacterID];user.sc_tutorial_note;
+  --~|attribute;set;[&CharacterID];user.sc_tutorial_count;
+
+  --+Text Value After Cleanup|[*S:sc_tutorial_note:::Not found]
+  --+Number After Cleanup|[*S:sc_tutorial_count:::Not found]
+
+  --+|[c][b]Finished[/b][/c]
+
+  --+Result|The tutorial created custom values and used both bare and explicit user. names to read and write them.
+}}

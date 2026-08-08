@@ -1,0 +1,115 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial 05: Finding Specific D&D 2024 Beacon Repeating Rows
+  --/|
+  --/| PURPOSE
+  --/| Tutorial 04 showed how to walk through every row with Rfirst and Rnext.
+  --/| Often a script already knows which row it wants.
+  --/|
+  --/| This tutorial demonstrates four ways to load a particular repeating row:
+  --/|
+  --/| Rfind         finds a row by an exact field value.
+  --/| Rsearch       finds a row by a pattern.
+  --/| Rbyindex      loads a row by its position in the section.
+  --/| Rbysectionid  loads a row by its saved row ID.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a D&D 2024 Beacon NPC with at least one normal Action.
+  --/| 2. Run this ScriptCard.
+  --/| 3. The script first saves information from a real Action so the later
+  --/|    examples do not depend on a hard-coded action name.
+  --/|
+  --/| Rfind VS Rsearch
+  --/| Rfind is useful when you know the exact value you want.
+  --/|
+  --/| Rsearch uses regular-expression pattern matching. You do not need to know
+  --/| regular expressions to understand this example: .+ simply means
+  --/| "one or more characters," so it finds the first non-empty Action name.
+  --/|
+  --/| INDEXES AND ROW IDS
+  --/| Index 0 means the first row, index 1 means the second row, and so on.
+  --/|
+  --/| A saved row ID is better when you need to return to the exact same row
+  --/| later, because positions can change if rows are added or reordered.
+  --/|
+  --/| CLASSIC REPEATING ROWS VS BEACON REPEATING ROWS
+  --/| Classic sheets use traditional repeating Attribute objects. Beacon stores
+  --/| native records. ScriptCards presents compatible repeating rows in Beacon
+  --/| mode so these familiar commands can still be used.
+  --/|
+  --/| This tutorial only reads information. It does not change the character.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - Finding Repeating Rows Tutorial
+
+  --&CharacterID|[*S:character_id]
+  --&Section|repeating_npcaction
+  --&RowCount|[*R:[&CharacterID]:[&Section]:rowcount]
+
+  --+|[c][b]Section Overview[/b][/c]
+
+  --+Section|[&Section]
+  --+Number of Rows|[&RowCount]
+
+  --?"[&RowCount]" -eq "0"|NoRows
+
+  --+|[c][b]Save an Example Row[/b][/c]
+
+  --Rfirst|[&CharacterID];[&Section]
+  --&SavedName|[*R:name]
+  --&SavedID|[*R:xxxActionIDxxxx]
+  --&SavedDescription|[*R:description]
+
+  --+Example Name|[&SavedName]
+  --+Example Row ID|[&SavedID]
+  --+Example Description|[&SavedDescription]
+
+  --+|[c][b]Rfind: Exact Field Value[/b][/c]
+
+  --/| Search the name field for the exact name saved above.
+  --Rfind|[&CharacterID];[&SavedName];[&Section];name
+
+  --+Found Name|[*R:name]
+  --+Found Row ID|[*R:xxxActionIDxxxx]
+
+  --+|[c][b]Rsearch: Pattern Match[/b][/c]
+
+  --/| .+ means one or more characters. This finds the first Action whose name
+  --/| is not empty.
+  --Rsearch|[&CharacterID];.+;[&Section];name
+
+  --+Matched Name|[*R:name]
+  --+Matched Row ID|[*R:xxxActionIDxxxx]
+
+  --+|[c][b]Rbyindex: Zero-Based Position[/b][/c]
+
+  --Rbyindex|[&CharacterID];[&Section];0
+
+  --+Index Used|0
+  --+Loaded Name|[*R:name]
+  --+Loaded Row ID|[*R:xxxActionIDxxxx]
+
+  --+|[c][b]Rbysectionid: Saved Row ID[/b][/c]
+
+  --Rbysectionid|[&CharacterID];[&Section];[&SavedID]
+
+  --+Saved ID Used|[&SavedID]
+  --+Loaded Name|[*R:name]
+  --+Loaded Description|[*R:description]
+
+  --+|[c][b]Read by Index Without Loading the Row[/b][/c]
+
+  --+First Row Name|[*R:[&CharacterID]:[&Section]:0:name]
+  --+First Row ID|[*R:[&CharacterID]:[&Section]:0:xxxActionIDxxxx]
+
+  --+|[c][b]Finished[/b][/c]
+
+  --+Result|The same section was accessed by exact value, pattern, index, row ID, and direct indexed reference.
+  --X|
+
+  --:NoRows|
+  --+|[c][b]No Action Rows Found[/b][/c]
+  --+Result|Select an NPC with at least one normal Action and run the tutorial again.
+}}

@@ -1,0 +1,111 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial: Writing D&D 2024 Beacon Typed Collection Values
+  --/|
+  --/| PURPOSE
+  --/| The Typed Collections tutorial showed how to find one Beacon record and
+  --/| read a field from it. This tutorial takes the next step and changes one
+  --/| existing field on one typed record.
+  --/|
+  --/| The example uses the character's Walk Speed record because it gives us a
+  --/| simple numeric value that is easy to change and restore.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a D&D 2024 Beacon character that has a Walk speed.
+  --/| 2. Run this ScriptCard.
+  --/| 3. The tutorial temporarily changes Walk speed by 1.
+  --/| 4. It reads the value back and then restores the exact starting value.
+  --/|
+  --/| WHAT THIS TEACHES
+  --/| A typed collection path follows this pattern:
+  --/|
+  --/| collection -> selector -> field
+  --/|
+  --/| In this tutorial:
+  --/| speeds chooses the Speed collection.
+  --/| Walk chooses the Walk record.
+  --/| valueFormula->flatValue chooses the number stored on that record.
+  --/|
+  --/| READING AND WRITING USE THE SAME PATH
+  --/| The read is:
+  --/| [*S:speeds->Walk->valueFormula->flatValue]
+  --/|
+  --/| The write uses the same path with the Beacon !c command.
+  --/|
+  --/| WHY !c?
+  --/| Typed collection fields are native Beacon record data. In Beacon mode,
+  --/| !c is the command used for existing native, structured, and typed values.
+  --/|
+  --/| !a is not used for a typed path. Its Beacon role is attribute-style
+  --/| compatibility, custom user. values, and familiar repeating-field syntax.
+  --/|
+  --/| IMPORTANT SAFETY RULE
+  --/| A typed write changes an EXISTING primitive field: a string, number,
+  --/| boolean, or other simple stored value.
+  --/|
+  --/| Do not use an ordinary typed write to replace an entire object or array.
+  --/| Do not casually change identity or relationship fields such as shortID,
+  --/| parentID, childIDs, or other IDs.
+  --/|
+  --/| The selector must identify one record. If a readable name matches more
+  --/| than one record, use a unique shortID, canonical ID, or zero-based index.
+  --/|
+  --/| This tutorial restores the original Walk speed before it finishes.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - Typed Collection Write Tutorial
+
+  --&CharacterID|[*S:character_id]
+
+  --/| Save the current Walk speed. The default text lets us detect a character
+  --/| that does not have a usable Walk record.
+  --&OriginalWalk|[*S:speeds->Walk->valueFormula->flatValue:::No Walk record]
+
+  --?"[&OriginalWalk]" -eq "No Walk record"|NoWalk
+
+  --=TestWalk|[&OriginalWalk] + 1
+
+  --+|[c][b]The Typed Collection Path[/b][/c]
+
+  --+Collection|speeds
+  --+Selector|Walk
+  --+Field|valueFormula->flatValue
+  --+Complete Path|speeds->Walk->valueFormula->flatValue
+
+  --+|[c][b]Starting Value[/b][/c]
+
+  --+Character|[*S:character_name]
+  --+Walk Speed|[&OriginalWalk]
+
+  --+|[c][b]Write the Typed Field[/b][/c]
+
+  --/| !c locates the Walk record and changes only its existing flatValue field.
+  --!c:[&CharacterID]|speeds->Walk->valueFormula->flatValue:[$TestWalk.Raw]
+
+  --+Value Written|[$TestWalk.Raw]
+  --+Value Read Back|[*S:speeds->Walk->valueFormula->flatValue]
+
+  --+|[c][b]Restore the Original Value[/b][/c]
+
+  --!c:[&CharacterID]|speeds->Walk->valueFormula->flatValue:[&OriginalWalk]
+
+  --+Restored Walk Speed|[*S:speeds->Walk->valueFormula->flatValue]
+
+  --+|[c][b]What to Remember[/b][/c]
+
+  --+Read|Use collection -> selector -> field inside a normal Beacon sheet reference.
+  --+Write|Use the same typed path with Beacon !c when changing an existing primitive field.
+  --+Selector|Use a unique name, ID, or index that identifies exactly one record.
+  --+Safety|Avoid identity fields, relationship fields, whole objects, and whole arrays unless you fully understand the record structure.
+
+  --+|[c][b]Finished[/b][/c]
+
+  --+Result|Walk speed was changed through a typed collection path and restored.
+  --X|
+
+  --:NoWalk|
+  --+|[c][b]No Walk Record Found[/b][/c]
+  --+Result|Select a Beacon character with a Walk speed and run the tutorial again.
+}}

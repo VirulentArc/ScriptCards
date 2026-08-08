@@ -1,0 +1,79 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial 01: Basic D&D 2024 Beacon NPC Stats
+  --/|
+  --/| PURPOSE
+  --/| This tutorial shows the simplest way to read common values from a D&D 2024
+  --/| Beacon character sheet with ScriptCards.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a token that represents a D&D 2024 Beacon NPC.
+  --/| 2. Run this ScriptCard.
+  --/| 3. Compare the values on the output card with the character sheet.
+  --/|
+  --/| WHAT THIS TEACHES
+  --/| A reference such as [*S:hp] reads a value from the source character.
+  --/| The S means Source. The source character is set below with sourcetoken.
+  --/|
+  --/| Names such as hp, hp_max, npc_ac, strength, and strength_mod are direct
+  --/| aliases. Direct aliases are the easiest way to read common sheet values.
+  --/|
+  --/| CURRENT AND MAXIMUM VALUES
+  --/| On the D&D 2024 Beacon sheet, current HP and final maximum HP are exposed
+  --/| as separate direct aliases:
+  --/|
+  --/| hp      = current Hit Points
+  --/| hp_max  = final maximum Hit Points
+  --/|
+  --/| Beacon also has a separate structured "max tree" that can be requested
+  --/| with ^ on a complete structured or typed lookup. That is a different idea
+  --/| from the hp_max compatibility alias and is covered in Tutorial 02.
+  --/|
+  --/| This tutorial only reads information. It does not change the character.
+  --/| ==========================================================================
+
+  --/| Beacon support must be enabled when working with a Beacon sheet.
+  --#beaconsheet|1
+
+  --/| The selected token becomes the source token.
+  --/| After this, [*S:...] references read from that token's character.
+  --#sourcetoken|@{selected|token_id}
+
+  --/| A sheet value can be used anywhere a ScriptCards value is accepted.
+  --#title|[*S:npc_name] - Basic Stats Tutorial
+
+  --+|[c][b]Basic Information[/b][/c]
+
+  --+Name|[*S:npc_name]
+  --+Type|[*S:npc_type]
+  --+Armor Class|[*S:npc_ac]
+
+  --+|[c][b]Current and Maximum Hit Points[/b][/c]
+
+  --/| These are two separate Beacon direct aliases.
+  --+Current HP|[*S:hp]
+  --+Maximum HP|[*S:hp_max]
+
+  --+|[c][b]Other Basic Values[/b][/c]
+
+  --+Speed|[*S:npc_speed]
+  --+Challenge Rating|[*S:npc_challenge]
+  --+Proficiency Bonus|[*S:pb]
+
+  --+|[c][b]Ability Scores[/b][/c]
+
+  --/| Ability scores and ability modifiers are separate direct aliases.
+  --/| For example, strength is the score and strength_mod is the modifier.
+  --+Strength|[*S:strength] ([*S:strength_mod])
+  --+Dexterity|[*S:dexterity] ([*S:dexterity_mod])
+  --+Constitution|[*S:constitution] ([*S:constitution_mod])
+  --+Intelligence|[*S:intelligence] ([*S:intelligence_mod])
+  --+Wisdom|[*S:wisdom] ([*S:wisdom_mod])
+  --+Charisma|[*S:charisma] ([*S:charisma_mod])
+
+  --+|[c][b]Other NPC Information[/b][/c]
+
+  --/| Some direct aliases return formatted text rather than one number.
+  --+Senses|[*S:npc_senses]
+  --+Languages|[*S:npc_languages]
+}}

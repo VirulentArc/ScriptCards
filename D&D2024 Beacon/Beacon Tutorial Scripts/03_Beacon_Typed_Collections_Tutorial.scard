@@ -1,0 +1,221 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial: D&D 2024 Beacon Typed Collections
+  --/|
+  --/| PURPOSE
+  --/| Beacon stores many things as individual records: Actions, Spells, Items,
+  --/| Languages, Speeds, Defenses, Class Levels, and much more.
+  --/|
+  --/| ScriptCards groups records of the same kind into typed collections. This
+  --/| gives a ScriptCards author a much easier way to find and read those records.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select any D&D 2024 Beacon character.
+  --/| 2. Run this ScriptCard.
+  --/| 3. Try it on several different PCs and NPCs. Different characters will
+  --/|    have different records, so some collections may be empty.
+  --/|
+  --/| READING A WHOLE COLLECTION
+  --/| A reference such as [*S:languages] asks ScriptCards to display a short
+  --/| summary of every active Language record on the source character.
+  --/|
+  --/| The whole-collection display is only a quick summary. Some collections
+  --/| may look strange or show the same name many times. Those records are not
+  --/| necessarily duplicates. Each record can contain more information than the
+  --/| short summary shows.
+  --/|
+  --/| For example, Class Levels may show Paladin many times because there are
+  --/| several separate Paladin level records. Defenses may show Petrified many
+  --/| times because separate defense records can belong to different features.
+  --/|
+  --/| READING ONE RECORD
+  --/| The basic typed collection path is:
+  --/|
+  --/| collection -> selector -> field
+  --/|
+  --/| collection chooses the kind of record.
+  --/| selector chooses one record in that collection.
+  --/| field chooses the piece of information you want from that record.
+  --/|
+  --/| A selector can be a unique readable name, such as Walk or Strength.
+  --/| A number can also be used. The number 0 means the first record, 1 means
+  --/| the second, and so on. Numbered positions can change when records change,
+  --/| so a unique name or ID is better when you already know one.
+  --/|
+  --/| If a selected character does not have the record used by an example,
+  --/| that example may display undefined or an empty value. That is normal.
+  --/|
+  --/| This tutorial only reads information. It does not change the character.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - Typed Collections Tutorial
+
+  --+|[c][b]Character and Progression Collections[/b][/c]
+
+  --/| Reading only the collection name gives a short summary of its records.
+  --+Ability Scores|[*S:abilityscores]
+  --+Backgrounds|[*S:backgrounds]
+  --+Classes|[*S:classes]
+  --+Class Levels|[*S:classlevels]
+  --+Species|[*S:species]
+  --+Subclasses|[*S:subclasses]
+  --+Sizes|[*S:sizes]
+
+  --+|[c][b]Combat and Rules Collections[/b][/c]
+
+  --+Actions|[*S:actions]
+  --+Armor Classes|[*S:armorclasses]
+  --+Attacks|[*S:attacks]
+  --+Conditions|[*S:conditions]
+  --+Damages|[*S:damages]
+  --+Defenses|[*S:defenses]
+  --+Exhaustions|[*S:exhaustions]
+  --+Features|[*S:features]
+  --+Hit Dice|[*S:hitdices]
+  --+Hit Points|[*S:hitpoints]
+  --+Modifiers|[*S:modifiers]
+  --+Proficiencies|[*S:proficiencies]
+  --+Roll Bonuses|[*S:rollbonuses]
+  --+Senses|[*S:senses]
+  --+Skills|[*S:skills]
+  --+Speeds|[*S:speeds]
+
+  --+|[c][b]Inventory and Resource Collections[/b][/c]
+
+  --+Attunements|[*S:attunements]
+  --+Currencies|[*S:currencies]
+  --+Items|[*S:items]
+  --+Languages|[*S:languages]
+  --+Resources|[*S:resources]
+  --+Rest Displays|[*S:restdisplays]
+
+  --+|[c][b]Spell Collections[/b][/c]
+
+  --+Prepared Spell Slots|[*S:preparedspellslots]
+  --+Spells|[*S:spells]
+  --+Spell Slots|[*S:spellslots]
+  --+Spellcastings|[*S:spellcastings]
+  --+Upcastings|[*S:upcastings]
+
+  --+|[c][b]Weapon Mastery Collections[/b][/c]
+
+  --+Weapon Mastery Changes|[*S:weaponmasterychanges]
+  --+Weapon Mastery Knowns|[*S:weaponmasteryknowns]
+  --+Weapon Mastery Slots|[*S:weaponmasteryslots]
+  --+Weapon Masteries|[*S:weaponmasteries]
+
+  --+|[c][b]Examples: Selecting a Record by Name[/b][/c]
+
+  --/| Walk selects the Speed record whose readable identity is Walk.
+  --+Walking Speed|[*S:speeds->Walk->valueFormula->flatValue]
+
+  --/| Strength selects the Strength Ability Score record.
+  --+Strength Score|[*S:abilityscores->Strength->valueFormula->flatValue]
+
+  --/| Perception selects records whose readable identity is Perception.
+  --+Perception Ability|[*S:skills->Perception->ability]
+  --+Perception Proficiency|[*S:proficiencies->Perception->proficiencyLevel]
+
+  --/| Darkvision selects the Darkvision Sense record when the character has one.
+  --+Darkvision Range|[*S:senses->Darkvision->valueFormula->flatValue]
+
+  --+|[c][b]Examples: Selecting the First Record[/b][/c]
+
+  --/| The selector 0 means "the first active record in this collection."
+  --/| This is useful when exploring a collection whose record names are unknown.
+  --+First Language|[*S:languages->0->name]
+  --+First Action|[*S:actions->0->name]
+  --+First Item|[*S:items->0->name]
+  --+First Spell|[*S:spells->0->name]
+
+  --+|[c][b]Looking Deeper: Class Level Records[/b][/c]
+
+  --/| A whole classlevels summary may repeat the same class name. Reading fields
+  --/| from one record shows that the record contains much more than that name.
+  --+Record Name|[*S:classlevels->0->name]
+  --+Class Level|[*S:classlevels->0->level]
+  --+Total Character Level|[*S:classlevels->0->totalLevel]
+  --+Class Record ID|[*S:classlevels->0->classID]
+
+  --+|[c][b]Looking Deeper: Actions and Attacks[/b][/c]
+
+  --+Action Name|[*S:actions->0->name]
+  --+Action Type|[*S:actions->0->actionType]
+  --+Action Description|[*S:actions->0->description]
+
+  --+Attack Name|[*S:attacks->0->name]
+  --+Attack Type|[*S:attacks->0->actionType]
+  --+Attack Ability|[*S:attacks->0->attack->abilityBonus]
+  --+Attack Proficiency|[*S:attacks->0->attack->proficiencyLevel]
+
+  --+|[c][b]Looking Deeper: Damage Records[/b][/c]
+
+  --/| Damage is stored in its own records. A Damage record may belong to an
+  --/| Attack, Spell, or another record. parentID identifies its parent.
+  --+Damage Name|[*S:damages->0->name]
+  --+Damage Dice|[*S:damages->0->_diceCount]d[*S:damages->0->diceSize]
+  --+Damage Bonus|[*S:damages->0->_bonus]
+  --+Damage Ability|[*S:damages->0->ability]
+  --+Damage Type|[*S:damages->0->damageType]
+  --+Damage Parent ID|[*S:damages->0->parentID]
+
+  --+|[c][b]Looking Deeper: Defense Records[/b][/c]
+
+  --/| Defense is a good example of why the short summary can be misleading.
+  --/| Separate records can share the same name while describing different
+  --/| defenses or belonging to different parent features.
+  --+Defense Name|[*S:defenses->0->name]
+  --+Defense Category|[*S:defenses->0->defense]
+  --+Damage|[*S:defenses->0->damage]
+  --+Condition|[*S:defenses->0->condition]
+  --+Defense Parent ID|[*S:defenses->0->parentID]
+
+  --+|[c][b]Looking Deeper: Item Records[/b][/c]
+
+  --+Item Name|[*S:items->0->name]
+  --+Quantity|[*S:items->0->quantity]
+  --+Weight|[*S:items->0->weight]
+  --+Rarity|[*S:items->0->rarity]
+  --+Equipped|[*S:items->0->equipData->equipped]
+
+  --+|[c][b]Looking Deeper: Spell Records[/b][/c]
+
+  --+Spell Name|[*S:spells->0->name]
+  --+Spell Level|[*S:spells->0->level]
+  --+School|[*S:spells->0->school]
+  --+Casting Time|[*S:spells->0->castingTime]
+  --+Range|[*S:spells->0->range]
+  --+Duration|[*S:spells->0->duration]
+  --+Concentration|[*S:spells->0->concentration]
+  --+Ritual|[*S:spells->0->ritual]
+  --+Description|[*S:spells->0->description]
+
+  --+|[c][b]Looking Deeper: Spell Slot Records[/b][/c]
+
+  --/| Spell Slot records describe slot capacity. The _slotType field is useful
+  --/| because normal slots and Pact slots are separate record types.
+  --+Spell Slot Name|[*S:spellslots->0->name]
+  --+Spell Level|[*S:spellslots->0->spellLevel]
+  --+Slot Type|[*S:spellslots->0->_slotType]
+  --+Calculation|[*S:spellslots->0->calculation]
+  --+Value|[*S:spellslots->0->valueFormula->flatValue]
+
+  --+|[c][b]Looking Deeper: Spellcasting Records[/b][/c]
+
+  --+Casting Ability|[*S:spellcastings->0->ability]
+  --+Caster Type|[*S:spellcastings->0->casterType]
+  --+Overview Display|[*S:spellcastings->0->overviewDisplay]
+
+  --+|[c][b]Looking Deeper: Conditions and Weapon Mastery[/b][/c]
+
+  --+Condition Name|[*S:conditions->0->name]
+  --+Condition Active|[*S:conditions->0->_active]
+  --+Condition Description|[*S:conditions->0->description]
+
+  --+Mastery Name|[*S:weaponmasteries->0->name]
+  --+Mastery Active|[*S:weaponmasteries->0->active]
+  --+Mastery Applies To|[*S:weaponmasteries->0->applies]
+  --+Mastery Description|[*S:weaponmasteries->0->description]
+}}

@@ -1,0 +1,97 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial: Creating D&D 2024 Beacon Repeating Rows
+  --/|
+  --/| PURPOSE
+  --/| This tutorial creates a brand-new NPC Action row on a Beacon character,
+  --/| reads the row back, and then removes the temporary row.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a D&D 2024 Beacon NPC.
+  --/| 2. Run this ScriptCard.
+  --/| 3. A temporary Action named "ScriptCards Tutorial Action" is created.
+  --/| 4. The script reads the new row and removes it before finishing.
+  --/|
+  --/| CLASSIC SHEETS VS BEACON
+  --/| ScriptCards already has an !or command for creating repeating rows.
+  --/|
+  --/| On a classic sheet, repeating rows are traditional Roll20 Attribute rows.
+  --/|
+  --/| On Beacon, ScriptCards keeps the same familiar command, but it creates a
+  --/| real native Beacon record instead of a collection of fake repeating
+  --/| Attribute objects.
+  --/|
+  --/| HOW SCRIPTSCARDS KNOWS WHAT TO CREATE
+  --/| Beacon records contain hidden structural information in addition to fields
+  --/| such as name and description.
+  --/|
+  --/| ScriptCards learns the required shape from a compatible existing record
+  --/| and remembers that shape as a creation profile.
+  --/|
+  --/| If ScriptCards cannot learn a safe structure for that kind of row, it
+  --/| refuses the creation rather than guessing.
+  --/|
+  --/| THE NEW ROW ID
+  --/| After a successful creation, SC_LAST_CREATED_ROWID contains the new
+  --/| repeating row ID. Save it immediately if the script will need the row.
+  --/|
+  --/| CLEANUP
+  --/| This tutorial creates only a name and description. At the end it deletes
+  --/| those two meaningful fields. Once the temporary record is empty,
+  --/| ScriptCards removes the canonical Beacon row.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:npc_name] - Repeating Row Creation Tutorial
+
+  --&CharacterID|[*S:character_id]
+  --&CountBefore|[*R:[&CharacterID]:repeating_npcaction:rowcount]
+
+  --+|[c][b]Before Creation[/b][/c]
+
+  --+Section|repeating_npcaction
+  --+Rows Before|[&CountBefore]
+
+  --+|[c][b]Create a Native Beacon Action[/b][/c]
+
+  --/| The section can be written as npcaction or repeating_npcaction.
+  --!or:[&CharacterID]:npcaction|name:ScriptCards Tutorial Action|description:Temporary row created by the repeating row tutorial
+
+  --/| Save this immediately. The next creation or copy would replace it.
+  --&CreatedRowID|[&SC_LAST_CREATED_ROWID]
+
+  --?"[&CreatedRowID]" -eq ""|CreationFailed
+
+  --&CountAfterCreate|[*R:[&CharacterID]:repeating_npcaction:rowcount]
+
+  --Rbysectionid|[&CharacterID];repeating_npcaction;[&CreatedRowID]
+  --&CreatedName|[*R:name]
+  --&CreatedDescription|[*R:description]
+
+  --+Rows After Creation|[&CountAfterCreate]
+  --+New Row ID|[&CreatedRowID]
+  --+New Action Name|[&CreatedName]
+  --+New Description|[&CreatedDescription]
+
+  --+|[c][b]Remove the Tutorial Row[/b][/c]
+
+  --/| attribute;set with an empty value deletes the named repeating field.
+  --/| Removing the last meaningful field lets ScriptCards remove the empty row.
+  --~|attribute;set;[&CharacterID];repeating_npcaction_[&CreatedRowID]_description;
+  --~|attribute;set;[&CharacterID];repeating_npcaction_[&CreatedRowID]_name;
+
+  --&CountAfterCleanup|[*R:[&CharacterID]:repeating_npcaction:rowcount]
+
+  --+Rows After Cleanup|[&CountAfterCleanup]
+  --+Expected Rows|[&CountBefore]
+
+  --+|[c][b]Finished[/b][/c]
+
+  --+Result|A native Beacon Action row was created, read by its new row ID, and removed.
+  --X|
+
+  --:CreationFailed|
+  --+|[c][b]Creation Could Not Be Completed[/b][/c]
+  --+Result|ScriptCards could not learn a compatible native structure for this Action row. No tutorial row was created.
+}}

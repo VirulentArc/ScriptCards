@@ -1,0 +1,144 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial: D&D 2024 Beacon Spell Slots
+  --/|
+  --/| PURPOSE
+  --/| The D&D 2024 Beacon sheet keeps normal spell slots and Pact Magic slots
+  --/| as two separate pools. This tutorial shows how ScriptCards reads and
+  --/| writes those pools without mixing them together.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a D&D 2024 Beacon spellcaster with level-1 spell slots.
+  --/| 2. Run this ScriptCard.
+  --/| 3. A multiclass character with both normal and Pact slots is the best
+  --/|    example because the output can show both pools at the same level.
+  --/| 4. Any temporary slot changes are restored before the tutorial finishes.
+  --/|
+  --/| NORMAL SPELL SLOTS
+  --/| Normal remaining slots are stored under:
+  --/| sheet->spellSlots->currentByLevel
+  --/|
+  --/| Level 1 uses FIRST, level 2 SECOND, level 3 THIRD, and so on through:
+  --/| FOURTH, FIFTH, SIXTH, SEVENTH, EIGHTH, NINTH.
+  --/|
+  --/| ScriptCards also provides the familiar compatibility names:
+  --/| lvl1_slots_total       = normal level-1 capacity
+  --/| lvl1_slots_expended    = normal level-1 REMAINING slots
+  --/|
+  --/| IMPORTANT NAME WARNING
+  --/| The historical name lvl1_slots_expended sounds like a count of used slots.
+  --/| On the Beacon version of ScriptCards it means the number of normal slots
+  --/| that are still available.
+  --/|
+  --/| In the current Beacon implementation, reads and writes through
+  --/| lvl1_slots_expended use the same remaining-slot value.
+  --/|
+  --/| PACT MAGIC SLOTS
+  --/| Pact remaining slots are stored separately under:
+  --/| sheet->spellSlots->currentPactByLevel
+  --/|
+  --/| There is no verified separate direct alias for Pact current slots, so use
+  --/| the structured Pact path when you need that pool.
+  --/|
+  --/| NEVER TREAT THESE AS ONE POOL
+  --/| A character can have normal and Pact slots at the same spell level.
+  --/| Changing currentByLevel must not change currentPactByLevel, and changing
+  --/| currentPactByLevel must not change currentByLevel.
+  --/|
+  --/| This tutorial demonstrates that separation and restores every changed value.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - Beacon Spell Slots Tutorial
+
+  --&CharacterID|[*S:character_id]
+
+  --&NormalTotal|[*S:lvl1_slots_total:::0]
+  --&NormalStart|[*S:sheet->spellSlots->currentByLevel->FIRST:::0]
+  --&PactStart|[*S:sheet->spellSlots->currentPactByLevel->FIRST:::No Pact pool]
+
+  --+|[c][b]Level 1 Slot Overview[/b][/c]
+
+  --+Normal Slot Capacity|[&NormalTotal]
+  --+Normal Slots Remaining|[&NormalStart]
+  --+Compatibility Read|[*S:lvl1_slots_expended]
+  --+Pact Slots Remaining|[&PactStart]
+
+  --?"[&NormalTotal]" -le "0"|NoNormalSlots
+
+  --+|[c][b]Normal Pool: Compatibility Alias[/b][/c]
+
+  --/| Choose a temporary legal value.
+  --=NormalTest|[&NormalStart] - 1
+  --?"[&NormalStart]" -le "0"|[
+    --=NormalTest|1
+  --]|
+
+  --/| Despite its historical name, this writes the remaining NORMAL slot count.
+  --!c:[&CharacterID]|lvl1_slots_expended:[$NormalTest.Raw]
+
+  --+Value Written|[$NormalTest.Raw]
+  --+Alias Read Back|[*S:lvl1_slots_expended]
+  --+Structured Normal Read|[*S:sheet->spellSlots->currentByLevel->FIRST]
+  --+Pact Pool After Normal Write|[*S:sheet->spellSlots->currentPactByLevel->FIRST:::No Pact pool]
+
+  --+|[c][b]Restore the Normal Pool[/b][/c]
+
+  --/| Restore through the exact structured normal-slot path.
+  --!c:[&CharacterID]|sheet->spellSlots->currentByLevel->FIRST:[&NormalStart]
+
+  --+Restored Normal Slots|[*S:sheet->spellSlots->currentByLevel->FIRST]
+  --+Pact Pool Still|[*S:sheet->spellSlots->currentPactByLevel->FIRST:::No Pact pool]
+
+  --?"[&PactStart]" -eq "No Pact pool"|NoPactWrite
+  --?"[&PactStart]" -le "0"|NoPactAvailable
+
+  --+|[c][b]Pact Pool: Structured Path[/b][/c]
+
+  --=PactTest|[&PactStart] - 1
+
+  --/| Pact slots use their own structured pool. Do not route this through the
+  --/| normal lvl1_slots_expended compatibility alias.
+  --!c:[&CharacterID]|sheet->spellSlots->currentPactByLevel->FIRST:[$PactTest.Raw]
+
+  --+Pact Value Written|[$PactTest.Raw]
+  --+Pact Read Back|[*S:sheet->spellSlots->currentPactByLevel->FIRST]
+  --+Normal Pool After Pact Write|[*S:sheet->spellSlots->currentByLevel->FIRST]
+
+  --+|[c][b]Restore the Pact Pool[/b][/c]
+
+  --!c:[&CharacterID]|sheet->spellSlots->currentPactByLevel->FIRST:[&PactStart]
+
+  --+Restored Pact Slots|[*S:sheet->spellSlots->currentPactByLevel->FIRST]
+  --+Normal Pool Still|[*S:sheet->spellSlots->currentByLevel->FIRST]
+
+  --^Finished|
+
+  --:NoPactWrite|
+  --+|[c][b]No Pact Pool on This Character[/b][/c]
+  --+Pact Test|Skipped. The normal-slot test above still demonstrates the normal pool.
+  --^Finished|
+
+  --:NoPactAvailable|
+  --+|[c][b]No Pact Slots Currently Available[/b][/c]
+  --+Pact Test|Skipped rather than adding a Pact slot that the character may not currently be entitled to use.
+  --^Finished|
+
+  --:NoNormalSlots|
+  --+|[c][b]No Normal Level 1 Slots Found[/b][/c]
+  --+Result|Select a Beacon spellcaster with normal level-1 slots and run the tutorial again.
+  --X|
+
+  --:Finished|
+  --+|[c][b]What to Remember[/b][/c]
+
+  --+Normal Current Pool|sheet->spellSlots->currentByLevel
+  --+Pact Current Pool|sheet->spellSlots->currentPactByLevel
+  --+Normal Compatibility Alias|lvlN_slots_expended means remaining normal slots in Beacon ScriptCards.
+  --+Rule|Never combine, preserve, restore, or decrement the normal and Pact pools as if they were one value.
+
+  --+|[c][b]Finished[/b][/c]
+
+  --+Result|Normal and Pact slot state were handled as separate Beacon pools and all test changes were restored.
+}}

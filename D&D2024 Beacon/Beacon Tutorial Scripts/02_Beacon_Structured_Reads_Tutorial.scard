@@ -1,0 +1,92 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial 02: D&D 2024 Beacon Structured Reads
+  --/|
+  --/| PURPOSE
+  --/| Direct aliases such as hp are convenient, but Beacon also stores a great
+  --/| deal of information inside larger groups of sheet data. A structured read
+  --/| lets ScriptCards follow an exact path to one value inside that data.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a token that represents a D&D 2024 Beacon NPC.
+  --/| 2. Run this ScriptCard.
+  --/| 3. Compare the direct and structured HP lines. They should show the same
+  --/|    current HP even though they reach it in different ways.
+  --/|
+  --/| WHAT THIS TEACHES
+  --/| [*S:hp] is a direct alias.
+  --/| [*S:sheet->hitpoints->currentHP] is a structured read.
+  --/|
+  --/| The word sheet starts at the character's structured Beacon sheet data.
+  --/| Each -> means "go one step deeper" until the final value is reached.
+  --/|
+  --/| sheet and store are two public names for the same structured current root.
+  --/| In other words, these reach the same place:
+  --/|
+  --/| sheet->settings->rolls->mode
+  --/| store->settings->rolls->mode
+  --/|
+  --/| THE CURRENT TREE AND THE MAX TREE
+  --/| Structured Beacon data has a current tree and can also have a parallel max
+  --/| tree. Appending ^ to a COMPLETE lookup asks for that same path in the max
+  --/| tree.
+  --/|
+  --/| The ^ does not mean "calculate the maximum version of this value."
+  --/| It literally means "look at this path in the max tree."
+  --/|
+  --/| Many D&D 2024 Beacon values have nothing stored in the max tree. That is
+  --/| normal. Final values such as maximum HP can instead have their own direct
+  --/| alias or be calculated from canonical records.
+  --/|
+  --/| Structured reads are useful when there is no simple direct alias, or when
+  --/| you deliberately need one exact stored setting or value.
+  --/|
+  --/| This tutorial only reads information. It does not change the character.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - Structured Reads Tutorial
+
+  --+|[c][b]Direct Alias vs Structured Path[/b][/c]
+
+  --+Direct HP|[*S:hp]
+  --+Structured HP|[*S:sheet->hitpoints->currentHP]
+
+  --+|[c][b]Hit Point Data[/b][/c]
+
+  --+Current HP|[*S:sheet->hitpoints->currentHP]
+  --+Temporary HP|[*S:sheet->hitpoints->tempHP]
+
+  --+|[c][b]Character Information[/b][/c]
+
+  --+Creature Type|[*S:sheet->character->creatureType]
+  --+Alignment|[*S:sheet->about->characteristics->alignment]
+  --+Size|[*S:sheet->about->characteristics->size]
+
+  --+|[c][b]NPC Information[/b][/c]
+
+  --+Challenge Rating|[*S:sheet->npc->challengeRating]
+  --+HP Formula|[*S:sheet->npc->rollHP]
+  --+Gear|[*S:sheet->npc->gear]
+  --+Habitat|[*S:sheet->npc->habitat]
+  --+Treasure|[*S:sheet->npc->treasure]
+
+  --+|[c][b]sheet and store Reach the Same Root[/b][/c]
+
+  --+Using sheet|[*S:sheet->settings->rolls->mode]
+  --+Using store|[*S:store->settings->rolls->mode]
+
+  --+|[c][b]Current Tree vs Max Tree[/b][/c]
+
+  --/| The first line reads the normal current tree.
+  --+Current Roll Mode|[*S:sheet->settings->rolls->mode]
+
+  --/| The second asks for the same path in the parallel max tree.
+  --/| Most settings do not have a max-tree value, so the default text is normal.
+  --+Same Path in Max Tree|[*S:sheet->settings->rolls->mode^:::No max-tree value]
+
+  --+|[c][b]Other Sheet Settings[/b][/c]
+
+  --+Roll Privacy|[*S:sheet->settings->rolls->privacy]
+}}

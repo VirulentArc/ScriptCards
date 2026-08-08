@@ -1,0 +1,159 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial: Copying D&D 2024 Beacon Repeating Rows
+  --/|
+  --/| PURPOSE
+  --/| ScriptCards can copy an existing repeating row by matching one of its
+  --/| fields or by using its zero-based position in the section.
+  --/|
+  --/| In Beacon mode, these commands copy the real canonical Beacon record.
+  --/| When the source record owns linked child records, ScriptCards copies and
+  --/| reconnects that linked record graph as well.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select one D&D 2024 Beacon NPC as the source.
+  --/| 2. When Roll20 asks for a target, click a different Beacon NPC.
+  --/| 3. The script creates one simple temporary Action on the source.
+  --/| 4. It copies that Action to the destination in two different ways.
+  --/| 5. All three temporary rows are removed before the tutorial finishes.
+  --/|
+  --/| WHY THE TUTORIAL CREATES ITS OWN SOURCE ROW
+  --/| Using a temporary row makes the example predictable and avoids changing or
+  --/| depending on one of your real Actions.
+  --/|
+  --/| COPY BY FIELD MATCH
+  --/| This method finds a source row by the value of one field. A common example
+  --/| is finding an Action by its name.
+  --/|
+  --/| COPY BY INDEX
+  --/| This method copies the row at a zero-based position. Index 0 is the first
+  --/| row, index 1 is the second, and so on.
+  --/|
+  --/| Positions can change when rows are added, removed, or reordered, so a
+  --/| field match or stable row identity is often easier to maintain.
+  --/|
+  --/| BEACON DIFFERENCE
+  --/| On a classic sheet, these functions copy traditional repeating Attribute
+  --/| rows. In Beacon mode they clone native canonical records and give the
+  --/| destination copies new identities.
+  --/|
+  --/| copyfromdatagrid is not used for Beacon. A data-grid row does not contain
+  --/| enough information to define a native Beacon record safely.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#targettoken|@{target|token_id}
+  --#title|Beacon Repeating Row Copy Tutorial
+
+  --&SourceID|[*S:character_id]
+  --&DestinationID|[*T:character_id]
+
+  --?"[&SourceID]" -eq "[&DestinationID]"|SameCharacter
+
+  --&SourceCountBefore|[*R:[&SourceID]:repeating_npcaction:rowcount]
+  --&DestinationCountBefore|[*R:[&DestinationID]:repeating_npcaction:rowcount]
+
+  --/| Give this run a simple unique name.
+  --=TutorialNumber|1d1000000
+  --&TutorialName|SC Tutorial Copy [$TutorialNumber.Raw]
+
+  --+|[c][b]Characters and Starting Counts[/b][/c]
+
+  --+Source|[*S:character_name]
+  --+Destination|[*T:character_name]
+  --+Source Action Rows|[&SourceCountBefore]
+  --+Destination Action Rows|[&DestinationCountBefore]
+
+  --+|[c][b]Create a Temporary Source Row[/b][/c]
+
+  --!or:[&SourceID]:npcaction|name:[&TutorialName]|description:Temporary source row for the copy tutorial
+  --&SourceRowID|[&SC_LAST_CREATED_ROWID]
+
+  --?"[&SourceRowID]" -eq ""|CreationFailed
+
+  --+Temporary Name|[&TutorialName]
+  --+Source Row ID|[&SourceRowID]
+
+  --+|[c][b]Find the Source Row Index[/b][/c]
+
+  --/| Walk the section until the newly created row ID is found.
+  --Rfirst|[&SourceID];repeating_npcaction
+  --&SourceIndex|-1
+  --&CurrentIndex|0
+
+  --%FindSourceIndex|while;"[*R:xxxActionIDxxxx]" -ne "NoRepeatingAttributeLoaded" -and "[&SourceIndex]" -eq "-1"
+    --?"[*R:xxxActionIDxxxx]" -eq "[&SourceRowID]"|[
+      --&SourceIndex|[&CurrentIndex]
+    --]|
+    --?"[&SourceIndex]" -eq "-1"|[
+      --&CurrentIndex|[= [&CurrentIndex] + 1 ]
+      --Rnext|
+    --]|
+  --%|
+
+  --+Source Row Index|[&SourceIndex]
+
+  --+|[c][b]Copy by Field Match[/b][/c]
+
+  --~|repeatingrow;copybyfieldmatch;[&SourceID];[&DestinationID];repeating_npcaction;name;[&TutorialName]
+  --&FieldCopyRowID|[&SC_LAST_CREATED_ROWID]
+
+  --?"[&FieldCopyRowID]" -ne ""|[
+    --Rbysectionid|[&DestinationID];repeating_npcaction;[&FieldCopyRowID]
+    --&FieldCopyName|[*R:name]
+  --]|
+
+  --+Copied Name|[&FieldCopyName]
+  --+New Destination Row ID|[&FieldCopyRowID]
+
+  --+|[c][b]Copy by Zero-Based Index[/b][/c]
+
+  --?"[&SourceIndex]" -ge "0"|[
+    --~|repeatingrow;copybyindex;[&SourceID];[&DestinationID];repeating_npcaction;[&SourceIndex]
+    --&IndexCopyRowID|[&SC_LAST_CREATED_ROWID]
+  --]|
+
+  --?"[&IndexCopyRowID]" -ne ""|[
+    --Rbysectionid|[&DestinationID];repeating_npcaction;[&IndexCopyRowID]
+    --&IndexCopyName|[*R:name]
+  --]|
+
+  --+Copied Name|[&IndexCopyName]
+  --+New Destination Row ID|[&IndexCopyRowID]
+
+  --+|[c][b]Clean Up All Tutorial Rows[/b][/c]
+
+  --?"[&FieldCopyRowID]" -ne ""|[
+    --~|attribute;set;[&DestinationID];repeating_npcaction_[&FieldCopyRowID]_description;
+    --~|attribute;set;[&DestinationID];repeating_npcaction_[&FieldCopyRowID]_name;
+  --]|
+
+  --?"[&IndexCopyRowID]" -ne ""|[
+    --~|attribute;set;[&DestinationID];repeating_npcaction_[&IndexCopyRowID]_description;
+    --~|attribute;set;[&DestinationID];repeating_npcaction_[&IndexCopyRowID]_name;
+  --]|
+
+  --~|attribute;set;[&SourceID];repeating_npcaction_[&SourceRowID]_description;
+  --~|attribute;set;[&SourceID];repeating_npcaction_[&SourceRowID]_name;
+
+  --&SourceCountAfter|[*R:[&SourceID]:repeating_npcaction:rowcount]
+  --&DestinationCountAfter|[*R:[&DestinationID]:repeating_npcaction:rowcount]
+
+  --+Source Rows After Cleanup|[&SourceCountAfter]
+  --+Destination Rows After Cleanup|[&DestinationCountAfter]
+
+  --+|[c][b]Finished[/b][/c]
+
+  --+Result|One temporary Beacon row was copied by field match and by index, then all tutorial rows were removed.
+  --X|
+
+  --:SameCharacter|
+  --+|[c][b]Choose Two Different Characters[/b][/c]
+  --+Result|Select the source NPC, run the script again, and choose a different Beacon NPC when Roll20 asks for the target.
+  --X|
+
+  --:CreationFailed|
+  --+|[c][b]Temporary Source Row Could Not Be Created[/b][/c]
+  --+Result|ScriptCards could not learn a compatible Action structure for the source character. No copy was attempted.
+}}

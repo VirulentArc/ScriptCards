@@ -1,0 +1,117 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial: Arrays and Hashtables from Beacon Repeating Rows
+  --/|
+  --/| PURPOSE
+  --/| The repeating-row tutorials showed how to load and read one row at a time.
+  --/| Sometimes a script needs the whole section in a form that is easier to
+  --/| work with later.
+  --/|
+  --/| ScriptCards can turn repeating-row information into an array or hashtable.
+  --/|
+  --/| An ARRAY is simply an ordered list of values.
+  --/| Example: Bite, Claw, Multiattack
+  --/|
+  --/| A HASHTABLE is a collection of named values. Instead of remembering a
+  --/| position, the script looks up information using a key.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a D&D 2024 Beacon NPC with at least one normal Action.
+  --/| 2. Run this ScriptCard.
+  --/| 3. The tutorial converts repeating_npcaction into several useful forms.
+  --/|
+  --/| WHAT THIS TEACHES
+  --/| array;fromrepeatingsection collects one field from every repeating row.
+  --/| In this tutorial it collects the name from every Action.
+  --/|
+  --/| array;fullrepeatingsection can combine several fields from each row into
+  --/| one array entry.
+  --/|
+  --/| hashtable;fromrepeatingsection builds keys using an identifier field.
+  --/| The identifier values should be unique. For an Action section, name is
+  --/| convenient when every action has a different name.
+  --/|
+  --/| hashtable;fromrepeatingrow builds a small hashtable for just one row.
+  --/|
+  --/| The identifier field used by hashtable;fromrepeatingsection must be written
+  --/| in lower case.
+  --/|
+  --/| This tutorial only reads information. It does not change the character.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - Arrays and Hashtables Tutorial
+
+  --&CharacterID|[*S:character_id]
+  --&Section|repeating_npcaction
+  --&RowCount|[*R:[&CharacterID]:[&Section]:rowcount]
+
+  --+|[c][b]Section Overview[/b][/c]
+
+  --+Section|[&Section]
+  --+Number of Rows|[&RowCount]
+
+  --?"[&RowCount]" -eq "0"|NoRows
+
+  --+|[c][b]Create an Array of Action Names[/b][/c]
+
+  --/| This collects the name field from every row into ActionNames.
+  --~|array;fromrepeatingsection;ActionNames;[&CharacterID];[&Section];name
+
+  --+Array Length|[@ActionNames()]
+  --+First Array Entry|[@ActionNames(0)]
+
+  --/| foreach runs the following lines once for every value in the array.
+  --%ActionName|foreach;ActionNames
+    --+Action Name|[&ActionName]
+  --%|
+
+  --+|[c][b]Create a Full-Row Array[/b][/c]
+
+  --/| This combines each row's name and row ID, separated by a tilde.
+  --~|array;fullrepeatingsection;FullActions;[&CharacterID];[&Section];name:xxxActionIDxxxx;~
+
+  --+Full Array Length|[@FullActions()]
+  --+First Combined Entry|[@FullActions(0)]
+
+  --+|[c][b]Create a Hashtable from the Whole Section[/b][/c]
+
+  --/| Here name is the identifier. A key is built from the action name plus the
+  --/| field we want. For example: Bite_description or Bite_sectionid.
+  --~|hashtable;fromrepeatingsection;[&CharacterID];[&Section];name;ActionHash
+
+  --/| Save the first action name so we can use it as part of a hashtable key.
+  --&FirstActionName|[@ActionNames(0)]
+
+  --+First Action|[&FirstActionName]
+  --+Description from Hash|[:ActionHash("[&FirstActionName]_description")]
+  --+Row ID from Hash|[:ActionHash("[&FirstActionName]_sectionid")]
+
+  --+|[c][b]Create a Hashtable from One Row[/b][/c]
+
+  --/| First save the row ID from the section hashtable.
+  --&FirstActionID|[:ActionHash("[&FirstActionName]_sectionid")]
+
+  --/| Now build a hashtable containing only that one repeating row.
+  --~|hashtable;fromrepeatingrow;[&CharacterID];[&Section];[&FirstActionID];OneAction
+
+  --+Name from Row Hash|[:OneAction("name")]
+  --+Description from Row Hash|[:OneAction("description")]
+  --+Row ID from Row Hash|[:OneAction("_sectionid")]
+
+  --+|[c][b]When Should I Use Each One?[/b][/c]
+
+  --+Array|Use an array when you mainly need an ordered list and want to loop through it.
+  --+Hashtable|Use a hashtable when you want to look up several fields by a meaningful key.
+  --+One-Row Hashtable|Use a one-row hashtable when you already know the row ID and want several fields from that row.
+
+  --+|[c][b]Finished[/b][/c]
+
+  --+Result|The same repeating section was converted into arrays and hashtables without changing the character.
+  --X|
+
+  --:NoRows|
+  --+|[c][b]No Action Rows Found[/b][/c]
+  --+Result|Select an NPC with at least one normal Action and run the tutorial again.
+}}

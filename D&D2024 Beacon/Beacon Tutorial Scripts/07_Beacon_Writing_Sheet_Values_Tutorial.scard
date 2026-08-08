@@ -1,0 +1,123 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial 07: Writing D&D 2024 Beacon Sheet Values
+  --/|
+  --/| PURPOSE
+  --/| This tutorial shows how ScriptCards writes existing values on a Beacon
+  --/| character sheet, and explains the important difference between the !a and
+  --/| !c commands on classic Roll20 sheets and Beacon sheets.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a token that represents a D&D 2024 Beacon character.
+  --/| 2. Run this ScriptCard.
+  --/| 3. The script temporarily changes current HP several ways.
+  --/| 4. The exact starting HP is restored before the script finishes.
+  --/|
+  --/| CLASSIC SHEETS
+  --/| Older Roll20 sheets normally store sheet fields as Attribute objects.
+  --/|
+  --/| On a classic sheet:
+  --/| !a changes those Attribute objects.
+  --/| !c changes properties of the Roll20 Character itself.
+  --/|
+  --/| BEACON SHEETS
+  --/| Beacon stores most sheet information differently.
+  --/|
+  --/| With beaconsheet enabled:
+  --/| !c is the preferred command for existing native values, structured paths,
+  --/| and typed-collection fields.
+  --/|
+  --/| !a is the compatibility command for attribute-style writes. It can write
+  --/| an existing native alias, custom values, and familiar repeating fields.
+  --/|
+  --/| A structured path containing -> must use !c, not !a.
+  --/| A custom user. value must use !a, not !c.
+  --/|
+  --/| COMPOUND WRITES
+  --/| Existing numeric Beacon values can also use += and -=.
+  --/| Instead of supplying a completely new number, these add to or subtract
+  --/| from the existing value.
+  --/|
+  --/| This tutorial restores the exact original HP at the end as a final safety
+  --/| step even after the compound-write example returns to the starting value.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - Writing Sheet Values Tutorial
+
+  --&CharacterID|[*S:character_id]
+  --=OriginalHP|[*S:hp]
+
+  --=TestHP|[$OriginalHP.Raw] - 1
+  --?[$OriginalHP.Raw] -le 0|[
+    --=TestHP|[$OriginalHP.Raw] + 1
+  --]|
+
+  --+|[c][b]Starting Value[/b][/c]
+
+  --+Character|[*S:character_name]
+  --+Starting HP|[$OriginalHP.Raw]
+
+  --+|[c][b]Beacon !c: Direct Alias Write[/b][/c]
+
+  --!c:[&CharacterID]|hp:[$TestHP.Raw]
+
+  --+Value Written|[$TestHP.Raw]
+  --+Direct Alias Read|[*S:hp]
+  --+Structured Read|[*S:sheet->hitpoints->currentHP]
+
+  --+|[c][b]Beacon !c: Structured Path Write[/b][/c]
+
+  --/| A structured path contains -> and must use !c.
+  --!c:[&CharacterID]|sheet->hitpoints->currentHP:[$OriginalHP.Raw]
+
+  --+Value Written|[$OriginalHP.Raw]
+  --+Direct Alias Read|[*S:hp]
+  --+Structured Read|[*S:sheet->hitpoints->currentHP]
+
+  --+|[c][b]Beacon !a: Native Compatibility Write[/b][/c]
+
+  --/| Beacon !a also accepts an existing native alias for compatibility.
+  --!a:[&CharacterID]|hp:[$TestHP.Raw]
+
+  --+Value Written|[$TestHP.Raw]
+  --+HP After !a Write|[*S:hp]
+
+  --/| Return to the starting value before the compound example.
+  --!c:[&CharacterID]|hp:[$OriginalHP.Raw]
+
+  --+|[c][b]Compound Numeric Writes with += and -=[/b][/c]
+
+  --/| If HP is above zero, subtract first and then add it back.
+  --?[$OriginalHP.Raw] -gt 0|[
+    --!c:[&CharacterID]|hp:-=1
+    --+After -=1|[*S:hp]
+    --!c:[&CharacterID]|hp:+=1
+    --+After +=1|[*S:hp]
+  --]|[
+    --/| If HP starts at zero, add first so the example does not create negative HP.
+    --!c:[&CharacterID]|hp:+=1
+    --+After +=1|[*S:hp]
+    --!c:[&CharacterID]|hp:-=1
+    --+After -=1|[*S:hp]
+  --]|
+
+  --+|[c][b]Final Safety Restore[/b][/c]
+
+  --!c:[&CharacterID]|hp:[$OriginalHP.Raw]
+
+  --+Restored HP|[*S:hp]
+  --+Restored Structured Value|[*S:sheet->hitpoints->currentHP]
+
+  --+|[c][b]Which Command Should I Choose?[/b][/c]
+
+  --+Beacon !c|Use for existing native aliases, structured paths, and typed-collection fields.
+  --+Beacon !a|Use for custom attributes and familiar attribute-style repeating fields. It also supports existing native aliases for compatibility.
+  --+Classic !a|Normally changes traditional Roll20 sheet Attribute objects.
+  --+Classic !c|Normally changes properties of the Roll20 Character object itself.
+
+  --+|[c][b]Finished[/b][/c]
+
+  --+Result|HP was written through Beacon !c and !a routing, compound writes were demonstrated, and the original value was restored.
+}}

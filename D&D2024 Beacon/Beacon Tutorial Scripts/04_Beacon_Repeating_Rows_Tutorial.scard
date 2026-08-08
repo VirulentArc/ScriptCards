@@ -1,0 +1,92 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial 04: Reading D&D 2024 Beacon Repeating Rows
+  --/|
+  --/| PURPOSE
+  --/| Many parts of a D&D character sheet are lists: actions, spells, items,
+  --/| traits, resources, and so on. ScriptCards calls these repeating sections.
+  --/| Each entry in one of those lists is a repeating row.
+  --/|
+  --/| This tutorial walks through the NPC Actions section one row at a time.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a D&D 2024 Beacon NPC that has at least one Action.
+  --/| 2. Run this ScriptCard.
+  --/| 3. The card will list the Action rows in the order ScriptCards reads them.
+  --/| 4. The Mod console will also receive one Rdump of the first Action row.
+  --/|
+  --/| WHAT THIS TEACHES
+  --/| rowcount tells us how many rows are in a repeating section.
+  --/| Rfirst loads the first row.
+  --/| [*R:name] reads the name from the row that is currently loaded.
+  --/| [*R:$fieldlist$] lists the fields available on the loaded row.
+  --/| Rdump prints the loaded row's fields to the Mod console for inspection.
+  --/| Rnext moves to the next row.
+  --/|
+  --/| When there are no more rows, the repeating row is unloaded and a read
+  --/| returns NoRepeatingAttributeLoaded.
+  --/|
+  --/| The special xxxActionIDxxxx value is the row ID ScriptCards uses for
+  --/| repeating-row commands. Save it when you need to return to one particular
+  --/| row later.
+  --/|
+  --/| CLASSIC REPEATING ROWS VS BEACON REPEATING ROWS
+  --/| On older Roll20 sheets, repeating sections are built from traditional
+  --/| Roll20 Attribute objects whose names begin with repeating_.
+  --/|
+  --/| Beacon stores the same kinds of information as native records instead.
+  --/| With beaconsheet enabled, ScriptCards builds a compatible repeating-row
+  --/| view from those Beacon records.
+  --/|
+  --/| This tutorial only reads information. It does not change the character.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --&CharacterID|[*S:character_id]
+  --#title|[*S:npc_name] - Repeating Rows Tutorial
+
+  --+|[c][b]Repeating Section Overview[/b][/c]
+
+  --&ActionCount|[*R:[&CharacterID]:repeating_npcaction:rowcount]
+  --+Section|repeating_npcaction
+  --+Number of Rows|[&ActionCount]
+
+  --?"[&ActionCount]" -eq "0"|NoRows
+
+  --+|[c][b]Inspect the First Row[/b][/c]
+
+  --Rfirst|[&CharacterID];repeating_npcaction
+
+  --/| fieldlist is useful when you do not yet know which fields a row exposes.
+  --+First Action|[*R:name]
+  --+Available Fields|[*R:$fieldlist$]
+
+  --/| Rdump writes the current row to the Mod console. It does not change which
+  --/| row is loaded, so the script can continue reading the same row afterward.
+  --Rdump|
+
+  --+|[c][b]Read Every Action Row[/b][/c]
+
+  --/| The first row is already loaded from the section above.
+  --:ReadActionRow|
+
+  --&ActionName|[*R:name]
+  --?"[&ActionName]" -eq "NoRepeatingAttributeLoaded"|Finished
+
+  --+|[b][&ActionName][/b]
+  --+Description|[*R:description]
+  --+Row ID|[*R:xxxActionIDxxxx]
+
+  --Rnext|
+  --^ReadActionRow|
+
+  --:Finished|
+  --+|[c][b]Finished[/b][/c]
+  --+Result|All repeating_npcaction rows have been read.
+  --X|
+
+  --:NoRows|
+  --+|[c][b]No Action Rows Found[/b][/c]
+  --+Result|Select an NPC with at least one normal Action and run the tutorial again.
+}}

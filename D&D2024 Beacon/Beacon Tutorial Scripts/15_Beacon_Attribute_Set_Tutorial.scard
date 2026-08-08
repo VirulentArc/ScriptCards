@@ -1,0 +1,159 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial 15: Beacon attribute;set
+  --/|
+  --/| PURPOSE
+  --/| attribute;set is an existing ScriptCards function, but Beacon mode gives
+  --/| it several additional jobs. This tutorial shows what makes it different
+  --/| from !a and !c when beaconsheet is enabled.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a D&D 2024 Beacon character.
+  --/| 2. For the repeating-row example, an NPC with at least one normal Action
+  --/|    is best. The rest of the tutorial still works without an Action row.
+  --/| 3. Run the ScriptCard.
+  --/| 4. Every temporary value created or changed by the tutorial is restored or
+  --/|    deleted before the script finishes.
+  --/|
+  --/| THE BASIC FUNCTION FORM
+  --/| attribute;set receives three important pieces of information:
+  --/|
+  --/| character ID ; attribute name or Beacon path ; value
+  --/|
+  --/| WHAT !c DOES IN BEACON MODE
+  --/| !c is the normal writer for an EXISTING native alias, structured primitive
+  --/| leaf, or typed-collection primitive field.
+  --/|
+  --/| Plain !c requires the final field to already exist.
+  --/|
+  --/| WHAT !a DOES IN BEACON MODE
+  --/| !a is the attribute-style compatibility writer. It handles existing native
+  --/| aliases, custom user. values, and familiar repeating attribute-style names.
+  --/| A leading ! authorizes !a to create a missing custom value.
+  --/|
+  --/| Structured paths containing -> do not belong in !a.
+  --/|
+  --/| WHAT attribute;set ADDS
+  --/| In Beacon mode attribute;set can:
+  --/|
+  --/| set an existing native value;
+  --/| create or update a custom user. value;
+  --/| set an existing structured primitive field;
+  --/| create a missing FINAL primitive field when the rest of the structured
+  --/| path is valid;
+  --/| set or create a primitive field on an existing Beacon repeating row;
+  --/| delete custom, structured, or repeating fields when the supplied value is
+  --/| empty.
+  --/|
+  --/| If deleting the meaningful fields leaves a native repeating row empty,
+  --/| ScriptCards can remove that empty canonical row as well.
+  --/|
+  --/| WHY NOT USE attribute;set FOR EVERYTHING?
+  --/| !c and !a make the author's intention clearer and preserve the normal
+  --/| ScriptCards command style. Use attribute;set when you specifically need
+  --/| its broader creation or deletion behavior, or when adapting code that
+  --/| already uses the function.
+  --/|
+  --/| IMPORTANT
+  --/| An empty value can mean DELETE on Beacon surfaces handled by this function.
+  --/| Be deliberate when the final parameter is empty.
+  --/|
+  --/| This tutorial deliberately uses temporary names beginning with scTutorial
+  --/| and removes them before it finishes.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - attribute;set Tutorial
+
+  --&CharacterID|[*S:character_id]
+  --=OriginalHP|[*S:hp]
+
+  --=TestHP|[$OriginalHP.Raw] - 1
+  --?[$OriginalHP.Raw] -le 0|[
+    --=TestHP|[$OriginalHP.Raw] + 1
+  --]|
+
+  --+|[c][b]1. Existing Native Value[/b][/c]
+
+  --+Starting HP|[$OriginalHP.Raw]
+
+  --/| hp already exists, so attribute;set can route this as a native Beacon write.
+  --~|attribute;set;[&CharacterID];hp;[$TestHP.Raw]
+
+  --+HP After Write|[*S:hp]
+
+  --/| Restore the exact starting value immediately.
+  --~|attribute;set;[&CharacterID];hp;[$OriginalHP.Raw]
+
+  --+Restored HP|[*S:hp]
+
+  --+|[c][b]2. Create and Delete a Custom Value[/b][/c]
+
+  --/| An explicit user. name makes it clear that this is custom script storage.
+  --~|attribute;set;[&CharacterID];user.scTutorialAttributeSet;Created by Tutorial 15
+
+  --+Custom Value|[*S:user.scTutorialAttributeSet]
+
+  --/| With attribute;set, an empty value deletes this custom item.
+  --~|attribute;set;[&CharacterID];user.scTutorialAttributeSet;
+
+  --+After Delete|[*S:user.scTutorialAttributeSet:::Not found]
+
+  --+|[c][b]3. Create a Missing Structured Leaf[/b][/c]
+
+  --/| sheet->settings already exists. The final scTutorialAttributeSet field
+  --/| does not need to exist beforehand when attribute;set is used.
+  --~|attribute;set;[&CharacterID];sheet->settings->scTutorialAttributeSet;Temporary structured value
+
+  --+Created Structured Value|[*S:sheet->settings->scTutorialAttributeSet]
+
+  --/| An empty value removes the temporary structured leaf.
+  --~|attribute;set;[&CharacterID];sheet->settings->scTutorialAttributeSet;
+
+  --+After Structured Delete|[*S:sheet->settings->scTutorialAttributeSet:::Not found]
+
+  --+|[c][b]4. Existing Beacon Repeating Row[/b][/c]
+
+  --&ActionCount|[*R:[&CharacterID]:repeating_npcaction:rowcount]
+
+  --?"[&ActionCount]" -eq "0"|NoRepeatingExample
+
+  --Rfirst|[&CharacterID];repeating_npcaction
+  --&RowID|[*R:xxxActionIDxxxx]
+  --&ActionName|[*R:name]
+
+  --+Action Used|[&ActionName]
+  --+Row ID|[&RowID]
+
+  --/| The row already exists, but scTutorialAttributeSet does not. The function
+  --/| can create that final primitive field on the canonical Beacon row.
+  --~|attribute;set;[&CharacterID];repeating_npcaction_[&RowID]_scTutorialAttributeSet;Temporary row value
+
+  --Rbysectionid|[&CharacterID];repeating_npcaction;[&RowID]
+
+  --+Temporary Row Field|[*R:scTutorialAttributeSet]
+
+  --/| Delete only the temporary field. The real Action row remains.
+  --~|attribute;set;[&CharacterID];repeating_npcaction_[&RowID]_scTutorialAttributeSet;
+
+  --Rbysectionid|[&CharacterID];repeating_npcaction;[&RowID]
+
+  --+After Row Field Delete|[*R:scTutorialAttributeSet:::Not found]
+
+  --^Summary|
+
+  --:NoRepeatingExample|
+  --+Repeating Example|Skipped because this character has no repeating_npcaction rows.
+
+  --:Summary|
+  --+|[c][b]When Should I Use Each Writer?[/b][/c]
+
+  --+Beacon !c|Best for existing native aliases, structured paths, and typed fields.
+  --+Beacon !a|Best for custom values and familiar attribute-style repeating writes; also supports existing native aliases for compatibility.
+  --+attribute;set|Use when you need its broader function behavior, especially missing final primitive creation or verified deletion.
+
+  --+|[c][b]Finished[/b][/c]
+
+  --+Result|Native, custom, structured, and repeating attribute;set behavior was demonstrated and all tutorial changes were cleaned up.
+}}

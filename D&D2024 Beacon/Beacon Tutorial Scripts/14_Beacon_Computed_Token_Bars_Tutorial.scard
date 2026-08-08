@@ -1,0 +1,134 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial: D&D 2024 Beacon Computed Token Bars
+  --/|
+  --/| PURPOSE
+  --/| ScriptCards can link a token bar to a writable Beacon computed property.
+  --/| This is different from the traditional Roll20 Attribute link used by
+  --/| classic character sheets.
+  --/|
+  --/| This tutorial temporarily links Bar 4 to the character's Temporary HP,
+  --/| changes the linked bar value, proves that the CHARACTER value changed,
+  --/| then restores the character and the token's original Bar 4 settings.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Use a test token that represents a D&D 2024 Beacon character.
+  --/| 2. Select that token and run this ScriptCard.
+  --/| 3. This tutorial uses Bar 4 so it is less likely to disturb a normal HP,
+  --/|    AC, or resource bar. Bar 4 must be available in your game.
+  --/| 4. The original Bar 4 link, value, max, and character Temporary HP are
+  --/|    saved before the test.
+  --/|
+  --/| CLASSIC TOKEN BAR LINKS
+  --/| On a classic sheet, a linked token bar normally stores the ID of a
+  --/| traditional Roll20 Attribute object.
+  --/|
+  --/| BEACON COMPUTED TOKEN BAR LINKS
+  --/| Beacon can expose special computed properties that Roll20 marks as safe
+  --/| for token bars.
+  --/|
+  --/| When ScriptCards receives a bar link such as hp_temp, it checks Roll20's
+  --/| computed-property information. If that property is marked as a token-bar
+  --/| value, ScriptCards stores the computed property name as the link.
+  --/|
+  --/| WRITING A LINKED BEACON BAR
+  --/| If the linked computed property is writable, changing bar4_value does not
+  --/| merely change the number printed on the token. ScriptCards writes the
+  --/| represented character through Roll20's computed-value system.
+  --/|
+  --/| A read-only computed property is rejected instead of being changed.
+  --/| A token that does not represent a character cannot use this write route.
+  --/|
+  --/| IMPORTANT
+  --/| A linked token bar can change the represented character. Use a test token
+  --/| while learning this feature.
+  --/|
+  --/| This tutorial restores everything it deliberately changes.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+
+  --/| Do not let ScriptCards cap the temporary test value against an unrelated
+  --/| Bar 4 maximum that may have existed before we changed the link.
+  --#limitmaxbarvalues|0
+
+  --#title|[*S:character_name] - Beacon Token Bar Tutorial
+
+  --&TokenID|[*S:t-id]
+  --&CharacterID|[*S:character_id]
+
+  --/| Save the exact values before touching Bar 4 or Temporary HP.
+  --&OriginalTempHP|[*S:hp_temp]
+  --&OriginalBarLink|[*S:t-bar4_link]
+  --&OriginalBarValue|[*S:t-bar4_value]
+  --&OriginalBarMax|[*S:t-bar4_max]
+
+  --&TestTempHP|1
+  --?"[&OriginalTempHP]" -eq "1"|[
+    --&TestTempHP|2
+  --]|
+
+  --+|[c][b]Starting Values[/b][/c]
+
+  --+Character|[*S:character_name]
+  --+Temporary HP|[&OriginalTempHP:::blank]
+  --+Bar 4 Link|[&OriginalBarLink:::unlinked]
+  --+Bar 4 Value|[&OriginalBarValue:::blank]
+  --+Bar 4 Max|[&OriginalBarMax:::blank]
+
+  --+|[c][b]Link Bar 4 to Beacon Temporary HP[/b][/c]
+
+  --/| hp_temp is a writable Beacon property that Roll20 allows as a token bar.
+  --!t:[&TokenID]|bar4_link:hp_temp
+
+  --+Stored Bar 4 Link|[*S:t-bar4_link]
+
+  --+|[c][b]Change the Linked Bar Value[/b][/c]
+
+  --/| Because the bar is linked, this write should change the represented
+  --/| character's Temporary HP through the Beacon computed-value route.
+  --!t:[&TokenID]|bar4_value:[&TestTempHP]
+
+  --+Value Written to Bar 4|[&TestTempHP]
+  --+Bar 4 Value|[*S:t-bar4_value]
+  --+Character Temporary HP|[*S:hp_temp]
+
+  --+|[c][b]Restore the Character Value[/b][/c]
+
+  --/| Restore the character while Bar 4 is still linked to hp_temp.
+  --!c:[&CharacterID]|hp_temp:[&OriginalTempHP]
+
+  --+Restored Temporary HP|[*S:hp_temp]
+
+  --+|[c][b]Restore the Original Bar 4 Link[/b][/c]
+
+  --/| The saved link may be blank, a classic Attribute ID, or another Beacon
+  --/| computed property. Passing the saved value back restores that link.
+  --!t:[&TokenID]|bar4_link:[&OriginalBarLink]
+
+  --+Restored Bar 4 Link|[*S:t-bar4_link]
+
+  --/| If Bar 4 was originally unlinked, its value and max were ordinary token
+  --/| display values, so restore those exact values too.
+  --/|
+  --/| If it was originally linked, do not write bar4_value here. Doing so could
+  --/| change the character property belonging to the restored original link.
+  --?"[&OriginalBarLink]" -eq ""|[
+    --!t:[&TokenID]|bar4_value:[&OriginalBarValue]|bar4_max:[&OriginalBarMax]
+  --]|
+
+  --+Final Bar 4 Value|[*S:t-bar4_value]
+  --+Final Bar 4 Max|[*S:t-bar4_max]
+
+  --+|[c][b]What to Remember[/b][/c]
+
+  --+Classic Link|Normally stores the ID of a traditional Roll20 Attribute.
+  --+Beacon Link|Can store the name of a computed property that Roll20 marks for token-bar use.
+  --+Linked Value Write|A writable Beacon linked bar changes the represented character, not just the token display.
+  --+Safety|Do not write a linked bar value unless you intend to change the character property behind that link.
+
+  --+|[c][b]Finished[/b][/c]
+
+  --+Result|Bar 4 was linked to hp_temp, the linked value changed the character, and the saved character and token settings were restored.
+}}
