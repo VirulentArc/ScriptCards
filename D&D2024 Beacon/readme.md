@@ -1380,11 +1380,74 @@ These aliases are builder/interface state or currently lack a verified source lo
 | `drop_name` | Direct alias: `drop_name`<br>Builder/interface state: `builder` | `TRANSIENT` | Transient builder/interface value. Read for diagnostics only; exact domain is builder-state specific and not a supported live-character write surface. | `drop_name` is the transient name associated with drag-and-drop or builder workflow content. | `Builder/interface state` |
 
 
+
+### Discovering character-specific Feature records
+
+Feature records are character-content dependent. The D&D 2024 sheet can contain Features supplied by classes, subclasses, species, feats, backgrounds, items, spells, or other content, so this reference cannot provide a literal selector for every possible Feature on every character.
+
+Do **not** try to derive a ScriptCards selector or compatibility alias from the feature's display name. For example, the observed *Jack of All Trades* compatibility surface includes names such as `jack`, `jack_attr`, `jack_bonus`, and `jack_of_all_trades`; those names cannot be predicted reliably from the displayed feature name.
+
+Instead, use the `features` typed collection to discover the actual Feature records present on the selected character. The following probe enumerates the active Feature records by numeric index and prints every currently mapped Feature field. Once a Feature is identified, use its unique `name` or `shortID` as the selector in a reusable script.
+
+```scard
+!script {{
+  --#beaconsheet|1
+  --#sourcetoken|[@SC_SelectedTokens(0)]
+  --#title|Beacon Feature Probe
+  --#leftsub|[*S:character_name]
+
+  --%FeatureIndex|0;99;1
+    --&FeatureName|[*S:features->[&FeatureIndex]->name]
+    --?"[&FeatureName]" -eq "undefined"|%!
+
+    --+|[b]Feature [&FeatureIndex]: [&FeatureName][/b]
+    --+name|[*S:features->[&FeatureIndex]->name]
+    --+shortID|[*S:features->[&FeatureIndex]->shortID]
+    --+description|[*S:features->[&FeatureIndex]->description]
+    --+_enabled|[*S:features->[&FeatureIndex]->_enabled]
+    --+arrayPosition|[*S:features->[&FeatureIndex]->arrayPosition]
+    --+parentID|[*S:features->[&FeatureIndex]->parentID]
+    --+childIDs|[*S:features->[&FeatureIndex]->childIDs]
+    --+relations|[*S:features->[&FeatureIndex]->relations]
+  --%|
+}}
+```
+
+The probe uses numeric indexes only for discovery. Numeric indexes can change when records are added, removed, disabled, or reordered. For a reusable script, prefer a unique Feature name or `shortID`, for example:
+
+```scard
+[*S:features->Jack of All Trades->description]
+[*S:features-><shortID>->_enabled]
+```
+
+Replace `<shortID>` with the actual value returned by the probe.
+
+#### Generic Feature fields
+
+These are the currently mapped fields on a Feature record. `childIDs` and `relations` are structural containers rather than primitive scalar leaves, but they are included because they are part of the mapped Feature record and identify related effect records.
+
+| Field | Generic ScriptCards location | Value / meaning |
+|---|---|---|
+| `name` | `features->[feature]->name` | Feature display name. Also usable as a selector when unique. |
+| `shortID` | `features->[feature]->shortID` | Existing Beacon compact record identity. Prefer this when names are duplicated. Do not invent or casually change it. |
+| `description` | `features->[feature]->description` | Free-text feature description. Blank is allowed. |
+| `_enabled` | `features->[feature]->_enabled` | Boolean. `true` = the Feature record participates in the live character model; `false` = the record is disabled/excluded. ScriptCards boolean writes also accept `1`/`0`, `yes`/`no`, and `on`/`off`. |
+| `arrayPosition` | `features->[feature]->arrayPosition` | Numeric relative ordering position. Exact range is not verified; explicit display-order arrays can override it. |
+| `parentID` | `features->[feature]->parentID` | Existing canonical parent `recordKey`, or blank where the sheet permits no parent. Do not invent IDs. |
+| `childIDs` | `features->[feature]->childIDs` | Array of existing canonical child `recordKey` values; `[]` = no children. Structural container; do not replace wholesale through an ordinary typed write. |
+| `relations` | `features->[feature]->relations` | Feature-specific relationship object. Its internal keys depend on the Feature and related records. Do not replace the whole object through a normal typed write. |
+
+`[feature]` above is a documentation placeholder only. Replace it with the actual unique Feature name, `shortID`, or a numeric index returned by the probe.
+
+The Feature record does **not** necessarily contain all mechanics of the feature itself. A Feature can point through `childIDs` or `relations` to Roll Bonus, Resource, Action, Defense, Speed, Spellcasting, or other canonical records. Those child records belong to their own typed collections and are intentionally outside this Feature-only probe.
+
+The current Roll20 Beacon SDK surface available to ScriptCards does not provide a generic `getSheetItemNames()`-style enumeration of every character-specific compatibility-property name. Therefore this probe discovers canonical Feature records and their fields; it cannot discover arbitrary compatibility aliases such as `jack` unless that alias is already known and tested separately.
+
 ### Character-specific compatibility aliases
 
-These seven legacy compatibility names were intentionally excluded from the earlier general-alias table because they are tied to particular class, species, or feature behavior. Under the **complete searchable-location** rule they are listed here instead of being omitted.
+The names below are **observed examples**, not an exhaustive list of character-specific compatibility aliases. They were present because the controlled test characters had the corresponding class, species, or feature behavior. Another character can expose different content-dependent names, and there is no reliable naming rule that can be inferred from a Feature's display name.
 
-They are compatibility views, not authoritative standalone Beacon state. Use the canonical sources named below when changing the underlying character feature.
+They are compatibility views, not authoritative standalone Beacon state. Use the Feature probe above and the canonical sources named below when inspecting or changing the underlying character feature. Do not treat this table as a catalogue of every possible feature alias.
 
 | Direct alias | ScriptCards read location | Value role | Values / writable domain | Description | Write using |
 |---|---|---|---|---|---|
