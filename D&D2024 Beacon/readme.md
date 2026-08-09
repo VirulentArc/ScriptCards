@@ -310,34 +310,47 @@ This is a searchable index of the mapped **behavior-changing controls** that a S
 
 ## Per-roll Advantage, Disadvantage, and targeted roll overrides
 
-`sheet->settings->rolls->mode` is the **global sheet d20 mode**. It is not the source of the red per-roll Advantage/Disadvantage indicators that can appear on a particular skill, ability check, saving throw, attack, or other roll.
+### Global roll mode is separate
 
-Targeted roll overrides are represented by **Roll Bonus** canonical records. Use the `rollbonuses` typed collection to inspect them.
-
-The important leaves are:
-
-| Purpose | ScriptCards location | Values / meaning |
-|---|---|---|
-| Target category | `rollbonuses->[selector]->bonusCategory` | Array of roll categories. Observed values include `Skills`, `Ability Checks`, `Attacks`, `Spell Attack`, `Spell Save`, and `Spellcasting`. This is not yet claimed to be the complete enum. |
-| Specific target | `rollbonuses->[selector]->bonusName` | Array of specific target names. For a skill-specific record this can contain a literal skill name such as `Stealth`. An empty list can mean the Roll Bonus applies across the named category rather than to one named target. |
-| Roll behavior | `rollbonuses->[selector]->bonusDetails` | `Keep Highest` = Advantage-style roll; `Keep Lowest` = Disadvantage-style roll; `Modifier` = apply the numeric `bonusValue`. |
-| Numeric modifier | `rollbonuses->[selector]->bonusValue` | Finite numeric modifier used by `Modifier` records. |
-| Source relationship | `rollbonuses->[selector]->parentID` | Canonical `recordKey` of the record that owns/provides the Roll Bonus. Follow this to determine whether the source currently applies. |
-| Record availability | `rollbonuses->[selector]->_enabled` | `true` = record participates in the model; `false` = record is disabled. This alone does not prove the parent source currently applies. |
-
-### Example: armor imposing Disadvantage on Stealth
-
-A controlled armor sample produced a Roll Bonus equivalent to:
+`sheet->settings->rolls->mode` is the character's **global d20 roll mode**:
 
 ```text
-name          = Stealth Disadvantage
-bonusCategory = ["Skills"]
-bonusName     = ["Stealth"]
-bonusDetails  = Keep Lowest
-parentID      = <armor Item recordKey>
+Automatic
+Advantage
+Disadvantage
 ```
 
-The parent Item determines whether the armor source is currently applicable. For equipment, the relevant state is:
+It is **not** the source of the red Advantage/Disadvantage indicator shown beside one particular skill, save, attack, or ability check.
+
+A targeted override is stored in a **Roll Bonus** canonical record. ScriptCards exposes those records through the `rollbonuses` typed collection.
+
+### The Roll Bonus locations that matter
+
+| What you need | ScriptCards location | Values / meaning |
+|---|---|---|
+| Roll Bonus name | `rollbonuses->[roll bonus]->name` | Human-readable record name such as `Stealth Disadvantage`, `Prone`, or `Invisible`. Roll Bonus names are content-dependent and are not a fixed sheet-wide list. |
+| Roll category | `rollbonuses->[roll bonus]->bonusCategory` | Array of categories the modifier applies to. Observed values include `Skills`, `Ability Checks`, `Attacks`, `Saving Throws`, `Spell Attack`, `Spell Save`, and `Spellcasting`. The complete enum is not yet claimed. |
+| Specific roll target | `rollbonuses->[roll bonus]->bonusName` | Array of specific names inside the category. Example: `Stealth`. An empty list means the rule can apply to the whole category rather than one named target. |
+| Advantage / Disadvantage / modifier behavior | `rollbonuses->[roll bonus]->bonusDetails` | `Keep Highest` = Advantage; `Keep Lowest` = Disadvantage; `Modifier` = use the numeric `bonusValue`. |
+| Numeric modifier | `rollbonuses->[roll bonus]->bonusValue` | Numeric value used by `Modifier` records. |
+| Source of the modifier | `rollbonuses->[roll bonus]->parentID` | Canonical `recordKey` of the Item, Condition, Effect, Feature, or other record providing the Roll Bonus. |
+| Roll Bonus record enabled state | `rollbonuses->[roll bonus]->_enabled` | `true` = the Roll Bonus record participates in the model; `false` = it is disabled. This is **not by itself** proof that its parent source currently applies. |
+
+`[roll bonus]` is a documentation placeholder. Replace it with the existing Roll Bonus record's unique name, `shortID`, canonical identity where supported, or numeric index.
+
+### Concrete observed example: heavy armor and Stealth
+
+A controlled heavy-armor sample created a Roll Bonus named `Stealth Disadvantage`. Because this name was actually observed, these are literal searchable ScriptCards locations:
+
+| Exact ScriptCards location | Observed value | Meaning |
+|---|---|---|
+| `rollbonuses->Stealth Disadvantage->bonusCategory` | `["Skills"]` | The Roll Bonus targets skills. |
+| `rollbonuses->Stealth Disadvantage->bonusName` | `["Stealth"]` | The specific targeted skill is Stealth. |
+| `rollbonuses->Stealth Disadvantage->bonusDetails` | `Keep Lowest` | The targeted roll is made with Disadvantage. |
+| `rollbonuses->Stealth Disadvantage->parentID` | Armor Item `recordKey` | Identifies the armor record supplying the modifier. |
+| `rollbonuses->Stealth Disadvantage->_enabled` | `true` in the controlled sample | The Roll Bonus record itself participates in the model. |
+
+For an Item-sourced Roll Bonus, follow `parentID` to the parent Item and check:
 
 ```text
 items->[armor]->equipData->equipped
@@ -345,18 +358,88 @@ items->[armor]->equipData->equipped
 
 `true` means the armor is equipped; `false` means it is not equipped.
 
-So the effective interpretation is:
+For a Condition-sourced Roll Bonus, the corresponding applicability state is the parent Condition's:
 
 ```text
-Roll Bonus targets Skills / Stealth
-+ bonusDetails = Keep Lowest
-+ parent armor Item is equipped
-= Stealth is being rolled with Disadvantage from that source
+conditions->Condition Name->_active
 ```
 
-Conditions and other effects can use the same Roll Bonus mechanism but have different applicability rules. For example, a Condition-provided Roll Bonus depends on the parent Condition's active state rather than an Item's equipped state.
+Other parent record families can have different applicability rules. `parentID` tells you which source record must be inspected.
 
-> **Important:** There is not currently a documented single scalar location that answers “what is the final effective roll mode for Stealth?” The sheet derives that behavior from the global roll mode plus any applicable Roll Bonus/source records. To reproduce the sheet's effective result, inspect the relevant `rollbonuses` records and their parent/source state.
+There is **no mapped single scalar** such as `stealth_roll_mode` that stores the final effective state. The sheet combines the global roll mode with every applicable Roll Bonus and its source state.
+
+### Generic Roll Bonus probe
+
+This probe is intentionally generic. It lists every Roll Bonus on the selected character as **one readable summary line**, showing what it targets, what it does, where it came from, and the common applicability state of its source. Inactive Condition records remain visible so you can see what would apply if that Condition became active.
+
+```scard
+!script {{
+  --#beaconsheet|1
+  --#sourcetoken|[@SC_SelectedTokens(0)]
+  --#title|Roll Bonus Probe
+  --#leftsub|[*S:character_name]
+
+  --%Index|0;99;1
+    --&RecordName|[*S:rollbonuses->[&Index]->name]
+    --?"[&RecordName]" -eq "undefined"|%!
+
+    --&Category1|[*S:rollbonuses->[&Index]->bonusCategory->0]
+    --&Category2|[*S:rollbonuses->[&Index]->bonusCategory->1]
+    --&Category|[&Category1]
+    --?"[&Category2]" -ne "undefined" -and "[&Category2]" -ne ""|[
+      --&Category|[&Category], [&Category2]
+    --]|
+
+    --&Target1|[*S:rollbonuses->[&Index]->bonusName->0]
+    --&Target2|[*S:rollbonuses->[&Index]->bonusName->1]
+    --&Target|All in category
+    --?"[&Target1]" -ne "undefined" -and "[&Target1]" -ne ""|[
+      --&Target|[&Target1]
+    --]|
+    --?"[&Target2]" -ne "undefined" -and "[&Target2]" -ne ""|[
+      --&Target|[&Target], [&Target2]
+    --]|
+
+    --&Effect|[*S:rollbonuses->[&Index]->bonusDetails]
+    --&BonusValue|[*S:rollbonuses->[&Index]->bonusValue]
+    --?"[&Effect]" -eq "Keep Highest"|[
+      --&Effect|Advantage
+    --]|
+    --?"[&Effect]" -eq "Keep Lowest"|[
+      --&Effect|Disadvantage
+    --]|
+    --?"[&Effect]" -eq "Modifier"|[
+      --&Effect|Modifier [&BonusValue]
+    --]|
+
+    --&ParentID|[*S:rollbonuses->[&Index]->parentID]
+    --&SourceType|[*S:sheet->integrants->integrants->[&ParentID]->type]
+    --&SourceName|[*S:sheet->integrants->integrants->[&ParentID]->name]
+    --&SourceState|enabled=[*S:sheet->integrants->integrants->[&ParentID]->_enabled]
+    --?"[&SourceType]" -eq "Condition"|[
+      --&SourceState|active=[*S:sheet->integrants->integrants->[&ParentID]->_active]
+    --]|
+    --?"[&SourceType]" -eq "Item"|[
+      --&SourceState|equipped=[*S:sheet->integrants->integrants->[&ParentID]->equipData->equipped]
+    --]|
+    --?"[&SourceType]" -eq "Effect"|[
+      --&SourceState|active=[*S:sheet->integrants->integrants->[&ParentID]->_active]
+    --]|
+
+    --+|[b][&RecordName][/b] — [&Category] / [&Target] — [&Effect] — [&SourceType]: [&SourceName] ([&SourceState])
+  --%|
+}}
+```
+
+Typical output is compact enough to scan:
+
+```text
+Prone — Attacks / All in category — Disadvantage — Condition: Prone (active=false)
+Invisible — Attacks / All in category — Advantage — Condition: Invisible (active=false)
+Stealth Disadvantage — Skills / Stealth — Disadvantage — Item: Chain Mail (equipped=true)
+```
+
+This is a discovery/diagnostic probe. It does not change any Roll Bonus or source record.
 
 ## Direct aliases
 
@@ -3534,7 +3617,7 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 **Calculation:** The bonus definition is stored. The final roll total is calculated.
 
-**General use:** Use these records to identify active global modifiers. Change the bonus fields only when intentionally editing that modifier. For the direct `spell_attack_bonus` and `spell_save_dc` aliases, ScriptCards can locally accumulate applicable flat numeric `Modifier` records with `totalRoll` disabled; `Keep Highest` and `Keep Lowest` affect roll mode rather than the numeric header. An inactive parent Condition is ignored. Any other applicable spell-targeted shape preserves the native sheet lookup.
+**General use:** Use these records to identify targeted or broad roll modifiers. A Roll Bonus record can remain `_enabled:true` even when its parent source is not currently applicable, so inspect `parentID` and the parent record state as well. Change the bonus fields only when intentionally editing that modifier. For the direct `spell_attack_bonus` and `spell_save_dc` aliases, ScriptCards can locally accumulate applicable flat numeric `Modifier` records with `totalRoll` disabled; `Keep Highest` and `Keep Lowest` affect roll mode rather than the numeric header. An inactive parent Condition is ignored. Any other applicable spell-targeted shape preserves the native sheet lookup.
 
 > **Value kinds**
 >
@@ -3552,10 +3635,10 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Values / writable domain | Description | Use |
 |---|---|---|---|---|---|
-| `bonusCategory` | `rollbonuses->[selector]->bonusCategory` | `STORED` | Array of roll-target category strings. Observed values include `Skills`, `Ability Checks`, `Attacks`, `Spell Attack`, `Spell Save`, and `Spellcasting`. The complete target-category enum is not yet claimed. | On a Roll Bonus record, this field stores `bonusCategory`. | `FIND` + `RECORD` |
+| `bonusCategory` | `rollbonuses->[selector]->bonusCategory` | `STORED` | Array of roll-target category strings. Observed values include `Skills`, `Ability Checks`, `Attacks`, `Saving Throws`, `Spell Attack`, `Spell Save`, and `Spellcasting`. The complete target-category enum is not yet claimed. | On a Roll Bonus record, this field stores `bonusCategory`. | `FIND` + `RECORD` |
 | `bonusDetails` | `rollbonuses->[selector]->bonusDetails` | `STORED` | `Modifier` = apply the numeric `bonusValue`; `Keep Highest` = advantage-style keep-highest roll mode; `Keep Lowest` = disadvantage-style keep-lowest roll mode. | On a Roll Bonus record, this field stores `bonusDetails`. | `FIND` + `RECORD` |
 | `bonusName` | `rollbonuses->[selector]->bonusName` | `STORED` | Array of target/name strings for the Roll Bonus. Observed target names include literal skills such as `Stealth`; an empty array can represent category-wide application. Other target names are content/category dependent, so this is not a closed enum. | On a Roll Bonus record, this field stores `bonusName`. | `FIND` + `RECORD` |
-| `bonusCategory.[index]` | `rollbonuses->[selector]->bonusCategory->[index]` | `STORED` | One roll-target category string. Observed values include `Skills`, `Ability Checks`, `Attacks`, `Spell Attack`, `Spell Save`, and `Spellcasting`; the complete target-category enum is not yet claimed. | Indexed primitive leaf inside `bonusCategory`. | `FIND` + `RECORD` |
+| `bonusCategory.[index]` | `rollbonuses->[selector]->bonusCategory->[index]` | `STORED` | One roll-target category string. Observed values include `Skills`, `Ability Checks`, `Attacks`, `Saving Throws`, `Spell Attack`, `Spell Save`, and `Spellcasting`; the complete target-category enum is not yet claimed. | Indexed primitive leaf inside `bonusCategory`. | `FIND` + `RECORD` |
 | `bonusName.[index]` | `rollbonuses->[selector]->bonusName->[index]` | `STORED` | One roll-target/name string. Observed values include literal skill names such as `Stealth`; other values are target/category/content dependent and are not a closed enum. | Indexed primitive leaf inside `bonusName`. | `FIND` + `RECORD` |
 | `bonusValue` | `rollbonuses->[selector]->bonusValue` | `STORED` | Finite numeric bonus value. Used by `Modifier`-style Roll Bonus records; may be ignored by keep-highest/lowest records. | On a Roll Bonus record, this field stores `bonusValue`. | `FIND` + `RECORD` |
 | `diceCount` | `rollbonuses->[selector]->diceCount` | `INPUT` | Numeric number of bonus dice. Normally a non-negative integer; exact validation was not independently probed. | On a Roll Bonus record, this field stores the number of dice. | `FIND` + `INPUT` + `RECORD` |
@@ -4146,7 +4229,7 @@ All **152 observed canonical path shapes** are listed here in raw ScriptCards fo
 | `sheet->integrants->integrants->[record-key]->attack->abilityBonus` | string<br>`STORED` | Ability reference used for the attack. Usually one of `Strength`, `Dexterity`, `Constitution`, `Intelligence`, `Wisdom`, `Charisma`; blank/absent lets the sheet use attack-type defaults. Exact alternate representations are not fully enumerated. | This location stores the ability contribution used by the attack on the canonical record identified by `[recordKey]`. | `RECORD` |
 | `sheet->integrants->integrants->[record-key]->applies` | string<br>`STORED` | `On Hit` or `On Miss` in the mapped mastery records. This determines when the mastery effect is eligible to apply. | Stores when or how a Weapon Mastery effect applies, such as on a hit or miss. | `RECORD` |
 | `sheet->integrants->integrants->[record-key]->bonusCategory->[index]` | string<br>`STORED` | One Roll Bonus category string. Observed spell-target logic recognizes `Spell Attack`, `Spell Save`, `Spellcasting`; complete enum not captured. | This location stores the canonical record field named `[index]` on the canonical record identified by `[recordKey]`. | `RECORD` |
-| `sheet->integrants->integrants->[record-key]->bonusCategory` | array<br>`STORED` | Array of roll-target category strings. Observed values include `Skills`, `Ability Checks`, `Attacks`, `Spell Attack`, `Spell Save`, and `Spellcasting`. The complete target-category enum is not yet claimed. | Stores the Roll Bonus categories to which the record applies. | `RECORD` |
+| `sheet->integrants->integrants->[record-key]->bonusCategory` | array<br>`STORED` | Array of roll-target category strings. Observed values include `Skills`, `Ability Checks`, `Attacks`, `Saving Throws`, `Spell Attack`, `Spell Save`, and `Spellcasting`. The complete target-category enum is not yet claimed. | Stores the Roll Bonus categories to which the record applies. | `RECORD` |
 | `sheet->integrants->integrants->[record-key]->concat` | object<br>`STORED` | Object/container. **Do not replace the whole object through a normal typed leaf write.** Read its child structure first and edit only a verified primitive child. | Stores modifier concatenation metadata. | `RECORD` |
 | `sheet->integrants->integrants->[record-key]->bonusDetails` | string<br>`STORED` | `Modifier` = apply the numeric `bonusValue`; `Keep Highest` = advantage-style keep-highest roll mode; `Keep Lowest` = disadvantage-style keep-lowest roll mode. | This location stores the canonical record field named `bonusDetails` on the canonical record identified by `[recordKey]`. | `RECORD` |
 | `sheet->integrants->integrants->[record-key]->bonusName` | array<br>`STORED` | Array of target/name strings for the Roll Bonus. Observed target names include literal skills such as `Stealth`; an empty array can represent category-wide application. Other target names are content/category dependent, so this is not a closed enum. | This location stores the canonical record field named `bonusName` on the canonical record identified by `[recordKey]`. | `RECORD` |
