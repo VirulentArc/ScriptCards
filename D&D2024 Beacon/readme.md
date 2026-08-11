@@ -1354,6 +1354,21 @@ These aliases are builder/interface state or currently lack a verified source lo
 | `drop_data` | Direct alias: `drop_data`<br>Builder/interface state: `builder` | `TRANSIENT` | `drop_data` is transient drag-and-drop or builder workflow payload data. | `Builder/interface state` |
 | `drop_name` | Direct alias: `drop_name`<br>Builder/interface state: `builder` | `TRANSIENT` | `drop_name` is the transient name associated with drag-and-drop or builder workflow content. | `Builder/interface state` |
 
+
+#### Additional legacy feature compatibility
+
+These names remain part of the complete legacy-name inventory. Their exact single-value projections are not reconstructed locally; use the listed typed records for deterministic logic.
+
+| Direct alias | ScriptCards read location | Value role | Description | Write using |
+|---|---|---|---|---|
+| `arcane_fighter` | Direct alias: `arcane_fighter`<br>Known typed collections: `classes`, `subclasses`, and `spellcastings` | `COMPUTED` | Legacy Fighter spellcasting compatibility flag. Determine the class, subclass, and spellcasting state from the canonical records when deterministic behavior is required. | `Write not verified` |
+| `arcane_rogue` | Direct alias: `arcane_rogue`<br>Known typed collections: `classes`, `subclasses`, and `spellcastings` | `COMPUTED` | Legacy Rogue spellcasting compatibility flag. Determine the class, subclass, and spellcasting state from the canonical records when deterministic behavior is required. | `Write not verified` |
+| `halflingluck_flag` | Direct alias: `halflingluck_flag`<br>Known typed collections: `features` and applicable `rollbonuses` | `COMPUTED` | Legacy Halfling Luck compatibility flag. Beacon represents the feature and its roll effects with canonical records. | `Write not verified` |
+| `jack` | Direct alias: `jack`<br>Known typed collections: applicable `features` and `rollbonuses` | `COMPUTED` | Legacy Jack of All Trades compatibility value. Beacon represents the feature and its roll modifier with canonical records. | `Write not verified` |
+| `jack_attr` | Direct alias: `jack_attr`<br>Known typed collections: applicable `features` and `rollbonuses` | `UNKNOWN` | Legacy Jack of All Trades ability component. No safe single Beacon write target is verified. | `Write not verified` |
+| `jack_bonus` | Direct alias: `jack_bonus`<br>Known typed collections: applicable `features` and `rollbonuses` | `UNKNOWN` | Legacy Jack of All Trades bonus component. No safe single Beacon write target is verified. | `Write not verified` |
+| `jack_of_all_trades` | Direct alias: `jack_of_all_trades`<br>Known typed collections: applicable `features` and `rollbonuses` | `COMPUTED` | Legacy Jack of All Trades feature flag. Beacon represents the feature and its roll effect with canonical records. | `Write not verified` |
+
 ## Placeholder notation
 
 | Placeholder | Meaning |
@@ -1363,6 +1378,271 @@ These aliases are builder/interface state or currently lack a verified source lo
 | `[poolKey]` | An existing opaque key under `sheet->rest->usedHitDiceData`. Read its nested `dieSize`; do not construct or parse the key from a class name. |
 | `FIELD` | An existing primitive field on the selected typed record. |
 | `VALUE` | The string, number, or boolean being written. |
+
+## Fixed structured locations
+
+Use these sections when no public alias exposes the required value, when a write must target the actual backing input, or when a script needs a specific structured record rather than a formatted public result.
+
+### Nested-write rules
+
+- Use the documented location after `|` in a `--!c` command.
+- The complete path must already exist.
+- The final target must be a primitive string, number, or boolean.
+- Whole objects and arrays cannot be replaced.
+- Numeric leaves preserve numeric type.
+- Boolean leaves accept `1/0`, `true/false`, `yes/no`, and `on/off`.
+- `+=` and `-=` work on numeric leaves; `+=` can append to string leaves.
+- Missing nested fields cannot be created.
+- `!name` creates a sheet-visible custom field under `user.name`; it does not create a missing nested location.
+- Order arrays contain canonical record keys. Only write valid existing keys.
+- `parentID`, `childIDs`, and `relations` form the canonical graph. Invalid writes can disconnect records.
+- A successful raw write can occur before every translated or calculated value refreshes. Reread after the sheet worker settles when the result matters.
+
+### Fixed `sheet` locations
+
+#### Character identity and About tab
+
+> **Value kinds**
+>
+> - `ORDER` — Stored ordering or index data containing positions or canonical record keys.
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `ORDER` — Preserve valid existing record keys and change this only when intentionally reordering them.
+> - `NATIVE` — The public `name` is verified writable and may be used directly in `--!c`.
+> - `RAW` — Use the exact `sheet` path to read or deliberately change this existing primitive value.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->about->aboutTabApperancesDisplayOrder` | array<br>`ORDER` | This location stores the value named `aboutTabApperancesDisplayOrder` within the character's About-tab data and display order. | `ORDER` |
+| `sheet->about->aboutTabCharacteristicsDisplayOrder` | array<br>`ORDER` | This location stores the value named `aboutTabCharacteristicsDisplayOrder` within the character's About-tab data and display order. | `ORDER` |
+| `sheet->about->characteristics->alignment` | string<br>`STORED` | This location stores the value named `alignment` within the character's About-tab data and display order. | `NATIVE` — Prefer `alignment` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->about->characteristics->size` | string<br>`STORED` | This location stores the value named `size` within the character's About-tab data and display order. | `NATIVE` — Prefer `size` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->character->createdWithBuilder` | boolean<br>`STORED` | This location stores the value named `createdWithBuilder` within core character identity metadata stored by the Beacon sheet. | `RAW` — Treat this as provenance metadata; do not write it to change how the character is managed. |
+| `sheet->character->creatureType` | string<br>`STORED` | This location stores the value named `creatureType` within core character identity metadata stored by the Beacon sheet. | `RAW` |
+| `sheet->character->pronouns` | string<br>`STORED` | This location stores the value named `pronouns` within core character identity metadata stored by the Beacon sheet. | `RAW` |
+| `sheet->classLevel->currentExp` | number<br>`STORED` | This location stores the character's current experience points within direct experience state; class levels themselves remain canonical records. | `NATIVE` — Prefer `experience` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+
+#### Hit points, Inspiration, and death saves
+
+> **Value kinds**
+>
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `NATIVE` — The public `name` is verified writable and may be used directly in `--!c`.
+> - `RAW` — Use the exact `sheet` path to read or deliberately change this existing primitive value.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->hitpoints->currentHP` | number<br>`STORED` | This location stores the character's current hit points within current hit points, temporary hit points, and death-save state. | `NATIVE` — Prefer `hp` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->hitpoints->deathSaves->failures` | number<br>`STORED` | This location stores the current number of failed death saves within current hit points, temporary hit points, and death-save state. | `NATIVE` + `RAW` — Use `deathsave_fail1` through `deathsave_fail3` for ordinary checkbox writes; use this count for deliberate count-based logic. |
+| `sheet->hitpoints->deathSaves->open` | boolean<br>`STORED` | This location stores the value named `open` within current hit points, temporary hit points, and death-save state. | `RAW` — This is death-save interface state; use `successes` and `failures` for the actual tracked results. |
+| `sheet->hitpoints->deathSaves->successes` | number<br>`STORED` | This location stores the current number of successful death saves within current hit points, temporary hit points, and death-save state. | `NATIVE` + `RAW` — Use `deathsave_succ1` through `deathsave_succ3` for ordinary checkbox writes; use this count for deliberate count-based logic. |
+| `sheet->hitpoints->tempHP` | number<br>`STORED` | This location stores the character's temporary hit points within current hit points, temporary hit points, and death-save state. | `NATIVE` — Prefer `hp_temp` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->inspiration->isInspired` | boolean<br>`STORED` | This location stores whether the character currently has Inspiration within the character's current Inspiration state. | `NATIVE` — Prefer `inspiration` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+
+#### Rules and sheet settings
+
+> **Value kinds**
+>
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `RAW` — Use the exact `sheet` path to read or deliberately change this existing primitive value.
+> - `SETTING` — Read this to respect the user's sheet setting; write only when intentionally changing that setting.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->campaignSettings->lastDefaultsApplied` | number<br>`STORED` | This location stores the value named `lastDefaultsApplied` within the campaign-default state already applied to this character. | `RAW` — Use this to diagnose campaign-default application; do not normally change it as character data. |
+| `sheet->rest->longRestModalData->dawnResources` | boolean<br>`STORED` | This location stores the value named `dawnResources` within the options used by the short-rest and long-rest dialogs. | `SETTING` |
+| `sheet->rest->longRestModalData->recoverExhaustion` | boolean<br>`STORED` | This location stores the value named `recoverExhaustion` within the options used by the short-rest and long-rest dialogs. | `SETTING` — Controls the long-rest dialog option; it is not the character’s current Exhaustion value. |
+| `sheet->rest->longRestModalData->resetHpMax` | boolean<br>`STORED` | This location stores the value named `resetHpMax` within the options used by the short-rest and long-rest dialogs. | `SETTING` |
+| `sheet->rest->longRestModalData->spellManagement` | boolean<br>`STORED` | This location stores the value named `spellManagement` within the options used by the short-rest and long-rest dialogs. | `SETTING` — Controls spell management in the long-rest dialog; individual prepared state belongs to each Spell record. |
+| `sheet->rest->shortRestModalData->autoApplyHealing` | boolean<br>`STORED` | This location stores the value named `autoApplyHealing` within the options used by the short-rest and long-rest dialogs. | `SETTING` — Controls short-rest dialog behavior; it does not store a healing amount or current HP. |
+| `sheet->rest->shortRestModalData->dawnResources` | boolean<br>`STORED` | This location stores the value named `dawnResources` within the options used by the short-rest and long-rest dialogs. | `SETTING` |
+| `sheet->rest->shortRestModalData->resetHpMax` | boolean<br>`STORED` | This location stores the value named `resetHpMax` within the options used by the short-rest and long-rest dialogs. | `SETTING` |
+| `sheet->settings->addDexTiebreaker` | boolean<br>`STORED` | This location stores the value named `addDexTiebreaker` within the sheet's rules, display, roll, and behavior settings. | `SETTING` — Read this when reproducing the sheet’s initiative behavior. |
+| `sheet->settings->encumbranceType` | string<br>`STORED` | This location stores the value named `encumbranceType` within the sheet's rules, display, roll, and behavior settings. | `SETTING` |
+| `sheet->settings->hideCombatHints` | boolean<br>`STORED` | This location stores the value named `hideCombatHints` within the sheet's rules, display, roll, and behavior settings. | `SETTING` |
+| `sheet->settings->ignoreCoinWeight` | boolean<br>`STORED` | This location stores the value named `ignoreCoinWeight` within the sheet's rules, display, roll, and behavior settings. | `SETTING` |
+| `sheet->settings->isCampaignSettingsSheet` | boolean<br>`STORED` | This location stores the value named `isCampaignSettingsSheet` within the sheet's rules, display, roll, and behavior settings. | `SETTING` — This identifies a campaign-settings sheet; do not enable it on an ordinary character. |
+| `sheet->settings->layoutState` | string<br>`STORED` | This location stores the value named `layoutState` within the sheet's rules, display, roll, and behavior settings. | `SETTING` |
+| `sheet->settings->newRules` | boolean<br>`STORED` | This location stores the value named `newRules` within the sheet's rules, display, roll, and behavior settings. | `SETTING` — Read this before applying rules-version-specific behavior; writing it changes the sheet’s rules mode. |
+| `sheet->settings->rollDamageAutomatic` | boolean<br>`STORED` | This location stores whether the sheet rolls damage automatically with an attack within the sheet's rules, display, roll, and behavior settings. | `SETTING` — Read this before deciding whether an attack needs a separate damage action; writing it changes sheet roll behavior. |
+| `sheet->settings->rolls->advancedMode` | string<br>`STORED` | This location stores the value named `advancedMode` within the sheet's rules, display, roll, and behavior settings. | `SETTING` |
+| `sheet->settings->rolls->mode` | string<br>`STORED` | This location stores the selected mode, such as a roll or upcasting mode within the sheet's rules, display, roll, and behavior settings. | `SETTING` — Read this when reproducing the sheet’s current roll or upcasting mode; do not assume it is only an advantage setting. |
+| `sheet->settings->rolls->privacy` | string<br>`STORED` | This location stores the public/GM/private roll-visibility setting within the sheet's rules, display, roll, and behavior settings. | `SETTING` — Read this to preserve public, GM, or private visibility in sheet-equivalent output. |
+| `sheet->settings->showAllCrits` | boolean<br>`STORED` | This location stores the value named `showAllCrits` within the sheet's rules, display, roll, and behavior settings. | `SETTING` |
+| `sheet->settings->showPreparedSpells` | boolean<br>`STORED` | This location stores the value named `showPreparedSpells` within the sheet's rules, display, roll, and behavior settings. | `SETTING` — Controls spell-list display or filtering; individual prepared state belongs to `Spell._prepared`. |
+| `sheet->settings->useConditionTokenSync` | boolean<br>`STORED` | This location stores the value named `useConditionTokenSync` within the sheet's rules, display, roll, and behavior settings. | `SETTING` — Writing this changes automatic synchronization between sheet conditions and token markers. |
+| `sheet->sheetToSheet->lastSheetToSheetAcknowledged` | number<br>`STORED` | This location stores the value named `lastSheetToSheetAcknowledged` within the sheet-to-sheet migration acknowledgement state. | `RAW` — This is migration acknowledgement state; do not normally change it as live character data. |
+
+
+#### Hit Dice expenditure
+
+Hit Dice entitlement is stored in canonical `hitdices` records. Current expenditure is stored separately under `sheet->rest->usedHitDiceData`. Pool keys are opaque: enumerate existing keys and inspect `dieSize` instead of constructing a key from a class name.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->rest->usedHitDiceData->[pool-key]->dieSize` | number<br>`STORED` | Identifies the die size associated with this existing rest-state pool. | `READ` — Use this to associate an opaque pool with its die size; do not infer identity from the pool key. |
+| `sheet->rest->usedHitDiceData->[pool-key]->usedHitDice` | number<br>`STORED` | Stores the number of Hit Dice spent from this pool. | `RAW` — This is expenditure, not entitlement. Change deliberately and preserve the existing pool structure. |
+
+#### Section display order
+
+> **Value kinds**
+>
+> - `ORDER` — Stored ordering or index data containing positions or canonical record keys.
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `ORDER` — Preserve valid existing record keys and change this only when intentionally reordering them.
+> - `RAW` — Use the exact `sheet` path to read or deliberately change this existing primitive value.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->actions->actionDisplayOrder` | array<br>`ORDER` | This location stores the value named `actionDisplayOrder` within the record keys and order used by the Actions, Bonus Actions, Free Actions, and Reactions sections. | `ORDER` |
+| `sheet->actions->bonusActionDisplayOrder` | array<br>`ORDER` | This location stores the value named `bonusActionDisplayOrder` within the record keys and order used by the Actions, Bonus Actions, Free Actions, and Reactions sections. | `ORDER` |
+| `sheet->actions->freeActionDisplayOrder` | array<br>`ORDER` | This location stores the value named `freeActionDisplayOrder` within the record keys and order used by the Actions, Bonus Actions, Free Actions, and Reactions sections. | `ORDER` |
+| `sheet->actions->reactionDisplayOrder` | array<br>`ORDER` | This location stores the value named `reactionDisplayOrder` within the record keys and order used by the Actions, Bonus Actions, Free Actions, and Reactions sections. | `ORDER` |
+| `sheet->attacks->attackDisplayOrder` | array<br>`ORDER` | This location stores the canonical Attack record keys in the order shown by the sheet within the record keys and order used by the Attacks section. | `ORDER` |
+| `sheet->attacks->attackDisplayOrder->[index]` | string<br>`ORDER` | This array element stores one entry in `attackDisplayOrder` within the record keys and order used by the Attacks section. | `ORDER` — Returns an Attack `[record-key]`; use it to seed an exact raw record read or write. |
+| `sheet->background->aboutTabBackgroundDisplayOrder` | array<br>`ORDER` | This location stores the value named `aboutTabBackgroundDisplayOrder` within the background display data shown on the About tab. | `ORDER` |
+| `sheet->effects->effectDisplayOrder` | array<br>`ORDER` | This location stores the value named `effectDisplayOrder` within the record keys and order used by the Effects section. | `ORDER` |
+| `sheet->features->classFeatureDisplayOrder` | array<br>`ORDER` | This location stores the value named `classFeatureDisplayOrder` within the record keys and order used by the feature sections. | `ORDER` |
+| `sheet->features->classFeatureDisplayOrder->[index]` | string<br>`ORDER` | This array element stores one entry in `classFeatureDisplayOrder` within the record keys and order used by the feature sections. | `ORDER` — Returns a Feature `[record-key]`; use it to seed an exact raw record read or write. |
+| `sheet->features->featsDisplayOrder` | array<br>`ORDER` | This location stores the value named `featsDisplayOrder` within the record keys and order used by the feature sections. | `ORDER` |
+| `sheet->features->featsDisplayOrder->[index]` | string<br>`ORDER` | This array element stores one entry in `featsDisplayOrder` within the record keys and order used by the feature sections. | `ORDER` — Returns a Feat `[record-key]`; use it to seed an exact raw record read or write. |
+| `sheet->features->otherDisplayOrder` | array<br>`ORDER` | This location stores the value named `otherDisplayOrder` within the record keys and order used by the feature sections. | `ORDER` |
+| `sheet->features->otherDisplayOrder->[index]` | string<br>`ORDER` | This array element stores one entry in `otherDisplayOrder` within the record keys and order used by the feature sections. | `ORDER` — Returns a Feature `[record-key]`; use it to seed an exact raw record read or write. |
+| `sheet->features->speciesTraitsDisplayOrder->[index]` | string<br>`ORDER` | This array element stores one entry in `speciesTraitsDisplayOrder` within the record keys and order used by the feature sections. | `ORDER` — Returns a Species Trait `[record-key]`; use it to seed an exact raw record read or write. |
+| `sheet->notes->emptyCategories` | array<br>`ORDER` | This location stores the value named `emptyCategories` within notes categories and notes display order. | `ORDER` — Stores empty category names, not canonical record keys. |
+| `sheet->notes->order->Allies` | array<br>`ORDER` | This location stores the value named `Allies` within notes categories and notes display order. | `ORDER` — Contains the Note record keys displayed under Allies; do not replace them with note text. |
+| `sheet->notes->order->Enemies` | array<br>`ORDER` | This location stores the value named `Enemies` within notes categories and notes display order. | `ORDER` — Contains the Note record keys displayed under Enemies; do not replace them with note text. |
+| `sheet->notes->order->Organizations` | array<br>`ORDER` | This location stores the value named `Organizations` within notes categories and notes display order. | `ORDER` — Contains the Note record keys displayed under Organizations; do not replace them with note text. |
+| `sheet->spells->displayOrder->[index]` | array<br>`ORDER` | This array element stores one entry in `displayOrder` within spell display order and spell-section behavior. | `ORDER` — Returns one spell-level bucket; read its child elements to obtain actual Spell record keys. |
+| `sheet->spells->displayOrder->[index]->[index]` | string<br>`ORDER` | This array element stores one entry in `[index]` within spell display order and spell-section behavior. | `ORDER` — Returns a Spell `[record-key]`; use it to seed an exact raw Spell read or write. |
+| `sheet->spells->generalSpellSettings->defaultToFullscreen` | boolean<br>`STORED` | This location stores the value named `defaultToFullscreen` within spell display order and spell-section behavior. | `RAW` |
+| `sheet->spells->generalSpellSettings->showPreparedBar` | boolean<br>`STORED` | This location stores the value named `showPreparedBar` within spell display order and spell-section behavior. | `RAW` |
+| `sheet->spells->generalSpellSettings->showPreparedSpellsOnly` | boolean<br>`STORED` | This location stores the value named `showPreparedSpellsOnly` within spell display order and spell-section behavior. | `RAW` — This is a display filter; individual prepared state belongs to `Spell._prepared`. |
+| `sheet->spells->generalSpellSettings->spellcastings` | string<br>`STORED` | This location stores the value named `spellcastings` within spell display order and spell-section behavior. | `RAW` — Inspect the stored format before editing; this is spellcasting-selection state rather than a single spell record. |
+| `sheet->spells->generalSpellSettings->useSlotAlwaysPrepared` | boolean<br>`STORED` | This location stores the value named `useSlotAlwaysPrepared` within spell display order and spell-section behavior. | `RAW` |
+| `sheet->spells->generalSpellSettings->useSlotDefault` | boolean<br>`STORED` | This location stores the value named `useSlotDefault` within spell display order and spell-section behavior. | `RAW` |
+| `sheet->weaponMasteries->masteryDisplayOrder` | array<br>`ORDER` | This location stores the value named `masteryDisplayOrder` within weapon-mastery display order. | `ORDER` |
+
+#### Inventory and currencies
+
+> **Value kinds**
+>
+> - `ORDER` — Stored ordering or index data containing positions or canonical record keys.
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `RAW` — Use the exact `sheet` path to read or deliberately change this existing primitive value.
+> - `ORDER` — Preserve valid existing record keys and change this only when intentionally reordering them.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->currencies->initialized` | boolean<br>`STORED` | This location stores the value named `initialized` within the currency subsystem's initialization state. | `RAW` — This is an initialization flag; change Currency records or `cp` through `pp` to change actual money values. |
+| `sheet->inventory->equipmentDisplayOrder` | array<br>`ORDER` | This location stores the value named `equipmentDisplayOrder` within inventory display order and editing behavior. | `ORDER` |
+| `sheet->inventory->equipmentDisplayOrder->[index]` | string<br>`ORDER` | This array element stores one entry in `equipmentDisplayOrder` within inventory display order and editing behavior. | `ORDER` — Returns an Item `[record-key]`; use it to seed an exact raw Item read or write. |
+| `sheet->inventory->incrementalQuantityEditing` | boolean<br>`STORED` | This location stores the value named `incrementalQuantityEditing` within inventory display order and editing behavior. | `RAW` — This controls inventory editing behavior; it does not store an item quantity. |
+| `sheet->inventory->otherPossessionsDisplayOrder` | array<br>`ORDER` | This location stores the value named `otherPossessionsDisplayOrder` within inventory display order and editing behavior. | `ORDER` |
+
+#### Spell slots
+
+> **Value kinds**
+>
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `RAW` — Use the exact `sheet` path to read or deliberately change this existing primitive value.
+> - `NATIVE` — The public `name` is verified writable and may be used directly in `--!c`.
+
+Normal `currentByLevel` rows have public `lvlN_slots_expended` aliases. `currentPactByLevel` is separate Pact-slot state and has no verified writable public alias in this reference.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->spellSlots->currentByLevel->CANTRIP` | number<br>`STORED` | This location stores the value named `CANTRIP` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` — Treat this as diagnostic slot-state data; cantrips do not consume normal spell slots. |
+| `sheet->spellSlots->currentByLevel->EIGHTH` | number<br>`STORED` | This location stores the value named `EIGHTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `NATIVE` — Prefer `lvl8_slots_expended` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->spellSlots->currentByLevel->FIFTH` | number<br>`STORED` | This location stores the value named `FIFTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `NATIVE` — Prefer `lvl5_slots_expended` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->spellSlots->currentByLevel->FIRST` | number<br>`STORED` | This location stores the value named `FIRST` within current normal and Pact spell-slot counters and slot-consumption behavior. | `NATIVE` — Prefer `lvl1_slots_expended` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->spellSlots->currentByLevel->FOURTH` | number<br>`STORED` | This location stores the value named `FOURTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `NATIVE` — Prefer `lvl4_slots_expended` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->spellSlots->currentByLevel->NINTH` | number<br>`STORED` | This location stores the value named `NINTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `NATIVE` — Prefer `lvl9_slots_expended` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->spellSlots->currentByLevel->SECOND` | number<br>`STORED` | This location stores the value named `SECOND` within current normal and Pact spell-slot counters and slot-consumption behavior. | `NATIVE` — Prefer `lvl2_slots_expended` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->spellSlots->currentByLevel->SEVENTH` | number<br>`STORED` | This location stores the value named `SEVENTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `NATIVE` — Prefer `lvl7_slots_expended` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->spellSlots->currentByLevel->SIXTH` | number<br>`STORED` | This location stores the value named `SIXTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `NATIVE` — Prefer `lvl6_slots_expended` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->spellSlots->currentByLevel->THIRD` | number<br>`STORED` | This location stores the value named `THIRD` within current normal and Pact spell-slot counters and slot-consumption behavior. | `NATIVE` — Prefer `lvl3_slots_expended` for ordinary reads and writes through the verified alias; this raw path is its backing store. |
+| `sheet->spellSlots->currentPactByLevel->CANTRIP` | number<br>`STORED` | This location stores the value named `CANTRIP` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` — Treat this as diagnostic Pact-slot data; cantrips do not consume Pact slots. |
+| `sheet->spellSlots->currentPactByLevel->EIGHTH` | number<br>`STORED` | This location stores the value named `EIGHTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` |
+| `sheet->spellSlots->currentPactByLevel->FIFTH` | number<br>`STORED` | This location stores the value named `FIFTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` |
+| `sheet->spellSlots->currentPactByLevel->FIRST` | number<br>`STORED` | This location stores the value named `FIRST` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` |
+| `sheet->spellSlots->currentPactByLevel->FOURTH` | number<br>`STORED` | This location stores the value named `FOURTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` |
+| `sheet->spellSlots->currentPactByLevel->NINTH` | number<br>`STORED` | This location stores the value named `NINTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` |
+| `sheet->spellSlots->currentPactByLevel->SECOND` | number<br>`STORED` | This location stores the value named `SECOND` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` |
+| `sheet->spellSlots->currentPactByLevel->SEVENTH` | number<br>`STORED` | This location stores the value named `SEVENTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` |
+| `sheet->spellSlots->currentPactByLevel->SIXTH` | number<br>`STORED` | This location stores the value named `SIXTH` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` |
+| `sheet->spellSlots->currentPactByLevel->THIRD` | number<br>`STORED` | This location stores the value named `THIRD` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` |
+| `sheet->spellSlots->useSpellSlotOnCast` | boolean<br>`STORED` | This location stores the value named `useSpellSlotOnCast` within current normal and Pact spell-slot counters and slot-consumption behavior. | `RAW` — Controls automatic slot consumption when casting; it is not a slot count. |
+
+#### NPC metadata
+
+> **Value kinds**
+>
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `RAW` — Use the exact `sheet` path to read or deliberately change this existing primitive value.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->npc->acNotes` | string<br>`STORED` | This location stores the value named `acNotes` within NPC-only scalar metadata. | `RAW` — Supplemental NPC AC text only; read final AC from `ac` and Armor Class records. |
+| `sheet->npc->challengeRating` | string<br>`STORED` | This location stores the value named `challengeRating` within NPC-only scalar metadata. | `RAW` — Use this as the direct NPC Challenge Rating value; `npc_challenge` is a compatibility view of this path. |
+| `sheet->npc->compendiumDropData->categoryName` | string<br>`STORED` | This location stores the value named `categoryName` within NPC-only scalar metadata. | `RAW` — Compendium-import provenance; read for diagnostics and do not normally edit it. |
+| `sheet->npc->compendiumDropData->expansionId` | number<br>`STORED` | This location stores the value named `expansionId` within NPC-only scalar metadata. | `RAW` — Compendium-import provenance; read for diagnostics and do not normally edit it. |
+| `sheet->npc->compendiumDropData->pageName` | string<br>`STORED` | This location stores the value named `pageName` within NPC-only scalar metadata. | `RAW` — Compendium-import provenance; read for diagnostics and do not normally edit it. |
+| `sheet->npc->compendiumDropData->tokenImg` | string<br>`STORED` | This location stores the value named `tokenImg` within NPC-only scalar metadata. | `RAW` — Compendium-import provenance; this is not the active token object’s image source. |
+| `sheet->npc->customXP` | string<br>`STORED` | This location stores the value named `customXP` within NPC-only scalar metadata. | `RAW` — Use only for a manual NPC XP override; Challenge Rating remains at `challengeRating`. |
+| `sheet->npc->gear` | string<br>`STORED` | This location stores the value named `gear` within NPC-only scalar metadata. | `RAW` — Direct NPC Gear text; no canonical-record lookup is required. |
+| `sheet->npc->habitat` | string<br>`STORED` | This location stores the value named `habitat` within NPC-only scalar metadata. | `RAW` — Direct NPC Habitat text; no canonical-record lookup is required. |
+| `sheet->npc->legendaryActionCompendiumNum` | number<br>`STORED` | This location stores the value named `legendaryActionCompendiumNum` within NPC-only scalar metadata. | `RAW` — Stores the legendary-action count or allowance, not the action descriptions. |
+| `sheet->npc->legendaryActionSummary` | string<br>`STORED` | This location stores the value named `legendaryActionSummary` within NPC-only scalar metadata. | `RAW` — Stores the legendary-action summary text, not the individual Action records. |
+| `sheet->npc->mythicActionSummary` | string<br>`STORED` | This location stores the value named `mythicActionSummary` within NPC-only scalar metadata. | `RAW` — Stores mythic-action summary text, not the individual Action records. |
+| `sheet->npc->rollHP` | string<br>`STORED` | This location stores the value named `rollHP` within NPC-only scalar metadata. | `RAW` — Stores the NPC HP formula text; current HP remains at `hp`. |
+| `sheet->npc->treasure` | string<br>`STORED` | This location stores the value named `treasure` within NPC-only scalar metadata. | `RAW` — Direct NPC Treasure text; do not confuse it with the synthetic legacy `treasure` field. |
+
+#### Bastion, shop, and other state
+
+> **Value kinds**
+>
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `RAW` — Use the exact `sheet` path to read or deliberately change this existing primitive value.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->bastion->bastionDefenders` | string<br>`STORED` | This location stores the value named `bastionDefenders` within the character's Bastion state. | `RAW` |
+| `sheet->bastion->bastionDescription` | string<br>`STORED` | This location stores the value named `bastionDescription` within the character's Bastion state. | `RAW` |
+| `sheet->bastion->bastionLevel` | number<br>`STORED` | This location stores the value named `bastionLevel` within the character's Bastion state. | `RAW` |
+| `sheet->bastion->characterLink` | string<br>`STORED` | This location stores the value named `characterLink` within the character's Bastion state. | `RAW` — This is a relationship identifier; write only a valid character link. |
+| `sheet->shop->isLocked` | boolean<br>`STORED` | This location stores the value named `isLocked` within shop-sheet configuration and shop state. | `RAW` |
+| `sheet->shop->lockDC` | number<br>`STORED` | This location stores the value named `lockDC` within shop-sheet configuration and shop state. | `RAW` |
+| `sheet->shop->sheetToSheetEnabled` | boolean<br>`STORED` | This location stores the value named `sheetToSheetEnabled` within shop-sheet configuration and shop state. | `RAW` — Controls shop sheet-to-sheet transfers; it is independent of the shop lock state. |
+| `sheet->shop->shopDescription` | string<br>`STORED` | This location stores the value named `shopDescription` within shop-sheet configuration and shop state. | `RAW` |
+| `sheet->shop->shopDiscountMarkup` | number<br>`STORED` | This location stores the value named `shopDiscountMarkup` within shop-sheet configuration and shop state. | `RAW` |
+| `sheet->shop->shopOwner` | string<br>`STORED` | This location stores the value named `shopOwner` within shop-sheet configuration and shop state. | `RAW` |
+| `sheet->shop->shopStaff` | string<br>`STORED` | This location stores the value named `shopStaff` within shop-sheet configuration and shop state. | `RAW` |
+| `sheet->shop->type` | string<br>`STORED` | Stores the shop type used by the shop sheet. | `RAW` — Identifies the shop-sheet type; do not change it merely to repurpose a normal character. |
+
 
 ## Typed canonical collections
 
@@ -1409,13 +1689,13 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `ability` | `abilityscores->[selector]->ability` | `INPUT` | On an Ability Score record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
-| `calculation` | `abilityscores->[selector]->calculation` | `INPUT` | On an Ability Score record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
-| `valueFormula.flatValue` | `abilityscores->[selector]->valueFormula->flatValue` | `INPUT` | On an Ability Score record, this field stores a finite score component. | `FIND` + `INPUT` + `RECORD` — Use the matching direct ability alias for ordinary changes; edit this field only for deliberate record-level control. |
-| `valueFormula.ability` | `abilityscores->[selector]->valueFormula->ability` | `INPUT` | On an Ability Score record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
-| `_enabled` | `abilityscores->[selector]->_enabled` | `STORED` | On an Ability Score record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `name` | `abilityscores->[selector]->name` | `STORED` | On an Ability Score record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `abilityscores->[selector]->shortID` | `STORED` | On an Ability Score record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `ability` | Typed: `abilityscores->[selector]->ability`<br>Raw: `sheet->integrants->integrants->[record-key]->ability` | `INPUT` | On an Ability Score record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
+| `calculation` | Typed: `abilityscores->[selector]->calculation`<br>Raw: `sheet->integrants->integrants->[record-key]->calculation` | `INPUT` | On an Ability Score record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
+| `valueFormula.flatValue` | Typed: `abilityscores->[selector]->valueFormula->flatValue`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->flatValue` | `INPUT` | On an Ability Score record, this field stores a finite score component. | `FIND` + `INPUT` + `RECORD` — Use the matching direct ability alias for ordinary changes; edit this field only for deliberate record-level control. |
+| `valueFormula.ability` | Typed: `abilityscores->[selector]->valueFormula->ability`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->ability` | `INPUT` | On an Ability Score record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
+| `_enabled` | Typed: `abilityscores->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On an Ability Score record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `name` | Typed: `abilityscores->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On an Ability Score record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `abilityscores->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On an Ability Score record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
 
 #### Action records
 
@@ -1441,14 +1721,14 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `actionType` | `actions->[selector]->actionType` | `STORED` | On an Action record, this field identifies whether the record is an Action, Bonus Action, Reaction, Free Action, or another action category. | `FIND` + `RECORD` — Changing the category may also require the record identity to appear in the matching action display-order array. |
-| `description` | `actions->[selector]->description` | `STORED` | On an Action record, this field stores the human-readable description. | `FIND` + `RECORD` |
-| `name` | `actions->[selector]->name` | `STORED` | On an Action record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `actions->[selector]->shortID` | `STORED` | On an Action record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` — Use this for the Beacon action call; typed writes use the selected collection path. |
-| `_enabled` | `actions->[selector]->_enabled` | `STORED` | On an Action record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `arrayPosition` | `actions->[selector]->arrayPosition` | `ORDER` | On an Action record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
-| `parentID` | `actions->[selector]->parentID` | `STORED` | On an Action record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
-| `childIDs` | `actions->[selector]->childIDs` | `STORED` | On an Action record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` — Contains relationship IDs; edit an existing array element rather than replacing the whole array. |
+| `actionType` | Typed: `actions->[selector]->actionType`<br>Raw: `sheet->integrants->integrants->[record-key]->actionType` | `STORED` | On an Action record, this field identifies whether the record is an Action, Bonus Action, Reaction, Free Action, or another action category. | `FIND` + `RECORD` — Changing the category may also require the record identity to appear in the matching action display-order array. |
+| `description` | Typed: `actions->[selector]->description`<br>Raw: `sheet->integrants->integrants->[record-key]->description` | `STORED` | On an Action record, this field stores the human-readable description. | `FIND` + `RECORD` |
+| `name` | Typed: `actions->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On an Action record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `actions->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On an Action record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` — Use this for the Beacon action call; typed writes use the selected collection path. |
+| `_enabled` | Typed: `actions->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On an Action record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `arrayPosition` | Typed: `actions->[selector]->arrayPosition`<br>Raw: `sheet->integrants->integrants->[record-key]->arrayPosition` | `ORDER` | On an Action record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
+| `parentID` | Typed: `actions->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On an Action record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `childIDs` | Typed: `actions->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On an Action record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` — Contains relationship IDs; edit an existing array element rather than replacing the whole array. |
 
 #### Armor Class records
 
@@ -1474,14 +1754,14 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `calculation` | `armorclasses->[selector]->calculation` | `INPUT` | On an Armor Class record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
-| `defaultAbility` | `armorclasses->[selector]->defaultAbility` | `STORED` | On an Armor Class record, this field stores the default ability used by the formula. | `FIND` + `RECORD` |
-| `valueFormula.flatValue` | `armorclasses->[selector]->valueFormula->flatValue` | `INPUT` | On an Armor Class record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` |
-| `valueFormula.ability` | `armorclasses->[selector]->valueFormula->ability` | `INPUT` | On an Armor Class record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
-| `_enabled` | `armorclasses->[selector]->_enabled` | `STORED` | On an Armor Class record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `armorclasses->[selector]->parentID` | `STORED` | On an Armor Class record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
-| `name` | `armorclasses->[selector]->name` | `STORED` | On an Armor Class record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `armorclasses->[selector]->shortID` | `STORED` | On an Armor Class record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `calculation` | Typed: `armorclasses->[selector]->calculation`<br>Raw: `sheet->integrants->integrants->[record-key]->calculation` | `INPUT` | On an Armor Class record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
+| `defaultAbility` | Typed: `armorclasses->[selector]->defaultAbility`<br>Raw: `sheet->integrants->integrants->[record-key]->defaultAbility` | `STORED` | On an Armor Class record, this field stores the default ability used by the formula. | `FIND` + `RECORD` |
+| `valueFormula.flatValue` | Typed: `armorclasses->[selector]->valueFormula->flatValue`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->flatValue` | `INPUT` | On an Armor Class record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` |
+| `valueFormula.ability` | Typed: `armorclasses->[selector]->valueFormula->ability`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->ability` | `INPUT` | On an Armor Class record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
+| `_enabled` | Typed: `armorclasses->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On an Armor Class record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `armorclasses->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On an Armor Class record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `name` | Typed: `armorclasses->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On an Armor Class record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `armorclasses->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On an Armor Class record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
 
 #### Attack records
 
@@ -1507,28 +1787,28 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `actionType` | `attacks->[selector]->actionType` | `STORED` | On an Attack record, this field identifies whether the record is an Action, Bonus Action, Reaction, Free Action, or another action category. | `FIND` + `RECORD` |
-| `attack.type` | `attacks->[selector]->attack->type` | `STORED` | On an Attack record, this field identifies the canonical record type. | `FIND` + `IDENTITY` |
-| `attack.abilityBonus` | `attacks->[selector]->attack->abilityBonus` | `STORED` | On an Attack record, this field stores the ability contribution used by the attack. | `FIND` + `RECORD` |
-| `attack.proficiencyLevel` | `attacks->[selector]->attack->proficiencyLevel` | `INPUT` | On an Attack record, this field stores the proficiency tier, such as Proficient or Expertise. | `FIND` + `INPUT` + `RECORD` |
-| `attack.bonus` | `attacks->[selector]->attack->bonus` | `INPUT` | On an Attack record, this field stores a finite bonus or bonus expression. | `FIND` + `INPUT` + `RECORD` |
-| `autoHit` | `attacks->[selector]->autoHit` | `STORED` | On an Attack record, this field stores whether the attack skips an attack roll and automatically applies its effect or damage. | `FIND` + `RECORD` — Changes whether the attack rolls to hit; it does not change the attack bonus. |
-| `repeat` | `attacks->[selector]->repeat` | `STORED` | On an Attack record, this field stores attack repetition or multiattack information. | `FIND` + `RECORD` |
-| `range` | `attacks->[selector]->range` | `STORED` | On an Attack record, this field stores the attack or spell range. | `FIND` + `RECORD` |
-| `_reach` | `attacks->[selector]->_reach` | `STORED` | On an Attack record, this field stores `_reach`. | `FIND` + `RECORD` |
-| `_reachText` | `attacks->[selector]->_reachText` | `STORED` | On an Attack record, this field stores `_reachText`. | `FIND` + `RECORD` |
-| `save.saveAbility` | `attacks->[selector]->save->saveAbility` | `STORED` | On an Attack record, this field stores `saveAbility`. | `FIND` + `RECORD` |
-| `save.saveFlat` | `attacks->[selector]->save->saveFlat` | `STORED` | On an Attack record, this field stores `saveFlat`. | `FIND` + `RECORD` |
-| `save.saveFormula.flatValue` | `attacks->[selector]->save->saveFormula->flatValue` | `INPUT` | On an Attack record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` |
-| `save.onFail` | `attacks->[selector]->save->onFail` | `STORED` | On an Attack record, this field stores the effect or text used when a save fails. | `FIND` + `RECORD` |
-| `save.onSucceed` | `attacks->[selector]->save->onSucceed` | `STORED` | On an Attack record, this field stores the effect or text used when a save succeeds. | `FIND` + `RECORD` |
-| `onHitDisplay` | `attacks->[selector]->onHitDisplay` | `STORED` | On an Attack record, this field stores `onHitDisplay`. | `FIND` + `RECORD` |
-| `description` | `attacks->[selector]->description` | `STORED` | On an Attack record, this field stores the human-readable description. | `FIND` + `RECORD` |
-| `name` | `attacks->[selector]->name` | `STORED` | On an Attack record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `attacks->[selector]->shortID` | `STORED` | On an Attack record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` — Use this for the Beacon attack action call; typed writes use the selected collection path. |
-| `_enabled` | `attacks->[selector]->_enabled` | `STORED` | On an Attack record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `attacks->[selector]->parentID` | `STORED` | On an Attack record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
-| `childIDs` | `attacks->[selector]->childIDs` | `STORED` | On an Attack record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` — Follow these linked record IDs to linked Damage or other child records; do not replace the whole array. |
+| `actionType` | Typed: `attacks->[selector]->actionType`<br>Raw: `sheet->integrants->integrants->[record-key]->actionType` | `STORED` | On an Attack record, this field identifies whether the record is an Action, Bonus Action, Reaction, Free Action, or another action category. | `FIND` + `RECORD` |
+| `attack.type` | Typed: `attacks->[selector]->attack->type`<br>Raw: `sheet->integrants->integrants->[record-key]->attack->type` | `STORED` | On an Attack record, this field identifies the canonical record type. | `FIND` + `IDENTITY` |
+| `attack.abilityBonus` | Typed: `attacks->[selector]->attack->abilityBonus`<br>Raw: `sheet->integrants->integrants->[record-key]->attack->abilityBonus` | `STORED` | On an Attack record, this field stores the ability contribution used by the attack. | `FIND` + `RECORD` |
+| `attack.proficiencyLevel` | Typed: `attacks->[selector]->attack->proficiencyLevel`<br>Raw: `sheet->integrants->integrants->[record-key]->attack->proficiencyLevel` | `INPUT` | On an Attack record, this field stores the proficiency tier, such as Proficient or Expertise. | `FIND` + `INPUT` + `RECORD` |
+| `attack.bonus` | Typed: `attacks->[selector]->attack->bonus`<br>Raw: `sheet->integrants->integrants->[record-key]->attack->bonus` | `INPUT` | On an Attack record, this field stores a finite bonus or bonus expression. | `FIND` + `INPUT` + `RECORD` |
+| `autoHit` | Typed: `attacks->[selector]->autoHit`<br>Raw: `sheet->integrants->integrants->[record-key]->autoHit` | `STORED` | On an Attack record, this field stores whether the attack skips an attack roll and automatically applies its effect or damage. | `FIND` + `RECORD` — Changes whether the attack rolls to hit; it does not change the attack bonus. |
+| `repeat` | Typed: `attacks->[selector]->repeat`<br>Raw: `sheet->integrants->integrants->[record-key]->repeat` | `STORED` | On an Attack record, this field stores attack repetition or multiattack information. | `FIND` + `RECORD` |
+| `range` | Typed: `attacks->[selector]->range`<br>Raw: `sheet->integrants->integrants->[record-key]->range` | `STORED` | On an Attack record, this field stores the attack or spell range. | `FIND` + `RECORD` |
+| `_reach` | Typed: `attacks->[selector]->_reach`<br>Raw: `sheet->integrants->integrants->[record-key]->_reach` | `STORED` | On an Attack record, this field stores `_reach`. | `FIND` + `RECORD` |
+| `_reachText` | Typed: `attacks->[selector]->_reachText`<br>Raw: `sheet->integrants->integrants->[record-key]->_reachText` | `STORED` | On an Attack record, this field stores `_reachText`. | `FIND` + `RECORD` |
+| `save.saveAbility` | Typed: `attacks->[selector]->save->saveAbility`<br>Raw: `sheet->integrants->integrants->[record-key]->save->saveAbility` | `STORED` | On an Attack record, this field stores `saveAbility`. | `FIND` + `RECORD` |
+| `save.saveFlat` | Typed: `attacks->[selector]->save->saveFlat`<br>Raw: `sheet->integrants->integrants->[record-key]->save->saveFlat` | `STORED` | On an Attack record, this field stores `saveFlat`. | `FIND` + `RECORD` |
+| `save.saveFormula.flatValue` | Typed: `attacks->[selector]->save->saveFormula->flatValue`<br>Raw: `sheet->integrants->integrants->[record-key]->save->saveFormula->flatValue` | `INPUT` | On an Attack record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` |
+| `save.onFail` | Typed: `attacks->[selector]->save->onFail`<br>Raw: `sheet->integrants->integrants->[record-key]->save->onFail` | `STORED` | On an Attack record, this field stores the effect or text used when a save fails. | `FIND` + `RECORD` |
+| `save.onSucceed` | Typed: `attacks->[selector]->save->onSucceed`<br>Raw: `sheet->integrants->integrants->[record-key]->save->onSucceed` | `STORED` | On an Attack record, this field stores the effect or text used when a save succeeds. | `FIND` + `RECORD` |
+| `onHitDisplay` | Typed: `attacks->[selector]->onHitDisplay`<br>Raw: `sheet->integrants->integrants->[record-key]->onHitDisplay` | `STORED` | On an Attack record, this field stores `onHitDisplay`. | `FIND` + `RECORD` |
+| `description` | Typed: `attacks->[selector]->description`<br>Raw: `sheet->integrants->integrants->[record-key]->description` | `STORED` | On an Attack record, this field stores the human-readable description. | `FIND` + `RECORD` |
+| `name` | Typed: `attacks->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On an Attack record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `attacks->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On an Attack record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` — Use this for the Beacon attack action call; typed writes use the selected collection path. |
+| `_enabled` | Typed: `attacks->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On an Attack record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `attacks->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On an Attack record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `childIDs` | Typed: `attacks->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On an Attack record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` — Follow these linked record IDs to linked Damage or other child records; do not replace the whole array. |
 
 #### Attunement records
 
@@ -1552,13 +1832,13 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `_attuned` | `attunements->[selector]->_attuned` | `STORED` | On an Attunement record, this field stores whether the item is currently attuned. | `FIND` + `TOGGLE` + `RECORD` — This is the actual attunement state; `_enabled` only controls whether the record participates. |
-| `requireEquip` | `attunements->[selector]->requireEquip` | `STORED` | On an Attunement record, this field stores `requireEquip`. | `FIND` + `RECORD` |
-| `parentID` | `attunements->[selector]->parentID` | `STORED` | On an Attunement record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
-| `childIDs` | `attunements->[selector]->childIDs` | `STORED` | On an Attunement record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
-| `_enabled` | `attunements->[selector]->_enabled` | `STORED` | On an Attunement record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `name` | `attunements->[selector]->name` | `STORED` | On an Attunement record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `attunements->[selector]->shortID` | `STORED` | On an Attunement record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_attuned` | Typed: `attunements->[selector]->_attuned`<br>Raw: `sheet->integrants->integrants->[record-key]->_attuned` | `STORED` | On an Attunement record, this field stores whether the item is currently attuned. | `FIND` + `TOGGLE` + `RECORD` — This is the actual attunement state; `_enabled` only controls whether the record participates. |
+| `requireEquip` | Typed: `attunements->[selector]->requireEquip`<br>Raw: `sheet->integrants->integrants->[record-key]->requireEquip` | `STORED` | On an Attunement record, this field stores `requireEquip`. | `FIND` + `RECORD` |
+| `parentID` | Typed: `attunements->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On an Attunement record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `childIDs` | Typed: `attunements->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On an Attunement record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
+| `_enabled` | Typed: `attunements->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On an Attunement record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `name` | Typed: `attunements->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On an Attunement record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `attunements->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On an Attunement record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
 
 #### Background records
 
@@ -1582,11 +1862,11 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `description` | `backgrounds->[selector]->description` | `STORED` | On a Background record, this field stores the human-readable description. | `FIND` + `RECORD` |
-| `childIDs` | `backgrounds->[selector]->childIDs` | `STORED` | On a Background record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
-| `name` | `backgrounds->[selector]->name` | `STORED` | On a Background record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `backgrounds->[selector]->shortID` | `STORED` | On a Background record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `backgrounds->[selector]->_enabled` | `STORED` | On a Background record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `description` | Typed: `backgrounds->[selector]->description`<br>Raw: `sheet->integrants->integrants->[record-key]->description` | `STORED` | On a Background record, this field stores the human-readable description. | `FIND` + `RECORD` |
+| `childIDs` | Typed: `backgrounds->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On a Background record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
+| `name` | Typed: `backgrounds->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Background record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `backgrounds->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Background record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `backgrounds->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Background record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
 
 #### Class records
 
@@ -1610,11 +1890,11 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `childIDs` | `classes->[selector]->childIDs` | `STORED` | On a Class record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
-| `name` | `classes->[selector]->name` | `STORED` | On a Class record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `classes->[selector]->shortID` | `STORED` | On a Class record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `classes->[selector]->_enabled` | `STORED` | On a Class record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `sourceID` | `classes->[selector]->sourceID` | `STORED` | On a Class record, this field stores the originating source record identifier. | `FIND` + `IDENTITY` |
+| `childIDs` | Typed: `classes->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On a Class record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
+| `name` | Typed: `classes->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Class record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `classes->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Class record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `classes->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Class record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `sourceID` | Typed: `classes->[selector]->sourceID`<br>Raw: `sheet->integrants->integrants->[record-key]->sourceID` | `STORED` | On a Class record, this field stores the originating source record identifier. | `FIND` + `IDENTITY` |
 
 #### Class Level records
 
@@ -1640,14 +1920,14 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `classID` | `classlevels->[selector]->classID` | `STORED` | On a Class Level record, this field identifies the owning Class record. | `FIND` + `RECORD` |
-| `level` | `classlevels->[selector]->level` | `INPUT` | Identifies the class-progression stage represented by this record. It is not the additive contribution used to total multiclass levels. | `FIND` + `INPUT` + `RECORD` |
-| `totalLevel` | `classlevels->[selector]->totalLevel` | `INPUT` | On a valid Class Level record, this field stores one contribution to the character-wide level aggregate used by calculations such as proficiency bonus. Sum the contributions from active records with populated `classID`; do not treat one record as the complete character total. | `FIND` + `INPUT` + `RECORD` |
-| `subClassID` | `classlevels->[selector]->subClassID` | `STORED` | On a Class Level record, this field stores `subClassID`. | `FIND` + `RECORD` |
-| `name` | `classlevels->[selector]->name` | `STORED` | On a Class Level record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `classlevels->[selector]->shortID` | `STORED` | On a Class Level record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `classlevels->[selector]->_enabled` | `STORED` | On a Class Level record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `classlevels->[selector]->parentID` | `STORED` | On a Class Level record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `classID` | Typed: `classlevels->[selector]->classID`<br>Raw: `sheet->integrants->integrants->[record-key]->classID` | `STORED` | On a Class Level record, this field identifies the owning Class record. | `FIND` + `RECORD` |
+| `level` | Typed: `classlevels->[selector]->level`<br>Raw: `sheet->integrants->integrants->[record-key]->level` | `INPUT` | Identifies the class-progression stage represented by this record. It is not the additive contribution used to total multiclass levels. | `FIND` + `INPUT` + `RECORD` |
+| `totalLevel` | Typed: `classlevels->[selector]->totalLevel`<br>Raw: `sheet->integrants->integrants->[record-key]->totalLevel` | `INPUT` | On a valid Class Level record, this field stores one contribution to the character-wide level aggregate used by calculations such as proficiency bonus. Sum the contributions from active records with populated `classID`; do not treat one record as the complete character total. | `FIND` + `INPUT` + `RECORD` |
+| `subClassID` | Typed: `classlevels->[selector]->subClassID`<br>Raw: `sheet->integrants->integrants->[record-key]->subClassID` | `STORED` | On a Class Level record, this field stores `subClassID`. | `FIND` + `RECORD` |
+| `name` | Typed: `classlevels->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Class Level record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `classlevels->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Class Level record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `classlevels->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Class Level record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `classlevels->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Class Level record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Condition records
 
@@ -1671,12 +1951,12 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `_active` | `conditions->[selector]->_active` | `STORED` | On a Condition record, this field stores whether this record or effect is currently active. | `FIND` + `TOGGLE` + `RECORD` — This is the actual condition state; `_enabled` only controls whether the record participates. |
-| `description` | `conditions->[selector]->description` | `STORED` | On a Condition record, this field stores the human-readable description. | `FIND` + `RECORD` |
-| `childIDs` | `conditions->[selector]->childIDs` | `STORED` | On a Condition record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
-| `name` | `conditions->[selector]->name` | `STORED` | On a Condition record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `conditions->[selector]->shortID` | `STORED` | On a Condition record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `conditions->[selector]->_enabled` | `STORED` | On a Condition record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `_active` | Typed: `conditions->[selector]->_active`<br>Raw: `sheet->integrants->integrants->[record-key]->_active` | `STORED` | On a Condition record, this field stores whether this record or effect is currently active. | `FIND` + `TOGGLE` + `RECORD` — This is the actual condition state; `_enabled` only controls whether the record participates. |
+| `description` | Typed: `conditions->[selector]->description`<br>Raw: `sheet->integrants->integrants->[record-key]->description` | `STORED` | On a Condition record, this field stores the human-readable description. | `FIND` + `RECORD` |
+| `childIDs` | Typed: `conditions->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On a Condition record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
+| `name` | Typed: `conditions->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Condition record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `conditions->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Condition record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `conditions->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Condition record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
 
 #### Currency records
 
@@ -1699,12 +1979,12 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `value` | `currencies->[selector]->value` | `STORED` | On a Currency record, this field stores the record's finite current value. | `FIND` + `RECORD` — Prefer `cp`, `sp`, `ep`, `gp`, or `pp` for ordinary amount changes; use the record for conversion details. |
-| `conversion.target` | `currencies->[selector]->conversion->target` | `STORED` | On a Currency record, this field stores `target`. | `FIND` + `RECORD` |
-| `conversion.amountOfTarget` | `currencies->[selector]->conversion->amountOfTarget` | `STORED` | On a Currency record, this field stores `amountOfTarget`. | `FIND` + `RECORD` |
-| `name` | `currencies->[selector]->name` | `STORED` | On a Currency record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `currencies->[selector]->shortID` | `STORED` | On a Currency record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `currencies->[selector]->_enabled` | `STORED` | On a Currency record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `value` | Typed: `currencies->[selector]->value`<br>Raw: `sheet->integrants->integrants->[record-key]->value` | `STORED` | On a Currency record, this field stores the record's finite current value. | `FIND` + `RECORD` — Prefer `cp`, `sp`, `ep`, `gp`, or `pp` for ordinary amount changes; use the record for conversion details. |
+| `conversion.target` | Typed: `currencies->[selector]->conversion->target`<br>Raw: `sheet->integrants->integrants->[record-key]->conversion->target` | `STORED` | On a Currency record, this field stores `target`. | `FIND` + `RECORD` |
+| `conversion.amountOfTarget` | Typed: `currencies->[selector]->conversion->amountOfTarget`<br>Raw: `sheet->integrants->integrants->[record-key]->conversion->amountOfTarget` | `STORED` | On a Currency record, this field stores `amountOfTarget`. | `FIND` + `RECORD` |
+| `name` | Typed: `currencies->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Currency record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `currencies->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Currency record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `currencies->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Currency record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
 
 #### Damage records
 
@@ -1730,17 +2010,17 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `_diceCount` | `damages->[selector]->_diceCount` | `INPUT` | On a Damage record, this field stores `_diceCount`. | `FIND` + `INPUT` + `RECORD` |
-| `diceSize` | `damages->[selector]->diceSize` | `INPUT` | On a Damage record, this field stores the die size. | `FIND` + `INPUT` + `RECORD` |
-| `_bonus` | `damages->[selector]->_bonus` | `INPUT` | On a Damage record, this field stores `_bonus`. | `FIND` + `INPUT` + `RECORD` |
-| `ability` | `damages->[selector]->ability` | `INPUT` | On a Damage record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
-| `damageType` | `damages->[selector]->damageType` | `STORED` | On a Damage record, this field stores the damage type. | `FIND` + `RECORD` |
-| `overrideCrit` | `damages->[selector]->overrideCrit` | `STORED` | On a Damage record, this field stores `overrideCrit`. | `FIND` + `RECORD` |
-| `critDiceSize` | `damages->[selector]->critDiceSize` | `STORED` | On a Damage record, this field stores `critDiceSize`. | `FIND` + `RECORD` |
-| `parentID` | `damages->[selector]->parentID` | `STORED` | On a Damage record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` — Use this linked record ID to identify the owning Attack, Spell, or other parent record. |
-| `name` | `damages->[selector]->name` | `STORED` | On a Damage record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `damages->[selector]->shortID` | `STORED` | On a Damage record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `damages->[selector]->_enabled` | `STORED` | On a Damage record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `_diceCount` | Typed: `damages->[selector]->_diceCount`<br>Raw: `sheet->integrants->integrants->[record-key]->_diceCount` | `INPUT` | On a Damage record, this field stores `_diceCount`. | `FIND` + `INPUT` + `RECORD` |
+| `diceSize` | Typed: `damages->[selector]->diceSize`<br>Raw: `sheet->integrants->integrants->[record-key]->diceSize` | `INPUT` | On a Damage record, this field stores the die size. | `FIND` + `INPUT` + `RECORD` |
+| `_bonus` | Typed: `damages->[selector]->_bonus`<br>Raw: `sheet->integrants->integrants->[record-key]->_bonus` | `INPUT` | On a Damage record, this field stores `_bonus`. | `FIND` + `INPUT` + `RECORD` |
+| `ability` | Typed: `damages->[selector]->ability`<br>Raw: `sheet->integrants->integrants->[record-key]->ability` | `INPUT` | On a Damage record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
+| `damageType` | Typed: `damages->[selector]->damageType`<br>Raw: `sheet->integrants->integrants->[record-key]->damageType` | `STORED` | On a Damage record, this field stores the damage type. | `FIND` + `RECORD` |
+| `overrideCrit` | Typed: `damages->[selector]->overrideCrit`<br>Raw: `sheet->integrants->integrants->[record-key]->overrideCrit` | `STORED` | On a Damage record, this field stores `overrideCrit`. | `FIND` + `RECORD` |
+| `critDiceSize` | Typed: `damages->[selector]->critDiceSize`<br>Raw: `sheet->integrants->integrants->[record-key]->critDiceSize` | `STORED` | On a Damage record, this field stores `critDiceSize`. | `FIND` + `RECORD` |
+| `parentID` | Typed: `damages->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Damage record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` — Use this linked record ID to identify the owning Attack, Spell, or other parent record. |
+| `name` | Typed: `damages->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Damage record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `damages->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Damage record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `damages->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Damage record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
 
 #### Defense records
 
@@ -1764,13 +2044,13 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `defense` | `defenses->[selector]->defense` | `STORED` | On a Defense record, this field stores `defense`. | `FIND` + `RECORD` |
-| `damage` | `defenses->[selector]->damage` | `STORED` | On a Defense record, this field stores the defense record's damage category or damage-type data. | `FIND` + `RECORD` |
-| `condition` | `defenses->[selector]->condition` | `STORED` | On a Defense record, this field stores `condition`. | `FIND` + `RECORD` |
-| `name` | `defenses->[selector]->name` | `STORED` | On a Defense record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `defenses->[selector]->shortID` | `STORED` | On a Defense record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `defenses->[selector]->_enabled` | `STORED` | On a Defense record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `defenses->[selector]->parentID` | `STORED` | On a Defense record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `defense` | Typed: `defenses->[selector]->defense`<br>Raw: `sheet->integrants->integrants->[record-key]->defense` | `STORED` | On a Defense record, this field stores `defense`. | `FIND` + `RECORD` |
+| `damage` | Typed: `defenses->[selector]->damage`<br>Raw: `sheet->integrants->integrants->[record-key]->damage` | `STORED` | On a Defense record, this field stores the defense record's damage category or damage-type data. | `FIND` + `RECORD` |
+| `condition` | Typed: `defenses->[selector]->condition`<br>Raw: `sheet->integrants->integrants->[record-key]->condition` | `STORED` | On a Defense record, this field stores `condition`. | `FIND` + `RECORD` |
+| `name` | Typed: `defenses->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Defense record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `defenses->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Defense record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `defenses->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Defense record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `defenses->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Defense record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Effect records
 
@@ -1793,15 +2073,15 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `_active` | `effects->[selector]->_active` | `STORED` | Whether the existing Effect is currently active. Distinct from `_enabled`. | `FIND` + `UNVERIFIED` |
-| `_enabled` | `effects->[selector]->_enabled` | `STORED` | Whether the Effect participates in the canonical model. Distinct from `_active`. | `FIND` + `UNVERIFIED` |
-| `category` | `effects->[selector]->category` | `STORED` | Serialized JSON array text identifying affected categories when present; parse before treating it as a list. | `FIND` |
-| `damageType` | `effects->[selector]->damageType` | `STORED` | Optional damage-type value on Effects that apply to a damage type. | `FIND` |
-| `description` | `effects->[selector]->description` | `STORED` | Human-readable Effect description. | `FIND` |
-| `name` | `effects->[selector]->name` | `STORED` | Effect display name. | `FIND` + `IDENTITY` |
-| `shortID` | `effects->[selector]->shortID` | `STORED` | Compact Beacon identity. | `FIND` + `IDENTITY` |
-| `parentID` | `effects->[selector]->parentID` | `STORED` | Immediate parent identity when present. | `FIND` + `GRAPH` |
-| `childIDs` | `effects->[selector]->childIDs` | `STORED` | Immediate child identities. Effect mechanics may be implemented by these linked records. | `FIND` + `GRAPH` |
+| `_active` | Typed: `effects->[selector]->_active`<br>Raw: `sheet->integrants->integrants->[record-key]->_active` | `STORED` | Whether the existing Effect is currently active. Distinct from `_enabled`. | `FIND` + `UNVERIFIED` |
+| `_enabled` | Typed: `effects->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | Whether the Effect participates in the canonical model. Distinct from `_active`. | `FIND` + `UNVERIFIED` |
+| `category` | Typed: `effects->[selector]->category`<br>Raw: `sheet->integrants->integrants->[record-key]->category` | `STORED` | Serialized JSON array text identifying affected categories when present; parse before treating it as a list. | `FIND` |
+| `damageType` | Typed: `effects->[selector]->damageType`<br>Raw: `sheet->integrants->integrants->[record-key]->damageType` | `STORED` | Optional damage-type value on Effects that apply to a damage type. | `FIND` |
+| `description` | Typed: `effects->[selector]->description`<br>Raw: `sheet->integrants->integrants->[record-key]->description` | `STORED` | Human-readable Effect description. | `FIND` |
+| `name` | Typed: `effects->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | Effect display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `effects->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | Compact Beacon identity. | `FIND` + `IDENTITY` |
+| `parentID` | Typed: `effects->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | Immediate parent identity when present. | `FIND` + `GRAPH` |
+| `childIDs` | Typed: `effects->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | Immediate child identities. Effect mechanics may be implemented by these linked records. | `FIND` + `GRAPH` |
 
 #### Exhaustion records
 
@@ -1824,10 +2104,10 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `value` | `exhaustions->[selector]->value` | `STORED` | On an Exhaustion record, this field stores the record's finite current value. | `FIND` + `RECORD` |
-| `name` | `exhaustions->[selector]->name` | `STORED` | On an Exhaustion record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `exhaustions->[selector]->shortID` | `STORED` | On an Exhaustion record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `exhaustions->[selector]->_enabled` | `STORED` | On an Exhaustion record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `value` | Typed: `exhaustions->[selector]->value`<br>Raw: `sheet->integrants->integrants->[record-key]->value` | `STORED` | On an Exhaustion record, this field stores the record's finite current value. | `FIND` + `RECORD` |
+| `name` | Typed: `exhaustions->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On an Exhaustion record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `exhaustions->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On an Exhaustion record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `exhaustions->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On an Exhaustion record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
 
 #### Features records
 
@@ -1853,18 +2133,20 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `description` | `features->[selector]->description` | `STORED` | On a Features record, this field stores the human-readable description. | `FIND` + `RECORD` |
-| `childIDs` | `features->[selector]->childIDs` | `STORED` | On a Features record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
-| `relations` | `features->[selector]->relations` | `STORED` | On a Features record, this field stores relationships that connect this record to other records. | `FIND` + `GRAPH` |
-| `name` | `features->[selector]->name` | `STORED` | On a Features record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `features->[selector]->shortID` | `STORED` | On a Features record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `features->[selector]->_enabled` | `STORED` | On a Features record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `arrayPosition` | `features->[selector]->arrayPosition` | `ORDER` | On a Features record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
-| `parentID` | `features->[selector]->parentID` | `STORED` | On a Features record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `description` | Typed: `features->[selector]->description`<br>Raw: `sheet->integrants->integrants->[record-key]->description` | `STORED` | On a Features record, this field stores the human-readable description. | `FIND` + `RECORD` |
+| `childIDs` | Typed: `features->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On a Features record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
+| `relations` | Typed: `features->[selector]->relations`<br>Raw: `sheet->integrants->integrants->[record-key]->relations` | `STORED` | On a Features record, this field stores relationships that connect this record to other records. | `FIND` + `GRAPH` |
+| `name` | Typed: `features->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Features record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `features->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Features record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `features->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Features record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `arrayPosition` | Typed: `features->[selector]->arrayPosition`<br>Raw: `sheet->integrants->integrants->[record-key]->arrayPosition` | `ORDER` | On a Features record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
+| `parentID` | Typed: `features->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Features record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Healing records
 
 **Purpose:** Healing records are a confirmed canonical family associated with healing effects and progression.
+
+**Locations:** Typed: `healings->[selector]`; raw record: `sheet->integrants->integrants->[record-key]`.
 
 **Calculation:** Not mapped. The family is available through the `healings` typed collection, but its type-specific payload contract has not been established.
 
@@ -1899,15 +2181,15 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `classID` | `hitdices->[selector]->classID` | `STORED` | On a Hit Dice record, this field identifies the owning Class record. | `FIND` + `RECORD` — Stores the owning Class record identity, not the Class `shortID` or display name. |
-| `dieCount` | `hitdices->[selector]->dieCount` | `STORED` | Stores the number of dice granted by this entitlement record, not the remaining unspent count. | `FIND` + `RECORD` |
-| `dieSize` | `hitdices->[selector]->dieSize` | `STORED` | On a Hit Dice record, this field stores `dieSize`. | `FIND` + `RECORD` |
-| `ability` | `hitdices->[selector]->ability` | `INPUT` | On a Hit Dice record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
-| `recovery` | `hitdices->[selector]->recovery` | `STORED` | On a Hit Dice record, this field stores how the value recovers. | `FIND` + `RECORD` |
-| `name` | `hitdices->[selector]->name` | `STORED` | On a Hit Dice record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `hitdices->[selector]->shortID` | `STORED` | On a Hit Dice record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `hitdices->[selector]->_enabled` | `STORED` | On a Hit Dice record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `hitdices->[selector]->parentID` | `STORED` | On a Hit Dice record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `classID` | Typed: `hitdices->[selector]->classID`<br>Raw: `sheet->integrants->integrants->[record-key]->classID` | `STORED` | On a Hit Dice record, this field identifies the owning Class record. | `FIND` + `RECORD` — Stores the owning Class record identity, not the Class `shortID` or display name. |
+| `dieCount` | Typed: `hitdices->[selector]->dieCount`<br>Raw: `sheet->integrants->integrants->[record-key]->dieCount` | `STORED` | Stores the number of dice granted by this entitlement record, not the remaining unspent count. | `FIND` + `RECORD` |
+| `dieSize` | Typed: `hitdices->[selector]->dieSize`<br>Raw: `sheet->integrants->integrants->[record-key]->dieSize` | `STORED` | On a Hit Dice record, this field stores `dieSize`. | `FIND` + `RECORD` |
+| `ability` | Typed: `hitdices->[selector]->ability`<br>Raw: `sheet->integrants->integrants->[record-key]->ability` | `INPUT` | On a Hit Dice record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
+| `recovery` | Typed: `hitdices->[selector]->recovery`<br>Raw: `sheet->integrants->integrants->[record-key]->recovery` | `STORED` | On a Hit Dice record, this field stores how the value recovers. | `FIND` + `RECORD` |
+| `name` | Typed: `hitdices->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Hit Dice record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `hitdices->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Hit Dice record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `hitdices->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Hit Dice record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `hitdices->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Hit Dice record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Hit Points records
 
@@ -1933,17 +2215,17 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `hitpointType` | `hitpoints->[selector]->hitpointType` | `STORED` | On a Hit Points record, this field stores `hitpointType`. | `FIND` + `RECORD` |
-| `calculation` | `hitpoints->[selector]->calculation` | `INPUT` | On a Hit Points record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
-| `isFixed` | `hitpoints->[selector]->isFixed` | `STORED` | On a Hit Points record, this field stores whether the formula uses a fixed value. | `FIND` + `RECORD` |
-| `isTemp` | `hitpoints->[selector]->isTemp` | `STORED` | On a Hit Points record, this field stores whether a Hit Points record represents temporary hit points. | `FIND` + `RECORD` — Classifies this formula record as temporary-HP capacity; it is not the character’s current `hp_temp` value. |
-| `valueFormula.flatValue` | `hitpoints->[selector]->valueFormula->flatValue` | `INPUT` | On a Hit Points record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` |
-| `valueFormula.ability.name` | `hitpoints->[selector]->valueFormula->ability->name` | `STORED` | On a Hit Points record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `valueFormula.ability.add` | `hitpoints->[selector]->valueFormula->ability->add` | `STORED` | On a Hit Points record, this field stores `add`. | `FIND` + `RECORD` |
-| `name` | `hitpoints->[selector]->name` | `STORED` | On a Hit Points record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `hitpoints->[selector]->shortID` | `STORED` | On a Hit Points record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `hitpoints->[selector]->_enabled` | `STORED` | On a Hit Points record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `hitpoints->[selector]->parentID` | `STORED` | On a Hit Points record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `hitpointType` | Typed: `hitpoints->[selector]->hitpointType`<br>Raw: `sheet->integrants->integrants->[record-key]->hitpointType` | `STORED` | On a Hit Points record, this field stores `hitpointType`. | `FIND` + `RECORD` |
+| `calculation` | Typed: `hitpoints->[selector]->calculation`<br>Raw: `sheet->integrants->integrants->[record-key]->calculation` | `INPUT` | On a Hit Points record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
+| `isFixed` | Typed: `hitpoints->[selector]->isFixed`<br>Raw: `sheet->integrants->integrants->[record-key]->isFixed` | `STORED` | On a Hit Points record, this field stores whether the formula uses a fixed value. | `FIND` + `RECORD` |
+| `isTemp` | Typed: `hitpoints->[selector]->isTemp`<br>Raw: `sheet->integrants->integrants->[record-key]->isTemp` | `STORED` | On a Hit Points record, this field stores whether a Hit Points record represents temporary hit points. | `FIND` + `RECORD` — Classifies this formula record as temporary-HP capacity; it is not the character’s current `hp_temp` value. |
+| `valueFormula.flatValue` | Typed: `hitpoints->[selector]->valueFormula->flatValue`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->flatValue` | `INPUT` | On a Hit Points record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` |
+| `valueFormula.ability.name` | Typed: `hitpoints->[selector]->valueFormula->ability->name`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->ability->name` | `STORED` | On a Hit Points record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `valueFormula.ability.add` | Typed: `hitpoints->[selector]->valueFormula->ability->add`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->ability->add` | `STORED` | On a Hit Points record, this field stores `add`. | `FIND` + `RECORD` |
+| `name` | Typed: `hitpoints->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Hit Points record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `hitpoints->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Hit Points record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `hitpoints->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Hit Points record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `hitpoints->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Hit Points record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Item records
 
@@ -1971,29 +2253,29 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `description` | `items->[selector]->description` | `STORED` | On an Item record, this field stores the human-readable description. | `FIND` + `RECORD` |
-| `quantity` | `items->[selector]->quantity` | `STORED` | On an Item record, this field stores the item quantity. | `FIND` + `RECORD` |
-| `weight` | `items->[selector]->weight` | `STORED` | On an Item record, this field stores the item weight. | `FIND` + `RECORD` |
-| `cost` | `items->[selector]->cost` | `STORED` | On an Item record, this field stores `cost`. | `FIND` + `RECORD` |
-| `rarity` | `items->[selector]->rarity` | `STORED` | On an Item record, this field stores `rarity`. | `FIND` + `RECORD` |
-| `properties` | `items->[selector]->properties` | `STORED` | On an Item record, this field stores `properties`. | `FIND` + `RECORD` |
-| `equipData.equippable` | `items->[selector]->equipData->equippable` | `STORED` | On an Item record, this field stores whether the item can be equipped. | `FIND` + `RECORD` |
-| `equipData.equipped` | `items->[selector]->equipData->equipped` | `STORED` | On an Item record, this field stores whether the item is currently equipped. | `FIND` + `TOGGLE` + `RECORD` — Changes equipped state and can affect derived AC or attacks; `equippable` only says whether equipping is allowed. |
-| `weaponData.category` | `items->[selector]->weaponData->category` | `STORED` | On an Item record, this field stores the weapon category used by the item. | `FIND` + `RECORD` |
-| `weaponData.training` | `items->[selector]->weaponData->training` | `STORED` | On an Item record, this field stores `training`. | `FIND` + `RECORD` |
-| `weaponData.type` | `items->[selector]->weaponData->type` | `STORED` | On an Item record, this field identifies the canonical record type. | `FIND` + `IDENTITY` |
-| `armorData.category` | `items->[selector]->armorData->category` | `STORED` | On an Item record, this field stores the armour category used by the item. | `FIND` + `RECORD` |
-| `armorData.ability` | `items->[selector]->armorData->ability` | `INPUT` | On an Item record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
-| `armorData.bonusCap` | `items->[selector]->armorData->bonusCap` | `STORED` | On an Item record, this field stores the maximum ability contribution allowed by the armor formula. | `FIND` + `RECORD` |
-| `armorData.strengthMinimum` | `items->[selector]->armorData->strengthMinimum` | `STORED` | On an Item record, this field stores the armor's Strength requirement. | `FIND` + `RECORD` |
-| `shieldData.category` | `items->[selector]->shieldData->category` | `STORED` | On an Item record, this field stores the shield category used by the item. | `FIND` + `RECORD` |
-| `shieldData.wieldable` | `items->[selector]->shieldData->wieldable` | `STORED` | On an Item record, this field stores `wieldable`. | `FIND` + `RECORD` |
-| `name` | `items->[selector]->name` | `STORED` | On an Item record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `items->[selector]->shortID` | `STORED` | On an Item record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `items->[selector]->_enabled` | `STORED` | On an Item record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `arrayPosition` | `items->[selector]->arrayPosition` | `ORDER` | On an Item record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
-| `parentID` | `items->[selector]->parentID` | `STORED` | On an Item record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
-| `childIDs` | `items->[selector]->childIDs` | `STORED` | On an Item record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` — Follow these linked record IDs to linked Attack, Attunement, or other child records; do not replace the whole array. |
+| `description` | Typed: `items->[selector]->description`<br>Raw: `sheet->integrants->integrants->[record-key]->description` | `STORED` | On an Item record, this field stores the human-readable description. | `FIND` + `RECORD` |
+| `quantity` | Typed: `items->[selector]->quantity`<br>Raw: `sheet->integrants->integrants->[record-key]->quantity` | `STORED` | On an Item record, this field stores the item quantity. | `FIND` + `RECORD` |
+| `weight` | Typed: `items->[selector]->weight`<br>Raw: `sheet->integrants->integrants->[record-key]->weight` | `STORED` | On an Item record, this field stores the item weight. | `FIND` + `RECORD` |
+| `cost` | Typed: `items->[selector]->cost`<br>Raw: `sheet->integrants->integrants->[record-key]->cost` | `STORED` | On an Item record, this field stores `cost`. | `FIND` + `RECORD` |
+| `rarity` | Typed: `items->[selector]->rarity`<br>Raw: `sheet->integrants->integrants->[record-key]->rarity` | `STORED` | On an Item record, this field stores `rarity`. | `FIND` + `RECORD` |
+| `properties` | Typed: `items->[selector]->properties`<br>Raw: `sheet->integrants->integrants->[record-key]->properties` | `STORED` | On an Item record, this field stores `properties`. | `FIND` + `RECORD` |
+| `equipData.equippable` | Typed: `items->[selector]->equipData->equippable`<br>Raw: `sheet->integrants->integrants->[record-key]->equipData->equippable` | `STORED` | On an Item record, this field stores whether the item can be equipped. | `FIND` + `RECORD` |
+| `equipData.equipped` | Typed: `items->[selector]->equipData->equipped`<br>Raw: `sheet->integrants->integrants->[record-key]->equipData->equipped` | `STORED` | On an Item record, this field stores whether the item is currently equipped. | `FIND` + `TOGGLE` + `RECORD` — Changes equipped state and can affect derived AC or attacks; `equippable` only says whether equipping is allowed. |
+| `weaponData.category` | Typed: `items->[selector]->weaponData->category`<br>Raw: `sheet->integrants->integrants->[record-key]->weaponData->category` | `STORED` | On an Item record, this field stores the weapon category used by the item. | `FIND` + `RECORD` |
+| `weaponData.training` | Typed: `items->[selector]->weaponData->training`<br>Raw: `sheet->integrants->integrants->[record-key]->weaponData->training` | `STORED` | On an Item record, this field stores `training`. | `FIND` + `RECORD` |
+| `weaponData.type` | Typed: `items->[selector]->weaponData->type`<br>Raw: `sheet->integrants->integrants->[record-key]->weaponData->type` | `STORED` | On an Item record, this field identifies the canonical record type. | `FIND` + `IDENTITY` |
+| `armorData.category` | Typed: `items->[selector]->armorData->category`<br>Raw: `sheet->integrants->integrants->[record-key]->armorData->category` | `STORED` | On an Item record, this field stores the armour category used by the item. | `FIND` + `RECORD` |
+| `armorData.ability` | Typed: `items->[selector]->armorData->ability`<br>Raw: `sheet->integrants->integrants->[record-key]->armorData->ability` | `INPUT` | On an Item record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
+| `armorData.bonusCap` | Typed: `items->[selector]->armorData->bonusCap`<br>Raw: `sheet->integrants->integrants->[record-key]->armorData->bonusCap` | `STORED` | On an Item record, this field stores the maximum ability contribution allowed by the armor formula. | `FIND` + `RECORD` |
+| `armorData.strengthMinimum` | Typed: `items->[selector]->armorData->strengthMinimum`<br>Raw: `sheet->integrants->integrants->[record-key]->armorData->strengthMinimum` | `STORED` | On an Item record, this field stores the armor's Strength requirement. | `FIND` + `RECORD` |
+| `shieldData.category` | Typed: `items->[selector]->shieldData->category`<br>Raw: `sheet->integrants->integrants->[record-key]->shieldData->category` | `STORED` | On an Item record, this field stores the shield category used by the item. | `FIND` + `RECORD` |
+| `shieldData.wieldable` | Typed: `items->[selector]->shieldData->wieldable`<br>Raw: `sheet->integrants->integrants->[record-key]->shieldData->wieldable` | `STORED` | On an Item record, this field stores `wieldable`. | `FIND` + `RECORD` |
+| `name` | Typed: `items->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On an Item record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `items->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On an Item record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `items->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On an Item record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `arrayPosition` | Typed: `items->[selector]->arrayPosition`<br>Raw: `sheet->integrants->integrants->[record-key]->arrayPosition` | `ORDER` | On an Item record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
+| `parentID` | Typed: `items->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On an Item record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `childIDs` | Typed: `items->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On an Item record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` — Follow these linked record IDs to linked Attack, Attunement, or other child records; do not replace the whole array. |
 
 #### Language records
 
@@ -2019,11 +2301,11 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `name` | `languages->[selector]->name` | `STORED` | On a Language record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `_enabled` | `languages->[selector]->_enabled` | `STORED` | On a Language record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `shortID` | `languages->[selector]->shortID` | `STORED` | On a Language record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `arrayPosition` | `languages->[selector]->arrayPosition` | `ORDER` | On a Language record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
-| `parentID` | `languages->[selector]->parentID` | `STORED` | On a Language record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `name` | Typed: `languages->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Language record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `languages->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Language record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `shortID` | Typed: `languages->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Language record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `arrayPosition` | Typed: `languages->[selector]->arrayPosition`<br>Raw: `sheet->integrants->integrants->[record-key]->arrayPosition` | `ORDER` | On a Language record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
+| `parentID` | Typed: `languages->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Language record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Modifier records
 
@@ -2047,13 +2329,13 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `concat` | `modifiers->[selector]->concat` | `STORED` | On a `modifier` record, this field stores how modifier text or values are concatenated. | `FIND` + `RECORD` |
-| `modifications` | `modifiers->[selector]->modifications` | `STORED` | On a `modifier` record, this field stores the modifications applied by the record. | `FIND` + `RECORD` — Structured modifier data; inspect it and address an existing primitive child rather than replacing the container blindly. |
-| `relations` | `modifiers->[selector]->relations` | `STORED` | On a `modifier` record, this field stores relationships that connect this record to other records. | `FIND` + `GRAPH` — Structured relationship data; preserve valid linked record IDs and edit only an understood primitive child. |
-| `name` | `modifiers->[selector]->name` | `STORED` | On a `modifier` record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `modifiers->[selector]->shortID` | `STORED` | On a `modifier` record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `modifiers->[selector]->_enabled` | `STORED` | On a `modifier` record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `modifiers->[selector]->parentID` | `STORED` | On a `modifier` record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `concat` | Typed: `modifiers->[selector]->concat`<br>Raw: `sheet->integrants->integrants->[record-key]->concat` | `STORED` | On a `modifier` record, this field stores how modifier text or values are concatenated. | `FIND` + `RECORD` |
+| `modifications` | Typed: `modifiers->[selector]->modifications`<br>Raw: `sheet->integrants->integrants->[record-key]->modifications` | `STORED` | On a `modifier` record, this field stores the modifications applied by the record. | `FIND` + `RECORD` — Structured modifier data; inspect it and address an existing primitive child rather than replacing the container blindly. |
+| `relations` | Typed: `modifiers->[selector]->relations`<br>Raw: `sheet->integrants->integrants->[record-key]->relations` | `STORED` | On a `modifier` record, this field stores relationships that connect this record to other records. | `FIND` + `GRAPH` — Structured relationship data; preserve valid linked record IDs and edit only an understood primitive child. |
+| `name` | Typed: `modifiers->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a `modifier` record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `modifiers->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a `modifier` record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `modifiers->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a `modifier` record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `modifiers->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a `modifier` record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Prepared Spell Slot records
 
@@ -2079,12 +2361,12 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `calculation` | `preparedspellslots->[selector]->calculation` | `INPUT` | On a Prepared Spell Slot record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
-| `valueFormula.flatValue` | `preparedspellslots->[selector]->valueFormula->flatValue` | `INPUT` | On a Prepared Spell Slot record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` |
-| `name` | `preparedspellslots->[selector]->name` | `STORED` | On a Prepared Spell Slot record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `preparedspellslots->[selector]->shortID` | `STORED` | On a Prepared Spell Slot record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `preparedspellslots->[selector]->_enabled` | `STORED` | On a Prepared Spell Slot record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `preparedspellslots->[selector]->parentID` | `STORED` | On a Prepared Spell Slot record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `calculation` | Typed: `preparedspellslots->[selector]->calculation`<br>Raw: `sheet->integrants->integrants->[record-key]->calculation` | `INPUT` | On a Prepared Spell Slot record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
+| `valueFormula.flatValue` | Typed: `preparedspellslots->[selector]->valueFormula->flatValue`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->flatValue` | `INPUT` | On a Prepared Spell Slot record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` |
+| `name` | Typed: `preparedspellslots->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Prepared Spell Slot record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `preparedspellslots->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Prepared Spell Slot record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `preparedspellslots->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Prepared Spell Slot record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `preparedspellslots->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Prepared Spell Slot record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Proficiency records
 
@@ -2110,15 +2392,15 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `category` | `proficiencies->[selector]->category` | `STORED` | On a Proficiency record, this field identifies the record's category, such as Skill or Saving Throw. | `FIND` + `RECORD` |
-| `proficiency` | `proficiencies->[selector]->proficiency` | `STORED` | On a Proficiency record, this field identifies the skill, save, tool, weapon, or armor proficiency. | `FIND` + `RECORD` |
-| `proficiencyLevel` | `proficiencies->[selector]->proficiencyLevel` | `INPUT` | On a Proficiency record, this field stores the proficiency tier, such as Proficient or Expertise. | `FIND` + `INPUT` + `RECORD` — Change this tier to alter Proficient or Expertise state, then read the recalculated public skill or save total. |
-| `rollAbility` | `proficiencies->[selector]->rollAbility` | `STORED` | On a Proficiency record, this field stores the ability used when rolling the proficiency. | `FIND` + `RECORD` |
-| `increaseIfAlreadyAt` | `proficiencies->[selector]->increaseIfAlreadyAt` | `STORED` | On a Proficiency record, this field stores `increaseIfAlreadyAt`. | `FIND` + `RECORD` |
-| `name` | `proficiencies->[selector]->name` | `STORED` | On a Proficiency record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `proficiencies->[selector]->shortID` | `STORED` | On a Proficiency record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `proficiencies->[selector]->_enabled` | `STORED` | On a Proficiency record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `proficiencies->[selector]->parentID` | `STORED` | On a Proficiency record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `category` | Typed: `proficiencies->[selector]->category`<br>Raw: `sheet->integrants->integrants->[record-key]->category` | `STORED` | On a Proficiency record, this field identifies the record's category, such as Skill or Saving Throw. | `FIND` + `RECORD` |
+| `proficiency` | Typed: `proficiencies->[selector]->proficiency`<br>Raw: `sheet->integrants->integrants->[record-key]->proficiency` | `STORED` | On a Proficiency record, this field identifies the skill, save, tool, weapon, or armor proficiency. | `FIND` + `RECORD` |
+| `proficiencyLevel` | Typed: `proficiencies->[selector]->proficiencyLevel`<br>Raw: `sheet->integrants->integrants->[record-key]->proficiencyLevel` | `INPUT` | On a Proficiency record, this field stores the proficiency tier, such as Proficient or Expertise. | `FIND` + `INPUT` + `RECORD` — Change this tier to alter Proficient or Expertise state, then read the recalculated public skill or save total. |
+| `rollAbility` | Typed: `proficiencies->[selector]->rollAbility`<br>Raw: `sheet->integrants->integrants->[record-key]->rollAbility` | `STORED` | On a Proficiency record, this field stores the ability used when rolling the proficiency. | `FIND` + `RECORD` |
+| `increaseIfAlreadyAt` | Typed: `proficiencies->[selector]->increaseIfAlreadyAt`<br>Raw: `sheet->integrants->integrants->[record-key]->increaseIfAlreadyAt` | `STORED` | On a Proficiency record, this field stores `increaseIfAlreadyAt`. | `FIND` + `RECORD` |
+| `name` | Typed: `proficiencies->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Proficiency record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `proficiencies->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Proficiency record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `proficiencies->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Proficiency record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `proficiencies->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Proficiency record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Resource records
 
@@ -2144,14 +2426,14 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `value` | `resources->[selector]->value` | `STORED` | On a Resource record, this field stores the record's finite current value. | `FIND` + `RECORD` — This is the current amount; use `maxValueFormula` only when changing capacity. |
-| `maxValueFormula` | `resources->[selector]->maxValueFormula` | `INPUT` | On a Resource record, this field stores the formula used to calculate a Resource maximum. | `FIND` + `INPUT` + `RECORD` — Structured maximum formula; edit an existing primitive component rather than replacing the whole object blindly. |
-| `recoveryRate` | `resources->[selector]->recoveryRate` | `STORED` | On a Resource record, this field stores how much of the Resource recovers. | `FIND` + `RECORD` |
-| `relations` | `resources->[selector]->relations` | `STORED` | On a Resource record, this field stores relationships that connect this record to other records. | `FIND` + `GRAPH` |
-| `name` | `resources->[selector]->name` | `STORED` | On a Resource record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `resources->[selector]->shortID` | `STORED` | On a Resource record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `resources->[selector]->_enabled` | `STORED` | On a Resource record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `resources->[selector]->parentID` | `STORED` | On a Resource record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `value` | Typed: `resources->[selector]->value`<br>Raw: `sheet->integrants->integrants->[record-key]->value` | `STORED` | On a Resource record, this field stores the record's finite current value. | `FIND` + `RECORD` — This is the current amount; use `maxValueFormula` only when changing capacity. |
+| `maxValueFormula` | Typed: `resources->[selector]->maxValueFormula`<br>Raw: `sheet->integrants->integrants->[record-key]->maxValueFormula` | `INPUT` | On a Resource record, this field stores the formula used to calculate a Resource maximum. | `FIND` + `INPUT` + `RECORD` — Structured maximum formula; edit an existing primitive component rather than replacing the whole object blindly. |
+| `recoveryRate` | Typed: `resources->[selector]->recoveryRate`<br>Raw: `sheet->integrants->integrants->[record-key]->recoveryRate` | `STORED` | On a Resource record, this field stores how much of the Resource recovers. | `FIND` + `RECORD` |
+| `relations` | Typed: `resources->[selector]->relations`<br>Raw: `sheet->integrants->integrants->[record-key]->relations` | `STORED` | On a Resource record, this field stores relationships that connect this record to other records. | `FIND` + `GRAPH` |
+| `name` | Typed: `resources->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Resource record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `resources->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Resource record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `resources->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Resource record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `resources->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Resource record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Rest Display records
 
@@ -2174,11 +2456,11 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `description` | `restdisplays->[selector]->description` | `STORED` | On a Rest Display record, this field stores the human-readable description. | `FIND` + `RECORD` |
-| `restType` | `restdisplays->[selector]->restType` | `STORED` | On a Rest Display record, this field stores `restType`. | `FIND` + `RECORD` |
-| `name` | `restdisplays->[selector]->name` | `STORED` | On a Rest Display record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `restdisplays->[selector]->shortID` | `STORED` | On a Rest Display record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `restdisplays->[selector]->_enabled` | `STORED` | On a Rest Display record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `description` | Typed: `restdisplays->[selector]->description`<br>Raw: `sheet->integrants->integrants->[record-key]->description` | `STORED` | On a Rest Display record, this field stores the human-readable description. | `FIND` + `RECORD` |
+| `restType` | Typed: `restdisplays->[selector]->restType`<br>Raw: `sheet->integrants->integrants->[record-key]->restType` | `STORED` | On a Rest Display record, this field stores `restType`. | `FIND` + `RECORD` |
+| `name` | Typed: `restdisplays->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Rest Display record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `restdisplays->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Rest Display record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `restdisplays->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Rest Display record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
 
 #### Roll Bonus records
 
@@ -2204,16 +2486,16 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `bonusCategory` | `rollbonuses->[selector]->bonusCategory` | `STORED` | On a Roll Bonus record, this field stores `bonusCategory`. | `FIND` + `RECORD` |
-| `bonusDetails` | `rollbonuses->[selector]->bonusDetails` | `STORED` | On a Roll Bonus record, this field stores `bonusDetails`. | `FIND` + `RECORD` |
-| `bonusName` | `rollbonuses->[selector]->bonusName` | `STORED` | On a Roll Bonus record, this field stores `bonusName`. | `FIND` + `RECORD` |
-| `bonusValue` | `rollbonuses->[selector]->bonusValue` | `STORED` | On a Roll Bonus record, this field stores `bonusValue`. | `FIND` + `RECORD` |
-| `diceCount` | `rollbonuses->[selector]->diceCount` | `INPUT` | On a Roll Bonus record, this field stores the number of dice. | `FIND` + `INPUT` + `RECORD` |
-| `totalRoll` | `rollbonuses->[selector]->totalRoll` | `STORED` | On a Roll Bonus record, this field stores the record's `totalRoll` flag. | `FIND` + `RECORD` |
-| `name` | `rollbonuses->[selector]->name` | `STORED` | On a Roll Bonus record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `rollbonuses->[selector]->shortID` | `STORED` | On a Roll Bonus record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `rollbonuses->[selector]->_enabled` | `STORED` | On a Roll Bonus record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `rollbonuses->[selector]->parentID` | `STORED` | On a Roll Bonus record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `bonusCategory` | Typed: `rollbonuses->[selector]->bonusCategory`<br>Raw: `sheet->integrants->integrants->[record-key]->bonusCategory` | `STORED` | On a Roll Bonus record, this field stores `bonusCategory`. | `FIND` + `RECORD` |
+| `bonusDetails` | Typed: `rollbonuses->[selector]->bonusDetails`<br>Raw: `sheet->integrants->integrants->[record-key]->bonusDetails` | `STORED` | On a Roll Bonus record, this field stores `bonusDetails`. | `FIND` + `RECORD` |
+| `bonusName` | Typed: `rollbonuses->[selector]->bonusName`<br>Raw: `sheet->integrants->integrants->[record-key]->bonusName` | `STORED` | On a Roll Bonus record, this field stores `bonusName`. | `FIND` + `RECORD` |
+| `bonusValue` | Typed: `rollbonuses->[selector]->bonusValue`<br>Raw: `sheet->integrants->integrants->[record-key]->bonusValue` | `STORED` | On a Roll Bonus record, this field stores `bonusValue`. | `FIND` + `RECORD` |
+| `diceCount` | Typed: `rollbonuses->[selector]->diceCount`<br>Raw: `sheet->integrants->integrants->[record-key]->diceCount` | `INPUT` | On a Roll Bonus record, this field stores the number of dice. | `FIND` + `INPUT` + `RECORD` |
+| `totalRoll` | Typed: `rollbonuses->[selector]->totalRoll`<br>Raw: `sheet->integrants->integrants->[record-key]->totalRoll` | `STORED` | On a Roll Bonus record, this field stores the record's `totalRoll` flag. | `FIND` + `RECORD` |
+| `name` | Typed: `rollbonuses->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Roll Bonus record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `rollbonuses->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Roll Bonus record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `rollbonuses->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Roll Bonus record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `rollbonuses->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Roll Bonus record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Sense records
 
@@ -2241,14 +2523,14 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `calculation` | `senses->[selector]->calculation` | `INPUT` | On a Sense record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
-| `ignoreValue` | `senses->[selector]->ignoreValue` | `STORED` | On a Sense record, this field stores whether a Sense ignores its numeric range. | `FIND` + `RECORD` — When true, the Sense should not be treated as having a meaningful numeric range. |
-| `valueFormula.flatValue` | `senses->[selector]->valueFormula->flatValue` | `INPUT` | On a Sense record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` — Stores the numeric Sense range when `ignoreValue` does not suppress it. |
-| `name` | `senses->[selector]->name` | `STORED` | On a Sense record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `senses->[selector]->shortID` | `STORED` | On a Sense record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `senses->[selector]->_enabled` | `STORED` | On a Sense record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `arrayPosition` | `senses->[selector]->arrayPosition` | `ORDER` | On a Sense record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
-| `parentID` | `senses->[selector]->parentID` | `STORED` | On a Sense record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `calculation` | Typed: `senses->[selector]->calculation`<br>Raw: `sheet->integrants->integrants->[record-key]->calculation` | `INPUT` | On a Sense record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
+| `ignoreValue` | Typed: `senses->[selector]->ignoreValue`<br>Raw: `sheet->integrants->integrants->[record-key]->ignoreValue` | `STORED` | On a Sense record, this field stores whether a Sense ignores its numeric range. | `FIND` + `RECORD` — When true, the Sense should not be treated as having a meaningful numeric range. |
+| `valueFormula.flatValue` | Typed: `senses->[selector]->valueFormula->flatValue`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->flatValue` | `INPUT` | On a Sense record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` — Stores the numeric Sense range when `ignoreValue` does not suppress it. |
+| `name` | Typed: `senses->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Sense record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `senses->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Sense record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `senses->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Sense record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `arrayPosition` | Typed: `senses->[selector]->arrayPosition`<br>Raw: `sheet->integrants->integrants->[record-key]->arrayPosition` | `ORDER` | On a Sense record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
+| `parentID` | Typed: `senses->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Sense record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Size records
 
@@ -2272,11 +2554,11 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `sizeValue` | `sizes->[selector]->sizeValue` | `STORED` | On a Size record, this field stores the canonical creature-size value. | `FIND` + `RECORD` |
-| `name` | `sizes->[selector]->name` | `STORED` | On a Size record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `sizes->[selector]->shortID` | `STORED` | On a Size record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `sizes->[selector]->_enabled` | `STORED` | On a Size record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `sizes->[selector]->parentID` | `STORED` | On a Size record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `sizeValue` | Typed: `sizes->[selector]->sizeValue`<br>Raw: `sheet->integrants->integrants->[record-key]->sizeValue` | `STORED` | On a Size record, this field stores the canonical creature-size value. | `FIND` + `RECORD` |
+| `name` | Typed: `sizes->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Size record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `sizes->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Size record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `sizes->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Size record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `sizes->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Size record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Skill records
 
@@ -2301,12 +2583,12 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `ability` | `skills->[selector]->ability` | `INPUT` | On a Skill record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
-| `custom` | `skills->[selector]->custom` | `STORED` | On a Skill record, this field stores `custom`. | `FIND` + `RECORD` |
-| `showAsPassive` | `skills->[selector]->showAsPassive` | `STORED` | On a Skill record, this field stores whether the Skill can be displayed or calculated as a passive score. | `FIND` + `RECORD` — Controls whether this Skill participates in passive-score display or calculation; it is not the passive total itself. |
-| `name` | `skills->[selector]->name` | `STORED` | On a Skill record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `skills->[selector]->shortID` | `STORED` | On a Skill record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `skills->[selector]->_enabled` | `STORED` | On a Skill record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `ability` | Typed: `skills->[selector]->ability`<br>Raw: `sheet->integrants->integrants->[record-key]->ability` | `INPUT` | On a Skill record, this field identifies the ability used by this record or formula. | `FIND` + `INPUT` + `RECORD` |
+| `custom` | Typed: `skills->[selector]->custom`<br>Raw: `sheet->integrants->integrants->[record-key]->custom` | `STORED` | On a Skill record, this field stores `custom`. | `FIND` + `RECORD` |
+| `showAsPassive` | Typed: `skills->[selector]->showAsPassive`<br>Raw: `sheet->integrants->integrants->[record-key]->showAsPassive` | `STORED` | On a Skill record, this field stores whether the Skill can be displayed or calculated as a passive score. | `FIND` + `RECORD` — Controls whether this Skill participates in passive-score display or calculation; it is not the passive total itself. |
+| `name` | Typed: `skills->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Skill record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `skills->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Skill record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `skills->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Skill record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
 
 #### Species records
 
@@ -2330,13 +2612,13 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `description` | `species->[selector]->description` | `STORED` | On a Species record, this field stores the human-readable description. | `FIND` + `RECORD` |
-| `preventSubspecies` | `species->[selector]->preventSubspecies` | `STORED` | On a Species record, this field stores `preventSubspecies`. | `FIND` + `RECORD` |
-| `childIDs` | `species->[selector]->childIDs` | `STORED` | On a Species record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
-| `name` | `species->[selector]->name` | `STORED` | On a Species record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `species->[selector]->shortID` | `STORED` | On a Species record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `species->[selector]->_enabled` | `STORED` | On a Species record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `species->[selector]->parentID` | `STORED` | On a Species record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `description` | Typed: `species->[selector]->description`<br>Raw: `sheet->integrants->integrants->[record-key]->description` | `STORED` | On a Species record, this field stores the human-readable description. | `FIND` + `RECORD` |
+| `preventSubspecies` | Typed: `species->[selector]->preventSubspecies`<br>Raw: `sheet->integrants->integrants->[record-key]->preventSubspecies` | `STORED` | On a Species record, this field stores `preventSubspecies`. | `FIND` + `RECORD` |
+| `childIDs` | Typed: `species->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On a Species record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
+| `name` | Typed: `species->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Species record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `species->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Species record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `species->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Species record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `species->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Species record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Speed records
 
@@ -2364,14 +2646,14 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `speed` | `speeds->[selector]->speed` | `STORED` | On a Speed record, this field identifies the movement mode, such as Walk, Fly, Climb, Swim, or Burrow. | `FIND` + `RECORD` — Identifies the movement mode; the direct alias `speed` represents Speed only. |
-| `calculation` | `speeds->[selector]->calculation` | `INPUT` | On a Speed record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
-| `valueFormula.flatValue` | `speeds->[selector]->valueFormula->flatValue` | `INPUT` | On a Speed record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` — Changes the selected movement mode’s base value, after which the sheet recalculates the final speed. |
-| `name` | `speeds->[selector]->name` | `STORED` | On a Speed record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `speeds->[selector]->shortID` | `STORED` | On a Speed record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `speeds->[selector]->_enabled` | `STORED` | On a Speed record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `arrayPosition` | `speeds->[selector]->arrayPosition` | `ORDER` | On a Speed record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
-| `parentID` | `speeds->[selector]->parentID` | `STORED` | On a Speed record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `speed` | Typed: `speeds->[selector]->speed`<br>Raw: `sheet->integrants->integrants->[record-key]->speed` | `STORED` | On a Speed record, this field identifies the movement mode, such as Walk, Fly, Climb, Swim, or Burrow. | `FIND` + `RECORD` — Identifies the movement mode; the direct alias `speed` represents Speed only. |
+| `calculation` | Typed: `speeds->[selector]->calculation`<br>Raw: `sheet->integrants->integrants->[record-key]->calculation` | `INPUT` | On a Speed record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
+| `valueFormula.flatValue` | Typed: `speeds->[selector]->valueFormula->flatValue`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->flatValue` | `INPUT` | On a Speed record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` — Changes the selected movement mode’s base value, after which the sheet recalculates the final speed. |
+| `name` | Typed: `speeds->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Speed record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `speeds->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Speed record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `speeds->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Speed record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `arrayPosition` | Typed: `speeds->[selector]->arrayPosition`<br>Raw: `sheet->integrants->integrants->[record-key]->arrayPosition` | `ORDER` | On a Speed record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
+| `parentID` | Typed: `speeds->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Speed record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Spell records
 
@@ -2397,28 +2679,28 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `_prepared` | `spells->[selector]->_prepared` | `STORED` | On a Spell record, this field stores whether the spell is currently prepared. | `FIND` + `TOGGLE` + `RECORD` — This is the character’s current prepared state for the spell. |
-| `alwaysPrepared` | `spells->[selector]->alwaysPrepared` | `STORED` | On a Spell record, this field stores `alwaysPrepared`. | `FIND` + `RECORD` — Marks a spell as inherently always prepared; do not use it as a temporary prepared toggle. |
-| `level` | `spells->[selector]->level` | `STORED` | On a Spell record, this field stores a class, spell, slot, or upcasting level. | `FIND` + `RECORD` |
-| `school` | `spells->[selector]->school` | `STORED` | On a Spell record, this field stores the spell school. | `FIND` + `RECORD` |
-| `castingTime` | `spells->[selector]->castingTime` | `STORED` | On a Spell record, this field stores `castingTime`. | `FIND` + `RECORD` |
-| `range` | `spells->[selector]->range` | `STORED` | On a Spell record, this field stores the attack or spell range. | `FIND` + `RECORD` |
-| `duration` | `spells->[selector]->duration` | `STORED` | On a Spell record, this field stores the duration of the spell or effect. | `FIND` + `RECORD` |
-| `concentration` | `spells->[selector]->concentration` | `STORED` | On a Spell record, this field stores whether the spell requires Concentration. | `FIND` + `RECORD` |
-| `ritual` | `spells->[selector]->ritual` | `STORED` | On a Spell record, this field stores whether the spell can be cast as a Ritual. | `FIND` + `RECORD` |
-| `components.verbal` | `spells->[selector]->components->verbal` | `STORED` | On a Spell record, this field stores `verbal`. | `FIND` + `RECORD` |
-| `components.somatic` | `spells->[selector]->components->somatic` | `STORED` | On a Spell record, this field stores `somatic`. | `FIND` + `RECORD` |
-| `components.material` | `spells->[selector]->components->material` | `STORED` | On a Spell record, this field stores `material`. | `FIND` + `RECORD` |
-| `components.materialDescription` | `spells->[selector]->components->materialDescription` | `STORED` | On a Spell record, this field stores `materialDescription`. | `FIND` + `RECORD` |
-| `cantripScale` | `spells->[selector]->cantripScale` | `STORED` | On a Spell record, this field stores the spell's cantrip-scaling behavior. | `FIND` + `RECORD` |
-| `upcastText` | `spells->[selector]->upcastText` | `STORED` | On a Spell record, this field stores `upcastText`. | `FIND` + `RECORD` |
-| `description` | `spells->[selector]->description` | `STORED` | On a Spell record, this field stores the human-readable description. | `FIND` + `RECORD` |
-| `name` | `spells->[selector]->name` | `STORED` | On a Spell record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `spells->[selector]->shortID` | `STORED` | On a Spell record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` — Use this for the Beacon spell action call; typed writes use the selected collection path. |
-| `_enabled` | `spells->[selector]->_enabled` | `STORED` | On a Spell record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `arrayPosition` | `spells->[selector]->arrayPosition` | `ORDER` | On a Spell record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
-| `parentID` | `spells->[selector]->parentID` | `STORED` | On a Spell record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
-| `childIDs` | `spells->[selector]->childIDs` | `STORED` | On a Spell record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
+| `_prepared` | Typed: `spells->[selector]->_prepared`<br>Raw: `sheet->integrants->integrants->[record-key]->_prepared` | `STORED` | On a Spell record, this field stores whether the spell is currently prepared. | `FIND` + `TOGGLE` + `RECORD` — This is the character’s current prepared state for the spell. |
+| `alwaysPrepared` | Typed: `spells->[selector]->alwaysPrepared`<br>Raw: `sheet->integrants->integrants->[record-key]->alwaysPrepared` | `STORED` | On a Spell record, this field stores `alwaysPrepared`. | `FIND` + `RECORD` — Marks a spell as inherently always prepared; do not use it as a temporary prepared toggle. |
+| `level` | Typed: `spells->[selector]->level`<br>Raw: `sheet->integrants->integrants->[record-key]->level` | `STORED` | On a Spell record, this field stores a class, spell, slot, or upcasting level. | `FIND` + `RECORD` |
+| `school` | Typed: `spells->[selector]->school`<br>Raw: `sheet->integrants->integrants->[record-key]->school` | `STORED` | On a Spell record, this field stores the spell school. | `FIND` + `RECORD` |
+| `castingTime` | Typed: `spells->[selector]->castingTime`<br>Raw: `sheet->integrants->integrants->[record-key]->castingTime` | `STORED` | On a Spell record, this field stores `castingTime`. | `FIND` + `RECORD` |
+| `range` | Typed: `spells->[selector]->range`<br>Raw: `sheet->integrants->integrants->[record-key]->range` | `STORED` | On a Spell record, this field stores the attack or spell range. | `FIND` + `RECORD` |
+| `duration` | Typed: `spells->[selector]->duration`<br>Raw: `sheet->integrants->integrants->[record-key]->duration` | `STORED` | On a Spell record, this field stores the duration of the spell or effect. | `FIND` + `RECORD` |
+| `concentration` | Typed: `spells->[selector]->concentration`<br>Raw: `sheet->integrants->integrants->[record-key]->concentration` | `STORED` | On a Spell record, this field stores whether the spell requires Concentration. | `FIND` + `RECORD` |
+| `ritual` | Typed: `spells->[selector]->ritual`<br>Raw: `sheet->integrants->integrants->[record-key]->ritual` | `STORED` | On a Spell record, this field stores whether the spell can be cast as a Ritual. | `FIND` + `RECORD` |
+| `components.verbal` | Typed: `spells->[selector]->components->verbal`<br>Raw: `sheet->integrants->integrants->[record-key]->components->verbal` | `STORED` | On a Spell record, this field stores `verbal`. | `FIND` + `RECORD` |
+| `components.somatic` | Typed: `spells->[selector]->components->somatic`<br>Raw: `sheet->integrants->integrants->[record-key]->components->somatic` | `STORED` | On a Spell record, this field stores `somatic`. | `FIND` + `RECORD` |
+| `components.material` | Typed: `spells->[selector]->components->material`<br>Raw: `sheet->integrants->integrants->[record-key]->components->material` | `STORED` | On a Spell record, this field stores `material`. | `FIND` + `RECORD` |
+| `components.materialDescription` | Typed: `spells->[selector]->components->materialDescription`<br>Raw: `sheet->integrants->integrants->[record-key]->components->materialDescription` | `STORED` | On a Spell record, this field stores `materialDescription`. | `FIND` + `RECORD` |
+| `cantripScale` | Typed: `spells->[selector]->cantripScale`<br>Raw: `sheet->integrants->integrants->[record-key]->cantripScale` | `STORED` | On a Spell record, this field stores the spell's cantrip-scaling behavior. | `FIND` + `RECORD` |
+| `upcastText` | Typed: `spells->[selector]->upcastText`<br>Raw: `sheet->integrants->integrants->[record-key]->upcastText` | `STORED` | On a Spell record, this field stores `upcastText`. | `FIND` + `RECORD` |
+| `description` | Typed: `spells->[selector]->description`<br>Raw: `sheet->integrants->integrants->[record-key]->description` | `STORED` | On a Spell record, this field stores the human-readable description. | `FIND` + `RECORD` |
+| `name` | Typed: `spells->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Spell record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `spells->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Spell record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` — Use this for the Beacon spell action call; typed writes use the selected collection path. |
+| `_enabled` | Typed: `spells->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Spell record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `arrayPosition` | Typed: `spells->[selector]->arrayPosition`<br>Raw: `sheet->integrants->integrants->[record-key]->arrayPosition` | `ORDER` | On a Spell record, this field stores the record's relative display position among records of the same family. | `FIND` + `ORDER` |
+| `parentID` | Typed: `spells->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Spell record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `childIDs` | Typed: `spells->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On a Spell record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
 
 #### Spell Slot records
 
@@ -2448,16 +2730,16 @@ The complete low-level Beacon storage layout, internal record keys, builder data
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `_slotType` | `spellslots->[selector]->_slotType` | `STORED` | On a Spell Slot record, this field identifies the spell-slot category, such as normal or Pact. | `FIND` + `RECORD` — Distinguishes normal and Pact entitlement records; do not infer the slot type from `spellLevel` alone. |
-| `spellLevel` | `spellslots->[selector]->spellLevel` | `STORED` | On a Spell Slot record, this field stores the spell-slot level. | `FIND` + `RECORD` |
-| `calculation` | `spellslots->[selector]->calculation` | `INPUT` | On a Spell Slot record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
-| `valueFormula.flatValue` | `spellslots->[selector]->valueFormula->flatValue` | `INPUT` | On a Spell Slot record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` |
-| `name` | `spellslots->[selector]->name` | `STORED` | On a Spell Slot record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `spellslots->[selector]->shortID` | `STORED` | On a Spell Slot record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `spellslots->[selector]->_enabled` | `STORED` | On a Spell Slot record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `overwrittenBy` | `spellslots->[selector]->overwrittenBy` | `STORED` | Stores the raw canonical key of the later record that supersedes this progression stage. | `FIND` + `GRAPH` — When the referenced replacement exists and is enabled, ScriptCards excludes this record from the active typed collection. |
-| `cascades` | `spellslots->[selector]->cascades` | `STORED` | Stores progression/cascade metadata. An earlier progression record may identify its replacement as an `Overwrite`. | `FIND` + `GRAPH` — Treat as structural metadata; do not add the values of overwrite-linked records. |
-| `parentID` | `spellslots->[selector]->parentID` | `STORED` | On a Spell Slot record, this field stores the relationship ID of the record's immediate parent. Multiple progression stages can share this parent. | `FIND` + `GRAPH` — Parent identity alone may match several raw records; active typed selection also applies the overwrite rule. |
+| `_slotType` | Typed: `spellslots->[selector]->_slotType`<br>Raw: `sheet->integrants->integrants->[record-key]->_slotType` | `STORED` | On a Spell Slot record, this field identifies the spell-slot category, such as normal or Pact. | `FIND` + `RECORD` — Distinguishes normal and Pact entitlement records; do not infer the slot type from `spellLevel` alone. |
+| `spellLevel` | Typed: `spellslots->[selector]->spellLevel`<br>Raw: `sheet->integrants->integrants->[record-key]->spellLevel` | `STORED` | On a Spell Slot record, this field stores the spell-slot level. | `FIND` + `RECORD` |
+| `calculation` | Typed: `spellslots->[selector]->calculation`<br>Raw: `sheet->integrants->integrants->[record-key]->calculation` | `INPUT` | On a Spell Slot record, this field identifies the calculation method used by this record. | `FIND` + `INPUT` + `RECORD` |
+| `valueFormula.flatValue` | Typed: `spellslots->[selector]->valueFormula->flatValue`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->flatValue` | `INPUT` | On a Spell Slot record, this field stores a finite value used as an input by a formula. | `FIND` + `INPUT` + `RECORD` |
+| `name` | Typed: `spellslots->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Spell Slot record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `spellslots->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Spell Slot record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `spellslots->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Spell Slot record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `overwrittenBy` | Typed: `spellslots->[selector]->overwrittenBy`<br>Raw: `sheet->integrants->integrants->[record-key]->overwrittenBy` | `STORED` | Stores the raw canonical key of the later record that supersedes this progression stage. | `FIND` + `GRAPH` — When the referenced replacement exists and is enabled, ScriptCards excludes this record from the active typed collection. |
+| `cascades` | Typed: `spellslots->[selector]->cascades`<br>Raw: `sheet->integrants->integrants->[record-key]->cascades` | `STORED` | Stores progression/cascade metadata. An earlier progression record may identify its replacement as an `Overwrite`. | `FIND` + `GRAPH` — Treat as structural metadata; do not add the values of overwrite-linked records. |
+| `parentID` | Typed: `spellslots->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Spell Slot record, this field stores the relationship ID of the record's immediate parent. Multiple progression stages can share this parent. | `FIND` + `GRAPH` — Parent identity alone may match several raw records; active typed selection also applies the overwrite rule. |
 
 #### Spellcasting records
 
@@ -2492,15 +2774,15 @@ Use `shortID`, the canonical ID, or a numeric index when a displayed record name
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `ability` | `spellcastings->[selector]->ability` | `INPUT` | Verified official write target. The D&D 2024 Beacon sheet's Spellcasting Ability selector changes this field on the selected Spellcasting record. Each class, pact, species, or other spellcasting source may have its own value. | `FIND` + `INPUT` + `RECORD` — Write this exact field to mimic the official sheet selector. |
-| `spellcastingAbility` | `spellcastings->[selector]->spellcastingAbility` | `UNKNOWN` | This field was absent from the mapped Spellcasting records, and the sheet selector did not write it. It is not the D&D 2024 Beacon casting-ability write target. | `FIND` + `UNVERIFIED` — Prefer `ability`; do not create or write this field merely because its name suggests it. |
-| `casterType` | `spellcastings->[selector]->casterType` | `STORED` | On a Spellcasting record, this field identifies the spellcasting progression or caster category. | `FIND` + `RECORD` |
-| `overviewDisplay` | `spellcastings->[selector]->overviewDisplay` | `STORED` | On a Spellcasting record, this field stores `overviewDisplay`. | `FIND` + `RECORD` |
-| `name` | `spellcastings->[selector]->name` | `STORED` | On a Spellcasting record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `spellcastings->[selector]->shortID` | `STORED` | On a Spellcasting record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `spellcastings->[selector]->_enabled` | `STORED` | On a Spellcasting record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `spellcastings->[selector]->parentID` | `STORED` | On a Spellcasting record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
-| `childIDs` | `spellcastings->[selector]->childIDs` | `STORED` | On a Spellcasting record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
+| `ability` | Typed: `spellcastings->[selector]->ability`<br>Raw: `sheet->integrants->integrants->[record-key]->ability` | `INPUT` | Verified official write target. The D&D 2024 Beacon sheet's Spellcasting Ability selector changes this field on the selected Spellcasting record. Each class, pact, species, or other spellcasting source may have its own value. | `FIND` + `INPUT` + `RECORD` — Write this exact field to mimic the official sheet selector. |
+| `spellcastingAbility` | Typed: `spellcastings->[selector]->spellcastingAbility`<br>Raw: `sheet->integrants->integrants->[record-key]->spellcastingAbility` | `UNKNOWN` | This field was absent from the mapped Spellcasting records, and the sheet selector did not write it. It is not the D&D 2024 Beacon casting-ability write target. | `FIND` + `UNVERIFIED` — Prefer `ability`; do not create or write this field merely because its name suggests it. |
+| `casterType` | Typed: `spellcastings->[selector]->casterType`<br>Raw: `sheet->integrants->integrants->[record-key]->casterType` | `STORED` | On a Spellcasting record, this field identifies the spellcasting progression or caster category. | `FIND` + `RECORD` |
+| `overviewDisplay` | Typed: `spellcastings->[selector]->overviewDisplay`<br>Raw: `sheet->integrants->integrants->[record-key]->overviewDisplay` | `STORED` | On a Spellcasting record, this field stores `overviewDisplay`. | `FIND` + `RECORD` |
+| `name` | Typed: `spellcastings->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Spellcasting record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `spellcastings->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Spellcasting record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `spellcastings->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Spellcasting record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `spellcastings->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Spellcasting record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `childIDs` | Typed: `spellcastings->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On a Spellcasting record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
 
 #### Subclass records
 
@@ -2524,12 +2806,12 @@ Use `shortID`, the canonical ID, or a numeric index when a displayed record name
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `childIDs` | `subclasses->[selector]->childIDs` | `STORED` | On a Subclass record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
-| `name` | `subclasses->[selector]->name` | `STORED` | On a Subclass record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `subclasses->[selector]->shortID` | `STORED` | On a Subclass record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `subclasses->[selector]->_enabled` | `STORED` | On a Subclass record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `subclasses->[selector]->parentID` | `STORED` | On a Subclass record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
-| `sourceID` | `subclasses->[selector]->sourceID` | `STORED` | On a Subclass record, this field stores the originating source record identifier. | `FIND` + `IDENTITY` |
+| `childIDs` | Typed: `subclasses->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On a Subclass record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
+| `name` | Typed: `subclasses->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Subclass record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `subclasses->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Subclass record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `subclasses->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Subclass record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `subclasses->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Subclass record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `sourceID` | Typed: `subclasses->[selector]->sourceID`<br>Raw: `sheet->integrants->integrants->[record-key]->sourceID` | `STORED` | On a Subclass record, this field stores the originating source record identifier. | `FIND` + `IDENTITY` |
 
 #### Upcasting records
 
@@ -2553,16 +2835,16 @@ Use `shortID`, the canonical ID, or a numeric index when a displayed record name
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `mode` | `upcastings->[selector]->mode` | `STORED` | On an Upcasting record, this field stores the selected mode, such as a roll or upcasting mode. | `FIND` + `RECORD` |
-| `startingLevel` | `upcastings->[selector]->startingLevel` | `STORED` | On an Upcasting record, this field stores the starting level for the upcasting rule. | `FIND` + `RECORD` |
-| `level` | `upcastings->[selector]->level` | `STORED` | On an Upcasting record, this field stores a class, spell, slot, or upcasting level. | `FIND` + `RECORD` |
-| `changeMode` | `upcastings->[selector]->changeMode` | `STORED` | On an Upcasting record, this field stores how the target value changes at higher levels. | `FIND` + `RECORD` |
-| `target` | `upcastings->[selector]->target` | `STORED` | On an Upcasting record, this field identifies the value or linked record affected by the scaling rule. | `FIND` + `RECORD` — Identifies the value or linked record being scaled; preserve the expected target identity when editing the rule. |
-| `value` | `upcastings->[selector]->value` | `STORED` | On an Upcasting record, this field stores the record's finite current value. | `FIND` + `RECORD` |
-| `name` | `upcastings->[selector]->name` | `STORED` | On an Upcasting record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `upcastings->[selector]->shortID` | `STORED` | On an Upcasting record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `upcastings->[selector]->_enabled` | `STORED` | On an Upcasting record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `upcastings->[selector]->parentID` | `STORED` | On an Upcasting record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `mode` | Typed: `upcastings->[selector]->mode`<br>Raw: `sheet->integrants->integrants->[record-key]->mode` | `STORED` | On an Upcasting record, this field stores the selected mode, such as a roll or upcasting mode. | `FIND` + `RECORD` |
+| `startingLevel` | Typed: `upcastings->[selector]->startingLevel`<br>Raw: `sheet->integrants->integrants->[record-key]->startingLevel` | `STORED` | On an Upcasting record, this field stores the starting level for the upcasting rule. | `FIND` + `RECORD` |
+| `level` | Typed: `upcastings->[selector]->level`<br>Raw: `sheet->integrants->integrants->[record-key]->level` | `STORED` | On an Upcasting record, this field stores a class, spell, slot, or upcasting level. | `FIND` + `RECORD` |
+| `changeMode` | Typed: `upcastings->[selector]->changeMode`<br>Raw: `sheet->integrants->integrants->[record-key]->changeMode` | `STORED` | On an Upcasting record, this field stores how the target value changes at higher levels. | `FIND` + `RECORD` |
+| `target` | Typed: `upcastings->[selector]->target`<br>Raw: `sheet->integrants->integrants->[record-key]->target` | `STORED` | On an Upcasting record, this field identifies the value or linked record affected by the scaling rule. | `FIND` + `RECORD` — Identifies the value or linked record being scaled; preserve the expected target identity when editing the rule. |
+| `value` | Typed: `upcastings->[selector]->value`<br>Raw: `sheet->integrants->integrants->[record-key]->value` | `STORED` | On an Upcasting record, this field stores the record's finite current value. | `FIND` + `RECORD` |
+| `name` | Typed: `upcastings->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On an Upcasting record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `upcastings->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On an Upcasting record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `upcastings->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On an Upcasting record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `upcastings->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On an Upcasting record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
 
 #### Weapon Mastery Change records
 
@@ -2586,10 +2868,10 @@ Use `shortID`, the canonical ID, or a numeric index when a displayed record name
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `parentID` | `weaponmasterychanges->[selector]->parentID` | `STORED` | Stores the linked record ID of the owning feature record. | `FIND` + `GRAPH` |
-| `name` | `weaponmasterychanges->[selector]->name` | `STORED` | Stores the record's display name. | `FIND` + `IDENTITY` |
-| `shortID` | `weaponmasterychanges->[selector]->shortID` | `STORED` | Stores the compact Beacon action identity. | `FIND` + `IDENTITY` |
-| `_enabled` | `weaponmasterychanges->[selector]->_enabled` | `STORED` | Stores whether the record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `weaponmasterychanges->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | Stores the linked record ID of the owning feature record. | `FIND` + `GRAPH` |
+| `name` | Typed: `weaponmasterychanges->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | Stores the record's display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `weaponmasterychanges->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | Stores the compact Beacon action identity. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `weaponmasterychanges->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | Stores whether the record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
 
 #### Weapon Mastery Known records
 
@@ -2613,12 +2895,12 @@ Use `shortID`, the canonical ID, or a numeric index when a displayed record name
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `known` | `weaponmasteryknowns->[selector]->known` | `STORED` | Stores an object whose key identifies the weapon selected for mastery. | `FIND` + `RECORD` — Structured selected-weapon data; address an existing primitive child instead of replacing the whole object. |
-| `childIDs` | `weaponmasteryknowns->[selector]->childIDs` | `STORED` | Stores the linked record ID of the linked Weapon Mastery record. | `FIND` + `GRAPH` — Contains the linked Weapon Mastery record identity; edit an existing array element rather than replacing the whole array. |
-| `name` | `weaponmasteryknowns->[selector]->name` | `STORED` | Stores the selected mastery record's display name. | `FIND` + `IDENTITY` |
-| `shortID` | `weaponmasteryknowns->[selector]->shortID` | `STORED` | Stores the compact Beacon action identity. | `FIND` + `IDENTITY` |
-| `_enabled` | `weaponmasteryknowns->[selector]->_enabled` | `STORED` | Stores whether the selection participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `weaponmasteryknowns->[selector]->parentID` | `STORED` | Stores the linked record ID of the owning Weapon Mastery feature. | `FIND` + `GRAPH` |
+| `known` | Typed: `weaponmasteryknowns->[selector]->known`<br>Raw: `sheet->integrants->integrants->[record-key]->known` | `STORED` | Stores an object whose key identifies the weapon selected for mastery. | `FIND` + `RECORD` — Structured selected-weapon data; address an existing primitive child instead of replacing the whole object. |
+| `childIDs` | Typed: `weaponmasteryknowns->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | Stores the linked record ID of the linked Weapon Mastery record. | `FIND` + `GRAPH` — Contains the linked Weapon Mastery record identity; edit an existing array element rather than replacing the whole array. |
+| `name` | Typed: `weaponmasteryknowns->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | Stores the selected mastery record's display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `weaponmasteryknowns->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | Stores the compact Beacon action identity. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `weaponmasteryknowns->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | Stores whether the selection participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `weaponmasteryknowns->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | Stores the linked record ID of the owning Weapon Mastery feature. | `FIND` + `GRAPH` |
 
 #### Weapon Mastery Slot records
 
@@ -2644,12 +2926,12 @@ Use `shortID`, the canonical ID, or a numeric index when a displayed record name
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `calculation` | `weaponmasteryslots->[selector]->calculation` | `INPUT` | Stores the calculation mode used for mastery capacity. | `FIND` + `INPUT` + `RECORD` |
-| `valueFormula.flatValue` | `weaponmasteryslots->[selector]->valueFormula->flatValue` | `INPUT` | Stores the finite mastery-slot capacity. | `FIND` + `INPUT` + `RECORD` |
-| `name` | `weaponmasteryslots->[selector]->name` | `STORED` | Stores the record's display name. | `FIND` + `IDENTITY` |
-| `shortID` | `weaponmasteryslots->[selector]->shortID` | `STORED` | Stores the compact Beacon action identity. | `FIND` + `IDENTITY` |
-| `_enabled` | `weaponmasteryslots->[selector]->_enabled` | `STORED` | Stores whether the capacity record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `weaponmasteryslots->[selector]->parentID` | `STORED` | Stores the linked record ID of the owning Weapon Mastery feature. | `FIND` + `GRAPH` |
+| `calculation` | Typed: `weaponmasteryslots->[selector]->calculation`<br>Raw: `sheet->integrants->integrants->[record-key]->calculation` | `INPUT` | Stores the calculation mode used for mastery capacity. | `FIND` + `INPUT` + `RECORD` |
+| `valueFormula.flatValue` | Typed: `weaponmasteryslots->[selector]->valueFormula->flatValue`<br>Raw: `sheet->integrants->integrants->[record-key]->valueFormula->flatValue` | `INPUT` | Stores the finite mastery-slot capacity. | `FIND` + `INPUT` + `RECORD` |
+| `name` | Typed: `weaponmasteryslots->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | Stores the record's display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `weaponmasteryslots->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | Stores the compact Beacon action identity. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `weaponmasteryslots->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | Stores whether the capacity record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `weaponmasteryslots->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | Stores the linked record ID of the owning Weapon Mastery feature. | `FIND` + `GRAPH` |
 
 #### Weapon Mastery records
 
@@ -2673,15 +2955,15 @@ Use `shortID`, the canonical ID, or a numeric index when a displayed record name
 
 | Field | ScriptCards location | Value kind | Description | Use |
 |---|---|---|---|---|
-| `active` | `weaponmasteries->[selector]->active` | `STORED` | On a Weapon Mastery record, this field stores whether the mastery is currently active. | `FIND` + `TOGGLE` + `RECORD` — This is the mastery’s active state; `_enabled` only controls whether the record participates. |
-| `applies` | `weaponmasteries->[selector]->applies` | `STORED` | On a Weapon Mastery record, this field stores the item or weapon applicability rules. | `FIND` + `RECORD` — Structured applicability rules; inspect and edit an existing primitive child rather than replacing the container blindly. |
-| `defaultItems` | `weaponmasteries->[selector]->defaultItems` | `STORED` | On a Weapon Mastery record, this field stores the default items associated with the mastery. | `FIND` + `RECORD` — Structured default-item data; inspect and edit an existing primitive child or array element rather than replacing the container blindly. |
-| `description` | `weaponmasteries->[selector]->description` | `STORED` | On a Weapon Mastery record, this field stores the human-readable description. | `FIND` + `RECORD` |
-| `name` | `weaponmasteries->[selector]->name` | `STORED` | On a Weapon Mastery record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
-| `shortID` | `weaponmasteries->[selector]->shortID` | `STORED` | On a Weapon Mastery record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
-| `_enabled` | `weaponmasteries->[selector]->_enabled` | `STORED` | On a Weapon Mastery record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
-| `parentID` | `weaponmasteries->[selector]->parentID` | `STORED` | On a Weapon Mastery record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
-| `childIDs` | `weaponmasteries->[selector]->childIDs` | `STORED` | On a Weapon Mastery record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
+| `active` | Typed: `weaponmasteries->[selector]->active`<br>Raw: `sheet->integrants->integrants->[record-key]->active` | `STORED` | On a Weapon Mastery record, this field stores whether the mastery is currently active. | `FIND` + `TOGGLE` + `RECORD` — This is the mastery’s active state; `_enabled` only controls whether the record participates. |
+| `applies` | Typed: `weaponmasteries->[selector]->applies`<br>Raw: `sheet->integrants->integrants->[record-key]->applies` | `STORED` | On a Weapon Mastery record, this field stores the item or weapon applicability rules. | `FIND` + `RECORD` — Structured applicability rules; inspect and edit an existing primitive child rather than replacing the container blindly. |
+| `defaultItems` | Typed: `weaponmasteries->[selector]->defaultItems`<br>Raw: `sheet->integrants->integrants->[record-key]->defaultItems` | `STORED` | On a Weapon Mastery record, this field stores the default items associated with the mastery. | `FIND` + `RECORD` — Structured default-item data; inspect and edit an existing primitive child or array element rather than replacing the container blindly. |
+| `description` | Typed: `weaponmasteries->[selector]->description`<br>Raw: `sheet->integrants->integrants->[record-key]->description` | `STORED` | On a Weapon Mastery record, this field stores the human-readable description. | `FIND` + `RECORD` |
+| `name` | Typed: `weaponmasteries->[selector]->name`<br>Raw: `sheet->integrants->integrants->[record-key]->name` | `STORED` | On a Weapon Mastery record, this field stores the record's primary display name. | `FIND` + `IDENTITY` |
+| `shortID` | Typed: `weaponmasteries->[selector]->shortID`<br>Raw: `sheet->integrants->integrants->[record-key]->shortID` | `STORED` | On a Weapon Mastery record, this field stores the compact ID used by Beacon sheet action calls. | `FIND` + `IDENTITY` |
+| `_enabled` | Typed: `weaponmasteries->[selector]->_enabled`<br>Raw: `sheet->integrants->integrants->[record-key]->_enabled` | `STORED` | On a Weapon Mastery record, this field stores whether the canonical record participates in the live character model. | `FIND` + `TOGGLE` + `RECORD` |
+| `parentID` | Typed: `weaponmasteries->[selector]->parentID`<br>Raw: `sheet->integrants->integrants->[record-key]->parentID` | `STORED` | On a Weapon Mastery record, this field stores the relationship ID of the record's immediate parent. | `FIND` + `GRAPH` |
+| `childIDs` | Typed: `weaponmasteries->[selector]->childIDs`<br>Raw: `sheet->integrants->integrants->[record-key]->childIDs` | `STORED` | On a Weapon Mastery record, this field stores the relationship IDs of this record's immediate child records. | `FIND` + `GRAPH` |
 
 ### Calling Beacon sheet actions
 
@@ -2700,3 +2982,719 @@ Typed collection locations provide data; Beacon sheet actions execute the corres
 | NPC mythic action | `repeating_npcaction-m("ACTION_SHORTID", "action")` | Uses the Action `shortID`. |
 
 Use the relevant typed collection to read `shortID`, for example `attacks->[selector]->shortID` or `actions->[selector]->shortID`.
+
+
+## Advanced and internal locations
+
+These sections are complete implementation references rather than the normal starting point for a ScriptCards script. Use them for diagnostics, component-level canonical-record work, ordering, relationship traversal, or deliberate character-builder automation.
+
+### Root locations
+
+> **Value kinds**
+>
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+> - `TRANSIENT` — Builder or user-interface state that is not authoritative live character data.
+> - `MIXED` — A root or container holding more than one kind of data.
+>
+> **Usage**
+>
+> - `READ` — Read this for display, branching, or diagnostics; do not normally write it.
+> - `BUILDER` — Use this only for builder inspection or deliberate builder automation, not as finished-character data.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `appState` | string<br>`STORED` | Identifies whether the character is using the PC application (`sheet`) or NPC application (`npc`). | `READ` — Use this to distinguish a PC (`sheet`) from an NPC (`npc`); do not write it. |
+| `builder` | object<br>`TRANSIENT` | Contains character-builder decisions, source payloads, and in-progress builder state. | `BUILDER` — Use this only while inspecting or automating the builder; use `sheet` for authoritative live character data. |
+| `sheetVersion` | string<br>`STORED` | Stores the Beacon sheet schema version. | `READ` — Use this to version-gate a script against the Beacon schema; do not write it. |
+| `sheet` | object<br>`MIXED` | Contains live character state, settings, display-order arrays, and the canonical record graph. | `READ` — Use this root to reach live-sheet reads and exact writes to existing primitive leaves. |
+| `updateId` | string<br>`STORED` | Stores Roll20's internal sheet-update marker. | `READ` — Use this only to diagnose or detect a sheet update; do not write it. |
+
+
+### Complete observed canonical-record leaf index
+
+This appendix includes every primitive canonical-record path shape observed by the PC and NPC probes, including fields not repeated in the common record-type summaries.
+
+#### Identity and source metadata
+
+> **Value kinds**
+>
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `FIND` — Use the typed collection to locate and read the intended canonical record.
+> - `IDENTITY` — Treat this as record identity metadata and do not normally change it.
+> - `RECORD` — After locating the record, use its exact `[record-key]` raw path for a deliberate field edit.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->integrants->integrants->[record-key]->attack->type` | string<br>`STORED` | This location identifies the canonical record type on the canonical record identified by `[record-key]`. | `FIND` + `IDENTITY` |
+| `sheet->integrants->integrants->[record-key]->builderDisplayName` | string<br>`STORED` | This location stores the label shown by the character builder on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->builderIteration` | string<br>`STORED` | This location identifies the builder iteration that produced this record on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->compendiumPageID` | string<br>`STORED` | This location stores the Roll20 Compendium page identifier on the canonical record identified by `[record-key]`. | `FIND` + `IDENTITY` |
+| `sheet->integrants->integrants->[record-key]->concat->name` | string<br>`STORED` | This location stores the record's primary display name on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->createdTime` | number<br>`STORED` | This location stores the record's creation timestamp on the canonical record identified by `[record-key]`. | `FIND` + `IDENTITY` |
+| `sheet->integrants->integrants->[record-key]->label` | string<br>`STORED` | This location stores a secondary display identity for the record on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->name` | string<br>`STORED` | This location stores the record's primary display name on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->recordName` | string<br>`STORED` | This location stores the record's internal identity name on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->recoveryRate->Long Rest->type` | string<br>`STORED` | This location identifies the canonical record type on the canonical record identified by `[record-key]`. | `FIND` + `IDENTITY` |
+| `sheet->integrants->integrants->[record-key]->shortID` | string<br>`STORED` | This location stores the compact ID used by Beacon sheet action calls on the canonical record identified by `[record-key]`. | `FIND` + `IDENTITY` |
+| `sheet->integrants->integrants->[record-key]->source` | string<br>`STORED` | This location stores the human-readable source label on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->sourceID` | string<br>`STORED` | This location stores the originating source record identifier on the canonical record identified by `[record-key]`. | `FIND` + `IDENTITY` |
+| `sheet->integrants->integrants->[record-key]->type` | string<br>`STORED` | This location identifies the canonical record type on the canonical record identified by `[record-key]`. | `FIND` + `IDENTITY` |
+| `sheet->integrants->integrants->[record-key]->valueFormula->ability->name` | string<br>`STORED` | This location stores the record's primary display name on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->weaponData->type` | string<br>`STORED` | This location identifies the canonical record type on the canonical record identified by `[record-key]`. | `FIND` + `IDENTITY` |
+
+#### Relationships and ordering
+
+> **Value kinds**
+>
+> - `ORDER` — Stored ordering or index data containing positions or canonical record keys.
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `FIND` — Use the typed collection to locate and read the intended canonical record.
+> - `ORDER` — Preserve valid existing record keys and change this only when intentionally reordering them.
+> - `GRAPH` — Use this to traverse record relationships; write only with valid keys and a full understanding of the graph.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->integrants->integrants->[record-key]->arrayPosition` | number<br>`ORDER` | This location stores the record's relative display position among records of the same family on the canonical record identified by `[record-key]`. | `FIND` + `ORDER` |
+| `sheet->integrants->integrants->[record-key]->childIDs` | array<br>`STORED` | This location stores the canonical keys of this record's immediate child records on the canonical record identified by `[record-key]`. | `FIND` + `GRAPH` |
+| `sheet->integrants->integrants->[record-key]->parentID` | string<br>`STORED` | This location stores the canonical key of the record's immediate parent on the canonical record identified by `[record-key]`. | `FIND` + `GRAPH` |
+
+#### Calculation inputs
+
+> **Value kinds**
+>
+> - `INPUT` — A stored input used by the sheet to calculate another value.
+>
+> **Usage**
+>
+> - `FIND` — Use the typed collection to locate and read the intended canonical record.
+> - `INPUT` — Change this stored input when you want the sheet to recalculate the final result.
+> - `RECORD` — After locating the record, use its exact `[record-key]` raw path for a deliberate field edit.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->integrants->integrants->[record-key]->_bonus` | number<br>`INPUT` | This location stores the canonical record field named `_bonus` on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->_diceCount` | number<br>`INPUT` | This location stores the canonical record field named `_diceCount` on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->ability` | string<br>`INPUT` | This location identifies the ability used by this record or formula on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->attack->bonus` | number<br>`INPUT` | This location stores a finite bonus or bonus expression on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->attack->proficiencyLevel` | string<br>`INPUT` | This location stores the proficiency tier, such as Proficient or Expertise on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->calculation` | string<br>`INPUT` | This location identifies the calculation method used by this record on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->diceCount` | number<br>`INPUT` | This location stores the number of dice on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->diceSize` | string<br>`INPUT` | This location stores the die size on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->maxValueFormula->flatValue` | number<br>`INPUT` | This location stores a finite value used as an input by a formula on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->proficiencyLevel` | string<br>`INPUT` | This location stores the proficiency tier, such as Proficient or Expertise on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->save->saveFormula->ability->ability` | string<br>`INPUT` | This location identifies the ability used by this record or formula on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->save->saveFormula->flatValue` | number<br>`INPUT` | This location stores a finite value used as an input by a formula on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->totalLevel` | number<br>`INPUT` | This location stores the character's total level used by calculations such as proficiency bonus on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->valueFormula->flatValue` | number<br>`INPUT` | This location stores a finite value used as an input by a formula on the canonical record identified by `[record-key]`. | `FIND` + `INPUT` + `RECORD` |
+
+#### State and toggles
+
+> **Value kinds**
+>
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `FIND` — Use the typed collection to locate and read the intended canonical record.
+> - `TOGGLE` — Change this state only on the exact existing record or setting you intend to toggle.
+> - `RECORD` — After locating the record, use its exact `[record-key]` raw path for a deliberate field edit.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->integrants->integrants->[record-key]->_active` | boolean<br>`STORED` | This location stores whether this record or effect is currently active on the canonical record identified by `[record-key]`. | `FIND` + `TOGGLE` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->_enabled` | boolean<br>`STORED` | This location stores whether the canonical record participates in the live character model on the canonical record identified by `[record-key]`. | `FIND` + `TOGGLE` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->_prepared` | boolean<br>`STORED` | This location stores whether the spell is currently prepared on the canonical record identified by `[record-key]`. | `FIND` + `TOGGLE` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->alwaysPrepared` | boolean<br>`STORED` | This location stores the canonical record field named `alwaysPrepared` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->autoHit` | boolean<br>`STORED` | This location stores whether the attack skips an attack roll and automatically applies its effect or damage on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->concentration` | boolean<br>`STORED` | This location stores whether the spell requires Concentration on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->equipData->equippable` | boolean<br>`STORED` | This location stores whether the item can be equipped on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->equipData->equipped` | boolean<br>`STORED` | This location stores whether the item is currently equipped on the canonical record identified by `[record-key]`. | `FIND` + `TOGGLE` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->isFixed` | boolean<br>`STORED` | This location stores whether the formula uses a fixed value on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->isTemp` | boolean<br>`STORED` | This location stores whether a Hit Points record represents temporary hit points on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->ritual` | boolean<br>`STORED` | This location stores whether the spell can be cast as a Ritual on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+
+#### Record content
+
+> **Value kinds**
+>
+> - `STORED` — A value or field stored directly at this location; it may be primitive or a container.
+>
+> **Usage**
+>
+> - `FIND` — Use the typed collection to locate and read the intended canonical record.
+> - `RECORD` — After locating the record, use its exact `[record-key]` raw path for a deliberate field edit.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `sheet->integrants->integrants->[record-key]` | unknown<br>`STORED` | This location stores the canonical record field named `[record-key]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->_reach` | boolean<br>`STORED` | This location stores the canonical record field named `_reach` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->_reachText` | string<br>`STORED` | This location stores the canonical record field named `_reachText` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->_slotType` | string<br>`STORED` | This location identifies the spell-slot category, such as normal or Pact on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->actionType` | string<br>`STORED` | This location identifies whether the record is an Action, Bonus Action, Reaction, Free Action, or another action category on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->aoe->shape` | string<br>`STORED` | This location stores the canonical record field named `shape` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->aoe->size` | string<br>`STORED` | This location stores the canonical record field named `size` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->attack->abilityBonus` | string<br>`STORED` | This location stores the ability contribution used by the attack on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->bonusCategory->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->bonusDetails` | string<br>`STORED` | This location stores the canonical record field named `bonusDetails` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->bonusName` | array<br>`STORED` | This location stores the canonical record field named `bonusName` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->bonusName->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->bonusValue` | number<br>`STORED` | This location stores the canonical record field named `bonusValue` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cantripScale` | string<br>`STORED` | This location stores the spell's cantrip-scaling behavior on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->8i9RIG0aHUHG57O58mT7a->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->CSiYSrStvfQnAEocYiC3G->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->YEzDCStj638jvcyxvPcxW->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->blinded->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->cA9JVt0Yqj-jJ4QIkoP67->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->frightened->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->grappled->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->invisible->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->paralyzed->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->petrified->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->poisoned->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->prone->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->restrained->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->stunned->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cascades->unconscious->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->casterType` | string<br>`STORED` | This location identifies the spellcasting progression or caster category on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->castingTime` | string<br>`STORED` | This location stores the canonical record field named `castingTime` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->category` | string<br>`STORED` | Stores the category defined by the selected record; its meaning depends on that record type. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->changeMode` | string<br>`STORED` | This location stores the canonical record field named `changeMode` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->childIDs->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->classID` | string<br>`STORED` | This location identifies the owning Class record on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->components->material` | boolean<br>`STORED` | This location stores the canonical record field named `material` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->components->materialDescription` | string<br>`STORED` | This location stores the canonical record field named `materialDescription` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->components->somatic` | boolean<br>`STORED` | This location stores the canonical record field named `somatic` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->components->verbal` | boolean<br>`STORED` | This location stores the canonical record field named `verbal` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->condition` | string<br>`STORED` | This location stores the canonical record field named `condition` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->conversion->amountOfTarget` | number<br>`STORED` | This location stores the canonical record field named `amountOfTarget` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->conversion->target` | string<br>`STORED` | This location stores the canonical record field named `target` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->cost` | string<br>`STORED` | This location stores the canonical record field named `cost` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->critDiceSize` | string<br>`STORED` | This location stores the canonical record field named `critDiceSize` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->custom` | boolean<br>`STORED` | This location stores the canonical record field named `custom` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->damage` | string<br>`STORED` | This location stores the defense record's damage category or damage-type data on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->damageType` | string<br>`STORED` | This location stores the damage type on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->defaultAbility` | boolean<br>`STORED` | This location stores the default ability used by the formula on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->defaultName` | string<br>`STORED` | This location stores the canonical record field named `defaultName` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->defense` | string<br>`STORED` | This location stores the canonical record field named `defense` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->description` | string<br>`STORED` | This location stores the human-readable description on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->dieCount` | number<br>`STORED` | This location stores the canonical record field named `dieCount` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->dieSize` | number<br>`STORED` | This location stores the canonical record field named `dieSize` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->duration` | string<br>`STORED` | This location stores the duration of the spell or effect on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->excludeFamilialResources` | boolean<br>`STORED` | This location stores the canonical record field named `excludeFamilialResources` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->hitpointType` | string<br>`STORED` | This location stores the canonical record field named `hitpointType` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->ignoreValue` | boolean<br>`STORED` | This location stores whether a Sense ignores its numeric range on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->increaseIfAlreadyAt` | boolean<br>`STORED` | This location stores the canonical record field named `increaseIfAlreadyAt` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->level` | number<br>`STORED` | This location stores a class, spell, slot, or upcasting level on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->mode` | string<br>`STORED` | This location stores the selected mode, such as a roll or upcasting mode on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->modifications->description` | string<br>`STORED` | This location stores the human-readable description on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->notes` | string<br>`STORED` | This location stores the canonical record field named `notes` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->onHitDisplay` | string<br>`STORED` | This location stores the canonical record field named `onHitDisplay` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->overrideCrit` | boolean<br>`STORED` | This location stores the canonical record field named `overrideCrit` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->overviewDisplay` | boolean<br>`STORED` | This location stores the canonical record field named `overviewDisplay` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->preventSubspecies` | boolean<br>`STORED` | This location stores the canonical record field named `preventSubspecies` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->proficiency` | string<br>`STORED` | This location identifies the skill, save, tool, weapon, or armor proficiency on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->properties->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->quantity` | number<br>`STORED` | This location stores the item quantity on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->range` | string<br>`STORED` | This location stores the attack or spell range on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->rarity` | string<br>`STORED` | This location stores the canonical record field named `rarity` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->recovery` | string<br>`STORED` | This location stores how the value recovers on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->relations->WOSph94OitM56cZ2iaynw` | string<br>`STORED` | This location stores the canonical record field named `WOSph94OitM56cZ2iaynw` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->relations->Xvu6hzAoDz81im6yg-F6U` | string<br>`STORED` | This location stores the canonical record field named `Xvu6hzAoDz81im6yg-F6U` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->relations->dcdOvde0VxAPMNQ8C4xLH` | string<br>`STORED` | This location stores the canonical record field named `dcdOvde0VxAPMNQ8C4xLH` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->relations->sFUWXkqwwfto5WVIGBLml` | string<br>`STORED` | This location stores the canonical record field named `sFUWXkqwwfto5WVIGBLml` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->repeat` | number<br>`STORED` | This location stores attack repetition or multiattack information on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->restType->[index]` | string<br>`STORED` | This location stores the canonical record field named `[index]` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->rollAbility` | string<br>`STORED` | This location stores the ability used when rolling the proficiency on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->save->onFail` | string<br>`STORED` | This location stores the effect or text used when a save fails on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->save->onSucceed` | string<br>`STORED` | This location stores the effect or text used when a save succeeds on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->save->saveAbility` | string<br>`STORED` | This location stores the canonical record field named `saveAbility` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->save->saveFormula->ability->add` | boolean<br>`STORED` | This location stores the canonical record field named `add` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->save->saveFormula->proficiency->add` | boolean<br>`STORED` | This location stores the canonical record field named `add` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->school` | string<br>`STORED` | This location stores the spell school on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->showAsPassive` | boolean<br>`STORED` | This location stores whether the Skill can be displayed or calculated as a passive score on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->sizeValue` | string<br>`STORED` | This location stores the canonical creature-size value on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->speed` | string<br>`STORED` | This location identifies the movement mode on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->spellLevel` | number<br>`STORED` | This location stores the spell-slot level on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->startingLevel` | number<br>`STORED` | This location stores the starting level for the upcasting rule on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->subClassID` | string<br>`STORED` | This location stores the canonical record field named `subClassID` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->target` | string<br>`STORED` | This location stores the canonical record field named `target` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->tempShopData->compendiumUrl` | string<br>`STORED` | This location stores the canonical record field named `compendiumUrl` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->tempShopData->useCompendiumLink` | boolean<br>`STORED` | This location stores the canonical record field named `useCompendiumLink` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->totalRoll` | boolean<br>`STORED` | Stores the Roll Bonus record's `totalRoll` flag. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->upcastText` | string<br>`STORED` | This location stores the canonical record field named `upcastText` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->value` | number<br>`STORED` | This location stores the record's finite current value on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->valueFormula->ability->add` | boolean<br>`STORED` | This location stores the canonical record field named `add` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->weaponData->category` | string<br>`STORED` | Stores the weapon category on an Item record. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->weaponData->training` | string<br>`STORED` | This location stores the canonical record field named `training` on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+| `sheet->integrants->integrants->[record-key]->weight` | number, string<br>`STORED` | This location stores the item weight on the canonical record identified by `[record-key]`. | `FIND` + `RECORD` |
+
+
+### Builder-only typed collections
+
+The typed-collection index walks both `store` and `builder`. The collections below therefore exist even though their records are builder definitions rather than canonical finished-character records.
+
+> **Value kinds**
+>
+> - `TRANSIENT` — Builder or user-interface state that is not authoritative live character data.
+>
+> **Usage**
+>
+> - `BUILDER` — Use this only for builder inspection or deliberate builder automation, not as finished-character data.
+
+| Typed collection | Builder record type | Important fields | Description | Use |
+|---|---|---|---|---|
+| `abilityscorechoices` | `Ability Score Choice` | `choose`, `increase`, `from`, `excludeFrom` | Describes which ability scores can be selected and how much each selection increases them. | `BUILDER` |
+| `effects` | `Effect` | `category`, `description`, `flatValueFormula->customFormula`, `shortID` | Describes a builder effect before or alongside the canonical records it produces. | `BUILDER` |
+| `featattaches` | `Feat Attach` | `feats`, `limitations->choiceName`, `limitations->optionNames` | Describes feats automatically attached by a builder choice and the limitations controlling them. | `BUILDER` |
+| `featchoices` | `Feat Choice` | `list`, `limitations` | Describes the feat options offered by a builder choice. | `BUILDER` |
+| `genericchoices` | `Generic Choice` | `category`, `numOfChoices`, `replace` | Describes a generic builder selection that does not have a more specific record type. | `BUILDER` |
+| `itemattaches` | `Item Attach` | `items`, `parentID`, `childIDs` | Describes items attached by a builder choice; selected items may later be represented by canonical Item records. | `BUILDER` |
+| `languagechoices` | `Language Choice` | `list`, `numOfChoices` | Describes the language options and number of selections offered by the builder. | `BUILDER` |
+| `proficiencychoices` | `Proficiency Choice` | `list`, `numOfChoices`, `proficiencyLevel`, `subtype` | Describes selectable proficiencies and the tier granted by the choice. | `BUILDER` |
+| `spellchoices` | `Spell Choice` | `choices`, `filter`, `list`, `spellLevel`, `alwaysPrepared` | Describes spells offered by a builder choice and the filters applied to that list. | `BUILDER` |
+| `startingcurrencies` | `Starting Currency` | `gold` | Stores the starting-currency option offered by the builder. | `BUILDER` |
+| `startingequipments` | `Starting Equipment` | `items`, `numOfChoices`, `subtype` | Describes starting-equipment choices offered by the builder. The collection name is the exact result of ScriptCards' generic pluraliser. | `BUILDER` |
+
+The full primitive paths for these records remain listed in the Builder location index below.
+
+
+### Builder location index
+
+Builder locations are accessible, but they are not authoritative finished-character data.
+
+#### Builder workflow and section payloads
+
+> **Value kinds**
+>
+> - `TRANSIENT` — Builder or user-interface state that is not authoritative live character data.
+>
+> **Usage**
+>
+> - `BUILDER` — Use this only for builder inspection or deliberate builder automation, not as finished-character data.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `builder->abilities->assignAllToggled` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `assignAllToggled` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->abilities->generationMethod` | string<br>`TRANSIENT` | This builder location stores the builder value named `generationMethod` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->abilities->hasVisited` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasVisited` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->abilities->isUsingTCERulesASI` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `isUsingTCERulesASI` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->abilities->rolledArray` | string<br>`TRANSIENT` | This builder location stores the builder value named `rolledArray` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->about->hasVisited` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasVisited` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->background->hasVisited` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasVisited` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->class->hasVisited` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasVisited` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->equipment->hasVisited` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasVisited` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->feats->hasVisited` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasVisited` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->finalize->builderIterations->[iteration-key]` | number<br>`TRANSIENT` | This builder location stores the builder value named `[iteration-key]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->hasCompletedOnce` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasCompletedOnce` while the character builder is creating or editing the character. | `BUILDER` — Historical completion flag; it does not mean the builder is currently active. |
+| `builder->isInProgress` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `isInProgress` while the character builder is creating or editing the character. | `BUILDER` — Use this only to detect an active builder workflow; it is not finished-character validity state. |
+| `builder->skills->hasVisited` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasVisited` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->species->hasVisited` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasVisited` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->spells->hasVisited` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasVisited` while the character builder is creating or editing the character. | `BUILDER` |
+
+#### Builder decisions
+
+> **Value kinds**
+>
+> - `TRANSIENT` — Builder or user-interface state that is not authoritative live character data.
+>
+> **Usage**
+>
+> - `BUILDER` — Use this only for builder inspection or deliberate builder automation, not as finished-character data.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `builder->decisions->allDecisions->[decision-key]->_active` | boolean<br>`TRANSIENT` | This builder location stores whether this record or effect is currently active while the character builder is creating or editing the character. | `BUILDER` — Current builder-choice state only; the resulting live canonical records may not yet exist or may differ. |
+| `builder->decisions->allDecisions->[decision-key]->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->_iteration` | string<br>`TRANSIENT` | This builder location stores the builder value named `_iteration` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->children` | array<br>`TRANSIENT` | This builder location stores the builder value named `children` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->children->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->book->bundles` | array<br>`TRANSIENT` | This builder location stores the builder value named `bundles` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->book->cost` | number<br>`TRANSIENT` | This builder location stores the builder value named `cost` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->book->coverImage` | string<br>`TRANSIENT` | This builder location stores the builder value named `coverImage` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->book->isOwned` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `isOwned` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->book->itemId` | number<br>`TRANSIENT` | This builder location stores the builder value named `itemId` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->book->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->book->notForSale` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `notForSale` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->book->systemVersion` | number<br>`TRANSIENT` | This builder location stores the builder value named `systemVersion` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->builderDisplayDescription` | string<br>`TRANSIENT` | This builder location stores the builder value named `builderDisplayDescription` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->builderDisplayName` | string<br>`TRANSIENT` | This builder location stores the label shown by the character builder while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->cameFromFeat` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `cameFromFeat` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->choiceIndex` | number<br>`TRANSIENT` | This builder location stores the builder value named `choiceIndex` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->chosen` | array<br>`TRANSIENT` | This builder location stores the builder value named `chosen` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->chosen->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->classLevel` | number<br>`TRANSIENT` | This builder location stores the builder value named `classLevel` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->className` | string<br>`TRANSIENT` | This builder location stores the builder value named `className` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->closestParent` | string<br>`TRANSIENT` | This builder location stores the builder value named `closestParent` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->disabledByGenerationMethod` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `disabledByGenerationMethod` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->featRepeatable` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `featRepeatable` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->generationMethod` | string<br>`TRANSIENT` | This builder location stores the builder value named `generationMethod` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->hasInput` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasInput` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->hasLocalASI` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasLocalASI` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->hasLocalFeat` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasLocalFeat` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->index` | number<br>`TRANSIENT` | This builder location stores the builder value named `index` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->is2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `is2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->isPrimary` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `isPrimary` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->level` | number<br>`TRANSIENT` | This builder location stores a class, spell, slot, or upcasting level while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->multiclass` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `multiclass` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->override2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `override2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->position` | number<br>`TRANSIENT` | This builder location stores the builder value named `position` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->publisherIcon` | string<br>`TRANSIENT` | This builder location stores the builder value named `publisherIcon` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->spellLevel` | number<br>`TRANSIENT` | This builder location stores the spell-slot level while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->subclassDescription` | string<br>`TRANSIENT` | This builder location stores the builder value named `subclassDescription` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->subclassLevel` | number<br>`TRANSIENT` | This builder location stores the builder value named `subclassLevel` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->subclassName` | string<br>`TRANSIENT` | This builder location stores the builder value named `subclassName` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->metadata->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->parentID` | string<br>`TRANSIENT` | This builder location stores the canonical key of the record's immediate parent while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload` | unknown<br>`TRANSIENT` | This builder location stores the builder value named `payload` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->_bonus` | number<br>`TRANSIENT` | This builder location stores the builder value named `_bonus` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->_label` | string<br>`TRANSIENT` | This builder location stores the builder value named `_label` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->ability` | string<br>`TRANSIENT` | This builder location identifies the ability used by this record or formula while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->actionType` | string<br>`TRANSIENT` | This builder location identifies whether the record is an Action, Bonus Action, Reaction, Free Action, or another action category while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->alwaysPrepared` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `alwaysPrepared` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->aoe->shape` | string<br>`TRANSIENT` | This builder location stores the builder value named `shape` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->aoe->size` | string<br>`TRANSIENT` | This builder location stores the builder value named `size` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->attack->abilityBonus` | string<br>`TRANSIENT` | This builder location stores the ability contribution used by the attack while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->attack->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->autoHit` | boolean<br>`TRANSIENT` | This builder location stores whether the attack skips an attack roll and automatically applies its effect or damage while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->builderDisplayName` | string<br>`TRANSIENT` | This builder location stores the label shown by the character builder while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->calculation` | string<br>`TRANSIENT` | This builder location identifies the calculation method used by this record while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->cantripScale` | string<br>`TRANSIENT` | This builder location stores the spell's cantrip-scaling behavior while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->casterType` | string<br>`TRANSIENT` | This builder location identifies the spellcasting progression or caster category while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->castingTime` | string<br>`TRANSIENT` | This builder location stores the builder value named `castingTime` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->category` | string<br>`TRANSIENT` | Stores the category used by this builder payload; its meaning depends on the payload type. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->category->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->changeMode` | string<br>`TRANSIENT` | This builder location stores the builder value named `changeMode` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->choices` | number<br>`TRANSIENT` | This builder location stores the builder value named `choices` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->choose` | number<br>`TRANSIENT` | This builder location stores the builder value named `choose` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->classID` | string<br>`TRANSIENT` | This builder location identifies the owning Class record while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->compendiumPageID` | string<br>`TRANSIENT` | This builder location stores the Roll20 Compendium page identifier while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->components->material` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `material` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->components->materialDescription` | string<br>`TRANSIENT` | This builder location stores the builder value named `materialDescription` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->components->somatic` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `somatic` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->components->verbal` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `verbal` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->concat->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->concentration` | boolean<br>`TRANSIENT` | This builder location stores whether the spell requires Concentration while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->cost` | string<br>`TRANSIENT` | This builder location stores the builder value named `cost` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->damageType` | string<br>`TRANSIENT` | This builder location stores the damage type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->diceCount` | number<br>`TRANSIENT` | This builder location stores the number of dice while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->diceSize` | string<br>`TRANSIENT` | This builder location stores the die size while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->dieCount` | number<br>`TRANSIENT` | This builder location stores the builder value named `dieCount` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->dieSize` | number<br>`TRANSIENT` | This builder location stores the builder value named `dieSize` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->duration` | string<br>`TRANSIENT` | This builder location stores the duration of the spell or effect while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->equipData->equippable` | boolean<br>`TRANSIENT` | This builder location stores whether the item can be equipped while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->excludeFrom` | string<br>`TRANSIENT` | This builder location stores the builder value named `excludeFrom` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->feats->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->filter` | array<br>`TRANSIENT` | This builder location stores the builder value named `filter` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->filter->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->flatValueFormula->customFormula` | string<br>`TRANSIENT` | This builder location stores the builder value named `customFormula` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->from->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->fromClassList->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->gold` | number<br>`TRANSIENT` | This builder location stores the builder value named `gold` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->includeBelow` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `includeBelow` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->increase` | number<br>`TRANSIENT` | This builder location stores the builder value named `increase` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->increaseIfAlreadyAt` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `increaseIfAlreadyAt` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->isFixed` | boolean<br>`TRANSIENT` | This builder location stores whether the formula uses a fixed value while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->items` | array<br>`TRANSIENT` | This builder location stores the builder value named `items` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->items->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->label` | string<br>`TRANSIENT` | This builder location stores a secondary display identity for the record while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->level` | number<br>`TRANSIENT` | This builder location stores a class, spell, slot, or upcasting level while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->levelOrder` | number<br>`TRANSIENT` | This builder location stores the builder value named `levelOrder` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->limitations` | array<br>`TRANSIENT` | This builder location stores the builder value named `limitations` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->limitations->choiceName` | string<br>`TRANSIENT` | This builder location stores the builder value named `choiceName` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->limitations->optionNames->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->list` | array<br>`TRANSIENT` | This builder location stores the builder value named `list` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->list->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->maxValueFormula->flatValue` | number<br>`TRANSIENT` | This builder location stores a finite value used as an input by a formula while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->mode` | string<br>`TRANSIENT` | This builder location stores the selected mode, such as a roll or upcasting mode while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->modifications->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->numOfChoices` | number<br>`TRANSIENT` | This builder location stores the builder value named `numOfChoices` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->onHitDisplay` | string<br>`TRANSIENT` | This builder location stores the builder value named `onHitDisplay` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->preventSubspecies` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `preventSubspecies` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->proficiency` | string<br>`TRANSIENT` | This builder location identifies the skill, save, tool, weapon, or armor proficiency while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->proficiencyLevel` | string<br>`TRANSIENT` | This builder location stores the proficiency tier, such as Proficient or Expertise while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->properties->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->quantity` | number<br>`TRANSIENT` | This builder location stores the item quantity while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->range` | string<br>`TRANSIENT` | This builder location stores the attack or spell range while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->rarity` | string<br>`TRANSIENT` | This builder location stores the builder value named `rarity` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->recovery` | string<br>`TRANSIENT` | This builder location stores how the value recovers while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->recoveryRate` | string<br>`TRANSIENT` | This builder location stores how much of the Resource recovers while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->recoveryRate->Long Rest->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->recoveryRate->Short Rest->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->repeat` | number<br>`TRANSIENT` | This builder location stores attack repetition or multiattack information while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->replace` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `replace` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->restType->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->ritual` | boolean<br>`TRANSIENT` | This builder location stores whether the spell can be cast as a Ritual while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->save->onFail` | string<br>`TRANSIENT` | This builder location stores the effect or text used when a save fails while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->save->onSucceed` | string<br>`TRANSIENT` | This builder location stores the effect or text used when a save succeeds while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->save->saveAbility` | string<br>`TRANSIENT` | This builder location stores the builder value named `saveAbility` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->save->saveFlat->ability->ability` | string<br>`TRANSIENT` | This builder location identifies the ability used by this record or formula while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->save->saveFlat->ability->add` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `add` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->save->saveFlat->flatValue` | number<br>`TRANSIENT` | This builder location stores a finite value used as an input by a formula while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->save->saveFlat->proficiency->add` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `add` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->school` | string<br>`TRANSIENT` | This builder location stores the spell school while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->shortID` | string<br>`TRANSIENT` | This builder location stores the compact ID used by Beacon sheet action calls while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->sizeValue` | string<br>`TRANSIENT` | This builder location stores the canonical creature-size value while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->source` | string<br>`TRANSIENT` | This builder location stores the human-readable source label while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->speed` | string<br>`TRANSIENT` | This builder location identifies the movement mode while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->spellLevel` | number<br>`TRANSIENT` | This builder location stores the spell-slot level while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->startingLevel` | number<br>`TRANSIENT` | This builder location stores the starting level for the upcasting rule while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->subtype` | string<br>`TRANSIENT` | This builder location stores the builder value named `subtype` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->subtype->[index]` | string<br>`TRANSIENT` | This builder location stores the builder value named `[index]` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->target` | string<br>`TRANSIENT` | This builder location stores the builder value named `target` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->upcastText` | string<br>`TRANSIENT` | This builder location stores the builder value named `upcastText` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->value` | number, string<br>`TRANSIENT` | This builder location stores the record's finite current value while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->valueFormula->ability->add` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `add` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->valueFormula->ability->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->valueFormula->flatValue` | number<br>`TRANSIENT` | This builder location stores a finite value used as an input by a formula while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->weaponData->category` | string<br>`TRANSIENT` | Stores the weapon category selected by the builder payload. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->weaponData->training` | string<br>`TRANSIENT` | This builder location stores the builder value named `training` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->weaponData->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->payload->weight` | number, string<br>`TRANSIENT` | This builder location stores the item weight while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->relationshipObject->Arcane Recovery` | string<br>`TRANSIENT` | This builder location stores the builder value named `Arcane Recovery` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->relationshipObject->Magic Initiate` | string<br>`TRANSIENT` | This builder location stores the builder value named `Magic Initiate` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->relationshipObject->Signature Spell Resource 1` | string<br>`TRANSIENT` | This builder location stores the builder value named `Signature Spell Resource 1` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->relationshipObject->Signature Spell Resource 2` | string<br>`TRANSIENT` | This builder location stores the builder value named `Signature Spell Resource 2` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->title` | string<br>`TRANSIENT` | This builder location stores the builder value named `title` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->decisions->allDecisions->[decision-key]->visible` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `visible` while the character builder is creating or editing the character. | `BUILDER` |
+
+#### Custom content builder data
+
+> **Value kinds**
+>
+> - `TRANSIENT` — Builder or user-interface state that is not authoritative live character data.
+>
+> **Usage**
+>
+> - `BUILDER` — Use this only for builder inspection or deliberate builder automation, not as finished-character data.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `builder->customBackground->initialDecision->_active` | boolean<br>`TRANSIENT` | This builder location stores whether this record or effect is currently active while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->initialDecision->_description` | string<br>`TRANSIENT` | This builder location stores the builder value named `_description` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->initialDecision->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->initialDecision->children` | array<br>`TRANSIENT` | This builder location stores the builder value named `children` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->initialDecision->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->initialDecision->metadata->is2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `is2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->initialDecision->payload->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->initialDecision->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->initialDecision->visible` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `visible` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->options->allDecisions->[decision-key]->_active` | boolean<br>`TRANSIENT` | This builder location stores whether this record or effect is currently active while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->options->allDecisions->[decision-key]->_description` | string<br>`TRANSIENT` | This builder location stores the builder value named `_description` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->options->allDecisions->[decision-key]->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->options->allDecisions->[decision-key]->children` | array<br>`TRANSIENT` | This builder location stores the builder value named `children` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->options->allDecisions->[decision-key]->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->options->allDecisions->[decision-key]->metadata->is2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `is2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->options->allDecisions->[decision-key]->payload` | unknown<br>`TRANSIENT` | This builder location stores the builder value named `payload` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->options->allDecisions->[decision-key]->payload->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->options->allDecisions->[decision-key]->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->options->allDecisions->[decision-key]->visible` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `visible` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->tempCustomBackground->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->tempCustomBackground->hasASI` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasASI` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->tempCustomBackground->hasFeat` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasFeat` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->tempCustomBackground->metadata->is2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `is2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customBackground->tempCustomBackground->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->_active` | boolean<br>`TRANSIENT` | This builder location stores whether this record or effect is currently active while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->_description` | string<br>`TRANSIENT` | This builder location stores the builder value named `_description` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->children` | array<br>`TRANSIENT` | This builder location stores the builder value named `children` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->metadata->classLevel` | number<br>`TRANSIENT` | This builder location stores the builder value named `classLevel` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->metadata->className` | string<br>`TRANSIENT` | This builder location stores the builder value named `className` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->metadata->subclassDescription` | string<br>`TRANSIENT` | This builder location stores the builder value named `subclassDescription` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->metadata->subclassLevel` | number<br>`TRANSIENT` | This builder location stores the builder value named `subclassLevel` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->metadata->subclassName` | string<br>`TRANSIENT` | This builder location stores the builder value named `subclassName` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->metadata->suggestedAbilities` | array<br>`TRANSIENT` | This builder location stores the builder value named `suggestedAbilities` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->payload->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->initialDecision->visible` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `visible` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->_active` | boolean<br>`TRANSIENT` | This builder location stores whether this record or effect is currently active while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->_description` | string<br>`TRANSIENT` | This builder location stores the builder value named `_description` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->children` | array<br>`TRANSIENT` | This builder location stores the builder value named `children` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->metadata->classLevel` | number<br>`TRANSIENT` | This builder location stores the builder value named `classLevel` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->metadata->className` | string<br>`TRANSIENT` | This builder location stores the builder value named `className` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->metadata->subclassDescription` | string<br>`TRANSIENT` | This builder location stores the builder value named `subclassDescription` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->metadata->subclassLevel` | number<br>`TRANSIENT` | This builder location stores the builder value named `subclassLevel` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->metadata->subclassName` | string<br>`TRANSIENT` | This builder location stores the builder value named `subclassName` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->metadata->suggestedAbilities` | array<br>`TRANSIENT` | This builder location stores the builder value named `suggestedAbilities` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->payload` | unknown<br>`TRANSIENT` | This builder location stores the builder value named `payload` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->payload->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->options->allDecisions->[decision-key]->visible` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `visible` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->tempCustomClass->hasSpellcasting` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasSpellcasting` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->tempCustomClass->hitDieSize` | number<br>`TRANSIENT` | This builder location stores the builder value named `hitDieSize` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->tempCustomClass->metadata->className` | string<br>`TRANSIENT` | This builder location stores the builder value named `className` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->tempCustomClass->metadata->is2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `is2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->tempCustomClass->metadata->subclassLevel` | number<br>`TRANSIENT` | This builder location stores the builder value named `subclassLevel` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->tempCustomClass->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->tempCustomClass->spellcasting->ability` | string<br>`TRANSIENT` | This builder location identifies the ability used by this record or formula while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->tempCustomClass->spellcasting->casterType` | string<br>`TRANSIENT` | This builder location identifies the spellcasting progression or caster category while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->tempCustomClass->spellcasting->expandedSpells` | array<br>`TRANSIENT` | This builder location stores the builder value named `expandedSpells` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->tempCustomClass->spellcasting->prepareDaily` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `prepareDaily` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customClass->tempCustomClass->spellcasting->spellLists` | array<br>`TRANSIENT` | This builder location stores the builder value named `spellLists` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->initialDecision->_active` | boolean<br>`TRANSIENT` | This builder location stores whether this record or effect is currently active while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->initialDecision->_description` | string<br>`TRANSIENT` | This builder location stores the builder value named `_description` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->initialDecision->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->initialDecision->children` | array<br>`TRANSIENT` | This builder location stores the builder value named `children` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->initialDecision->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->initialDecision->metadata->is2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `is2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->initialDecision->payload->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->initialDecision->payload->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->initialDecision->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->initialDecision->visible` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `visible` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->options->allDecisions->[decision-key]->_active` | boolean<br>`TRANSIENT` | This builder location stores whether this record or effect is currently active while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->options->allDecisions->[decision-key]->_description` | string<br>`TRANSIENT` | This builder location stores the builder value named `_description` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->options->allDecisions->[decision-key]->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->options->allDecisions->[decision-key]->children` | array<br>`TRANSIENT` | This builder location stores the builder value named `children` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->options->allDecisions->[decision-key]->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->options->allDecisions->[decision-key]->metadata->is2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `is2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->options->allDecisions->[decision-key]->payload` | unknown<br>`TRANSIENT` | This builder location stores the builder value named `payload` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->options->allDecisions->[decision-key]->payload->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->options->allDecisions->[decision-key]->payload->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->options->allDecisions->[decision-key]->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->options->allDecisions->[decision-key]->visible` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `visible` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->tempCustomSpecies->hasDarkvision` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasDarkvision` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->tempCustomSpecies->hasSubspecies` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasSubspecies` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->tempCustomSpecies->metadata->is2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `is2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->tempCustomSpecies->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSpecies->tempCustomSpecies->subspeciesName` | string<br>`TRANSIENT` | This builder location stores the builder value named `subspeciesName` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->initialDecision->_active` | boolean<br>`TRANSIENT` | This builder location stores whether this record or effect is currently active while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->initialDecision->_description` | string<br>`TRANSIENT` | This builder location stores the builder value named `_description` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->initialDecision->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->initialDecision->children` | array<br>`TRANSIENT` | This builder location stores the builder value named `children` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->initialDecision->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->initialDecision->metadata->classLevel` | number<br>`TRANSIENT` | This builder location stores the builder value named `classLevel` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->initialDecision->metadata->is2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `is2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->initialDecision->metadata->subclassName` | string<br>`TRANSIENT` | This builder location stores the builder value named `subclassName` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->initialDecision->payload->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->initialDecision->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->initialDecision->visible` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `visible` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->_active` | boolean<br>`TRANSIENT` | This builder location stores whether this record or effect is currently active while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->_description` | string<br>`TRANSIENT` | This builder location stores the builder value named `_description` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->children` | array<br>`TRANSIENT` | This builder location stores the builder value named `children` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->metadata->classLevel` | number<br>`TRANSIENT` | This builder location stores the builder value named `classLevel` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->metadata->is2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `is2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->metadata->subclassName` | string<br>`TRANSIENT` | This builder location stores the builder value named `subclassName` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->payload` | unknown<br>`TRANSIENT` | This builder location stores the builder value named `payload` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->payload->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->options->allDecisions->[decision-key]->visible` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `visible` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->tempCustomSubclass->description` | string<br>`TRANSIENT` | This builder location stores the human-readable description while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->tempCustomSubclass->hasSpellcasting` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `hasSpellcasting` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->tempCustomSubclass->metadata->is2024` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `is2024` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->tempCustomSubclass->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->tempCustomSubclass->spellcasting->ability` | string<br>`TRANSIENT` | This builder location identifies the ability used by this record or formula while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->tempCustomSubclass->spellcasting->casterType` | string<br>`TRANSIENT` | This builder location identifies the spellcasting progression or caster category while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->tempCustomSubclass->spellcasting->expandedSpells` | array<br>`TRANSIENT` | This builder location stores the builder value named `expandedSpells` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->tempCustomSubclass->spellcasting->prepareDaily` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `prepareDaily` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->customSubclass->tempCustomSubclass->spellcasting->spellLists` | array<br>`TRANSIENT` | This builder location stores the builder value named `spellLists` while the character builder is creating or editing the character. | `BUILDER` |
+
+#### Builder lists and ordering
+
+> **Value kinds**
+>
+> - `TRANSIENT` — Builder or user-interface state that is not authoritative live character data.
+>
+> **Usage**
+>
+> - `BUILDER` — Use this only for builder inspection or deliberate builder automation, not as finished-character data.
+
+| ScriptCards location | Value | Description | Use |
+|---|---|---|---|
+| `builder->lists->localLists->[list-key]->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->_active` | boolean<br>`TRANSIENT` | This builder location stores whether this record or effect is currently active while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->_id` | string<br>`TRANSIENT` | This builder location stores the builder value named `_id` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->children` | array<br>`TRANSIENT` | This builder location stores the builder value named `children` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->concat` | object<br>`TRANSIENT` | This builder location stores the builder value named `concat` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->book->bundles` | array<br>`TRANSIENT` | This builder location stores the builder value named `bundles` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->book->cost` | number<br>`TRANSIENT` | This builder location stores the builder value named `cost` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->book->coverImage` | string<br>`TRANSIENT` | This builder location stores the builder value named `coverImage` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->book->isOwned` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `isOwned` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->book->itemId` | number<br>`TRANSIENT` | This builder location stores the builder value named `itemId` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->book->marketplaceLink` | object<br>`TRANSIENT` | This builder location stores the builder value named `marketplaceLink` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->book->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->book->notForSale` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `notForSale` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->book->systemVersion` | number<br>`TRANSIENT` | This builder location stores the builder value named `systemVersion` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->builderDisplayName` | string<br>`TRANSIENT` | This builder location stores the label shown by the character builder while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->cameFromFeat` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `cameFromFeat` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->level` | number<br>`TRANSIENT` | This builder location stores a class, spell, slot, or upcasting level while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->metadata->publisherIcon` | string<br>`TRANSIENT` | This builder location stores the builder value named `publisherIcon` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->modifications` | object<br>`TRANSIENT` | This builder location stores the builder value named `modifications` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->payload->ability` | string<br>`TRANSIENT` | This builder location identifies the ability used by this record or formula while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->payload->builderDisplayName` | string<br>`TRANSIENT` | This builder location stores the label shown by the character builder while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->payload->casterType` | string<br>`TRANSIENT` | This builder location identifies the spellcasting progression or caster category while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->payload->compendiumPageID` | string<br>`TRANSIENT` | This builder location stores the Roll20 Compendium page identifier while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->payload->name` | string<br>`TRANSIENT` | This builder location stores the record's primary display name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->payload->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->payload->sizeValue` | string<br>`TRANSIENT` | This builder location stores the canonical creature-size value while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->payload->type` | string<br>`TRANSIENT` | This builder location identifies the canonical record type while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->recordName` | string<br>`TRANSIENT` | This builder location stores the record's internal identity name while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->relationshipObject` | object<br>`TRANSIENT` | This builder location stores the builder value named `relationshipObject` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->title` | string<br>`TRANSIENT` | This builder location stores the builder value named `title` while the character builder is creating or editing the character. | `BUILDER` |
+| `builder->lists->localLists->[list-key]->optionsString->[index]->[index]->visible` | boolean<br>`TRANSIENT` | This builder location stores the builder value named `visible` while the character builder is creating or editing the character. | `BUILDER` |
+
+---
+
+## Master legend
+
+### Value kinds
+
+| Code | Meaning |
+|---|---|
+| `STORED` | A value or field stored directly at this location; it may be primitive or a container. |
+| `INPUT` | A stored input used by the sheet to calculate another value. |
+| `COMPUTED` | A read-only result calculated, aggregated, translated, or assembled from other Beacon data rather than independently stored. Change its input or backing record instead. |
+| `ORDER` | Stored ordering or index data containing positions or canonical record keys. |
+| `TRANSIENT` | Builder or user-interface state that is not authoritative live character data. |
+| `MIXED` | A root or container holding more than one kind of data. |
+| `UNKNOWN` | The backing source or calculation has not been verified. |
+
+### Usage codes
+
+| Code | Meaning |
+|---|---|
+| `NATIVE` | The public `name` is verified writable and may be used directly in `--!c`. |
+| `RAW` | Use the exact `sheet` path to read or deliberately change this existing primitive value. |
+| `READ` | Read this for display, branching, or diagnostics; do not normally write it. |
+| `INPUT` | Change this stored input when you want the sheet to recalculate the final result. |
+| `COMPUTED` | Read the exposed result only. Never pass a computed alias to `--!c`; change the documented stored value, input, or backing record. |
+| `FIND` | Use the typed collection to locate and read the intended canonical record. |
+| `RECORD` | After locating the record, use its exact `[record-key]` raw path for a deliberate field edit. |
+| `TOGGLE` | Change this state only on the exact existing record or setting you intend to toggle. |
+| `ORDER` | Preserve valid existing record keys and change this only when intentionally reordering them. |
+| `GRAPH` | Use this to traverse record relationships; write only with valid keys and a full understanding of the graph. |
+| `IDENTITY` | Treat this as record identity metadata and do not normally change it. |
+| `SETTING` | Read this to respect the user's sheet setting; write only when intentionally changing that setting. |
+| `BUILDER` | Use this only for builder inspection or deliberate builder automation, not as finished-character data. |
+| `ALIAS` | Use this public native/legacy attribute for convenient ScriptCards access in new or adapted scripts. For writes, use the alias only when it is verified as writable; otherwise use the documented backing location or calculation input. |
+| `SYNTH` | Use this for compatibility reads or sheet-button logic; edit the parent canonical record instead. |
+| `UNMAPPED` | Treat this as read-only until its backing source or calculation is verified. |
+
+Most rows use only these reusable codes. A row adds a short note after the codes when its alias, identity, container shape, or write risk needs field-specific guidance.
+
+### Write-target codes
+
+| Code | Meaning |
+|---|---|
+| `NATIVE` | The public `name` is on the verified writable list and may be used directly in `--!c`. |
+| `RAW` | No writable alias is relied on; write the exact existing primitive `sheet` leaf shown. |
+| `INPUT` | The location stores an input used by a sheet calculation. It can be changed deliberately, then the final public value should be reread. |
+| `COMPUTED` | The public value is calculated, aggregated, translated, or assembled from other data. Never write that alias; change the listed stored value, input, or backing record. |
+| `SYNTH` | The public value is a legacy or repeating-row projection assembled from canonical records. Edit the parent canonical record instead. |
+| `UNMAPPED` | No verified write target exists in this reference. Treat the alias as read-only. |
