@@ -1,14 +1,15 @@
 !script {{
   --/| ==========================================================================
-  --/| Tutorial: Writing D&D 2024 Beacon Typed Collection Values
+  --/| Tutorial 09: Writing D&D 2024 Beacon Typed Collection Values
   --/|
   --/| PURPOSE
   --/| The Typed Collections tutorial showed how to find one Beacon record and
   --/| read a field from it. This tutorial takes the next step and changes one
   --/| existing field on one typed record.
   --/|
-  --/| The example uses the character's Walk Speed record because it gives us a
-  --/| simple numeric value that is easy to change and restore.
+  --/| The first example uses the character's Walk Speed record because it gives us
+  --/| a simple numeric value that is easy to change and restore. The second uses
+  --/| the built-in Poisoned Condition to demonstrate a boolean typed write.
   --/|
   --/| HOW TO USE IT
   --/| 1. Select a D&D 2024 Beacon character that has a Walk speed.
@@ -50,7 +51,8 @@
   --/| The selector must identify one record. If a readable name matches more
   --/| than one record, use a unique shortID, canonical ID, or zero-based index.
   --/|
-  --/| This tutorial restores the original Walk speed before it finishes.
+  --/| This tutorial restores both the original Walk speed and the original Poisoned
+  --/| state before it finishes.
   --/| ==========================================================================
 
   --#beaconsheet|1
@@ -93,16 +95,50 @@
 
   --+Restored Walk Speed|[*S:speeds->Walk->valueFormula->flatValue]
 
+  --+|[c][b]Boolean Typed Write: Condition _active[/b][/c]
+
+  --/| Built-in Conditions use _active as their actual on/off state. _enabled is
+  --/| different: it controls whether the canonical record participates in the
+  --/| character model and is NOT the normal Condition toggle.
+  --/|
+  --/| Existing boolean leaves accept true/false, 1/0, yes/no, and on/off.
+  --/| Invalid boolean text is rejected instead of being guessed.
+  --/|
+  --/| IMPORTANT: this example briefly changes the character's real Poisoned state.
+  --/| If Condition/token synchronization is enabled, the token marker may change
+  --/| too. The original state is restored immediately after the read-back.
+  --&OriginalPoisoned|[*S:conditions->Poisoned->_active:::No Poisoned record]
+  --?"[&OriginalPoisoned]" -eq "No Poisoned record"|SkipConditionExample
+
+  --&TestPoisoned|true
+  --?"[&OriginalPoisoned]" -eq "true"|[
+    --&TestPoisoned|false
+  --]|
+
+  --+Starting Poisoned State|[&OriginalPoisoned]
+  --!c:[&CharacterID]|conditions->Poisoned->_active:[&TestPoisoned]
+  --+Temporary Poisoned State|[*S:conditions->Poisoned->_active]
+
+  --/| Restore the exact original state.
+  --!c:[&CharacterID]|conditions->Poisoned->_active:[&OriginalPoisoned]
+  --+Restored Poisoned State|[*S:conditions->Poisoned->_active]
+  --^AfterConditionExample|
+
+  --:SkipConditionExample|
+  --+Condition Example|Skipped because this character has no Poisoned Condition record.
+
+  --:AfterConditionExample|
   --+|[c][b]What to Remember[/b][/c]
 
   --+Read|Use collection -> selector -> field inside a normal Beacon sheet reference.
   --+Write|Use the same typed path with Beacon !c when changing an existing primitive field.
   --+Selector|Use a unique name, ID, or index that identifies exactly one record.
+  --+Boolean Fields|Existing boolean leaves accept normal boolean values; for Conditions, _active is the actual on/off state.
   --+Safety|Avoid identity fields, relationship fields, whole objects, and whole arrays unless you fully understand the record structure.
 
   --+|[c][b]Finished[/b][/c]
 
-  --+Result|Walk speed was changed through a typed collection path and restored.
+  --+Result|A numeric typed field and a boolean Condition state were changed through typed paths and restored.
   --X|
 
   --:NoWalk|

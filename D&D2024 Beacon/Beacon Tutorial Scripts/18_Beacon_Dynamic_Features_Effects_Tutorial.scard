@@ -1,0 +1,94 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial 18: Discovering Dynamic D&D 2024 Beacon Features and Effects
+  --/|
+  --/| PURPOSE
+  --/| Some Beacon record families cannot be documented as one fixed list of names.
+  --/| Features and Effects depend on the character's classes, species, feats,
+  --/| spells, items, and other content.
+  --/|
+  --/| A Feature called "Jack of All Trades," for example, does not guarantee that
+  --/| every compatibility property related to it will use the full display name.
+  --/| Observed compatibility names include jack, jack_attr, jack_bonus, and
+  --/| jack_of_all_trades. Those names cannot be predicted from the Feature name.
+  --/|
+  --/| The reliable approach is to discover the canonical Feature or Effect records
+  --/| that actually exist on the selected character and inspect their mapped leaves.
+  --/|
+  --/| SELECTORS
+  --/| Numeric indexes are useful for discovery only. For reusable scripts, prefer
+  --/| a unique record name or shortID after the probe has shown it to you.
+  --/|
+  --/| FEATURE RECORDS
+  --/| Feature instances are dynamic. The reusable Feature schema includes name,
+  --/| shortID, description, _enabled, arrayPosition, parentID, childIDs, relations.
+  --/|
+  --/| childIDs and relations are structural. A Feature's actual mechanics can live
+  --/| in linked Roll Bonus, Resource, Action, Defense, Speed, Effect, Healing,
+  --/| Spellcasting, or other canonical records.
+  --/|
+  --/| EFFECT RECORDS
+  --/| Effects are also dynamic content. The currently mapped generic fields include
+  --/| _id, type, name, recordName, shortID, _enabled, _active, description,
+  --/| category, damageType, label, source, compendiumPageID, createdTime, parentID,
+  --/| and childIDs.
+  --/|
+  --/| Effect _active can be read, and both true and false have been observed, but
+  --/| Effect creation/removal/toggle lifecycle is NOT documented as a universal
+  --/| safe ScriptCards write operation. This tutorial only reads Effects.
+  --/|
+  --/| This tutorial can produce a long card on feature-heavy characters. That is
+  --/| intentional: it is a discovery tutorial, not a compact character sheet.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - Dynamic Features and Effects Tutorial
+
+  --+|[c][b]Feature Records[/b][/c]
+
+  --%FeatureIndex|0;99;1
+    --&FeatureName|[*S:features->[&FeatureIndex]->name]
+    --?"[&FeatureName]" -eq "undefined"|%!
+
+    --+|[b]Feature [&FeatureIndex]: [&FeatureName][/b]
+    --+shortID|[*S:features->[&FeatureIndex]->shortID]
+    --+description|[*S:features->[&FeatureIndex]->description]
+    --+_enabled|[*S:features->[&FeatureIndex]->_enabled]
+    --+arrayPosition|[*S:features->[&FeatureIndex]->arrayPosition]
+    --+parentID|[*S:features->[&FeatureIndex]->parentID]
+    --+childIDs|[*S:features->[&FeatureIndex]->childIDs]
+    --+relations|[*S:features->[&FeatureIndex]->relations]
+  --%|
+
+  --+|[c][b]Effect Records[/b][/c]
+
+  --%EffectIndex|0;99;1
+    --&EffectName|[*S:effects->[&EffectIndex]->name]
+    --?"[&EffectName]" -eq "undefined"|%!
+
+    --+|[b]Effect [&EffectIndex]: [&EffectName][/b]
+    --+_id|[*S:effects->[&EffectIndex]->_id]
+    --+type|[*S:effects->[&EffectIndex]->type]
+    --+recordName|[*S:effects->[&EffectIndex]->recordName]
+    --+shortID|[*S:effects->[&EffectIndex]->shortID]
+    --+_enabled|[*S:effects->[&EffectIndex]->_enabled]
+    --+_active|[*S:effects->[&EffectIndex]->_active]
+    --+description|[*S:effects->[&EffectIndex]->description]
+    --+category|[*S:effects->[&EffectIndex]->category]
+    --+damageType|[*S:effects->[&EffectIndex]->damageType]
+    --+label|[*S:effects->[&EffectIndex]->label]
+    --+source|[*S:effects->[&EffectIndex]->source]
+    --+compendiumPageID|[*S:effects->[&EffectIndex]->compendiumPageID]
+    --+createdTime|[*S:effects->[&EffectIndex]->createdTime]
+    --+parentID|[*S:effects->[&EffectIndex]->parentID]
+    --+childIDs|[*S:effects->[&EffectIndex]->childIDs]
+  --%|
+
+  --+|[c][b]What to Remember[/b][/c]
+
+  --+Dynamic Names|Feature and Effect names come from character content, so there is no universal selector list.
+  --+Discovery|Use a numeric index to discover records, then prefer a unique name or shortID in reusable scripts.
+  --+Feature Mechanics|Follow childIDs and relations into the linked typed record families.
+  --+Effect Safety|Read _active freely for diagnosis; do not assume Effect lifecycle writes are universally safe or verified.
+}}

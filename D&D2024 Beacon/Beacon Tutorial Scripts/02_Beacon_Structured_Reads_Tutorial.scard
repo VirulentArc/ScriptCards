@@ -26,6 +26,11 @@
   --/| sheet->settings->rolls->mode
   --/| store->settings->rolls->mode
   --/|
+  --/| IMPORTANT: rolls->mode is the GLOBAL d20 roll mode for the character.
+  --/| It is not the per-skill/per-save Advantage or Disadvantage imposed by
+  --/| armor, Conditions, Effects, or other rules. Targeted overrides are stored
+  --/| in Roll Bonus records and are covered in Tutorial 17.
+  --/|
   --/| THE CURRENT TREE AND THE MAX TREE
   --/| Structured Beacon data has a current tree and can also have a parallel max
   --/| tree. Appending ^ to a COMPLETE lookup asks for that same path in the max
@@ -80,7 +85,7 @@
   --+|[c][b]Current Tree vs Max Tree[/b][/c]
 
   --/| The first line reads the normal current tree.
-  --+Current Roll Mode|[*S:sheet->settings->rolls->mode]
+  --+Global d20 Roll Mode|[*S:sheet->settings->rolls->mode]
 
   --/| The second asks for the same path in the parallel max tree.
   --/| Most settings do not have a max-tree value, so the default text is normal.
@@ -89,4 +94,6 @@
   --+|[c][b]Other Sheet Settings[/b][/c]
 
   --+Roll Privacy|[*S:sheet->settings->rolls->privacy]
+  --+Automatic Damage|[*S:sheet->settings->rollDamageAutomatic]
+  --+Condition Token Sync|[*S:sheet->settings->useConditionTokenSync]
 }}

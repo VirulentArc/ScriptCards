@@ -18,6 +18,11 @@
   --/| Names such as hp, hp_max, npc_ac, strength, and strength_mod are direct
   --/| aliases. Direct aliases are the easiest way to read common sheet values.
   --/|
+  --/| In .135, several familiar NPC compatibility values are reconstructed locally
+  --/| from the active Beacon record graph. That includes formatted senses,
+  --/| languages, defenses, and the flags that tell an existing ScriptCard whether
+  --/| an NPC has saves, skills, or reactions to display.
+  --/|
   --/| CURRENT AND MAXIMUM VALUES
   --/| On the D&D 2024 Beacon sheet, current HP and final maximum HP are exposed
   --/| as separate direct aliases:
@@ -60,6 +65,15 @@
   --+Challenge Rating|[*S:npc_challenge]
   --+Proficiency Bonus|[*S:pb]
 
+  --+|[c][b]NPC Section Flags[/b][/c]
+
+  --/| These compatibility flags are useful when deciding whether to show a
+  --/| section in an NPC card. A value of 1 means at least one applicable entry
+  --/| exists; 0 means none.
+  --+Has Saving Throws|[*S:npc_saving_flag]
+  --+Has Skills|[*S:npc_skills_flag]
+  --+Has Reactions|[*S:npcreactionsflag]
+
   --+|[c][b]Ability Scores[/b][/c]
 
   --/| Ability scores and ability modifiers are separate direct aliases.
@@ -76,4 +90,8 @@
   --/| Some direct aliases return formatted text rather than one number.
   --+Senses|[*S:npc_senses]
   --+Languages|[*S:npc_languages]
+  --+Vulnerabilities|[*S:npc_vulnerabilities:::None]
+  --+Resistances|[*S:npc_resistances:::None]
+  --+Damage Immunities|[*S:npc_immunities:::None]
+  --+Condition Immunities|[*S:npc_condition_immunities:::None]
 }}

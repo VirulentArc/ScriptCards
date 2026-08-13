@@ -1,0 +1,114 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial 16: D&D 2024 Beacon Character Progression and Hit Dice
+  --/|
+  --/| PURPOSE
+  --/| ScriptCards .135 can reconstruct several familiar D&D character-level
+  --/| compatibility values locally from the live Beacon record graph. This
+  --/| tutorial explains the values that are easy to confuse on a multiclass PC.
+  --/|
+  --/| HOW TO USE IT
+  --/| 1. Select a D&D 2024 Beacon PC.
+  --/| 2. Run this ScriptCard.
+  --/| 3. A multiclass character is the best example, especially one whose classes
+  --/|    use different Hit Die sizes.
+  --/|
+  --/| TOTAL LEVEL VS PRIMARY-CLASS LEVEL
+  --/| level is the FINAL total character level. ScriptCards sums the positive
+  --/| totalLevel contributions from applicable Class Level records that belong to
+  --/| real Class records.
+  --/|
+  --/| base_level is different. It is the level of the PRIMARY class. ScriptCards
+  --/| identifies the primary class conservatively from the first-level class graph;
+  --/| it does not simply pick the largest class or the first record in a list.
+  --/|
+  --/| class is the primary-class name.
+  --/| class_display is a formatted summary of every class and level.
+  --/| multiclass1 through multiclass3 expose secondary-class projections.
+  --/|
+  --/| PROFICIENCY BONUS
+  --/| pb is calculated from the same total character level used by level.
+  --/|
+  --/| HIT DICE
+  --/| Hit Dice entitlement and Hit Dice expenditure are separate.
+  --/|
+  --/| hitdices records store entitlement such as dieCount and dieSize.
+  --/| sheet->rest->usedHitDiceData stores how many dice have been spent.
+  --/|
+  --/| hit_dice      = current Hit Dice remaining across all pools
+  --/| hit_dice_max  = maximum Hit Dice entitlement across all pools
+  --/|
+  --/| A mixed d8/d10 character cannot honestly be represented by one hitdietype
+  --/| or hitdie_final value. In that case .135 deliberately returns undefined for
+  --/| those single-die-size compatibility views instead of guessing.
+  --/|
+  --/| SPELLCASTING ABILITY COMPATIBILITY
+  --/| spellcasting_ability is a legacy-style modifier string such as 3+; it is NOT
+  --/| the actual ability name. Read the Spellcasting typed records when you need
+  --/| the real ability name.
+  --/|
+  --/| This tutorial only reads information. It does not change the character.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - Progression and Hit Dice Tutorial
+
+  --+|[c][b]Character-Level Compatibility Values[/b][/c]
+
+  --+Primary Class|[*S:class:::Not resolved]
+  --+Primary Class Level|[*S:base_level:::Not resolved]
+  --+Total Character Level|[*S:level:::Not resolved]
+  --+Class Display|[*S:class_display:::Not resolved]
+  --+Proficiency Bonus|[*S:pb:::Not resolved]
+
+  --+|[c][b]Secondary Class Projections[/b][/c]
+
+  --+Multiclass 1|[*S:multiclass1:::None] — Level [*S:multiclass1_lvl:::0] — [*S:multiclass1_subclass:::No subclass]
+  --+Multiclass 2|[*S:multiclass2:::None] — Level [*S:multiclass2_lvl:::0] — [*S:multiclass2_subclass:::No subclass]
+  --+Multiclass 3|[*S:multiclass3:::None] — Level [*S:multiclass3_lvl:::0] — [*S:multiclass3_subclass:::No subclass]
+
+  --+|[c][b]Class Level Records Are Components[/b][/c]
+
+  --/| These fields belong to ONE Class Level record. totalLevel here is a
+  --/| contribution used by the final level aggregate; it is not necessarily the
+  --/| character's final level by itself.
+  --+First Class Level Record|[*S:classlevels->0->name:::No Class Level record]
+  --+Progression Stage|[*S:classlevels->0->level:::n/a]
+  --+Level Contribution|[*S:classlevels->0->totalLevel:::n/a]
+  --+Owning Class ID|[*S:classlevels->0->classID:::n/a]
+
+  --+|[c][b]Hit Dice Aggregates[/b][/c]
+
+  --+Current Hit Dice|[*S:hit_dice:::Not resolved]
+  --+Maximum Hit Dice|[*S:hit_dice_max:::Not resolved]
+  --+Maximum via ^|[*S:hit_dice^:::Not resolved]
+  --+Single Die Type Compatibility|[*S:hitdietype:::Undefined on mixed die sizes]
+  --+Single Die Final Compatibility|[*S:hitdie_final:::Undefined on mixed die sizes]
+
+  --+|[c][b]Hit Dice Entitlement Records[/b][/c]
+
+  --%HitDieIndex|0;19;1
+    --&HitDieName|[*S:hitdices->[&HitDieIndex]->name]
+    --?"[&HitDieName]" -eq "undefined"|%!
+    --+|[b][&HitDieName][/b] — [*S:hitdices->[&HitDieIndex]->dieCount]d[*S:hitdices->[&HitDieIndex]->dieSize] — classID [*S:hitdices->[&HitDieIndex]->classID]
+  --%|
+
+  --+|[c][b]Spellcasting Compatibility[/b][/c]
+
+  --+Compatibility spellcasting_ability|[*S:spellcasting_ability:::Not resolved]
+  --+Actual First Spellcasting Ability|[*S:spellcastings->0->ability:::No Spellcasting record]
+  --+Casting Ability Mod via spell_attack_mod|[*S:spell_attack_mod:::Not resolved]
+  --+Casting Ability Mod via spell_dc_mod|[*S:spell_dc_mod:::Not resolved]
+  --+Final Spell Attack Bonus|[*S:spell_attack_bonus:::Not resolved]
+  --+Final Spell Save DC|[*S:spell_save_dc:::Not resolved]
+
+  --+|[c][b]What to Remember[/b][/c]
+
+  --+level|Final total character level.
+  --+base_level|Primary-class level, not the total on a multiclass character.
+  --+classlevels->...->totalLevel|A record contribution used by the total-level aggregate.
+  --+Hit Dice|Use aggregate aliases for totals; use hitdices plus usedHitDiceData when pool details matter.
+  --+Mixed Hit Dice|Do not force one hitdietype when the character actually has several die sizes.
+  --+Spellcasting|spell_attack_mod/spell_dc_mod are casting-ability modifiers; spell_attack_bonus/spell_save_dc are the final header values.
+}}

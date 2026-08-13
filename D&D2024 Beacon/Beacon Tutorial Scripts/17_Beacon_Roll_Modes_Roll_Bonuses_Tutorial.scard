@@ -1,0 +1,114 @@
+!script {{
+  --/| ==========================================================================
+  --/| Tutorial 17: D&D 2024 Beacon Roll Modes and Targeted Roll Bonuses
+  --/|
+  --/| PURPOSE
+  --/| The D&D 2024 sheet has TWO different ideas that are easy to confuse:
+  --/|
+  --/| 1. A GLOBAL d20 roll mode for the character.
+  --/| 2. Targeted Advantage, Disadvantage, or numeric modifiers supplied by rules
+  --/|    such as armor, Conditions, Effects, Features, and other records.
+  --/|
+  --/| GLOBAL ROLL MODE
+  --/| The global setting is:
+  --/|
+  --/| sheet->settings->rolls->mode
+  --/|
+  --/| Verified values are:
+  --/| Automatic, Advantage, Disadvantage
+  --/|
+  --/| This setting is sheet-wide. It is NOT the red Advantage/Disadvantage marker
+  --/| shown beside one specific skill or save.
+  --/|
+  --/| TARGETED ROLL OVERRIDES
+  --/| Those are represented by Roll Bonus records in the rollbonuses collection.
+  --/|
+  --/| Important Roll Bonus fields include:
+  --/| bonusCategory  = what kind of roll is affected
+  --/| bonusName      = the specific roll inside that category, if any
+  --/| bonusDetails   = Keep Highest, Keep Lowest, or Modifier
+  --/| bonusValue     = numeric value used by Modifier records
+  --/| parentID       = the Roll Bonus record's immediate parent
+  --/|
+  --/| Keep Highest = Advantage
+  --/| Keep Lowest  = Disadvantage
+  --/|
+  --/| SOURCE APPLICABILITY
+  --/| A Roll Bonus can exist even while its source is not currently applicable.
+  --/| For example, the built-in Prone Roll Bonus exists while Prone is inactive.
+  --/|
+  --/| .135 follows the complete parent chain when reconstructing numeric totals.
+  --/| It excludes explicitly disabled records, inactive Conditions/Effects,
+  --/| unattuned Attunements, and descendants that require an unequipped Item.
+  --/|
+  --/| The compact probe below shows the IMMEDIATE parent and the most useful state
+  --/| field on common parent types. It is a discovery aid, not a replacement for
+  --/| ScriptCards' complete ancestry/applicability check.
+  --/|
+  --/| This tutorial is a discovery/diagnostic card. It does not change the sheet.
+  --/| ==========================================================================
+
+  --#beaconsheet|1
+  --#sourcetoken|@{selected|token_id}
+  --#title|[*S:character_name] - Roll Mode and Roll Bonus Tutorial
+
+  --+|[c][b]Global Sheet Roll Settings[/b][/c]
+
+  --+Global d20 Roll Mode|[*S:sheet->settings->rolls->mode]
+  --+Roll Privacy|[*S:sheet->settings->rolls->privacy]
+  --+Automatic Damage|[*S:sheet->settings->rollDamageAutomatic]
+
+  --+|[c][b]Targeted Roll Bonuses[/b][/c]
+
+  --/| The loop prints one readable line per Roll Bonus instead of dumping every
+  --/| raw field. Inactive sources remain visible so you can see what WOULD apply
+  --/| if that source became active.
+  --%Index|0;99;1
+    --&RecordName|[*S:rollbonuses->[&Index]->name]
+    --?"[&RecordName]" -eq "undefined"|%!
+
+    --/| Keep the complete stored category/target arrays so the probe cannot hide
+    --/| a third or later entry. The entire record is still printed on one line.
+    --&Category|[*S:rollbonuses->[&Index]->bonusCategory]
+    --&Target|[*S:rollbonuses->[&Index]->bonusName]
+
+    --&Effect|[*S:rollbonuses->[&Index]->bonusDetails]
+    --&BonusValue|[*S:rollbonuses->[&Index]->bonusValue]
+    --?"[&Effect]" -eq "Keep Highest"|[
+      --&Effect|Advantage
+    --]|
+    --?"[&Effect]" -eq "Keep Lowest"|[
+      --&Effect|Disadvantage
+    --]|
+    --?"[&Effect]" -eq "Modifier"|[
+      --&Effect|Modifier [&BonusValue]
+    --]|
+
+    --&ParentID|[*S:rollbonuses->[&Index]->parentID]
+    --&SourceType|[*S:sheet->integrants->integrants->[&ParentID]->type]
+    --&SourceName|[*S:sheet->integrants->integrants->[&ParentID]->name]
+    --&SourceState|enabled=[*S:sheet->integrants->integrants->[&ParentID]->_enabled]
+
+    --?"[&SourceType]" -eq "Condition"|[
+      --&SourceState|active=[*S:sheet->integrants->integrants->[&ParentID]->_active]
+    --]|
+    --?"[&SourceType]" -eq "Item"|[
+      --&SourceState|equipped=[*S:sheet->integrants->integrants->[&ParentID]->equipData->equipped]
+    --]|
+    --?"[&SourceType]" -eq "Effect"|[
+      --&SourceState|active=[*S:sheet->integrants->integrants->[&ParentID]->_active]
+    --]|
+    --?"[&SourceType]" -eq "Attunement"|[
+      --&SourceState|attuned=[*S:sheet->integrants->integrants->[&ParentID]->_attuned]
+    --]|
+
+    --+|[b][&RecordName][/b] — category [&Category] — target [&Target] — [&Effect] — immediate parent [&SourceType]: [&SourceName] ([&SourceState])
+  --%|
+
+  --+|[c][b]What to Remember[/b][/c]
+
+  --+Global Mode|sheet->settings->rolls->mode affects the character's general d20 mode.
+  --+Targeted Overrides|Inspect rollbonuses when one skill, save, attack, or check is being modified by another rule.
+  --+Source State|A Roll Bonus record can exist while its parent Condition, Effect, Attunement, or Item is not currently applicable.
+  --+No Single Stealth Setting|The final effective state can be the combination of the global mode plus several applicable Roll Bonus records.
+}}

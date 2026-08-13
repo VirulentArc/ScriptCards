@@ -1,6 +1,6 @@
 !script {{
   --/| ==========================================================================
-  --/| Tutorial: D&D 2024 Beacon Typed Collections
+  --/| Tutorial 03: D&D 2024 Beacon Typed Collections
   --/|
   --/| PURPOSE
   --/| Beacon stores many things as individual records: Actions, Spells, Items,
@@ -17,16 +17,28 @@
   --/|
   --/| READING A WHOLE COLLECTION
   --/| A reference such as [*S:languages] asks ScriptCards to display a short
-  --/| summary of every active Language record on the source character.
+  --/| summary of the typed Language records available on the source character.
+  --/|
+  --/| In .135, authoritative live records are preferred over mirrored Builder
+  --/| copies. Builder records are used only when no authoritative entries exist
+  --/| for that collection. Explicitly disabled and superseded records are
+  --/| excluded.
+  --/|
+  --/| IMPORTANT: being present in a typed collection does NOT always mean that a
+  --/| record currently applies to the character. A Roll Bonus owned by an inactive
+  --/| Condition, for example, can still be useful to discover. When ScriptCards
+  --/| reconstructs a calculated compatibility value, it follows the parent chain
+  --/| and excludes inactive Conditions/Effects, unattuned Attunements, and
+  --/| descendants that require an unequipped Item.
   --/|
   --/| The whole-collection display is only a quick summary. Some collections
   --/| may look strange or show the same name many times. Those records are not
   --/| necessarily duplicates. Each record can contain more information than the
   --/| short summary shows.
   --/|
-  --/| For example, Class Levels may show Paladin many times because there are
-  --/| several separate Paladin level records. Defenses may show Petrified many
-  --/| times because separate defense records can belong to different features.
+  --/| Different canonical records can still share the same readable name. For
+  --/| example, several Defense records can belong to different parent features.
+  --/| Do not assume that a repeated display name means duplicate data.
   --/|
   --/| READING ONE RECORD
   --/| The basic typed collection path is:
@@ -69,10 +81,15 @@
   --+Armor Classes|[*S:armorclasses]
   --+Attacks|[*S:attacks]
   --+Conditions|[*S:conditions]
+  --+Effects|[*S:effects]
   --+Damages|[*S:damages]
   --+Defenses|[*S:defenses]
   --+Exhaustions|[*S:exhaustions]
   --+Features|[*S:features]
+  --/| Healing is a live canonical family that can be discovered as healings, but
+  --/| its complete leaf contract is still less fully mapped than the families
+  --/| demonstrated later in this tutorial.
+  --+Healings|[*S:healings]
   --+Hit Dice|[*S:hitdices]
   --+Hit Points|[*S:hitpoints]
   --+Modifiers|[*S:modifiers]
@@ -123,7 +140,7 @@
 
   --+|[c][b]Examples: Selecting the First Record[/b][/c]
 
-  --/| The selector 0 means "the first active record in this collection."
+  --/| The selector 0 means "the first indexed record in this collection."
   --/| This is useful when exploring a collection whose record names are unknown.
   --+First Language|[*S:languages->0->name]
   --+First Action|[*S:actions->0->name]
@@ -132,12 +149,16 @@
 
   --+|[c][b]Looking Deeper: Class Level Records[/b][/c]
 
-  --/| A whole classlevels summary may repeat the same class name. Reading fields
-  --/| from one record shows that the record contains much more than that name.
+  --/| A Class Level record is one component of progression. Its level field is
+  --/| the progression stage represented by that record. Its totalLevel field is
+  --/| a contribution used by the character-level aggregate; it is NOT the final
+  --/| total character level by itself.
   --+Record Name|[*S:classlevels->0->name]
-  --+Class Level|[*S:classlevels->0->level]
-  --+Total Character Level|[*S:classlevels->0->totalLevel]
+  --+Progression Stage|[*S:classlevels->0->level]
+  --+Record Level Contribution|[*S:classlevels->0->totalLevel]
   --+Class Record ID|[*S:classlevels->0->classID]
+  --+Final Total Character Level|[*S:level]
+  --+Primary Class Level|[*S:base_level]
 
   --+|[c][b]Looking Deeper: Actions and Attacks[/b][/c]
 
@@ -208,11 +229,21 @@
   --+Caster Type|[*S:spellcastings->0->casterType]
   --+Overview Display|[*S:spellcastings->0->overviewDisplay]
 
-  --+|[c][b]Looking Deeper: Conditions and Weapon Mastery[/b][/c]
+  --+|[c][b]Looking Deeper: Conditions, Effects, and Weapon Mastery[/b][/c]
 
+  --/| Built-in Condition records are normally present even while inactive.
+  --/| _active is the actual Condition state; _enabled only controls whether the
+  --/| record participates in the model.
   --+Condition Name|[*S:conditions->0->name]
   --+Condition Active|[*S:conditions->0->_active]
   --+Condition Description|[*S:conditions->0->description]
+
+  --/| Effects are dynamic character content. A character may have none. Unlike
+  --/| Conditions, Effect creation/removal/toggle lifecycle is not a universal
+  --/| verified write operation, so this tutorial only reads the first Effect.
+  --+Effect Name|[*S:effects->0->name:::No Effect record]
+  --+Effect Active|[*S:effects->0->_active:::No Effect record]
+  --+Effect Parent|[*S:effects->0->parentID:::No Effect record]
 
   --+Mastery Name|[*S:weaponmasteries->0->name]
   --+Mastery Active|[*S:weaponmasteries->0->active]

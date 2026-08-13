@@ -1,6 +1,6 @@
 !script {{
   --/| ==========================================================================
-  --/| Tutorial: Custom Attributes on D&D 2024 Beacon Characters
+  --/| Tutorial 08: Custom Attributes on D&D 2024 Beacon Characters
   --/|
   --/| PURPOSE
   --/| Sometimes a ScriptCards script needs to save information that is not a
@@ -52,8 +52,16 @@
   --/| WRITING AN EXISTING CUSTOM ATTRIBUTE
   --/| Once it exists, !a can also write it with either name.
   --/|
-  --/| If a bare name is also the name of a real native Beacon value, the native
-  --/| value wins. Use user. when you specifically mean the custom value.
+  --/| If a bare name is also claimed by a native or D&D compatibility lookup,
+  --/| that sheet/compatibility meaning wins. Use user. when you specifically mean
+  --/| the custom value.
+  --/|
+  --/| .135 also has a small set of deliberate AUTHORITATIVE MISSES for legacy
+  --/| names that are too ambiguous to project safely, such as class_resource,
+  --/| other_resource, and default_critical_range. Those names intentionally return
+  --/| undefined instead of falling through to user.<name>. If a custom value could
+  --/| collide with any sheet/compatibility name, always read it explicitly as
+  --/| user.<name>.
   --/|
   --/| CLASSIC SHEET NOTE
   --/| The special user. routing described here is Beacon behavior. On a classic
@@ -79,6 +87,7 @@
 
   --+Beacon !c|Existing native, structured, and typed sheet values. It does not create custom values.
   --+Beacon !a|Custom attributes, attribute-style repeating fields, and compatible existing native aliases.
+  --+Safest Custom Read|Use user.name explicitly when the bare name could collide with a sheet or compatibility name.
 
   --+|[c][b]Create a Text Value[/b][/c]
 
