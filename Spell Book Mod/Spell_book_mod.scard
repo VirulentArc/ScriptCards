@@ -1,7 +1,7 @@
 !script {{ --/|{& skip}
   --/| ==========================================================================
   --/| Script Name : Tim's Spell Book Mod (Scriptcards) for D&D 5E 2014
-  --/| Version     : 4.0.1
+  --/| Version     : 4.0.2
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| Github URL  : https://github.com/VirulentArc/ScriptCards/tree/main/Spell%20Book%20Mod
@@ -356,7 +356,10 @@
     --?"[&Innate]" -eq "undefined"|[ --&Innate| --]|
     --?"[&Innate]" -ne ""|[ --&InnateDisplay|[F::12][&Innate][/F] --]|
     --&SpellData|[&SpellLevel]%%%[&SpellRowID]
-    --&SpellDetail|[rbutton][&BookImage]::SpellDescription;[&SpellData][/rbutton]
+    --&SpellDetailName|[&SpellName(replaceall,;,TIMSBMSEMI)]
+    --&SpellDetailName|[&SpellDetailName(replaceall,%,TIMSBMPCT)]
+    --&SpellDetailData|[&SpellLevel]%%%[&SpellRowID]%%%[&SpellDetailName]
+    --&SpellDetail|[rbutton][&BookImage]::SpellDescription;[&SpellDetailData][/rbutton]
     --~MacroName|string;replaceall; ;-;[&SpellName]
     --?"[&SpellMule]" -ne ""|[ --~MacroButton|system;findability;[&SpellMule];[&MacroName] --&CasterID|[&SpellMule] --]|[ --~MacroButton|system;findability;[&CharName_Attr];[&MacroName] --&CasterID|[&CharName_Attr] --]|
     --?"[&MacroButton]" -ne "AbilityNotFound"|[ --&SpellRoll|[button][&RollImage]::~[&CasterID]|[&MacroButton][/button] --&SpellDetail|[button][&BookImage]::~[&CasterID]|[&MacroButton][/button] --&RollCell_CSS|[&RollBtnTd_CSS] --&RollTitle|title="Cast [&SpellName]" --]|
@@ -560,18 +563,31 @@
 --:SpellDescription|
   --#hidecard|1
   --&DescSpellLevel|[&reentryval(before,%%%)]
-  --&DescSpellRowID|[&reentryval(after,%%%)]
-  --&DescOB|{ --&DescCB|} --&DescVBAR||
-  --?"[&DescWhisperMode]" -eq "1"|SpellDescriptionWhisper
-  --&DescPERC|%
-  --&DescNativeRoll|[&DescPERC][&DescOB][&CharName_Attr][&DescVBAR]repeating_spell-[&DescSpellLevel]_[&DescSpellRowID]_output[&DescCB]
-  --e[&CharName_Attr]|[&DescNativeRoll]
---X|
---:SpellDescriptionWhisper|
+  --&DescSpellPayload|[&reentryval(after,%%%)]
+  --&DescSpellRowID|[&DescSpellPayload(before,%%%)]
+  --&DescSpellName|[&DescSpellPayload(after,%%%)]
+  --&DescSpellName|[&DescSpellName(replaceall,TIMSBMSEMI,;)]
+  --&DescSpellName|[&DescSpellName(replaceall,TIMSBMPCT,%)]
   --Rbysectionid|[&CharId_Attr];repeating_spell-[&DescSpellLevel];[&DescSpellRowID]
-  --&DescAMP|& --&DescAT|@
-  --&DescRoll|/w "[&SendingPlayerName]" [&DescAMP][&DescOB]template:spelloutput[&DescCB] [&DescOB][&DescOB]level=[*R:spellschool] [&DescSpellLevel][&DescCB][&DescCB] [&DescOB][&DescOB]name=[*R:spellname][&DescCB][&DescCB] [&DescOB][&DescOB]castingtime=[*R:spellcastingtime][&DescCB][&DescCB] [&DescOB][&DescOB]range=[*R:spellrange][&DescCB][&DescCB] [&DescOB][&DescOB]target=[*R:spelltarget][&DescCB][&DescCB] [&DescOB][&DescOB]v=[*R:spellcomp_v][&DescCB][&DescCB] [&DescOB][&DescOB]s=[*R:spellcomp_s][&DescCB][&DescCB] [&DescOB][&DescOB]m=[*R:spellcomp_m][&DescCB][&DescCB] [&DescOB][&DescOB]material=[*R:spellcomp_materials][&DescCB][&DescCB] [&DescOB][&DescOB]duration=[*R:spellduration][&DescCB][&DescCB] [&DescOB][&DescOB]description=[*R:spelldescription][&DescCB][&DescCB] [&DescOB][&DescOB]athigherlevels=[*R:spellathigherlevels][&DescCB][&DescCB] [*R:spellritual] [&DescOB][&DescOB]innate=[*R:innate][&DescCB][&DescCB] [&DescOB][&DescOB]savedc=[*S:spell_save_dc][&DescCB][&DescCB] [*R:spellconcentration] [&DescAT][&DescOB][&CharName_Attr][&DescVBAR]charname_output[&DescCB]
+  --&DescLoadedSpellName|[*R:spellname]
+  --?"[&DescLoadedSpellName]" -eq "NoRepeatingAttributeLoaded" -or "[&DescLoadedSpellName]" -eq "" -or "[&DescLoadedSpellName]" -eq "undefined"|[
+    --?"[&DescSpellName]" -ne "" -and "[&DescSpellName]" -ne "undefined" -and "[&DescSpellName]" -ne "[&DescSpellRowID]"|[
+      --Rfind|[&CharId_Attr];[&DescSpellName];repeating_spell-[&DescSpellLevel];spellname
+      --&DescLoadedSpellName|[*R:spellname]
+    --]|
+  --]|
+  --?"[&DescLoadedSpellName]" -eq "NoRepeatingAttributeLoaded" -or "[&DescLoadedSpellName]" -eq "" -or "[&DescLoadedSpellName]" -eq "undefined"|SpellDescriptionMissing
+  --&DescOB|{ --&DescCB|} --&DescAMP|&
+  --&DescWhisperPrefix|
+  --?"[&DescWhisperMode]" -eq "1"|[ --&DescWhisperPrefix|/w "[&SendingPlayerName]" --]|
+  --&DescRoll|[&DescWhisperPrefix] [&DescAMP][&DescOB]template:spell[&DescCB] [&DescOB][&DescOB]level=[*R:spellschool] [&DescSpellLevel][&DescCB][&DescCB] [&DescOB][&DescOB]name=[*R:spellname][&DescCB][&DescCB] [&DescOB][&DescOB]castingtime=[*R:spellcastingtime][&DescCB][&DescCB] [&DescOB][&DescOB]range=[*R:spellrange][&DescCB][&DescCB] [&DescOB][&DescOB]target=[*R:spelltarget][&DescCB][&DescCB] [*R:spellcomp_v] [*R:spellcomp_s] [*R:spellcomp_m] [&DescOB][&DescOB]material=[*R:spellcomp_materials][&DescCB][&DescCB] [&DescOB][&DescOB]duration=[*R:spellduration][&DescCB][&DescCB] [&DescOB][&DescOB]description=[*R:spelldescription][&DescCB][&DescCB] [&DescOB][&DescOB]athigherlevels=[*R:spellathigherlevels][&DescCB][&DescCB] [*R:spellritual] [&DescOB][&DescOB]innate=[*R:innate][&DescCB][&DescCB] [*R:spellconcentration] [&DescOB][&DescOB]charname=[&CharName_Attr][&DescCB][&DescCB]
   --e[&CharName_Attr]|[&DescRoll]
+--X|
+--:SpellDescriptionMissing|
+  --#hidecard|0
+  --#title|Spellbook Error
+  --#titleCardBackground|#611b1c
+  --+|[c]That cached spell row no longer exists. Reopen the Spellbook once to refresh its spell list.[/c]
 --X|
 --:PrepareToggle|
   --?"[&PrepToggle_Attr]" -eq "0"|[ -->RestartBook| --]|
