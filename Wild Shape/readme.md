@@ -146,7 +146,7 @@ While transformed, choosing another form and selecting **Wild Shape** replaces t
 ![Choosing a Wild Shape form](images/choose-wild-shape.png)
 
 <!-- Replace images/wild-shape-stat-block.png with a screenshot of a form's rollable stat block. -->
-![Wild Shape form stat block](images/images/wild-shape-overview.png)
+![Wild Shape form stat block](images/wild-shape-overview.png)
 
 ## How rolls work
 
