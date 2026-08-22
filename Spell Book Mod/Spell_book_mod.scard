@@ -8,10 +8,12 @@
   --/| ==========================================================================
   --:RestartBook|
   --&ImgRoot|https://files.d20.io/images/
+  --#Whisper|self --#emoteState|0 --#debug|0 --#functionbenchmarking|0 --#dontcheckbuttonsforapi|1
+  --&SelectedTokenCount|[@SC_SelectedTokens()]
+  --?"[&SelectedTokenCount]" -eq "0" -or "[&SelectedTokenCount]" -eq "undefined array"|[ --#title|Spellbook Error --#titleCardBackground|#611b1c --#bodyBackgroundImage|url('[&ImgRoot]105716505/oymO0pnVyLCv-tQDw2vddA/med.png'); --+[c]No Token Selected|Please select the caster's token and run the Spellbook again.[/c] --X| --]|
+  --?"[&SelectedTokenCount]" -gt "1"|[ --#title|Spellbook Error --#titleCardBackground|#611b1c --#bodyBackgroundImage|url('[&ImgRoot]105716505/oymO0pnVyLCv-tQDw2vddA/med.png'); --+[c]Multiple Tokens Selected|Please select only one caster token and run the Spellbook again.[/c] --X| --]|
   --&CasterToken|[@SC_SelectedTokens(0)]
-  --#reentrant|Spellbook- [*[&CasterToken]:character_id] --#Whisper|self --#sourceToken|[&CasterToken] --#emoteState|0 --#debug|0 --#functionbenchmarking|0 --#dontcheckbuttonsforapi|1
-  --?"[@SC_SelectedTokens()]" -eq "undefined array"|[ --#title|Spellbook Error --#titleCardBackground|#611b1c --#bodyBackgroundImage|url('[&ImgRoot]105716505/oymO0pnVyLCv-tQDw2vddA/med.png'); --+[c]No Token Selected|Please select the caster's token and run the Spellbook again.[/c] --X| --]|
-  --?"[@SC_SelectedTokens()]" -gt "1"|[ --#title|Spellbook Error --#titleCardBackground|#611b1c --#bodyBackgroundImage|url('[&ImgRoot]105716505/oymO0pnVyLCv-tQDw2vddA/med.png'); --+[c]Multiple Tokens Selected|Please select only one caster token and run the Spellbook again.[/c] --X| --]|
+  --#reentrant|Spellbook- [*[&CasterToken]:character_id] --#sourceToken|[&CasterToken]
   --&CharId_Attr|[*S:character_id]
   --&CharName_Attr|[*S:character_name]
   -->BuildSpellHeaderAttributeIndex|
