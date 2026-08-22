@@ -8,7 +8,7 @@ The script gives each Druid a GM-managed list of available forms, displays the s
 > **Beacon support is experimental and is not part of the official ScriptCards release.** It has been tested in Roll20, but it requires the unofficial Beacon-compatible ScriptCards build supplied alongside this project. Beacon functionality and installation requirements may change as official ScriptCards support develops.
 
 <!-- Replace images/wild-shape-overview.png with an overview screenshot. -->
-![Wild Shape overview](images/wild-shape-overview.png)
+![Wild Shape overview](images/wild-shape-overview.png) ![Wild Shape overview](images/wild-shape-overview-2024.png)
 
 ## Features
 
