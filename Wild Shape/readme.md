@@ -144,9 +144,6 @@ If a Druid has a recorded active transformation, the GM Settings card displays *
 4. Read the recovery message and confirm the action.
 5. Follow any manual token instructions shown by the script.
 
-<!-- Replace images/force-revert.png with a screenshot of the Force Revert confirmation card. -->
-![Force Revert recovery](images/force-revert.png)
-
 The Rules setting cannot be changed while any Druid has an active Wild Shape state. Revert or Force Revert every transformed Druid first.
 
 ## Updating
