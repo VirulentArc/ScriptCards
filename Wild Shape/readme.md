@@ -120,9 +120,6 @@ Strength, Dexterity, and Constitution rolls use the selected form's statistics. 
 <!-- Replace images/wild-shape-stat-block.png with a screenshot of a form's rollable stat block. -->
 ![Wild Shape form stat block](images/wild-shape-overview.png)
 
-<!-- Replace images/token-transformation.png with a before-and-after token transformation screenshot. -->
-![Wild Shape token transformation](images/token-transformation.png)
-
 ### GM View and multiple Druids
 
 The **GM View** control is visible only to the GM.
