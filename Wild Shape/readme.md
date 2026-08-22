@@ -49,22 +49,16 @@ The Beacon implementation is included for testing and early use. It has been tes
    - To test the experimental Beacon support, manually install the unofficial Beacon-compatible build supplied alongside this project instead.
 4. Save the script and confirm that the Mod sandbox starts without errors.
 
-<!-- Replace images/install-scriptcards.png with a screenshot of the Mod (API) Scripts page. -->
-![Installing ScriptCards in Roll20](images/install-scriptcards.png)
-
 ### 2. Create the Wild Shape macro
 
 1. Open the **Collections** tab in the Roll20 game.
 2. Under **Macros**, select **Add**.
 3. Name the macro `Wild Shape`.
-4. Open `Wild_Shape_v0.7.94.scard` from this project.
+4. Open `Wild_Shape_mod.scard` from this project.
 5. Copy the complete contents of the file into the macro's **Actions** field.
 6. Make the macro visible to the players who will use it.
 7. Enable **Show as Token Action** or **Show in Macro Bar**, depending on how the group prefers to launch it.
 8. Save the macro.
-
-<!-- Replace images/create-wild-shape-macro.png with a screenshot of the completed Roll20 macro. -->
-![Creating the Wild Shape macro](images/create-wild-shape-macro.png)
 
 The `.scard` file belongs in a Roll20 macro or character ability. Do not paste it into the Mod (API) Script editor.
 
@@ -79,8 +73,6 @@ Each Druid must:
 - Use the same Roll20 sheet system as the game.
 - Have a token that represents the correct Druid character sheet.
 
-The script matches tokens to Druids by character ID, not by token name. This prevents tokens belonging to different Druids from being mixed up in a multi-Druid campaign.
-
 ### Wild Shape NPCs
 
 Each possible form should be an unarchived NPC character in the Journal with:
@@ -92,9 +84,6 @@ Each possible form should be an unarchived NPC character in the Journal with:
 - Any traits, actions, bonus actions, reactions, saves, and skills that should appear on the Wild Shape card.
 
 A valid character avatar can be used as a fallback, but assigning a proper default token is strongly recommended. The default token supplies the intended image, dimensions, and 2014 token-bar values.
-
-<!-- Replace images/prepare-wild-shape-npc.png with a screenshot showing a prepared NPC sheet and default token. -->
-![Preparing a Wild Shape NPC](images/prepare-wild-shape-npc.png)
 
 ## Initial GM setup
 
