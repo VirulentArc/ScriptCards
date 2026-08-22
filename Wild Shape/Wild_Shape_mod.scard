@@ -1,7 +1,7 @@
 !scriptcards {{ --/|{& skip}
   --/| ============================================================================
   --/| Script Name : Tim's Wild Shape Mod
-  --/| Version     : v1.0.0
+  --/| Version     : 1.0.0
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| ============================================================================
@@ -152,7 +152,7 @@
     --%GMDruidLoop|foreach;DruidList
       --~GMDruidSplit|string;split;!@!;[&GMDruidLoop]
       --?"[= [$GMDruidCellCount.Raw] % 2 ]" -eq "0" -and "[$GMDruidCellCount.Raw]" -ne "0"|[ --&CardBody|+[/tr][tr] --]|
-      --&CardBody|+[td style="width:50%;[&ButtonCellCSS]"][rbutton][&GMDruidSplit1][br][F10]Druid [&GMDruidSplit3][/F]::SelectGMDruid;[&GMDruidSplit2][/rbutton][/td]
+      --&CardBody|+[td style="width:50%;[&ButtonCellCSS]"][rbutton][&GMDruidSplit1]::SelectGMDruid;[&GMDruidSplit2][/rbutton][/td]
       --=GMDruidCellCount|[$GMDruidCellCount.Raw] + 1
     --%|
     --?"[= [$GMDruidCellCount.Raw] % 2 ]" -eq "1"|[ --&CardBody|+[td style="width:50%;border:0;background:transparent;"]&nbsp;[/td] --]|

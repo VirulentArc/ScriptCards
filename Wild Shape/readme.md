@@ -1,15 +1,18 @@
 # Tim's Wild Shape Mod
 
-Tim's Wild Shape Mod is a self-contained [ScriptCards](https://wiki.roll20.net/Script:ScriptCards) Wild Shape menu and token manager for Roll20. It supports both the **D&D 5E by Roll20 (2014)** character sheet and the **D&D 2024 by Roll20 Beacon** character sheet.
+Tim's Wild Shape Mod is a self-contained [ScriptCards](https://wiki.roll20.net/Script:ScriptCards) Wild Shape menu and token manager for Roll20. It officially supports the **D&D 5E by Roll20 (2014)** character sheet and includes experimental compatibility with the **D&D 2024 by Roll20 Beacon** character sheet.
 
 The script gives each Druid a GM-managed list of available forms, displays the selected form as a rollable stat block, replaces the Druid's token while transformed, and restores the original token when the Druid reverts.
+
+> [!IMPORTANT]
+> **Beacon support is experimental and is not part of the official ScriptCards release.** It has been tested in Roll20, but it requires the unofficial Beacon-compatible ScriptCards build supplied alongside this project. Beacon functionality and installation requirements may change as official ScriptCards support develops.
 
 <!-- Replace images/wild-shape-overview.png with an overview screenshot. -->
 ![Wild Shape overview](images/wild-shape-overview.png)
 
 ## Features
 
-- Separate support for the Roll20 2014 and Beacon character sheets.
+- Official support for the Roll20 2014 character sheet and experimental support for the Beacon character sheet.
 - Per-Druid form assignments managed by the GM.
 - Automatic Wild Shape eligibility information based on Druid level, challenge rating, and movement speeds.
 - Optional support for assigning non-Beast NPCs as forms.
@@ -26,10 +29,14 @@ The script gives each Druid a GM-managed list of available forms, displays the s
 
 - A **Roll20 Pro** subscription with access to Mod (API) Scripts.
 - **ScriptCards 3.0.25a**, which is the version used to develop and test this release.
-- For a 2014 game, the standard ScriptCards 3.0.25a release can be used.
-- For a Beacon game, use the Beacon-compatible experimental ScriptCards build provided with this project. The Wild Shape script relies on its D&D 2024 sheet adapter and native Beacon action support.
+- For a 2014 game, use the official ScriptCards 3.0.25a release.
+- Experimental Beacon support requires the unofficial Beacon-compatible ScriptCards build supplied alongside this project. The Wild Shape script relies on its experimental D&D 2024 sheet adapter and native Beacon action support.
 
 Only one copy of ScriptCards should be active in the game. Do not run the standard and Beacon-compatible builds at the same time.
+
+### Experimental Beacon support
+
+The Beacon implementation is included for testing and early use. It has been tested with the D&D 2024 by Roll20 sheet, but it is not currently an official ScriptCards feature. Users who only need the 2014 sheet should install the official ScriptCards release and can ignore the experimental build entirely.
 
 ## Installation
 
@@ -38,8 +45,8 @@ Only one copy of ScriptCards should be active in the game. Do not run the standa
 1. Open the Roll20 game.
 2. Open **Settings** and select **Mod (API) Scripts**.
 3. Install ScriptCards 3.0.25a.
-   - Use the standard version for a 2014 game.
-   - Use the Beacon-compatible experimental version supplied with this project for a Beacon game.
+   - For a 2014 game, use the official ScriptCards release.
+   - To test the experimental Beacon support, manually install the unofficial Beacon-compatible build supplied alongside this project instead.
 4. Save the script and confirm that the Mod sandbox starts without errors.
 
 <!-- Replace images/install-scriptcards.png with a screenshot of the Mod (API) Scripts page. -->
@@ -96,7 +103,7 @@ A valid character avatar can be used as a fallback, but assigning a proper defau
 3. Choose the Druid to configure. If the game contains only one recognized Druid, the script opens that Druid's settings automatically.
 4. Select the correct global rules option:
    - **2014 Rules** for the D&D 5E by Roll20 sheet.
-   - **2024 Rules** for the D&D 2024 by Roll20 Beacon sheet.
+   - **2024 Rules** for the experimental D&D 2024 by Roll20 Beacon support.
 5. Set **Non-Beasts** to the desired value.
 6. Select **Manage Wild Shape Forms**.
 7. Use the letter buttons to browse the available NPCs.
@@ -274,7 +281,7 @@ Place exactly one token representing that specific Druid character sheet on the 
 Confirm that:
 
 - The correct version of ScriptCards is installed.
-- Beacon games are using the Beacon-compatible experimental build.
+- Beacon games are using the unofficial Beacon-compatible experimental build rather than the official ScriptCards release.
 - The NPC and Druid use the expected Roll20 character sheet.
 - The requested action exists on the source character sheet.
 
