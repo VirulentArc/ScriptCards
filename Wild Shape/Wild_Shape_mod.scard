@@ -4,6 +4,7 @@
   --/| Version     : 1.0.0
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
+  --/| URL         : https://github.com/VirulentArc/ScriptCards/tree/main/Wild%20Shape
   --/| ============================================================================
   --#title| --#hidetitlecard|1 --#tableborder|0 --#tablebgcolor|transparent --#tableshadow|none --#tableborderradius|0px --#oddrowbackground|transparent --#evenrowbackground|transparent
   --#oddrowfontcolor|#000000 --#evenrowfontcolor|#000000 --#bodyfontface|serif --#bodyfontsize|12px --#lineheight|normal --#buttonbackground|transparent
@@ -48,11 +49,11 @@
     --?"[&GMView]" -eq "1"|GMSelectedDruidEntry
   --:GMPlayerModeEntry|
     --&DruidID|[&GMSelectedDruidID]
-    --?"[&DruidID]" -eq "" -or "[&DruidID]" -eq "undefined"|PlayerModePrompt
+    --?"[&DruidID]" -eq "" -or "[&DruidID]" -eq "undefined"|GMPlayerModeNeedsDruid
     --&DruidName|[*O:[&DruidID]:character:name]
-    --?"[&DruidName]" -eq "" -or "[&DruidName]" -eq "undefined"|PlayerModePrompt
+    --?"[&DruidName]" -eq "" -or "[&DruidName]" -eq "undefined"|GMPlayerModeNeedsDruid
     -->GetDruidLevel|[&DruidID]
-    --?"[&DruidLevel]" -le "0"|PlayerModePrompt
+    --?"[&DruidLevel]" -le "0"|GMPlayerModeNeedsDruid
     --^LoadPlayerDruid|
   --:PlayerModeEntry|
     --?"[&SelectedTokenCount]" -eq "undefined array"|NoSelectedToken
@@ -261,11 +262,10 @@
     --&ErrorMessage|No player character with Druid levels was found in the game.
     --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE
     --^ErrorCard|
-  --:PlayerModePrompt|
-    --&CardTitle|Wild Shape
-    --&CardBody|[t style="width:100%;[&BodyStyle]"][tr][td style="text-align:center;"][b]Player Mode[/b][br]No GM Druid is currently selected. Switch to GM View and choose a Druid.[/td][/tr][/t]
-    -->RenderCard|
-    --X|
+  --:GMPlayerModeNeedsDruid|
+    --&GMView|1
+    -->WriteGlobalSettings|
+    --^GMEntry|
   --:NoSelectedToken|
     --&ErrorTitle|Wild Shape
     --&ErrorMessage|[b]No Token Selected[/b][br]Select the character token before running Wild Shape.
@@ -486,9 +486,9 @@
     --?"[&RevertSourceAvailable]" -eq "1"|[
       --&PreservedRestoreLayer|[*O:[&RevertTokenID]:graphic:layer]
       --!t:[&OriginalTokenID]|layer:[&PreservedRestoreLayer]|left:[*O:[&RevertTokenID]:graphic:left]|top:[*O:[&RevertTokenID]:graphic:top]|width:[&OriginalWidth]|height:[&OriginalHeight]|rotation:[*O:[&RevertTokenID]:graphic:rotation]|statusmarkers:[*O:[&RevertTokenID]:graphic:statusmarkers]|tint_color:[*O:[&RevertTokenID]:graphic:tint_color]
-    ]|[
+    --]|[
       --!t:[&OriginalTokenID]|layer:[&PreservedRestoreLayer]|width:[&OriginalWidth]|height:[&OriginalHeight]
-    ]|
+    --]|
     --!t:[&OriginalTokenID]|bar1_value:[&OriginalBar1Value]|bar1_max:[&OriginalBar1Max]|bar2_value:[&OriginalBar2Value]|bar2_max:[&OriginalBar2Max]|bar3_value:[&OriginalBar3Value]|bar3_max:[&OriginalBar3Max]|bar4_value:[&OriginalBar4Value]|bar4_max:[&OriginalBar4Max]
     --?"[&RevertSourceAvailable]" -eq "1"|[ --!x:[&RevertTokenID]|Wild Shape token reversion --]|
     --&ReplacementTokenID|[&OriginalTokenID]
@@ -1519,9 +1519,9 @@
     --/| Preserve non-creatable original tokens on the GM layer; normal image tokens keep the established delete/recreate path.
     --?"[%7%]" -eq "form" -and "[&OriginalTokenID]" -eq "[%1%]"|[
       --!t:[%1%]|layer:gmlayer
-    ]|[
+    --]|[
       --!x:[%1%]|Wild Shape token replacement
-    ]|
+    --]|
   --<|
   --:ValidateReplacementToken|
     --&ReplacementTokenValid|0
