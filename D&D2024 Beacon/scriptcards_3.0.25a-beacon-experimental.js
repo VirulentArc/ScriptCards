@@ -27,7 +27,7 @@ const ScriptCards = (async () => { // eslint-disable-line no-unused-vars
 	*/
 
 	const APINAME = "ScriptCards";
-	const APIVERSION = "3.0.25a-beacon-experimental.136 EXPERIMENTAL";
+	const APIVERSION = "3.0.25a-beacon-experimental.137 EXPERIMENTAL";
 	const NUMERIC_VERSION = "300251"
 	const APIAUTHOR = "Kurt Jaegers";
 	const debugMode = false;
@@ -196,6 +196,21 @@ const ScriptCards = (async () => { // eslint-disable-line no-unused-vars
 		"gmnotes": 1,
 		"notes": 1,
 		"_defaulttoken": 1
+	};
+
+	// --!c serves two different targets in Beacon mode: Beacon sheet values and
+	// native Roll20 Character object properties. These properties belong to the
+	// Character object and must never be routed through setSheetItem().
+	const BeaconNativeCharacterProperties = {
+		"name": "name",
+		"avatar": "avatar",
+		"bio": "bio",
+		"gmnotes": "gmnotes",
+		"archived": "archived",
+		"inplayerjournals": "inplayerjournals",
+		"controlledby": "controlledby",
+		"defaulttoken": "_defaulttoken",
+		"_defaulttoken": "_defaulttoken"
 	};
 
 	const SettingsThatAreColors = [
@@ -5951,6 +5966,45 @@ const ScriptCards = (async () => { // eslint-disable-line no-unused-vars
 										}
 									}
 									var settingValue = thisSetting.join(':').replace(/\\\\\|/gi, "|");
+
+									const nativeCharacterProperty = BeaconNativeCharacterProperties[settingName.toLowerCase()];
+									if (beacon && setType === "current" && nativeCharacterProperty) {
+										if (nativeCharacterProperty === "_defaulttoken") {
+											const theToken = getObj("graphic", settingValue);
+											if (theToken) {
+												setDefaultTokenForCharacter(theCharacter, theToken);
+											} else {
+												log(`ScriptCards Error: Beacon native Character property "${settingName}" requires a valid Graphic ID.`);
+											}
+											continue;
+										}
+
+										if (settingValue.startsWith("+=") || settingValue.startsWith("-=")) {
+											const currentValue = bioFields[nativeCharacterProperty] == 1
+												? await getBioField(theCharacter, nativeCharacterProperty)
+												: theCharacter.get(nativeCharacterProperty);
+											const delta = settingValue.substring(2);
+											if (isNumber(currentValue) && isNumber(delta)) {
+												settingValue = settingValue.startsWith("+=")
+													? Number(currentValue) + Number(delta)
+													: Number(currentValue) - Number(delta);
+											} else {
+												settingValue = currentValue + delta;
+											}
+										}
+
+										if (nativeCharacterProperty === "archived") {
+											switch (String(settingValue).toLowerCase()) {
+												case "true": case "on": case "1": settingValue = true; break;
+												case "false": case "off": case "0": settingValue = false; break;
+												case "": case "toggle": case "flip": settingValue = !theCharacter.get("archived"); break;
+											}
+										}
+
+										theCharacter.set(nativeCharacterProperty, settingValue);
+										invalidateBeaconCharacterCaches(charID);
+										continue;
+									}
 
 									if (beacon) {
 										const structuredAliasWrite = await writeDnd2024BeaconStructuredAlias(
@@ -15545,31 +15599,6 @@ const ScriptCards = (async () => { // eslint-disable-line no-unused-vars
 
 
 		for (const [skillKey, skillName] of Object.entries(adapter.skillNames)) {
-			if ([`${skillKey}prof`, `${skillKey}type`].includes(normalized)) {
-				const proficiencySelection = findDnd2024BeaconActiveTypedRecord(characterId, adapter.collections.proficiencies, (candidate) =>
-					normalizeBeaconLookupName(beaconProperty(candidate, adapter.fields.category)) === normalizeBeaconLookupName(adapter.proficiencyCategories.skill)
-					&& normalizeBeaconLookupName(beaconProperty(candidate, adapter.fields.proficiency)) === normalizeBeaconLookupName(skillName)
-				);
-				if (!proficiencySelection.resolved) {
-					return { handled: false };
-				}
-				const level = proficiencySelection.record
-					? beaconProperty(proficiencySelection.record, adapter.fields.proficiencyLevel)
-					: undefined;
-				const multiplier = proficiencySelection.record ? dnd2024BeaconProficiencyMultiplier(level) : 0;
-				if (multiplier === undefined) {
-					return { handled: false };
-				}
-				const value = normalized === `${skillKey}type`
-					? String(multiplier)
-					: (multiplier > 0 ? "1" : "0");
-				return {
-					handled: true,
-					found: true,
-					value,
-					source: normalized === `${skillKey}type` ? "dnd2024-local-skill-type" : "dnd2024-local-skill-prof"
-				};
-			}
 			if ([`${skillKey}bonus`, `${skillKey}flat`, `npc${skillKey}`, `npc${skillKey}base`].includes(normalized)) {
 				const value = dnd2024BeaconSkillTotal(characterId, skillName);
 				return value === undefined ? { handled: false } : { handled: true, found: true, value: String(value), source: "dnd2024-local-skill-total" };
@@ -15579,24 +15608,6 @@ const ScriptCards = (async () => { // eslint-disable-line no-unused-vars
 		for (const abilityName of new Set(Object.values(adapter.abilityNames))) {
 			const abilityKey = normalizeBeaconLookupName(abilityName);
 			const abbreviation = abilityKey.slice(0, 3);
-			if (normalized === `${abilityKey}saveprof`) {
-				const proficiencySelection = findDnd2024BeaconActiveTypedRecord(characterId, adapter.collections.proficiencies, (candidate) =>
-					normalizeBeaconLookupName(beaconProperty(candidate, adapter.fields.category)) === normalizeBeaconLookupName(adapter.proficiencyCategories.savingThrow)
-					&& normalizeBeaconLookupName(beaconProperty(candidate, adapter.fields.proficiency)) === abilityKey
-				);
-				if (!proficiencySelection.resolved) {
-					return { handled: false };
-				}
-				const level = proficiencySelection.record
-					? beaconProperty(proficiencySelection.record, adapter.fields.proficiencyLevel)
-					: undefined;
-				return {
-					handled: true,
-					found: true,
-					value: beaconProficiencyIsActive(level) ? "1" : "0",
-					source: "dnd2024-local-save-prof"
-				};
-			}
 			if ([`${abilityKey}savebonus`, `${abilityKey}savemod`, `npc${abbreviation}save`, `npc${abbreviation}savebase`].includes(normalized)) {
 				if (dnd2024BeaconHasRelevantRollBonus(characterId, "save", abilityName, abilityName)) {
 					return { handled: false };
