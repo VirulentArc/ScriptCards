@@ -20,9 +20,9 @@
   --&Beacon|0 --&ClassicBackendFound|0 --&BeaconBackendFound|0
   --~|array;objects:character;SheetBackendCharacters;
   --%SheetBackendLoop|foreach;SheetBackendCharacters
-    --?"[*O:[&SheetBackendLoop]:character:archived]" -eq "true"|%
+    --?"[*O:[&SheetBackendLoop]:character:archived]" -eq "true"|SheetBackendNext
     --&SheetBackendControllers|[*O:[&SheetBackendLoop]:character:controlledby]
-    --?"[&SheetBackendControllers]" -eq "" -or "[&SheetBackendControllers]" -eq "undefined"|%
+    --?"[&SheetBackendControllers]" -eq "" -or "[&SheetBackendControllers]" -eq "undefined"|SheetBackendNext
     --~|array;define;SheetBackendClassAttrs
     --~|array;attributes;SheetBackendClassAttrs;[&SheetBackendLoop];class
     --?"[@SheetBackendClassAttrs(maxindex)]" -ge "0"|[
@@ -31,6 +31,7 @@
       --%|
     --]|
     --?"[*O:[&SheetBackendLoop]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|&BeaconBackendFound;1
+    --:SheetBackendNext|
   --%|
   --?"[&ClassicBackendFound]" -ne "1" -and "[&BeaconBackendFound]" -eq "1"|&Beacon;1
   --#beaconsheet|[&Beacon]
@@ -1546,8 +1547,9 @@
     --~|array;define;PermissionAssignedIDs
     --~|array;fromstring;PermissionAssignedIDs;,;[&AssignedRaw]
     --%PermissionAssignedLoop|foreach;PermissionAssignedIDs
-      --?"[&PermissionAssignedLoop]" -eq "" -or "[&PermissionAssignedLoop]" -eq "undefined"|%
+      --?"[&PermissionAssignedLoop]" -eq "" -or "[&PermissionAssignedLoop]" -eq "undefined"|PermissionAssignedNext
       -->GrantFormControllers|[&PermissionAssignedLoop]
+      --:PermissionAssignedNext|
     --%|
   --<|
   --:GrantFormControllers|formcharacterid
@@ -1563,8 +1565,8 @@
     --%DruidControllerLoop|foreach;DruidControllerIDs
       --&DruidControllerID|[&DruidControllerLoop]
       --~DruidControllerID|string;trim;[&DruidControllerID]
-      --?"[&DruidControllerID]" -eq "" -or "[&DruidControllerID]" -eq "undefined"|%
-      --?"[&FormControllerCheck]" -inc ",[&DruidControllerID],"|%
+      --?"[&DruidControllerID]" -eq "" -or "[&DruidControllerID]" -eq "undefined"|DruidControllerNext
+      --?"[&FormControllerCheck]" -inc ",[&DruidControllerID],"|DruidControllerNext
       --?"[&FormControllers]" -eq ""|[
         --&FormControllers|[&DruidControllerID]
       --]|[
@@ -1572,6 +1574,7 @@
       --]|
       --&FormControllerCheck|,[&FormControllers],
       --&FormControllersChanged|1
+      --:DruidControllerNext|
     --%|
     --?"[&FormControllersChanged]" -eq "1"|[ --!c:[%1%]|controlledby:[&FormControllers] --]|
   --<|
