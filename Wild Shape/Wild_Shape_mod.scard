@@ -1,14 +1,14 @@
 !scriptcards {{ --/|{& skip}
   --/| ============================================================================
   --/| Script Name : Tim's Wild Shape Mod
-  --/| Version     : 1.0.1
+  --/| Version     : 1.0.2
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| ============================================================================
   --#title| --#hidetitlecard|1 --#tableborder|0 --#tablebgcolor|transparent --#tableshadow|none --#tableborderradius|0px --#oddrowbackground|transparent --#evenrowbackground|transparent
   --#oddrowfontcolor|#000000 --#evenrowfontcolor|#000000 --#bodyfontface|serif --#bodyfontsize|12px --#lineheight|normal --#buttonbackground|transparent
   --#buttontextcolor|#7A2008 --#buttonbordercolor|transparent --#buttonpadding|1px 0 --#buttonfontface|inherit --#buttonfontsize|inherit --#buttonwidth|auto
-  --#whisper|self --#emotestate|0 --#dontcheckbuttonsforapi|1 --#debug|1 --#functionbenchmarking|0
+  --#whisper|self --#emotestate|0 --#dontcheckbuttonsforapi|1 --#debug|0 --#functionbenchmarking|0
   --&DefaultFX|explode-smoke
   --&GlobalHandoutName|WildShape_Settings
   --&Plus|& --&Plus|+# --&Plus|+43;
@@ -146,7 +146,7 @@
     --]|
     -->LoadGlobalSettings|
     -->LoadTheme|
-    --&CardTitle|Wild Shape GM
+    --&CardTitle|Wild Shape DM
     --&CardBody|[t style="width:100%;[&BodyStyle]"][tr][td style="text-align:center;font-weight:bold;"]Choose a Druid[/td][/tr][/t]
     --&CardBody|+[&ControlDivider]
     --&CardBody|+[t style="width:100%;table-layout:fixed;border-collapse:separate;border-spacing:5px 3px;[&BodyStyle]"][tr]
@@ -175,7 +175,7 @@
     -->LoadAssignedForms|
     -->LoadDruidRules|
     -->BuildAssignedFormList|
-    --&CardTitle|Wild Shape GM Settings
+    --&CardTitle|Wild Shape DM Settings
     --&TitleStyle|style="font-family:Georgia,'Noto Serif','Liberation Serif','Nimbus Roman No9 L','Nimbus Roman','DejaVu Serif','Times New Roman',serif;font-variant:small-caps;font-size:19px;font-weight:bold;color:#7A2008;line-height:1.05em;white-space:nowrap;"
     --?"[&Rules]" -eq "2024"|[ --&TitleStyle|style="font-family:Georgia,'Noto Serif','Liberation Serif','Nimbus Roman No9 L','Nimbus Roman','DejaVu Serif','Times New Roman',serif;font-variant:small-caps;font-size:19px;font-weight:bold;line-height:1.05em;letter-spacing:0;white-space:nowrap;" --]|
     --&NonBeastDisplay|Off
@@ -214,8 +214,6 @@
     -->LoadState|
     -->LoadDruidRules|
     --?"[&ActiveFormID]" -eq ""|GMNoActiveWildShape
-    -->CheckCreatableImage|[&OriginalImage]
-    --&OriginalImageCreatable|[&ImageCreatable]
     --&ForceRevertTokenCheck|[*O:[&TransformedTokenID]:graphic:imgsrc]
     --&ForceRevertOriginalTokenCheck|
     --?"[&OriginalTokenID]" -ne "" -and "[&OriginalTokenID]" -ne "undefined"|[
@@ -237,12 +235,6 @@
     --?"[&ForceRevertTokenCheck]" -eq "undefined" -and "[&ForceRevertOriginalTokenCheck]" -eq "undefined"|[
       --&ForceRevertMessage|The recorded transformed token no longer exists. This will clear the stale Wild Shape state without creating or deleting a token.
     --]|
-    --?"[&OriginalImageCreatable]" -ne "1" -and "[&ForceRevertOriginalTokenCheck]" -eq ""|[
-      --&ForceRevertMessage|This Wild Shape began before non-creatable token preservation was available. Roll20 cannot recreate the original token image through the Mod API. This will clear the recorded state only. Delete the transformed token and drag [&DruidName]'s original token back onto the page afterward.
-    --]|
-    --?"[&OriginalImageCreatable]" -ne "1" -and "[&ForceRevertOriginalTokenCheck]" -eq "undefined"|[
-      --&ForceRevertMessage|This Wild Shape began before non-creatable token preservation was available. Roll20 cannot recreate the original token image through the Mod API. This will clear the recorded state only. Delete the transformed token and drag [&DruidName]'s original token back onto the page afterward.
-    --]|
     --&CardTitle|Force Wild Shape Revert
     --&CardBody|[t style="width:100%;[&BodyStyle]"][tr][td style="text-align:center;white-space:normal;"][b][&DruidName][/b][br][&ForceRevertMessage][/td][/tr][/t]
     --&CardBody|+[&ControlDivider][t style="[&FooterControlTableStyle][&BodyStyle]"][tr][td style="width:[&FooterControlCellWidth][&ButtonCellCSS][&ManagerButtonOnBG]"][rbutton]Confirm Revert::GMForceRevert[/rbutton][/td][td style="width:[&FooterControlCellWidth][&ButtonCellCSS]"][rbutton]Cancel::GMSettings[/rbutton][/td][/tr][/t]
@@ -261,7 +253,7 @@
     --&ErrorButtonLabel|Back --&ErrorButtonTarget|GMSettings
     --^ErrorCard|
   --:GMNoDruids|
-    --&ErrorTitle|Wild Shape GM
+    --&ErrorTitle|Wild Shape DM
     --&ErrorMessage|No player character with Druid levels was found in the game.
     --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE
     --^ErrorCard|
@@ -583,6 +575,7 @@
     --&ManageLetter|[&reentryval]
     --?"[&ManageLetter]" -eq "" -or "[&ManageLetter]" -eq "undefined" -or "[&ManageLetter]" -eq "START"|[ --&ManageLetter| --]|
     -->LoadAssignedForms|
+    -->GrantAssignedFormControllers|
   --:ManageFormsRenderLoaded|
     -->LoadDruidRules|
     -->BuildNPCList|
@@ -644,7 +637,10 @@
     --]|[
       --&AssignedRaw|+[&ToggleSplit1],
     --]|
-    --?"[&FormAdded]" -eq "1"|[ -->EnsureNPCPublicRolls|[&ToggleSplit1] --]|
+    --?"[&FormAdded]" -eq "1"|[
+      -->EnsureNPCPublicRolls|[&ToggleSplit1]
+      -->GrantFormControllers|[&ToggleSplit1]
+    --]|
     --!h:[&HandoutID]|notes:"[&AssignedRaw]"
     --?"[&LastFormID]" -eq "[&ToggleSplit1]" -and "[&AssignedRaw]" -ninc ",[&ToggleSplit1],"|[
       --&LastFormID|
@@ -778,7 +774,7 @@
     --^ErrorCard|
   --:OriginalImageUnavailable|
     --&ErrorTitle|Wild Shape
-    --&ErrorMessage|This Wild Shape began before non-creatable token preservation was available. Roll20 deleted the original token, and its saved image cannot be recreated through the Mod API. In GM View, use [b]Force Revert[/b] to clear the recorded state, delete the transformed token, and drag the Druid token back onto the page once.
+    --&ErrorMessage|The preserved original token can no longer be found, and Roll20 cannot recreate its image through the Mod API. In DM View, use [b]Force Revert[/b] to clear the recorded state, delete the transformed token, and drag the Druid token back onto the page once.
     --&ErrorButtonLabel|Back --&ErrorButtonTarget|Main
     --^ErrorCard|
   --:ReplacementFailed|
@@ -788,12 +784,12 @@
     --^ErrorCard|
   --:RulesWhileActive|
     --&ErrorTitle|Wild Shape
-    --&ErrorMessage|A Wild Shape state is still active. Revert normally, or use the Force Revert button in GM Settings for that Druid before changing between the 2014 and 2024 rules.
+    --&ErrorMessage|A Wild Shape state is still active. Revert normally, or use the Force Revert button in DM Settings for that Druid before changing between the 2014 and 2024 rules.
     --&ErrorButtonLabel|Back --&ErrorButtonTarget|GMSettings
     --^ErrorCard|
   --:Unauthorized|
     --&ErrorTitle|Wild Shape
-    --&ErrorMessage|This Wild Shape menu belongs to another player or requires GM access.
+    --&ErrorMessage|This Wild Shape menu belongs to another player or requires DM access.
     --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE
     --^ErrorCard|
   --:LoadDruidRules|
@@ -991,7 +987,7 @@
   --:AppendGMControls|
     --?"[&IsGM]" -eq "1" -and "[&GMView]" -eq "1"|[
       --&CardBody|+[&ControlDivider]
-      --&CardBody|+[t style="width:100%;[&BodyStyle]"][tr][td colspan=2 style="text-align:center;font-size:9px;line-height:11px;font-weight:bold;letter-spacing:.7px;"]GM CONTROLS[/td][/tr][/t]
+      --&CardBody|+[t style="width:100%;[&BodyStyle]"][tr][td colspan=2 style="text-align:center;font-size:9px;line-height:11px;font-weight:bold;letter-spacing:.7px;"]DM CONTROLS[/td][/tr][/t]
       --&CardBody|+[t style="[&FooterControlTableStyle][&BodyStyle]"][tr][td style="width:[&FooterControlCellWidth][&ButtonCellCSS]"][rbutton]Rules: [&Rules]::ToggleRules[/rbutton][/td][td style="width:[&FooterControlCellWidth][&ButtonCellCSS]"][rbutton]Manage Forms::ManageForms;START[/rbutton][/td][/tr][/t]
     --]|
   --<|
@@ -1546,6 +1542,39 @@
       --?"[&PublicRollWType]" -ne ""|[ --!a:[%1%]|$wtype: --]|
     --]|
   --<|
+  --:GrantAssignedFormControllers|
+    --~|array;define;PermissionAssignedIDs
+    --~|array;fromstring;PermissionAssignedIDs;,;[&AssignedRaw]
+    --%PermissionAssignedLoop|foreach;PermissionAssignedIDs
+      --?"[&PermissionAssignedLoop]" -eq "" -or "[&PermissionAssignedLoop]" -eq "undefined"|%
+      -->GrantFormControllers|[&PermissionAssignedLoop]
+    --%|
+  --<|
+  --:GrantFormControllers|formcharacterid
+    --&DruidControllers|[*O:[&DruidID]:character:controlledby]
+    --?"[&DruidControllers]" -eq "" -or "[&DruidControllers]" -eq "undefined"|[ --<| --]|
+    --&FormControllers|[*O:[%1%]:character:controlledby]
+    --?"[&FormControllers]" -eq "undefined"|[ --&FormControllers| --]|
+    --&FormControllerCheck|,[&FormControllers],
+    --?"[&FormControllerCheck]" -inc ",all,"|[ --<| --]|
+    --&FormControllersChanged|0
+    --~|array;define;DruidControllerIDs
+    --~|array;fromstring;DruidControllerIDs;,;[&DruidControllers]
+    --%DruidControllerLoop|foreach;DruidControllerIDs
+      --&DruidControllerID|[&DruidControllerLoop]
+      --~DruidControllerID|string;trim;[&DruidControllerID]
+      --?"[&DruidControllerID]" -eq "" -or "[&DruidControllerID]" -eq "undefined"|%
+      --?"[&FormControllerCheck]" -inc ",[&DruidControllerID],"|%
+      --?"[&FormControllers]" -eq ""|[
+        --&FormControllers|[&DruidControllerID]
+      --]|[
+        --&FormControllers|+,[&DruidControllerID]
+      --]|
+      --&FormControllerCheck|,[&FormControllers],
+      --&FormControllersChanged|1
+    --%|
+    --?"[&FormControllersChanged]" -eq "1"|[ --!c:[%1%]|controlledby:[&FormControllers] --]|
+  --<|
   --:AppendFormSection|
     --&FormSectionLabel|[%2%]
     --Rfirst|[&BeastID];[%1%]
@@ -1611,7 +1640,7 @@
     --?"[&DruidName]" -ne "" -and "[&DruidName]" -ne "undefined"|[
       --&CardBody|+[t style="width:100%;margin:0 auto 2px auto;table-layout:fixed;[&BodyStyle]"][tr][td style="padding:0;text-align:center;font-size:11px;line-height:13px;font-weight:bold;white-space:normal;"][&DruidName][/td][/tr][/t]
     --]|
-    --&CardBody|+[t style="width:105px;margin:0 auto;table-layout:fixed;[&BodyStyle]"][tr][td style="[&ButtonCellCSS][&GMViewButtonBG]"][rbutton]GM View: [&GMViewDisplay]::ToggleGMView[/rbutton][/td][/tr][/t]
+    --&CardBody|+[t style="width:105px;margin:0 auto;table-layout:fixed;[&BodyStyle]"][tr][td style="[&ButtonCellCSS][&GMViewButtonBG]"][rbutton]DM View: [&GMViewDisplay]::ToggleGMView[/rbutton][/td][/tr][/t]
   --<|
   --:RenderCard|
     -->AppendGMViewToggle|

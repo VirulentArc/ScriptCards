@@ -2,12 +2,11 @@
 
 Tim's Wild Shape Mod is a [ScriptCards](https://wiki.roll20.net/Script:ScriptCards) Wild Shape menu and token manager for Roll20. It officially supports the **D&D 5E by Roll20 (2014)** character sheet and includes experimental compatibility with the **D&D 2024 by Roll20 Beacon** character sheet.
 
-The GM chooses which forms are available to each Druid. Players can then browse those forms, use their rollable stat blocks, transform their tokens, and revert when Wild Shape ends.
+The DM chooses which forms are available to each Druid. Players can then browse those forms, use their rollable stat blocks, transform their tokens, and revert when Wild Shape ends.
 
 > [!IMPORTANT]
 > **Beacon support is experimental and is not part of the official ScriptCards release.** It requires the unofficial Beacon-compatible ScriptCards build supplied alongside this project. Users playing with the 2014 sheet should use the official ScriptCards release.
 
-<!-- Replace images/wild-shape-overview.png and images/wild-shape-overview-2024.png with overview screenshots. -->
 ![Wild Shape overview](images/wild-shape-overview.png) ![Wild Shape overview](images/wild-shape-overview-2024.png)
 
 ## Requirements
@@ -66,9 +65,9 @@ Each possible form should be an unarchived NPC character in the Journal with:
 
 A character avatar can be used as a fallback, but a proper default token is strongly recommended.
 
-## Initial GM setup
+## Initial DM setup
 
-1. Run the **Wild Shape** macro as the GM.
+1. Run the **Wild Shape** macro as the DM.
 2. If the game contains multiple Druids, choose the Druid you want to configure. A game with one recognized Druid opens that Druid automatically.
 3. Set **Rules** to match the game's character sheet:
    - **2014 Rules** for the D&D 5E by Roll20 sheet.
@@ -78,12 +77,10 @@ A character avatar can be used as a fallback, but a proper default token is stro
 6. Use the letter buttons to browse the available NPCs.
 7. Select an NPC name to assign or remove it. Assigned forms are highlighted.
 8. Repeat this setup for every Druid in the game.
-9. Turn **GM View** off when you want to see the selected Druid's player-facing menu.
+9. Turn **DM View** off when you want to see the selected Druid's player-facing menu.
 
-<!-- Replace images/gm-settings.png with a screenshot of the Wild Shape GM Settings card. -->
-![Wild Shape GM Settings](images/gm-settings.png)
+![Wild Shape DM Settings](images/GM-settings.png)
 
-<!-- Replace images/manage-wild-shape-forms.png with a screenshot of the form manager. -->
 ![Managing Wild Shape forms](images/manage-wild-shape-forms.png)
 
 The **Rules** and **Non-Beasts** settings apply to the whole campaign. Form assignments and transformation effects are set separately for each Druid.
@@ -93,7 +90,7 @@ The **Rules** and **Non-Beasts** settings apply to the whole campaign. Form assi
 - With **Non-Beasts: Off**, the form manager displays NPCs whose creature type contains `Beast`.
 - With **Non-Beasts: On**, any valid NPC can be assigned as a form.
 - Turning Non-Beasts off does not remove non-Beast forms that were already assigned.
-- Eligibility warnings show when a form exceeds the normal challenge-rating or movement limits for the Druid's level. These warnings are informational; the GM can still assign the form.
+- Eligibility warnings show when a form exceeds the normal challenge-rating or movement limits for the Druid's level. These warnings are informational; the DM can still assign the form.
 
 ## Using Wild Shape
 
@@ -114,21 +111,19 @@ While transformed, you can choose another form and select **Wild Shape** to chan
 
 Strength, Dexterity, and Constitution rolls use the selected form's statistics. Intelligence, Wisdom, and Charisma rolls use the Druid's statistics.
 
-<!-- Replace images/choose-wild-shape.png with a screenshot of the Choose Wild Shape card. -->
 ![Choosing a Wild Shape form](images/choose-wild-shape.png)
 
-<!-- Replace images/wild-shape-stat-block.png with a screenshot of a form's rollable stat block. -->
 ![Wild Shape form stat block](images/wild-shape-overview.png)
 
-### GM View and multiple Druids
+### DM View and multiple Druids
 
-The **GM View** control is visible only to the GM.
+The **DM View** control is visible only to the DM.
 
-- A new GM session with no Druid selected opens GM View automatically.
+- A new DM session with no Druid selected opens DM View automatically.
 - In a game with one Druid, that Druid opens automatically.
-- In a game with multiple Druids, choose the Druid from the GM card.
-- Token selection does not determine which Druid the GM is configuring.
-- Turning GM View off shows the selected Druid's player-facing menu for testing.
+- In a game with multiple Druids, choose the Druid from the DM card.
+- Token selection does not determine which Druid the DM is configuring.
+- Turning DM View off shows the selected Druid's player-facing menu for testing.
 
 ### Transformation effects
 
@@ -136,9 +131,9 @@ Select **FX** or **FX Settings** from the player-facing card to choose that Drui
 
 ## Force Revert and recovery
 
-If a Druid has a recorded active transformation, the GM Settings card displays **Force Revert**. Use it when a transformed token was manually deleted or the token and saved transformation state are out of sync.
+If a Druid has a recorded active transformation, the DM Settings card displays **Force Revert**. Use it when a transformed token was manually deleted or the token and saved transformation state are out of sync.
 
-1. Run the macro as the GM.
+1. Run the macro as the DM.
 2. Choose the affected Druid.
 3. Select **Force Revert**.
 4. Read the recovery message and confirm the action.
@@ -176,7 +171,7 @@ Make sure the form has a usable Roll20-hosted default-token image. If Roll20 cre
 
 ### Rules cannot be changed
 
-At least one Druid still has an active Wild Shape state. Revert normally or use **Force Revert** from GM View.
+At least one Druid still has an active Wild Shape state. Revert normally or use **Force Revert** from DM View.
 
 ## Credits
 
