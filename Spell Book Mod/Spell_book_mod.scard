@@ -1,7 +1,7 @@
 !script {{ --/|{& skip}
   --/| ==========================================================================
   --/| Script Name : Tim's Spell Book Mod (Scriptcards) for D&D 5E 2014
-  --/| Version     : 4.0.2
+  --/| Version     : 4.0.3
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| Github URL  : https://github.com/VirulentArc/ScriptCards/tree/main/Spell%20Book%20Mod
@@ -364,7 +364,12 @@
     --&SpellDetail|[rbutton][&BookImage]::SpellDescription;[&SpellDetailData][/rbutton]
     --~MacroName|string;replaceall; ;-;[&SpellName]
     --?"[&SpellMule]" -ne ""|[ --~MacroButton|system;findability;[&SpellMule];[&MacroName] --&CasterID|[&SpellMule] --]|[ --~MacroButton|system;findability;[&CharName_Attr];[&MacroName] --&CasterID|[&CharName_Attr] --]|
-    --?"[&MacroButton]" -ne "AbilityNotFound"|[ --&SpellRoll|[button][&RollImage]::~[&CasterID]|[&MacroButton][/button] --&SpellDetail|[button][&BookImage]::~[&CasterID]|[&MacroButton][/button] --&RollCell_CSS|[&RollBtnTd_CSS] --&RollTitle|title="Cast [&SpellName]" --]|
+    --?"[&MacroButton]" -ne "AbilityNotFound"|[
+      --&SpellRoll|[button][&RollImage]::~[&CasterID]|[&MacroButton][/button]
+      --?"[&CustomSpellDetails_Attr]" -eq "macro"|[ --&SpellDetail|[button][&BookImage]::~[&CasterID]|[&MacroButton][/button] --]|
+      --&RollCell_CSS|[&RollBtnTd_CSS]
+      --&RollTitle|title="Cast [&SpellName]"
+    --]|
     --?"[&MacroButton]" -eq "AbilityNotFound" -and "[&SpellOutputType]" -inc "ATTACK"|[ --&SpellRoll|[sheetbutton][&RollImage]::[&CharId_Attr]::repeating_spell-[&SpellLevel]_[&SpellRowID]_spell[/sheetbutton] --&RollCell_CSS|[&RollBtnTd_CSS] --&RollTitle|title="Cast [&SpellName]" --]|
     --c[&SpellSchool]|Abjuration:&SchoolIcon;&#x26E8|Conjuration:&SchoolIcon;&#x169B9|Divination:&SchoolIcon;&#x2135|Enchantment:&SchoolIcon;&#x272F|Evocation:&SchoolIcon;&#x2739|Illusion:&SchoolIcon;&#x1F441|Necromancy:&SchoolIcon;&#x2620|Transmutation:&SchoolIcon;&#x21BB
     --?"[&SpellSchool]" -eq "undefined"|[ --&SchoolIcon|&#x2370; --]|
@@ -451,9 +456,13 @@
   --&PageNum|[= [&Pages] / [&SettingsPageSize] + 1]
   --+|[&TopBar]
   --+|[t [&TtlTbl_CSS]][tr][td][#[&IconColor_Attr]][&CharName_Attr][&Owner] Spell Book Settings Page [&PageNum][/#][/td][/tr][/t]
-  --+|[t [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&SpellColor_Attr]][F::12]Reset the spell cache if spells are missing, out of date, or custom spells were added.[/F][/#][/td][td [&CacheBtnTd_CSS] title="Clear Spellbook Cache"][rbutton::18px]&#9851;::ClearCache;restart[/rbutton][/td][/tr][/t]
+  --+|[t [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&SpellColor_Attr]][F::12]Reset Cache[/F][/#][/td][td [&CacheBtnTd_CSS] title="Clear Spellbook Cache"][rbutton::18px]&#9851;::ClearCache;restart[/rbutton][/td][/tr][/t]
   --?"[&SpellMule]" -eq ""|[ --&SpellMuleDisplay|None --]|[ --&SpellMuleDisplay|[&SpellMule] --]|
-  --+|[t [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&SpellColor_Attr]][F::12]Spell Mule: [b][&SpellMuleDisplay][/b][br]Optional custom spell macros; ability names use dashes instead of spell-name spaces.[/F][/#][/td][td [&CacheBtnTd_CSS]][rbutton::18px:Change Spell Mule]&#x270E;::WriteSpellMule;edit[/rbutton][rbutton::18px:Clear Spell Mule]&#x2715;::WriteSpellMule;clear[/rbutton][/td][/tr][/t]
+  --+|[t [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&SpellColor_Attr]][F::12]Spell Mule: [b][&SpellMuleDisplay][/b][/F][/#][/td][td [&CacheBtnTd_CSS]][rbutton::18px:Change Spell Mule]&#x270E;::WriteSpellMule;edit[/rbutton][rbutton::18px:Clear Spell Mule]&#x2715;::WriteSpellMule;clear[/rbutton][/td][/tr][/t]
+  --&CustomSpellDetailsToggle|&#x2610;
+  --&CustomSpellDetailsDisplay|Native Description
+  --?"[&CustomSpellDetails_Attr]" -eq "macro"|[ --&CustomSpellDetailsToggle|&#x2611; --&CustomSpellDetailsDisplay|Custom Macro --]|
+  --+|[t [&CacheTbl_CSS]][tr][td [&CacheTd_CSS]][#[&SpellColor_Attr]][F::12]Spell Details: [b][&CustomSpellDetailsDisplay][/b][/F][/#][/td][td [&CacheBtnTd_CSS] title="Toggle Custom Spell Details"][rbutton::18px][&CustomSpellDetailsToggle]::ToggleCustomSpellDetails[/rbutton][/td][/tr][/t]
   --&ThemeOutput|[t [&SettingsDarkTd_CSS]][tr]
   --%ThemeLoop|[&Pages];[&ArrayCounter]
     --&ChosenTheme|[&ThemeTd_CSS]
@@ -523,6 +532,12 @@
     --c[&fontTarget]|spell:&SBMColorKey;spellColor|icon:&SBMColorKey;iconColor|action:&SBMColorKey;actionColor|bonus:&SBMColorKey;bonusColor|reaction:&SBMColorKey;reactionColor
     -->WriteSBMCharSetting|[&SBMColorKey];[&UpdateColor];1
   --]|
+  --^SettingsCard|
+--X|
+--:ToggleCustomSpellDetails|
+  --?"[&CustomSpellDetails_Attr]" -eq "macro"|[ --&CustomSpellDetails_Attr|native --]|[ --&CustomSpellDetails_Attr|macro --]|
+  -->WriteSBMCharSetting|customSpellDetails;[&CustomSpellDetails_Attr];1
+  -->ClearCache|
   --^SettingsCard|
 --X|
 --:ActionToggle|
@@ -1046,11 +1061,11 @@
 --:WriteSBMCharSetting|
   --&SBMCharWriteKey|[%1%]
   --&SBMCharWriteValue|[%2%]
-  --c[&SBMCharWriteKey]|theme:&tmpChosen_Attr;[&SBMCharWriteValue]|uiTheme:&UITheme_Attr;[&SBMCharWriteValue]|slotStyle:&SlotStyleKey_Attr;[&SBMCharWriteValue]|preparedOnly:&PrepToggle_Attr;[&SBMCharWriteValue]|descriptionWhisper:&DescWhisperMode;[&SBMCharWriteValue]|spellColor:&SpellColor_Attr;[&SBMCharWriteValue]|iconColor:&IconColor_Attr;[&SBMCharWriteValue]|actionToggle:&ActionToggle_Attr;[&SBMCharWriteValue]|bonusToggle:&BonusToggle_Attr;[&SBMCharWriteValue]|reactionToggle:&ReactionToggle_Attr;[&SBMCharWriteValue]|actionColor:&ActionColor_Attr;[&SBMCharWriteValue]|bonusColor:&BonusColor_Attr;[&SBMCharWriteValue]|reactionColor:&ReactionColor_Attr;[&SBMCharWriteValue]|pactSlotsRemaining:&PactSlotsRemaining_Attr;[&SBMCharWriteValue]
+  --c[&SBMCharWriteKey]|theme:&tmpChosen_Attr;[&SBMCharWriteValue]|uiTheme:&UITheme_Attr;[&SBMCharWriteValue]|slotStyle:&SlotStyleKey_Attr;[&SBMCharWriteValue]|preparedOnly:&PrepToggle_Attr;[&SBMCharWriteValue]|descriptionWhisper:&DescWhisperMode;[&SBMCharWriteValue]|customSpellDetails:&CustomSpellDetails_Attr;[&SBMCharWriteValue]|spellColor:&SpellColor_Attr;[&SBMCharWriteValue]|iconColor:&IconColor_Attr;[&SBMCharWriteValue]|actionToggle:&ActionToggle_Attr;[&SBMCharWriteValue]|bonusToggle:&BonusToggle_Attr;[&SBMCharWriteValue]|reactionToggle:&ReactionToggle_Attr;[&SBMCharWriteValue]|actionColor:&ActionColor_Attr;[&SBMCharWriteValue]|bonusColor:&BonusColor_Attr;[&SBMCharWriteValue]|reactionColor:&ReactionColor_Attr;[&SBMCharWriteValue]|pactSlotsRemaining:&PactSlotsRemaining_Attr;[&SBMCharWriteValue]
   --?"[%3%]" -eq "1"|[ -->WriteSBMCharacterObject| --]|
 --<|
 --:WriteSBMCharacterObject|
-  --&SBMCharObject|!$!!q!theme!q!:!q![&tmpChosen_Attr]!q!,!q!uiTheme!q!:!q![&UITheme_Attr]!q!,!q!slotStyle!q!:!q![&SlotStyleKey_Attr]!q!,!q!preparedOnly!q!:!q![&PrepToggle_Attr]!q!,!q!descriptionWhisper!q!:!q![&DescWhisperMode]!q!,!q!spellColor!q!:!q![&SpellColor_Attr]!q!,!q!iconColor!q!:!q![&IconColor_Attr]!q!,!q!actionToggle!q!:!q![&ActionToggle_Attr]!q!,!q!bonusToggle!q!:!q![&BonusToggle_Attr]!q!,!q!reactionToggle!q!:!q![&ReactionToggle_Attr]!q!,!q!actionColor!q!:!q![&ActionColor_Attr]!q!,!q!bonusColor!q!:!q![&BonusColor_Attr]!q!,!q!reactionColor!q!:!q![&ReactionColor_Attr]!q!,!q!pactSlotsRemaining!q!:!q![&PactSlotsRemaining_Attr]!q!!%!
+  --&SBMCharObject|!$!!q!theme!q!:!q![&tmpChosen_Attr]!q!,!q!uiTheme!q!:!q![&UITheme_Attr]!q!,!q!slotStyle!q!:!q![&SlotStyleKey_Attr]!q!,!q!preparedOnly!q!:!q![&PrepToggle_Attr]!q!,!q!descriptionWhisper!q!:!q![&DescWhisperMode]!q!,!q!customSpellDetails!q!:!q![&CustomSpellDetails_Attr]!q!,!q!spellColor!q!:!q![&SpellColor_Attr]!q!,!q!iconColor!q!:!q![&IconColor_Attr]!q!,!q!actionToggle!q!:!q![&ActionToggle_Attr]!q!,!q!bonusToggle!q!:!q![&BonusToggle_Attr]!q!,!q!reactionToggle!q!:!q![&ReactionToggle_Attr]!q!,!q!actionColor!q!:!q![&ActionColor_Attr]!q!,!q!bonusColor!q!:!q![&BonusColor_Attr]!q!,!q!reactionColor!q!:!q![&ReactionColor_Attr]!q!,!q!pactSlotsRemaining!q!:!q![&PactSlotsRemaining_Attr]!q!!%!
   -->WriteSBMEntry|!q![&CharId_Attr]!q!:;[&SBMCharObject];!%!
 --<|
 --:WriteSBMEntry|
@@ -1081,6 +1096,8 @@
   --?"[&PrepToggle_Attr]" -eq "" -or "[&PrepToggle_Attr]" -eq "undefined"|[ --&PrepToggle_Attr|[&DefaultPrepToggle] --]|
   --&DescWhisperMode|[:SBMSettings("[&SBMCharPath]descriptionWhisper")]
   --?"[&DescWhisperMode]" -eq "" -or "[&DescWhisperMode]" -eq "undefined"|[ --&DescWhisperMode|0 --]|
+  --&CustomSpellDetails_Attr|[:SBMSettings("[&SBMCharPath]customSpellDetails")]
+  --?"[&CustomSpellDetails_Attr]" -eq "" -or "[&CustomSpellDetails_Attr]" -eq "undefined"|[ --&CustomSpellDetails_Attr|macro --]|
   --&SpellColor_Attr|[:SBMSettings("[&SBMCharPath]spellColor")]
   --?"[&SpellColor_Attr]" -eq "" -or "[&SpellColor_Attr]" -eq "undefined"|[ --&SpellColor_Attr|000 --]|
   --&IconColor_Attr|[:SBMSettings("[&SBMCharPath]iconColor")]
