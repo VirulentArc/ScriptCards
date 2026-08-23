@@ -1,14 +1,14 @@
 !scriptcards {{ --/|{& skip}
   --/| ============================================================================
   --/| Script Name : Tim's Wild Shape Mod
-  --/| Version     : v1.0.0
+  --/| Version     : 1.0.2
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| ============================================================================
   --#title| --#hidetitlecard|1 --#tableborder|0 --#tablebgcolor|transparent --#tableshadow|none --#tableborderradius|0px --#oddrowbackground|transparent --#evenrowbackground|transparent
   --#oddrowfontcolor|#000000 --#evenrowfontcolor|#000000 --#bodyfontface|serif --#bodyfontsize|12px --#lineheight|normal --#buttonbackground|transparent
   --#buttontextcolor|#7A2008 --#buttonbordercolor|transparent --#buttonpadding|1px 0 --#buttonfontface|inherit --#buttonfontsize|inherit --#buttonwidth|auto
-  --#whisper|self --#emotestate|0 --#dontcheckbuttonsforapi|1
+  --#whisper|self --#emotestate|0 --#dontcheckbuttonsforapi|1 --#debug|0 --#functionbenchmarking|0
   --&DefaultFX|explode-smoke
   --&GlobalHandoutName|WildShape_Settings
   --&Plus|& --&Plus|+# --&Plus|+43;
@@ -18,9 +18,11 @@
   --&FooterControlCellWidth|105px;
   --&Rules|2014
   --&Beacon|0 --&ClassicBackendFound|0 --&BeaconBackendFound|0
-  --~|array;fromcontrolledcharacters;SheetBackendCharacters;
+  --~|array;objects:character;SheetBackendCharacters;
   --%SheetBackendLoop|foreach;SheetBackendCharacters
     --?"[*O:[&SheetBackendLoop]:character:archived]" -eq "true"|%
+    --&SheetBackendControllers|[*O:[&SheetBackendLoop]:character:controlledby]
+    --?"[&SheetBackendControllers]" -eq "" -or "[&SheetBackendControllers]" -eq "undefined"|%
     --~|array;define;SheetBackendClassAttrs
     --~|array;attributes;SheetBackendClassAttrs;[&SheetBackendLoop];class
     --?"[@SheetBackendClassAttrs(maxindex)]" -ge "0"|[
@@ -48,11 +50,11 @@
     --?"[&GMView]" -eq "1"|GMSelectedDruidEntry
   --:GMPlayerModeEntry|
     --&DruidID|[&GMSelectedDruidID]
-    --?"[&DruidID]" -eq "" -or "[&DruidID]" -eq "undefined"|PlayerModePrompt
+    --?"[&DruidID]" -eq "" -or "[&DruidID]" -eq "undefined"|GMPlayerModeNeedsDruid
     --&DruidName|[*O:[&DruidID]:character:name]
-    --?"[&DruidName]" -eq "" -or "[&DruidName]" -eq "undefined"|PlayerModePrompt
+    --?"[&DruidName]" -eq "" -or "[&DruidName]" -eq "undefined"|GMPlayerModeNeedsDruid
     -->GetDruidLevel|[&DruidID]
-    --?"[&DruidLevel]" -le "0"|PlayerModePrompt
+    --?"[&DruidLevel]" -le "0"|GMPlayerModeNeedsDruid
     --^LoadPlayerDruid|
   --:PlayerModeEntry|
     --?"[&SelectedTokenCount]" -eq "undefined array"|NoSelectedToken
@@ -144,7 +146,7 @@
     --]|
     -->LoadGlobalSettings|
     -->LoadTheme|
-    --&CardTitle|Wild Shape GM
+    --&CardTitle|Wild Shape DM
     --&CardBody|[t style="width:100%;[&BodyStyle]"][tr][td style="text-align:center;font-weight:bold;"]Choose a Druid[/td][/tr][/t]
     --&CardBody|+[&ControlDivider]
     --&CardBody|+[t style="width:100%;table-layout:fixed;border-collapse:separate;border-spacing:5px 3px;[&BodyStyle]"][tr]
@@ -152,7 +154,7 @@
     --%GMDruidLoop|foreach;DruidList
       --~GMDruidSplit|string;split;!@!;[&GMDruidLoop]
       --?"[= [$GMDruidCellCount.Raw] % 2 ]" -eq "0" -and "[$GMDruidCellCount.Raw]" -ne "0"|[ --&CardBody|+[/tr][tr] --]|
-      --&CardBody|+[td style="width:50%;[&ButtonCellCSS]"][rbutton][&GMDruidSplit1][br][F10]Druid [&GMDruidSplit3][/F]::SelectGMDruid;[&GMDruidSplit2][/rbutton][/td]
+      --&CardBody|+[td style="width:50%;[&ButtonCellCSS]"][rbutton][&GMDruidSplit1]::SelectGMDruid;[&GMDruidSplit2][/rbutton][/td]
       --=GMDruidCellCount|[$GMDruidCellCount.Raw] + 1
     --%|
     --?"[= [$GMDruidCellCount.Raw] % 2 ]" -eq "1"|[ --&CardBody|+[td style="width:50%;border:0;background:transparent;"]&nbsp;[/td] --]|
@@ -173,7 +175,7 @@
     -->LoadAssignedForms|
     -->LoadDruidRules|
     -->BuildAssignedFormList|
-    --&CardTitle|Wild Shape GM Settings
+    --&CardTitle|Wild Shape DM Settings
     --&TitleStyle|style="font-family:Georgia,'Noto Serif','Liberation Serif','Nimbus Roman No9 L','Nimbus Roman','DejaVu Serif','Times New Roman',serif;font-variant:small-caps;font-size:19px;font-weight:bold;color:#7A2008;line-height:1.05em;white-space:nowrap;"
     --?"[&Rules]" -eq "2024"|[ --&TitleStyle|style="font-family:Georgia,'Noto Serif','Liberation Serif','Nimbus Roman No9 L','Nimbus Roman','DejaVu Serif','Times New Roman',serif;font-variant:small-caps;font-size:19px;font-weight:bold;line-height:1.05em;letter-spacing:0;white-space:nowrap;" --]|
     --&NonBeastDisplay|Off
@@ -233,12 +235,6 @@
     --?"[&ForceRevertTokenCheck]" -eq "undefined" -and "[&ForceRevertOriginalTokenCheck]" -eq "undefined"|[
       --&ForceRevertMessage|The recorded transformed token no longer exists. This will clear the stale Wild Shape state without creating or deleting a token.
     --]|
-    --?[&OriginalImage(contains,://)] -eq 0 -and "[&ForceRevertOriginalTokenCheck]" -eq ""|[
-      --&ForceRevertMessage|This Wild Shape began before placeholder-token preservation was available. This will clear the recorded state only. Delete the transformed token and drag [&DruidName]'s original token back onto the page afterward.
-    --]|
-    --?[&OriginalImage(contains,://)] -eq 0 -and "[&ForceRevertOriginalTokenCheck]" -eq "undefined"|[
-      --&ForceRevertMessage|This Wild Shape began before placeholder-token preservation was available. This will clear the recorded state only. Delete the transformed token and drag [&DruidName]'s original token back onto the page afterward.
-    --]|
     --&CardTitle|Force Wild Shape Revert
     --&CardBody|[t style="width:100%;[&BodyStyle]"][tr][td style="text-align:center;white-space:normal;"][b][&DruidName][/b][br][&ForceRevertMessage][/td][/tr][/t]
     --&CardBody|+[&ControlDivider][t style="[&FooterControlTableStyle][&BodyStyle]"][tr][td style="width:[&FooterControlCellWidth][&ButtonCellCSS][&ManagerButtonOnBG]"][rbutton]Confirm Revert::GMForceRevert[/rbutton][/td][td style="width:[&FooterControlCellWidth][&ButtonCellCSS]"][rbutton]Cancel::GMSettings[/rbutton][/td][/tr][/t]
@@ -257,15 +253,14 @@
     --&ErrorButtonLabel|Back --&ErrorButtonTarget|GMSettings
     --^ErrorCard|
   --:GMNoDruids|
-    --&ErrorTitle|Wild Shape GM
+    --&ErrorTitle|Wild Shape DM
     --&ErrorMessage|No player character with Druid levels was found in the game.
     --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE
     --^ErrorCard|
-  --:PlayerModePrompt|
-    --&CardTitle|Wild Shape
-    --&CardBody|[t style="width:100%;[&BodyStyle]"][tr][td style="text-align:center;"][b]Player Mode[/b][br]No GM Druid is currently selected. Switch to GM View and choose a Druid.[/td][/tr][/t]
-    -->RenderCard|
-    --X|
+  --:GMPlayerModeNeedsDruid|
+    --&GMView|1
+    -->WriteGlobalSettings|
+    --^GMEntry|
   --:NoSelectedToken|
     --&ErrorTitle|Wild Shape
     --&ErrorMessage|[b]No Token Selected[/b][br]Select the character token before running Wild Shape.
@@ -386,6 +381,7 @@
     --?"[&RequestedFormName]" -eq "" -or "[&RequestedFormName]" -eq "undefined"|FormMissing
     -->LoadFormToken|[&RequestedFormID]
     --?[&FormImage(contains,://)] -ne 1|FormNoToken
+    --?"[&FormImageCreatable]" -ne "1"|FormImageUnavailable
     --?"[&FormBar2Value]" -eq ""|[
       --?"[&Beacon]" -eq "1"|[
         --&FormBar2Value|[*[&RequestedFormID]:npc_ac:::]
@@ -409,8 +405,9 @@
       --&OriginalHeight|[*O:[&TargetTokenID]:graphic:height]
       --&OriginalTokenID|
       --&OriginalTokenLayer|
-      --/| Roll20's /images/character.png placeholder cannot be recreated through !ot, so preserve that exact token for reversion.
-      --?[&OriginalImage(contains,://)] -eq 0|[
+      --/| Preserve any original token whose image cannot be recreated through !ot, including placeholders and Marketplace assets.
+      -->CheckCreatableImage|[&OriginalImage]
+      --?"[&ImageCreatable]" -ne "1"|[
         --&OriginalTokenID|[&TargetTokenID]
         --&OriginalTokenLayer|[*O:[&TargetTokenID]:graphic:layer]
       --]|
@@ -445,8 +442,10 @@
     --?"[&ForceRevertMode]" -eq "1" -and "[&OriginalImage]" -eq ""|GMForceClearTransformState
     --?"[&ForceRevertMode]" -eq "1" -and "[&OriginalImage]" -eq "undefined"|GMForceClearTransformState
     --?"[&OriginalImage]" -eq "" -or "[&OriginalImage]" -eq "undefined"|RestoreStateMissing
-    --?"[&ForceRevertMode]" -eq "1" -and [&OriginalImage(contains,://)] -eq 0 -and "[&PreservedOriginalAvailable]" -ne "1"|GMForceClearTransformState
-    --?[&OriginalImage(contains,://)] -eq 0 -and "[&PreservedOriginalAvailable]" -ne "1"|PlaceholderRestoreUnavailable
+    -->CheckCreatableImage|[&OriginalImage]
+    --&OriginalImageCreatable|[&ImageCreatable]
+    --?"[&ForceRevertMode]" -eq "1" -and "[&OriginalImageCreatable]" -ne "1" -and "[&PreservedOriginalAvailable]" -ne "1"|GMForceClearTransformState
+    --?"[&OriginalImageCreatable]" -ne "1" -and "[&PreservedOriginalAvailable]" -ne "1"|OriginalImageUnavailable
     --?"[&OriginalWidth]" -eq ""|[ --&OriginalWidth|70 --]|
     --?"[&OriginalHeight]" -eq ""|[ --&OriginalHeight|70 --]|
     --?"[&Rules]" -eq "2024"|[
@@ -486,9 +485,9 @@
     --?"[&RevertSourceAvailable]" -eq "1"|[
       --&PreservedRestoreLayer|[*O:[&RevertTokenID]:graphic:layer]
       --!t:[&OriginalTokenID]|layer:[&PreservedRestoreLayer]|left:[*O:[&RevertTokenID]:graphic:left]|top:[*O:[&RevertTokenID]:graphic:top]|width:[&OriginalWidth]|height:[&OriginalHeight]|rotation:[*O:[&RevertTokenID]:graphic:rotation]|statusmarkers:[*O:[&RevertTokenID]:graphic:statusmarkers]|tint_color:[*O:[&RevertTokenID]:graphic:tint_color]
-    ]|[
+    --]|[
       --!t:[&OriginalTokenID]|layer:[&PreservedRestoreLayer]|width:[&OriginalWidth]|height:[&OriginalHeight]
-    ]|
+    --]|
     --!t:[&OriginalTokenID]|bar1_value:[&OriginalBar1Value]|bar1_max:[&OriginalBar1Max]|bar2_value:[&OriginalBar2Value]|bar2_max:[&OriginalBar2Max]|bar3_value:[&OriginalBar3Value]|bar3_max:[&OriginalBar3Max]|bar4_value:[&OriginalBar4Value]|bar4_max:[&OriginalBar4Max]
     --?"[&RevertSourceAvailable]" -eq "1"|[ --!x:[&RevertTokenID]|Wild Shape token reversion --]|
     --&ReplacementTokenID|[&OriginalTokenID]
@@ -576,6 +575,7 @@
     --&ManageLetter|[&reentryval]
     --?"[&ManageLetter]" -eq "" -or "[&ManageLetter]" -eq "undefined" -or "[&ManageLetter]" -eq "START"|[ --&ManageLetter| --]|
     -->LoadAssignedForms|
+    -->GrantAssignedFormControllers|
   --:ManageFormsRenderLoaded|
     -->LoadDruidRules|
     -->BuildNPCList|
@@ -637,7 +637,10 @@
     --]|[
       --&AssignedRaw|+[&ToggleSplit1],
     --]|
-    --?"[&FormAdded]" -eq "1"|[ -->EnsureNPCPublicRolls|[&ToggleSplit1] --]|
+    --?"[&FormAdded]" -eq "1"|[
+      -->EnsureNPCPublicRolls|[&ToggleSplit1]
+      -->GrantFormControllers|[&ToggleSplit1]
+    --]|
     --!h:[&HandoutID]|notes:"[&AssignedRaw]"
     --?"[&LastFormID]" -eq "[&ToggleSplit1]" -and "[&AssignedRaw]" -ninc ",[&ToggleSplit1],"|[
       --&LastFormID|
@@ -678,53 +681,27 @@
       --]|
       --&DruidPB|[*[&DruidID]:pb:::0]
     --]|[
-      --&ClassicBeastHPMax|
-      --~|array;define;ClassicBeastFormAttrs
-      --~|array;attributes;ClassicBeastFormAttrs;[&BeastID];
-      --?[@ClassicBeastFormAttrs()] -eq 0|ClassicBeastFormAttrsDone
-      --%ClassicBeastFormAttrLoop|foreach;ClassicBeastFormAttrs
-        --&ClassicFormAttrName|[*O:[&ClassicBeastFormAttrLoop]:attribute:name]
-        --?"[&ClassicFormAttrName]" -eq "npc_type"|[ --&NPCType|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "npc_ac"|[ --&NPCAC|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "npc_speed"|[ --&NPCSpeed|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "npc_challenge"|[ --&CRFooter|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "npc_xp"|[ --&NPCXP|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "npc_senses"|[ --&SensesDisplay|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "npc_hpformula"|[ --&NPCHPFormula|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "npc_languages"|[
-          --?"[&Rules]" -eq "2014"|[ --&LanguageDisplay|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --]|
-        --?"[&ClassicFormAttrName]" -eq "npc_vulnerabilities"|[ --&NPCVulnerabilities|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "npc_resistances"|[ --&NPCResistances|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "npc_immunities"|[ --&ImmunityDisplay|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "npc_condition_immunities"|[ --&NPCConditionImmunities|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "strength"|[ --&FormSTR|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "dexterity"|[ --&FormDEX|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "constitution"|[ --&FormCON|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "strength_mod"|[ --&FormSTRMOD|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "dexterity_mod"|[ --&FormDEXMOD|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "constitution_mod"|[ --&FormCONMOD|[*O:[&ClassicBeastFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "hp"|[ --&ClassicBeastHPMax|[*O:[&ClassicBeastFormAttrLoop]:attribute:max] --]|
-      --%|
-      --:ClassicBeastFormAttrsDone|
-      --~|array;define;ClassicDruidFormAttrs
-      --~|array;attributes;ClassicDruidFormAttrs;[&DruidID];
-      --?[@ClassicDruidFormAttrs()] -eq 0|ClassicDruidFormAttrsDone
-      --%ClassicDruidFormAttrLoop|foreach;ClassicDruidFormAttrs
-        --&ClassicFormAttrName|[*O:[&ClassicDruidFormAttrLoop]:attribute:name]
-        --?"[&ClassicFormAttrName]" -eq "intelligence"|[ --&FormINT|[*O:[&ClassicDruidFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "wisdom"|[ --&FormWIS|[*O:[&ClassicDruidFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "charisma"|[ --&FormCHA|[*O:[&ClassicDruidFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "intelligence_mod"|[ --&FormINTMOD|[*O:[&ClassicDruidFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "wisdom_mod"|[ --&FormWISMOD|[*O:[&ClassicDruidFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "charisma_mod"|[ --&FormCHAMOD|[*O:[&ClassicDruidFormAttrLoop]:attribute:current] --]|
-        --?"[&ClassicFormAttrName]" -eq "hp"|[ --&DruidHPCurrent|[*O:[&ClassicDruidFormAttrLoop]:attribute:current] --&DruidHPMax|[*O:[&ClassicDruidFormAttrLoop]:attribute:max] --]|
-        --?"[&ClassicFormAttrName]" -eq "other_proficiencies_and_languages"|[
-          --?"[&Rules]" -eq "2024"|[ --&LanguageDisplay|[*O:[&ClassicDruidFormAttrLoop]:attribute:current] --]|
-        --]|
-        --?"[&ClassicFormAttrName]" -eq "pb"|[ --&DruidPB|[*O:[&ClassicDruidFormAttrLoop]:attribute:current] --]|
-      --%|
-      --:ClassicDruidFormAttrsDone|
+      --&NPCType|[*[&BeastID]:npc_type:::]
+      --&NPCAC|[*[&BeastID]:npc_ac:::]
+      --&NPCSpeed|[*[&BeastID]:npc_speed:::]
+      --&CRFooter|[*[&BeastID]:npc_challenge:::]
+      --&NPCXP|[*[&BeastID]:npc_xp:::]
+      --&SensesDisplay|[*[&BeastID]:npc_senses:::]
+      --?"[&Rules]" -eq "2014"|[ --&NPCHPFormula|[*[&BeastID]:npc_hpformula:::] --&LanguageDisplay|[*[&BeastID]:npc_languages:::] --]|
+      --&NPCVulnerabilities|[*[&BeastID]:npc_vulnerabilities:::]
+      --&NPCResistances|[*[&BeastID]:npc_resistances:::]
+      --&ImmunityDisplay|[*[&BeastID]:npc_immunities:::]
+      --&NPCConditionImmunities|[*[&BeastID]:npc_condition_immunities:::]
+      --&FormSTR|[*[&BeastID]:strength:::0] --&FormDEX|[*[&BeastID]:dexterity:::0] --&FormCON|[*[&BeastID]:constitution:::0]
+      --&FormSTRMOD|[*[&BeastID]:strength_mod:::0] --&FormDEXMOD|[*[&BeastID]:dexterity_mod:::0] --&FormCONMOD|[*[&BeastID]:constitution_mod:::0]
+      --&ClassicBeastHPMax|[*[&BeastID]:hp^:::]
+      --&FormINT|[*[&DruidID]:intelligence:::0] --&FormWIS|[*[&DruidID]:wisdom:::0] --&FormCHA|[*[&DruidID]:charisma:::0]
+      --&FormINTMOD|[*[&DruidID]:intelligence_mod:::0] --&FormWISMOD|[*[&DruidID]:wisdom_mod:::0] --&FormCHAMOD|[*[&DruidID]:charisma_mod:::0]
+      --?"[&Rules]" -eq "2024"|[
+        --&DruidHPCurrent|[*[&DruidID]:hp:::] --&DruidHPMax|[*[&DruidID]:hp^:::]
+        --&LanguageDisplay|[*[&DruidID]:other_proficiencies_and_languages:::]
+      --]|
+      --&DruidPB|[*[&DruidID]:pb:::0]
     --]|
     --~DruidPB|string;numericonly;[&DruidPB]
     --?"[&DruidPB]" -eq ""|[ --&DruidPB|0 --]|
@@ -775,6 +752,11 @@
     --&ErrorMessage|[b][&RequestedFormName][/b] does not have a usable default token. Assign a default token to that NPC before using it as a Wild Shape form.
     --&ErrorButtonLabel|Choose Another Form --&ErrorButtonTarget|ChooseForm
     --^ErrorCard|
+  --:FormImageUnavailable|
+    --&ErrorTitle|Wild Shape
+    --&ErrorMessage|[b][&RequestedFormName][/b] uses a Marketplace or otherwise API-incompatible token image. Roll20 Mod scripts can create tokens only from images uploaded to My Library. Assign that NPC a default token or character avatar using a My Library image, then try again.
+    --&ErrorButtonLabel|Choose Another Form --&ErrorButtonTarget|ChooseForm
+    --^ErrorCard|
   --:DruidTokenUnavailable|
     --&ErrorTitle|Wild Shape
     --&ErrorMessage|The script found [$GMDruidTokenCount.Raw] placed token(s) linked to the selected [b][&DruidName][/b] character sheet, including [$GMPlayerPageTokenCount.Raw] on the campaign player page. Place exactly one token linked to that specific sheet on the player page, then try again.
@@ -790,9 +772,9 @@
     --&ErrorMessage|The original token image was not stored, so automatic reversion cannot safely restore this token.
     --&ErrorButtonLabel|Back --&ErrorButtonTarget|Main
     --^ErrorCard|
-  --:PlaceholderRestoreUnavailable|
+  --:OriginalImageUnavailable|
     --&ErrorTitle|Wild Shape
-    --&ErrorMessage|This Wild Shape began before placeholder-token preservation was available. Roll20 deleted the original placeholder token, and its image cannot be recreated through the API. In GM View, use [b]Force Revert[/b] to clear the recorded state, delete the transformed token, and drag the Druid token back onto the page once.
+    --&ErrorMessage|The preserved original token can no longer be found, and Roll20 cannot recreate its image through the Mod API. In DM View, use [b]Force Revert[/b] to clear the recorded state, delete the transformed token, and drag the Druid token back onto the page once.
     --&ErrorButtonLabel|Back --&ErrorButtonTarget|Main
     --^ErrorCard|
   --:ReplacementFailed|
@@ -802,12 +784,12 @@
     --^ErrorCard|
   --:RulesWhileActive|
     --&ErrorTitle|Wild Shape
-    --&ErrorMessage|A Wild Shape state is still active. Revert normally, or use the Force Revert button in GM Settings for that Druid before changing between the 2014 and 2024 rules.
+    --&ErrorMessage|A Wild Shape state is still active. Revert normally, or use the Force Revert button in DM Settings for that Druid before changing between the 2014 and 2024 rules.
     --&ErrorButtonLabel|Back --&ErrorButtonTarget|GMSettings
     --^ErrorCard|
   --:Unauthorized|
     --&ErrorTitle|Wild Shape
-    --&ErrorMessage|This Wild Shape menu belongs to another player or requires GM access.
+    --&ErrorMessage|This Wild Shape menu belongs to another player or requires DM access.
     --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE
     --^ErrorCard|
   --:LoadDruidRules|
@@ -1005,7 +987,7 @@
   --:AppendGMControls|
     --?"[&IsGM]" -eq "1" -and "[&GMView]" -eq "1"|[
       --&CardBody|+[&ControlDivider]
-      --&CardBody|+[t style="width:100%;[&BodyStyle]"][tr][td colspan=2 style="text-align:center;font-size:9px;line-height:11px;font-weight:bold;letter-spacing:.7px;"]GM CONTROLS[/td][/tr][/t]
+      --&CardBody|+[t style="width:100%;[&BodyStyle]"][tr][td colspan=2 style="text-align:center;font-size:9px;line-height:11px;font-weight:bold;letter-spacing:.7px;"]DM CONTROLS[/td][/tr][/t]
       --&CardBody|+[t style="[&FooterControlTableStyle][&BodyStyle]"][tr][td style="width:[&FooterControlCellWidth][&ButtonCellCSS]"][rbutton]Rules: [&Rules]::ToggleRules[/rbutton][/td][td style="width:[&FooterControlCellWidth][&ButtonCellCSS]"][rbutton]Manage Forms::ManageForms;START[/rbutton][/td][/tr][/t]
     --]|
   --<|
@@ -1323,12 +1305,14 @@
   --<|
   --:BuildDruidList|
     --~|array;define;DruidList
-    --~|array;fromcontrolledcharacters;AllDruidCandidates;
+    --~|array;objects:character;AllDruidCandidates;
     --%DruidCandidateLoop|foreach;AllDruidCandidates
       --&CandidateDruidName|[*O:[&DruidCandidateLoop]:character:name]
       --?"[&CandidateDruidName]" -eq "" -or "[&CandidateDruidName]" -eq "undefined"|%
       --?"[&CandidateDruidName]" -imatch "^SBM_" -or "[&CandidateDruidName]" -imatch "^ScriptCards"|%
       --?"[*O:[&DruidCandidateLoop]:character:archived]" -eq "true"|%
+      --&CandidateDruidControllers|[*O:[&DruidCandidateLoop]:character:controlledby]
+      --?"[&CandidateDruidControllers]" -eq "" -or "[&CandidateDruidControllers]" -eq "undefined"|%
       --?"[&Beacon]" -eq "1"|[
         --?"[*[&DruidCandidateLoop]:npc:::0]" -eq "1"|%
       --]|[
@@ -1443,8 +1427,15 @@
     --&CardBody|+[&AlphaOutput]
     --#buttonwidth|auto
   --<|
+  --:CheckCreatableImage|
+    --&ImageCreatable|0
+    --?"[%1%]" -inc "/images/" -and "[%1%]" -inc "/thumb."|&ImageCreatable;1
+    --?"[%1%]" -inc "/images/" -and "[%1%]" -inc "/med."|&ImageCreatable;1
+    --?"[%1%]" -inc "/images/" -and "[%1%]" -inc "/original."|&ImageCreatable;1
+    --?"[%1%]" -inc "/images/" -and "[%1%]" -inc "/max."|&ImageCreatable;1
+  --<|
   --:LoadFormToken|
-    --&FormImage| --&FormWidth|70 --&FormHeight|70
+    --&FormImage| --&FormAvatar| --&FormImageCreatable|0 --&FormWidth|70 --&FormHeight|70
     --&FormBar1Value| --&FormBar1Max| --&FormBar2Value| --&FormBar2Max|
     --&FormBar3Value| --&FormBar3Max| --&FormBar4Value| --&FormBar4Max|
     --&FormDefaultToken|[*O:[%1%]:character:_defaulttoken]
@@ -1470,8 +1461,16 @@
       --?"[&FormBar4Value]" -eq "undefined" -or "[&FormBar4Value]" -eq "null"|&FormBar4Value;
       --?"[&FormBar4Max]" -eq "undefined" -or "[&FormBar4Max]" -eq "null"|&FormBar4Max;
     --]|
-    --?[&FormImage(contains,://)] -eq 0|[ --&FormAvatar|[*O:[%1%]:character:avatar] --]|
-    --?[&FormImage(contains,://)] -eq 0 -and [&FormAvatar(contains,://)] -eq 1|[ --&FormImage|[&FormAvatar] --]|
+    -->CheckCreatableImage|[&FormImage]
+    --&FormImageCreatable|[&ImageCreatable]
+    --?"[&FormImageCreatable]" -ne "1"|[
+      --&FormAvatar|[*O:[%1%]:character:avatar]
+      -->CheckCreatableImage|[&FormAvatar]
+      --?"[&ImageCreatable]" -eq "1"|[
+        --&FormImage|[&FormAvatar]
+        --&FormImageCreatable|1
+      --]|
+    --]|
     --?"[&FormWidth]" -eq "" -or "[&FormWidth]" -eq "undefined"|[ --&FormWidth|70 --]|
     --?"[&FormHeight]" -eq "" -or "[&FormHeight]" -eq "undefined"|[ --&FormHeight|70 --]|
   --<|
@@ -1503,6 +1502,8 @@
       --&ReplaceBar3Value|[&OriginalBar3Value] --&ReplaceBar3Max|[&OriginalBar3Max] --&ReplacePostBar3Link|[&OriginalBar3Link]
       --&ReplaceBar4Value|[&OriginalBar4Value] --&ReplaceBar4Max|[&OriginalBar4Max] --&ReplacePostBar4Link|[&OriginalBar4Link]
     --]|
+    -->CheckCreatableImage|[%4%]
+    --?"[&ImageCreatable]" -ne "1"|[ --<| --]|
     --&ChangeFX|
     --?"[&FXType]" -eq "Default"|[ --&ChangeFX|[&DefaultFX] --]|
     --?"[&FXType]" -ne "" -and "[&FXType]" -ne "undefined" -and "[&FXType]" -ne "Default" -and "[&FXColor]" -ne "" -and "[&FXColor]" -ne "undefined"|[ --&ChangeFX|[&FXType]-[&FXColor] --]|
@@ -1519,9 +1520,9 @@
     --/| Preserve non-creatable original tokens on the GM layer; normal image tokens keep the established delete/recreate path.
     --?"[%7%]" -eq "form" -and "[&OriginalTokenID]" -eq "[%1%]"|[
       --!t:[%1%]|layer:gmlayer
-    ]|[
+    --]|[
       --!x:[%1%]|Wild Shape token replacement
-    ]|
+    --]|
   --<|
   --:ValidateReplacementToken|
     --&ReplacementTokenValid|0
@@ -1540,6 +1541,39 @@
       --&PublicRollWType|[&ClassicAttributeValue]
       --?"[&PublicRollWType]" -ne ""|[ --!a:[%1%]|$wtype: --]|
     --]|
+  --<|
+  --:GrantAssignedFormControllers|
+    --~|array;define;PermissionAssignedIDs
+    --~|array;fromstring;PermissionAssignedIDs;,;[&AssignedRaw]
+    --%PermissionAssignedLoop|foreach;PermissionAssignedIDs
+      --?"[&PermissionAssignedLoop]" -eq "" -or "[&PermissionAssignedLoop]" -eq "undefined"|%
+      -->GrantFormControllers|[&PermissionAssignedLoop]
+    --%|
+  --<|
+  --:GrantFormControllers|formcharacterid
+    --&DruidControllers|[*O:[&DruidID]:character:controlledby]
+    --?"[&DruidControllers]" -eq "" -or "[&DruidControllers]" -eq "undefined"|[ --<| --]|
+    --&FormControllers|[*O:[%1%]:character:controlledby]
+    --?"[&FormControllers]" -eq "undefined"|[ --&FormControllers| --]|
+    --&FormControllerCheck|,[&FormControllers],
+    --?"[&FormControllerCheck]" -inc ",all,"|[ --<| --]|
+    --&FormControllersChanged|0
+    --~|array;define;DruidControllerIDs
+    --~|array;fromstring;DruidControllerIDs;,;[&DruidControllers]
+    --%DruidControllerLoop|foreach;DruidControllerIDs
+      --&DruidControllerID|[&DruidControllerLoop]
+      --~DruidControllerID|string;trim;[&DruidControllerID]
+      --?"[&DruidControllerID]" -eq "" -or "[&DruidControllerID]" -eq "undefined"|%
+      --?"[&FormControllerCheck]" -inc ",[&DruidControllerID],"|%
+      --?"[&FormControllers]" -eq ""|[
+        --&FormControllers|[&DruidControllerID]
+      --]|[
+        --&FormControllers|+,[&DruidControllerID]
+      --]|
+      --&FormControllerCheck|,[&FormControllers],
+      --&FormControllersChanged|1
+    --%|
+    --?"[&FormControllersChanged]" -eq "1"|[ --!c:[%1%]|controlledby:[&FormControllers] --]|
   --<|
   --:AppendFormSection|
     --&FormSectionLabel|[%2%]
@@ -1606,7 +1640,7 @@
     --?"[&DruidName]" -ne "" -and "[&DruidName]" -ne "undefined"|[
       --&CardBody|+[t style="width:100%;margin:0 auto 2px auto;table-layout:fixed;[&BodyStyle]"][tr][td style="padding:0;text-align:center;font-size:11px;line-height:13px;font-weight:bold;white-space:normal;"][&DruidName][/td][/tr][/t]
     --]|
-    --&CardBody|+[t style="width:105px;margin:0 auto;table-layout:fixed;[&BodyStyle]"][tr][td style="[&ButtonCellCSS][&GMViewButtonBG]"][rbutton]GM View: [&GMViewDisplay]::ToggleGMView[/rbutton][/td][/tr][/t]
+    --&CardBody|+[t style="width:105px;margin:0 auto;table-layout:fixed;[&BodyStyle]"][tr][td style="[&ButtonCellCSS][&GMViewButtonBG]"][rbutton]DM View: [&GMViewDisplay]::ToggleGMView[/rbutton][/td][/tr][/t]
   --<|
   --:RenderCard|
     -->AppendGMViewToggle|
