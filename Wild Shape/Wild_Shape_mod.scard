@@ -1576,11 +1576,7 @@
       --&FormControllersChanged|1
       --:DruidControllerNext|
     --%|
-    --?"[&FormControllersChanged]" -eq "1"|[
-      --?"[&Beacon]" -eq "1"|[ --#beaconsheet|0 --]|
-      --!c:[%1%]|controlledby:[&FormControllers]
-      --?"[&Beacon]" -eq "1"|[ --#beaconsheet|1 --]|
-    --]|
+    --?"[&FormControllersChanged]" -eq "1"|[ --!c:[%1%]|controlledby:[&FormControllers] --]|
   --<|
   --:AppendFormSection|
     --&FormSectionLabel|[%2%]
