@@ -79,7 +79,7 @@ A character avatar can be used as a fallback, but a proper default token is stro
 8. Repeat this setup for every Druid in the game.
 9. Turn **DM View** off when you want to see the selected Druid's player-facing menu.
 
-![Wild Shape DM Settings](images/GM-settings.png)
+![Wild Shape DM Settings](images/gm-settings.png)
 
 ![Managing Wild Shape forms](images/manage-wild-shape-forms.png)
 
