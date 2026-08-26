@@ -1,7 +1,7 @@
 !scriptcards {{ --/|{& skip}
   --/| ============================================================================
   --/| Script Name : Tim's Wild Shape Mod
-  --/| Version     : 1.0.2
+  --/| Version     : 1.0.3
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
   --/| ============================================================================
@@ -23,14 +23,18 @@
     --?"[*O:[&SheetBackendLoop]:character:archived]" -eq "true"|SheetBackendNext
     --&SheetBackendControllers|[*O:[&SheetBackendLoop]:character:controlledby]
     --?"[&SheetBackendControllers]" -eq "" -or "[&SheetBackendControllers]" -eq "undefined"|SheetBackendNext
-    --~|array;define;SheetBackendClassAttrs
-    --~|array;attributes;SheetBackendClassAttrs;[&SheetBackendLoop];class
-    --?"[@SheetBackendClassAttrs(maxindex)]" -ge "0"|[
+    --?"[&ClassicBackendFound]" -ne "1"|[
+      --~|array;define;SheetBackendClassAttrs
+      --~|array;attributes;SheetBackendClassAttrs;[&SheetBackendLoop];class
+      --?"[@SheetBackendClassAttrs(maxindex)]" -lt "0"|SheetBackendClassDone
       --%SheetBackendClassAttrLoop|foreach;SheetBackendClassAttrs
         --?"[*O:[&SheetBackendClassAttrLoop]:attribute:name]" -eqi "class"|&ClassicBackendFound;1
+        --?"[&ClassicBackendFound]" -eq "1"|%!
       --%|
+      --:SheetBackendClassDone|
     --]|
     --?"[*O:[&SheetBackendLoop]:character:charactersheetname]" -imatch "^dnd2024byroll20$"|&BeaconBackendFound;1
+    --?"[&ClassicBackendFound]" -eq "1" -and "[&BeaconBackendFound]" -eq "1"|%!
     --:SheetBackendNext|
   --%|
   --?"[&ClassicBackendFound]" -ne "1" -and "[&BeaconBackendFound]" -eq "1"|&Beacon;1
@@ -47,7 +51,6 @@
   --^PlayerModeEntry|
   --:GMModeEntry|
     -->LoadGlobalSettings|
-    -->LoadTheme|
     --?"[&GMView]" -eq "1"|GMSelectedDruidEntry
   --:GMPlayerModeEntry|
     --&DruidID|[&GMSelectedDruidID]
@@ -67,7 +70,6 @@
     --?"[&DruidID]" -eq "" -or "[&DruidID]" -eq "undefined"|NoCharacter
     -->GetDruidLevel|[&DruidID]
     --?"[&DruidLevel]" -le "0"|PlayerNotDruid
-
   --:LoadPlayerDruid|
     -->LoadState|
     --?"[&IsGM]" -eq "1" -and "[&GMView]" -ne "1"|[
@@ -75,7 +77,8 @@
       --#sourcetoken|
     --]|
     -->LoadAssignedForms|
-    -->LoadDruidRules|
+    -->LoadGlobalSettings|
+    -->LoadTheme|
     --^Main|
   --:ToggleGMView|
     --?"[&OriginalPlayerID]" -ne "[&SendingPlayerID]" -or "[&IsGM]" -ne "1"|Unauthorized
@@ -103,7 +106,7 @@
     --~|array;objects:page;GMTokenPages
     --%GMTokenPageLoop|foreach;GMTokenPages
       --~|array;pagetokens;GMPageCharacterTokens;[&GMTokenPageLoop];char
-      --?[@GMPageCharacterTokens(maxindex)] -eq -1|%
+      --?[@GMPageCharacterTokens(maxindex)] -eq -1|GMTokenPageNext
       --%GMPageCharacterTokenLoop|foreach;GMPageCharacterTokens
         --&GMTokenCharacterID|[*O:[&GMPageCharacterTokenLoop]:graphic:represents]
         --?"[&GMTokenCharacterID]" -ne "[&DruidID]"|%
@@ -114,17 +117,10 @@
           --&GMPlayerPageTokenID|[&GMPageCharacterTokenLoop]
         --]|
       --%|
+      --:GMTokenPageNext|
     --%|
-    --?[$GMPlayerPageTokenCount.Raw] -eq 1|[
-      --&TokenID|[&GMPlayerPageTokenID]
-      --#sourcetoken|[&TokenID]
-      --<|
-    --]|
-    --?[$GMDruidTokenCount.Raw] -ne 1|[
-      --&TokenID|
-      --#sourcetoken|
-      --<|
-    --]|
+    --?[$GMPlayerPageTokenCount.Raw] -eq 1|[ --&TokenID|[&GMPlayerPageTokenID] --#sourcetoken|[&TokenID] --<| --]|
+    --?[$GMDruidTokenCount.Raw] -ne 1|[ --&TokenID| --#sourcetoken| --<| --]|
     --#sourcetoken|[&TokenID]
   --<|
   --:GMSelectedDruidEntry|
@@ -168,14 +164,15 @@
   --:LoadGMDruid|
     --&DruidName|[*O:[&DruidID]:character:name]
     --?"[&DruidName]" -eq "" -or "[&DruidName]" -eq "undefined"|GMNoDruids
-    -->LoadGlobalSettings|
     --&GMSelectedDruidID|[&DruidID]
   --:GMSettings|
     --?"[&OriginalPlayerID]" -ne "[&SendingPlayerID]" -or "[&IsGM]" -ne "1" -or "[&GMView]" -ne "1"|Unauthorized
     -->LoadState|
+  --:GMSettingsStateLoaded|
     -->LoadAssignedForms|
     -->LoadDruidRules|
     -->BuildAssignedFormList|
+  --:GMSettingsRender|
     --&CardTitle|Wild Shape DM Settings
     --&TitleStyle|style="font-family:Georgia,'Noto Serif','Liberation Serif','Nimbus Roman No9 L','Nimbus Roman','DejaVu Serif','Times New Roman',serif;font-variant:small-caps;font-size:19px;font-weight:bold;color:#7A2008;line-height:1.05em;white-space:nowrap;"
     --?"[&Rules]" -eq "2024"|[ --&TitleStyle|style="font-family:Georgia,'Noto Serif','Liberation Serif','Nimbus Roman No9 L','Nimbus Roman','DejaVu Serif','Times New Roman',serif;font-variant:small-caps;font-size:19px;font-weight:bold;line-height:1.05em;letter-spacing:0;white-space:nowrap;" --]|
@@ -196,6 +193,13 @@
     --]|
     -->RenderCard|
     --X|
+  --:GMSettingsCurrentGlobal|
+    --?"[&OriginalPlayerID]" -ne "[&SendingPlayerID]" -or "[&IsGM]" -ne "1" -or "[&GMView]" -ne "1"|Unauthorized
+    -->LoadState|
+    -->LoadAssignedForms|
+    -->LoadDruidRulesCurrentGlobal|
+    -->BuildAssignedFormList|
+    --^GMSettingsRender|
   --:ToggleRules|
     --?"[&OriginalPlayerID]" -ne "[&SendingPlayerID]" -or "[&IsGM]" -ne "1" -or "[&GMView]" -ne "1"|Unauthorized
     -->LoadGlobalSettings|
@@ -203,39 +207,27 @@
     --?"[&AnyActiveWildShapeState]" -eq "1"|RulesWhileActive
     --?"[&Rules]" -eq "2014"|[ --&Rules|2024 --]|[ --&Rules|2014 --]|
     -->WriteGlobalSettings|
-    --^GMSettings|
+    --^GMSettingsCurrentGlobal|
   --:ToggleNonBeast|
     --?"[&OriginalPlayerID]" -ne "[&SendingPlayerID]" -or "[&IsGM]" -ne "1" -or "[&GMView]" -ne "1"|Unauthorized
     -->LoadGlobalSettings|
     --?"[&AllowNonBeast]" -eq "1"|[ --&AllowNonBeast|0 --]|[ --&AllowNonBeast|1 --]|
     -->WriteGlobalSettings|
-    --^GMSettings|
+    --^GMSettingsCurrentGlobal|
   --:GMForceRevertPrompt|
     --?"[&OriginalPlayerID]" -ne "[&SendingPlayerID]" -or "[&IsGM]" -ne "1" -or "[&GMView]" -ne "1"|Unauthorized
     -->LoadState|
-    -->LoadDruidRules|
+    -->LoadGlobalSettings|
+    -->LoadTheme|
     --?"[&ActiveFormID]" -eq ""|GMNoActiveWildShape
     --&ForceRevertTokenCheck|[*O:[&TransformedTokenID]:graphic:imgsrc]
-    --&ForceRevertOriginalTokenCheck|
-    --?"[&OriginalTokenID]" -ne "" -and "[&OriginalTokenID]" -ne "undefined"|[
-      --&ForceRevertOriginalTokenCheck|[*O:[&OriginalTokenID]:graphic:imgsrc]
-    --]|
+    --&ForceRevertOriginalTokenCheck| --&ForceRevertTokenFound|0 --&ForceRevertOriginalTokenFound|0
+    --?"[&OriginalTokenID]" -ne "" -and "[&OriginalTokenID]" -ne "undefined"|[ --&ForceRevertOriginalTokenCheck|[*O:[&OriginalTokenID]:graphic:imgsrc] --]|
+    --?"[&ForceRevertTokenCheck]" -ne "" -and "[&ForceRevertTokenCheck]" -ne "undefined"|&ForceRevertTokenFound;1
+    --?"[&ForceRevertOriginalTokenCheck]" -ne "" -and "[&ForceRevertOriginalTokenCheck]" -ne "undefined"|&ForceRevertOriginalTokenFound;1
     --&ForceRevertMessage|This will replace the recorded transformed token with [&DruidName]'s original token and clear the active Wild Shape state.
-    --?"[&ForceRevertOriginalTokenCheck]" -ne "" -and "[&ForceRevertOriginalTokenCheck]" -ne "undefined"|[
-      --&ForceRevertMessage|This will restore [&DruidName]'s preserved original token and clear the active Wild Shape state.
-    --]|
-    --?"[&ForceRevertTokenCheck]" -eq "" -and "[&ForceRevertOriginalTokenCheck]" -eq ""|[
-      --&ForceRevertMessage|The recorded transformed token no longer exists. This will clear the stale Wild Shape state without creating or deleting a token.
-    --]|
-    --?"[&ForceRevertTokenCheck]" -eq "undefined" -and "[&ForceRevertOriginalTokenCheck]" -eq ""|[
-      --&ForceRevertMessage|The recorded transformed token no longer exists. This will clear the stale Wild Shape state without creating or deleting a token.
-    --]|
-    --?"[&ForceRevertTokenCheck]" -eq "" -and "[&ForceRevertOriginalTokenCheck]" -eq "undefined"|[
-      --&ForceRevertMessage|The recorded transformed token no longer exists. This will clear the stale Wild Shape state without creating or deleting a token.
-    --]|
-    --?"[&ForceRevertTokenCheck]" -eq "undefined" -and "[&ForceRevertOriginalTokenCheck]" -eq "undefined"|[
-      --&ForceRevertMessage|The recorded transformed token no longer exists. This will clear the stale Wild Shape state without creating or deleting a token.
-    --]|
+    --?"[&ForceRevertOriginalTokenFound]" -eq "1"|[ --&ForceRevertMessage|This will restore [&DruidName]'s preserved original token and clear the active Wild Shape state. --]|
+    --?"[&ForceRevertTokenFound]" -eq "0" -and "[&ForceRevertOriginalTokenFound]" -eq "0"|[ --&ForceRevertMessage|The recorded transformed token no longer exists. This will clear the stale Wild Shape state without creating or deleting a token. --]|
     --&CardTitle|Force Wild Shape Revert
     --&CardBody|[t style="width:100%;[&BodyStyle]"][tr][td style="text-align:center;white-space:normal;"][b][&DruidName][/b][br][&ForceRevertMessage][/td][/tr][/t]
     --&CardBody|+[&ControlDivider][t style="[&FooterControlTableStyle][&BodyStyle]"][tr][td style="width:[&FooterControlCellWidth][&ButtonCellCSS][&ManagerButtonOnBG]"][rbutton]Confirm Revert::GMForceRevert[/rbutton][/td][td style="width:[&FooterControlCellWidth][&ButtonCellCSS]"][rbutton]Cancel::GMSettings[/rbutton][/td][/tr][/t]
@@ -249,49 +241,25 @@
     --&ForceRevertMode|1
     --^Revert|
   --:GMNoActiveWildShape|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|No active Wild Shape state is recorded for [&DruidName].
-    --&ErrorButtonLabel|Back --&ErrorButtonTarget|GMSettings
-    --^ErrorCard|
+    --&ErrorMode|GM_SETTINGS --&ErrorMessage|No active Wild Shape state is recorded for [&DruidName]. --^ErrorCard|
   --:GMNoDruids|
-    --&ErrorTitle|Wild Shape DM
-    --&ErrorMessage|No player character with Druid levels was found in the game.
-    --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE
-    --^ErrorCard|
+    --&ErrorMode|GM_NONE --&ErrorMessage|No player character with Druid levels was found in the game. --^ErrorCard|
   --:GMPlayerModeNeedsDruid|
     --&GMView|1
     -->WriteGlobalSettings|
     --^GMEntry|
   --:NoSelectedToken|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|[b]No Token Selected[/b][br]Select the character token before running Wild Shape.
-    --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE
-    --^ErrorCard|
+    --&ErrorMode|NONE --&ErrorMessage|[b]No Token Selected[/b][br]Select the character token before running Wild Shape. --^ErrorCard|
   --:MultipleSelectedTokens|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|[b]Multiple Tokens Selected[/b][br]Select only one character token before running Wild Shape.
-    --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE
-    --^ErrorCard|
+    --&ErrorMode|NONE --&ErrorMessage|[b]Multiple Tokens Selected[/b][br]Select only one character token before running Wild Shape. --^ErrorCard|
   --:NoCharacter|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|[b]No Character Sheet[/b][br]The selected token must represent the character using Wild Shape.
-    --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE
-    --^ErrorCard|
+    --&ErrorMode|NONE --&ErrorMessage|[b]No Character Sheet[/b][br]The selected token must represent the character using Wild Shape. --^ErrorCard|
   --:PlayerNotDruid|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|[b]Not a Druid[/b][br]The selected character does not have any Druid levels.
-    --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE
-    --^ErrorCard|
+    --&ErrorMode|NONE --&ErrorMessage|[b]Not a Druid[/b][br]The selected character does not have any Druid levels. --^ErrorCard|
   --:Main|
     --?"[&IsGM]" -eq "1" -and "[&GMView]" -eq "1"|GMEntry
-    --?"[&ActiveFormID]" -ne ""|[
-      --&RequestedFormID|[&ActiveFormID]
-      --^FormCard|
-    --]|
-    --?"[&LastFormID]" -ne "" -and "[&AssignedRaw]" -inc ",[&LastFormID],"|[
-      --&RequestedFormID|[&LastFormID]
-      --^FormCard|
-    --]|
+    --?"[&ActiveFormID]" -ne ""|[ --&RequestedFormID|[&ActiveFormID] --^FormCard| --]|
+    --?"[&LastFormID]" -ne "" -and "[&AssignedRaw]" -inc ",[&LastFormID],"|[ --&RequestedFormID|[&LastFormID] --^FormCard| --]|
     --&CardTitle|Wild Shape
     --&CardBody|[t style="width:100%;[&BodyStyle]"][tr][td style="font-size:14px;"][b][&DruidName][/b][/td][/tr][tr][td]Druid Level [&DruidLevel] &bull; [&Rules] Rules[/td][/tr][/t]
     --&CardBody|+[&Divider]
@@ -303,6 +271,7 @@
     --?"[&IsGM]" -eq "1" -and "[&GMView]" -eq "1"|GMEntry
     --?"[&OriginalPlayerID]" -ne "[&SendingPlayerID]"|Unauthorized
     -->LoadState|
+  --:FXSettingsStateLoaded|
     -->LoadDruidRules|
     --&CurrentVisualFX|[&FXType]-[&FXColor]
     --?"[&FXType]" -eq "Default"|[ --&CurrentVisualFX|Default ([&DefaultFX]) --]|
@@ -345,16 +314,10 @@
     --~FXData|string;split;|;[&reentryval]
     --?"[&FXData1]" -eq "Default"|[ --&FXType|Default --&FXColor| --]|
     --?"[&FXData1]" -eq "None"|[ --&FXType| --&FXColor| --]|
-    --?"[&FXData1]" -eq "Type"|[
-      --&FXType|[&FXData2]
-      --?"[&FXColor]" -eq "" -or "[&FXColor]" -eq "undefined"|&FXColor;smoke
-    --]|
-    --?"[&FXData1]" -eq "Color"|[
-      --&FXColor|[&FXData2]
-      --?"[&FXType]" -eq "" -or "[&FXType]" -eq "undefined" -or "[&FXType]" -eq "Default"|&FXType;explode
-    --]|
+    --?"[&FXData1]" -eq "Type"|[ --&FXType|[&FXData2] --?"[&FXColor]" -eq "" -or "[&FXColor]" -eq "undefined"|&FXColor;smoke --]|
+    --?"[&FXData1]" -eq "Color"|[ --&FXColor|[&FXData2] --?"[&FXType]" -eq "" -or "[&FXType]" -eq "undefined" -or "[&FXType]" -eq "Default"|&FXType;explode --]|
     -->WriteState|
-    --^FXSettings|
+    --^FXSettingsStateLoaded|
   --:Transform|
     --?"[&IsGM]" -eq "1" -and "[&GMView]" -eq "1"|GMEntry
     --?"[&OriginalPlayerID]" -ne "[&SendingPlayerID]"|Unauthorized
@@ -362,34 +325,18 @@
     --?"[&RequestedFormID]" -eq "" -or "[&RequestedFormID]" -eq "undefined"|ChooseForm
     -->LoadAssignedForms|
     --?"[&AssignedRaw]" -ninc ",[&RequestedFormID],"|FormNotAssigned
-    --?"[&IsGM]" -eq "1" -and "[&GMView]" -ne "1"|[
-      -->LoadState|
-      -->ResolveGMPlayerToken|
-    --]|
+    --?"[&IsGM]" -eq "1" -and "[&GMView]" -ne "1"|[ -->LoadState| -->ResolveGMPlayerToken| --]|
     -->LoadGlobalSettings|
-    --?"[&Rules]" -eq "2024"|[
-      -->GetDruidLevel|[&DruidID]
-      --?"[&Beacon]" -eq "1"|[
-        --&DruidHPCurrent|[*[&DruidID]:hp:::] --&DruidHPMax|[*[&DruidID]:hp^:::]
-      --]|[
-        -->GetClassicAttribute|[&DruidID];hp;
-        --&DruidHPCurrent|[&ClassicAttributeValue]
-        -->GetClassicAttributeMax|[&DruidID];hp;
-        --&DruidHPMax|[&ClassicAttributeMax]
-      --]|
-    --]|
+    --?"[&Rules]" -eq "2024"|[ -->GetDruidLevel|[&DruidID] -->LoadDruidHP| --]|
     --&RequestedFormName|[*O:[&RequestedFormID]:character:name]
     --?"[&RequestedFormName]" -eq "" -or "[&RequestedFormName]" -eq "undefined"|FormMissing
     -->LoadFormToken|[&RequestedFormID]
     --?[&FormImage(contains,://)] -ne 1|FormNoToken
     --?"[&FormImageCreatable]" -ne "1"|FormImageUnavailable
     --?"[&FormBar2Value]" -eq ""|[
-      --?"[&Beacon]" -eq "1"|[
-        --&FormBar2Value|[*[&RequestedFormID]:npc_ac:::]
-      --]|[
-        -->GetClassicAttribute|[&RequestedFormID];npc_ac;
-        --&FormBar2Value|[&ClassicAttributeValue]
-      --]|
+      --?"[&Beacon]" -eq "1"|&FormBar2Value;[*[&RequestedFormID]:npc_ac:::]
+      --?"[&Beacon]" -ne "1"|>GetClassicAttribute;[&RequestedFormID];npc_ac;
+      --?"[&Beacon]" -ne "1"|&FormBar2Value;[&ClassicAttributeValue]
       --?"[&FormBar2Value]" -eq "undefined" -or "[&FormBar2Value]" -eq "null"|&FormBar2Value;
     --]|
     --&TargetTokenID|[&TokenID]
@@ -404,23 +351,17 @@
       --&OriginalImage|[&TargetTokenImage]
       --&OriginalWidth|[*O:[&TargetTokenID]:graphic:width]
       --&OriginalHeight|[*O:[&TargetTokenID]:graphic:height]
-      --&OriginalTokenID|
-      --&OriginalTokenLayer|
-      --/| Preserve any original token whose image cannot be recreated through !ot, including placeholders and Marketplace assets.
+      --&OriginalTokenID| --&OriginalTokenLayer|
       -->CheckCreatableImage|[&OriginalImage]
-      --?"[&ImageCreatable]" -ne "1"|[
-        --&OriginalTokenID|[&TargetTokenID]
-        --&OriginalTokenLayer|[*O:[&TargetTokenID]:graphic:layer]
-      --]|
+      --?"[&ImageCreatable]" -ne "1"|&OriginalTokenID;[&TargetTokenID]
+      --?"[&ImageCreatable]" -ne "1"|&OriginalTokenLayer;[*O:[&TargetTokenID]:graphic:layer]
       -->CaptureOriginalBars|[&TargetTokenID]
     --]|
     -->ReplaceToken|[&TargetTokenID];[&RequestedFormID];[&DruidID];[&FormImage];[&FormWidth];[&FormHeight];form
     -->ValidateReplacementToken|
     --?"[&ReplacementTokenValid]" -ne "1"|ReplacementFailed
-    --&ActiveFormID|[&RequestedFormID]
-    --&LastFormID|[&RequestedFormID]
-    --&TransformedTokenID|[&ReplacementTokenID]
-    --&TokenID|[&ReplacementTokenID]
+    --&ActiveFormID|[&RequestedFormID] --&LastFormID|[&RequestedFormID]
+    --&TransformedTokenID|[&ReplacementTokenID] --&TokenID|[&ReplacementTokenID]
     -->WriteState|
     --^FormCard|
   --:Revert|
@@ -433,9 +374,7 @@
     --&RevertSourceAvailable|0
     --?"[&RevertTokenCheck]" -ne "" -and "[&RevertTokenCheck]" -ne "undefined"|&RevertSourceAvailable;1
     --&PreservedOriginalCheck|
-    --?"[&OriginalTokenID]" -ne "" -and "[&OriginalTokenID]" -ne "undefined"|[
-      --&PreservedOriginalCheck|[*O:[&OriginalTokenID]:graphic:imgsrc]
-    --]|
+    --?"[&OriginalTokenID]" -ne "" -and "[&OriginalTokenID]" -ne "undefined"|[ --&PreservedOriginalCheck|[*O:[&OriginalTokenID]:graphic:imgsrc] --]|
     --&PreservedOriginalAvailable|0
     --?"[&OriginalTokenID]" -ne "" -and "[&OriginalTokenID]" -ne "undefined" -and "[&PreservedOriginalCheck]" -ne "" -and "[&PreservedOriginalCheck]" -ne "undefined"|&PreservedOriginalAvailable;1
     --?"[&ForceRevertMode]" -eq "1" -and "[&RevertSourceAvailable]" -ne "1" -and "[&PreservedOriginalAvailable]" -ne "1"|GMForceClearTransformState
@@ -450,14 +389,7 @@
     --?"[&OriginalWidth]" -eq ""|[ --&OriginalWidth|70 --]|
     --?"[&OriginalHeight]" -eq ""|[ --&OriginalHeight|70 --]|
     --?"[&Rules]" -eq "2024"|[
-      --?"[&Beacon]" -eq "1"|[
-        --&DruidHPCurrent|[*[&DruidID]:hp:::] --&DruidHPMax|[*[&DruidID]:hp^:::]
-      --]|[
-        -->GetClassicAttribute|[&DruidID];hp;
-        --&DruidHPCurrent|[&ClassicAttributeValue]
-        -->GetClassicAttributeMax|[&DruidID];hp;
-        --&DruidHPMax|[&ClassicAttributeMax]
-      --]|
+      -->LoadDruidHP|
       --?"[&OriginalBar1Link]" -imatch "^hp$"|&OriginalBar1Value;[&DruidHPCurrent]
       --?"[&OriginalBar1Link]" -imatch "^hp$"|&OriginalBar1Max;[&DruidHPMax]
       --?"[&OriginalBar2Link]" -imatch "^hp$"|&OriginalBar2Value;[&DruidHPCurrent]
@@ -473,11 +405,7 @@
     --?"[&ReplacementTokenValid]" -ne "1"|ReplacementFailed
   --:RevertComplete|
     --&TokenID|[&ReplacementTokenID]
-    --&ActiveFormID| --&TransformedTokenID| --&OriginalImage| --&OriginalWidth| --&OriginalHeight| --&OriginalTokenID| --&OriginalTokenLayer| --&ForceRevertMode|0
-    --&OriginalBar1Value| --&OriginalBar1Max| --&OriginalBar1Link|
-    --&OriginalBar2Value| --&OriginalBar2Max| --&OriginalBar2Link|
-    --&OriginalBar3Value| --&OriginalBar3Max| --&OriginalBar3Link|
-    --&OriginalBar4Value| --&OriginalBar4Max| --&OriginalBar4Link|
+    -->ClearTransformState|
     -->WriteState|
     --^Main|
   --:RevertPreservedOriginalToken|
@@ -495,13 +423,9 @@
     --^RevertComplete|
   --:GMForceClearTransformState|
     --?"[&OriginalPlayerID]" -ne "[&SendingPlayerID]" -or "[&IsGM]" -ne "1" -or "[&GMView]" -ne "1" -or "[&ForceRevertMode]" -ne "1"|Unauthorized
-    --&ActiveFormID| --&TransformedTokenID| --&OriginalImage| --&OriginalWidth| --&OriginalHeight| --&OriginalTokenID| --&OriginalTokenLayer| --&ForceRevertMode|0
-    --&OriginalBar1Value| --&OriginalBar1Max| --&OriginalBar1Link|
-    --&OriginalBar2Value| --&OriginalBar2Max| --&OriginalBar2Link|
-    --&OriginalBar3Value| --&OriginalBar3Max| --&OriginalBar3Link|
-    --&OriginalBar4Value| --&OriginalBar4Max| --&OriginalBar4Link|
+    -->ClearTransformState|
     -->WriteState|
-    --^GMSettings|
+    --^GMSettingsStateLoaded|
   --:ChooseForm|
     --?"[&IsGM]" -eq "1" -and "[&GMView]" -eq "1"|GMEntry
     --?"[&OriginalPlayerID]" -ne "[&SendingPlayerID]"|Unauthorized
@@ -523,7 +447,7 @@
     --%ChooseLoop|foreach;AssignedFormList
       --=ChooseEntryIndex|[$ChooseEntryIndex.Raw] + 1
       --?[$ChooseEntryIndex.Raw] -lt [$ChooseStartIndex.Raw]|%
-      --?[$ChoosePageCount.Raw] -ge [$ChoosePageSize.Raw]|%
+      --?[$ChoosePageCount.Raw] -ge [$ChoosePageSize.Raw]|%!
       --~ChooseSplit|string;split;!@!;[&ChooseLoop]
       --?"[= [$ChoosePageCount.Raw] % 2 ]" -eq "0" -and "[$ChoosePageCount.Raw]" -ne "0"|[ --&CardBody|+[/tr][tr] --]|
       --&ChooseButtonBG|[&ManagerButtonOffBG]
@@ -574,12 +498,14 @@
   --:ManageForms|
     --?"[&OriginalPlayerID]" -ne "[&SendingPlayerID]" -or "[&IsGM]" -ne "1" -or "[&GMView]" -ne "1"|Unauthorized
     --&ManageLetter|[&reentryval]
-    --?"[&ManageLetter]" -eq "" -or "[&ManageLetter]" -eq "undefined" -or "[&ManageLetter]" -eq "START"|[ --&ManageLetter| --]|
-    -->LoadAssignedForms|
-    -->GrantAssignedFormControllers|
+    --&ManageFresh|0
+    --?"[&ManageLetter]" -eq "" -or "[&ManageLetter]" -eq "undefined" -or "[&ManageLetter]" -eq "START"|[
+      --&ManageLetter| --&ManageFresh|1 --&NPCListReady|0 --&NPCNavigationReady|0 --&ManagerRulesReady|0
+    --]|
+    --?"[&ManageFresh]" -eq "1"|[ -->LoadAssignedForms| -->GrantAssignedFormControllers| --]|
   --:ManageFormsRenderLoaded|
-    -->LoadDruidRules|
-    -->BuildNPCList|
+    --?"[&ManagerRulesReady]" -ne "1"|[ -->LoadDruidEligibilityRules| --&ManagerRulesReady|1 --]|
+    --?"[&NPCListReady]" -ne "1"|[ -->BuildNPCList| --&NPCListReady|1 --]|
     --&CardTitle|Manage Wild Shape Forms
     --&TitleStyle|style="font-family:Georgia,'Noto Serif','Liberation Serif','Nimbus Roman No9 L','Nimbus Roman','DejaVu Serif','Times New Roman',serif;font-variant:small-caps;font-size:18px;font-weight:bold;color:#7A2008;line-height:1.05em;white-space:nowrap;"
     --?"[&Rules]" -eq "2024"|[ --&TitleStyle|style="font-family:Georgia,'Noto Serif','Liberation Serif','Nimbus Roman No9 L','Nimbus Roman','DejaVu Serif','Times New Roman',serif;font-variant:small-caps;font-size:18px;font-weight:bold;line-height:1.05em;letter-spacing:0;white-space:nowrap;" --]|
@@ -587,12 +513,9 @@
     --?[$NPCCount.Raw] -eq 0|[
       --&NoNPCMessage|No Beast NPCs are available to assign as Wild Shape forms.
       --?"[&AllowNonBeast]" -eq "1"|&NoNPCMessage;No NPCs are available to assign as Wild Shape forms.
-      --&ErrorTitle|Manage Wild Shape Forms
-      --&ErrorMessage|[&NoNPCMessage]
-      --&ErrorButtonLabel|Back --&ErrorButtonTarget|GMSettings
-      --^ErrorCard|
+      --&ErrorMode|MANAGE_SETTINGS --&ErrorMessage|[&NoNPCMessage] --^ErrorCard|
     --]|
-    -->BuildLetterList|
+    --?"[&NPCNavigationReady]" -ne "1"|[ -->BuildLetterList| --&NPCNavigationReady|1 --]|
     --?"[&ManageLetter]" -eq "" -or "[&Letters]" -ninc ",[&ManageLetter],"|[ --&ManageLetter|[&DefaultLetter] --]|
     --~ManageLetter|string;touppercase;[&ManageLetter]
     --&KnownCountText|Assigned: [$AssignedCount.Raw]
@@ -635,10 +558,12 @@
     --?"[&AssignedRaw]" -inc ",[&ToggleSplit1],"|[
       --~AssignedRaw|string;replaceall;,[&ToggleSplit1],;,;[&AssignedRaw]
       --&FormAdded|0
-    --]|[
-      --&AssignedRaw|+[&ToggleSplit1],
     --]|
     --?"[&FormAdded]" -eq "1"|[
+      --&RequestedFormName|[*O:[&ToggleSplit1]:character:name]
+      -->LoadFormToken|[&ToggleSplit1]
+      --?[&FormImage(contains,://)] -ne 1|ManageFormNoToken
+      --&AssignedRaw|+[&ToggleSplit1],
       -->EnsureNPCPublicRolls|[&ToggleSplit1]
       -->GrantFormControllers|[&ToggleSplit1]
     --]|
@@ -648,6 +573,8 @@
       -->WriteState|
     --]|
     --^ManageFormsRenderLoaded|
+  --:ManageFormNoToken|
+    --&ErrorMode|MANAGE_LIST --&ErrorMessage|[b][&RequestedFormName][/b] does not have a usable default token or character avatar. Assign an image to that NPC before adding it as a Wild Shape form. --^ErrorCard|
   --:FormCard|
     --&BeastID|[&RequestedFormID]
     --?"[&BeastID]" -eq ""|[ --&BeastID|[&ActiveFormID] --]|
@@ -660,50 +587,31 @@
     --&FormSTR|0 --&FormDEX|0 --&FormCON|0 --&FormSTRMOD|0 --&FormDEXMOD|0 --&FormCONMOD|0
     --&FormINT|0 --&FormWIS|0 --&FormCHA|0 --&FormINTMOD|0 --&FormWISMOD|0 --&FormCHAMOD|0
     --&DruidHPCurrent| --&DruidHPMax| --&DruidPB|0 --&NPCHPDisplay|
-    --?"[&Beacon]" -eq "1"|[
-      --&NPCType|[*[&BeastID]:npc_type:::]
-      --&NPCAC|[*[&BeastID]:npc_ac:::]
-      --&NPCSpeed|[*[&BeastID]:npc_speed:::]
-      --&CRFooter|[*[&BeastID]:npc_challenge:::]
-      --&NPCXP|[*[&BeastID]:npc_xp:::]
-      --&SensesDisplay|[*[&BeastID]:npc_senses:::]
-      --?"[&Rules]" -eq "2014"|[ --&NPCHPFormula|[*[&BeastID]:npc_hpformula:::] --&LanguageDisplay|[*[&BeastID]:npc_languages:::] --]|
-      --&NPCVulnerabilities|[*[&BeastID]:npc_vulnerabilities:::]
-      --&NPCResistances|[*[&BeastID]:npc_resistances:::]
-      --&ImmunityDisplay|[*[&BeastID]:npc_immunities:::]
-      --&NPCConditionImmunities|[*[&BeastID]:npc_condition_immunities:::]
-      --&FormSTR|[*[&BeastID]:strength:::0] --&FormDEX|[*[&BeastID]:dexterity:::0] --&FormCON|[*[&BeastID]:constitution:::0]
-      --&FormSTRMOD|[*[&BeastID]:strength_mod:::0] --&FormDEXMOD|[*[&BeastID]:dexterity_mod:::0] --&FormCONMOD|[*[&BeastID]:constitution_mod:::0]
-      --&FormINT|[*[&DruidID]:intelligence:::0] --&FormWIS|[*[&DruidID]:wisdom:::0] --&FormCHA|[*[&DruidID]:charisma:::0]
-      --&FormINTMOD|[*[&DruidID]:intelligence_mod:::0] --&FormWISMOD|[*[&DruidID]:wisdom_mod:::0] --&FormCHAMOD|[*[&DruidID]:charisma_mod:::0]
-      --?"[&Rules]" -eq "2024"|[
-        --&DruidHPCurrent|[*[&DruidID]:hp:::] --&DruidHPMax|[*[&DruidID]:hp^:::]
-        --&LanguageDisplay|[*[&DruidID]:languages:::]
-      --]|
-      --&DruidPB|[*[&DruidID]:pb:::0]
-    --]|[
-      --&NPCType|[*[&BeastID]:npc_type:::]
-      --&NPCAC|[*[&BeastID]:npc_ac:::]
-      --&NPCSpeed|[*[&BeastID]:npc_speed:::]
-      --&CRFooter|[*[&BeastID]:npc_challenge:::]
-      --&NPCXP|[*[&BeastID]:npc_xp:::]
-      --&SensesDisplay|[*[&BeastID]:npc_senses:::]
-      --?"[&Rules]" -eq "2014"|[ --&NPCHPFormula|[*[&BeastID]:npc_hpformula:::] --&LanguageDisplay|[*[&BeastID]:npc_languages:::] --]|
-      --&NPCVulnerabilities|[*[&BeastID]:npc_vulnerabilities:::]
-      --&NPCResistances|[*[&BeastID]:npc_resistances:::]
-      --&ImmunityDisplay|[*[&BeastID]:npc_immunities:::]
-      --&NPCConditionImmunities|[*[&BeastID]:npc_condition_immunities:::]
-      --&FormSTR|[*[&BeastID]:strength:::0] --&FormDEX|[*[&BeastID]:dexterity:::0] --&FormCON|[*[&BeastID]:constitution:::0]
-      --&FormSTRMOD|[*[&BeastID]:strength_mod:::0] --&FormDEXMOD|[*[&BeastID]:dexterity_mod:::0] --&FormCONMOD|[*[&BeastID]:constitution_mod:::0]
-      --&ClassicBeastHPMax|[*[&BeastID]:hp^:::]
-      --&FormINT|[*[&DruidID]:intelligence:::0] --&FormWIS|[*[&DruidID]:wisdom:::0] --&FormCHA|[*[&DruidID]:charisma:::0]
-      --&FormINTMOD|[*[&DruidID]:intelligence_mod:::0] --&FormWISMOD|[*[&DruidID]:wisdom_mod:::0] --&FormCHAMOD|[*[&DruidID]:charisma_mod:::0]
-      --?"[&Rules]" -eq "2024"|[
-        --&DruidHPCurrent|[*[&DruidID]:hp:::] --&DruidHPMax|[*[&DruidID]:hp^:::]
-        --&LanguageDisplay|[*[&DruidID]:other_proficiencies_and_languages:::]
-      --]|
-      --&DruidPB|[*[&DruidID]:pb:::0]
+    --&NPCType|[*[&BeastID]:npc_type:::]
+    --&NPCAC|[*[&BeastID]:npc_ac:::]
+    --&NPCSpeed|[*[&BeastID]:npc_speed:::]
+    --&CRFooter|[*[&BeastID]:npc_challenge:::]
+    --&NPCXP|[*[&BeastID]:npc_xp:::]
+    --&SensesDisplay|[*[&BeastID]:npc_senses:::]
+    --?"[&Rules]" -eq "2014"|[ --&NPCHPFormula|[*[&BeastID]:npc_hpformula:::] --&LanguageDisplay|[*[&BeastID]:npc_languages:::] --]|
+    --&NPCVulnerabilities|[*[&BeastID]:npc_vulnerabilities:::]
+    --&NPCResistances|[*[&BeastID]:npc_resistances:::]
+    --&ImmunityDisplay|[*[&BeastID]:npc_immunities:::]
+    --&NPCConditionImmunities|[*[&BeastID]:npc_condition_immunities:::]
+    --&FormSTR|[*[&BeastID]:strength:::0] --&FormDEX|[*[&BeastID]:dexterity:::0] --&FormCON|[*[&BeastID]:constitution:::0]
+    --&FormSTRMOD|[*[&BeastID]:strength_mod:::0] --&FormDEXMOD|[*[&BeastID]:dexterity_mod:::0] --&FormCONMOD|[*[&BeastID]:constitution_mod:::0]
+    --&FormINT|[*[&DruidID]:intelligence:::0] --&FormWIS|[*[&DruidID]:wisdom:::0] --&FormCHA|[*[&DruidID]:charisma:::0]
+    --&FormINTMOD|[*[&DruidID]:intelligence_mod:::0] --&FormWISMOD|[*[&DruidID]:wisdom_mod:::0] --&FormCHAMOD|[*[&DruidID]:charisma_mod:::0]
+    --?"[&Rules]" -eq "2024"|[
+      --&DruidHPCurrent|[*[&DruidID]:hp:::] --&DruidHPMax|[*[&DruidID]:hp^:::]
+      --?"[&Beacon]" -eq "1"|FormCardBeaconLanguage
+      --&LanguageDisplay|[*[&DruidID]:other_proficiencies_and_languages:::]
+      --^FormCardLanguageDone|
+      --:FormCardBeaconLanguage|
+      --&LanguageDisplay|[*[&DruidID]:languages:::]
+      --:FormCardLanguageDone|
     --]|
+    --&DruidPB|[*[&DruidID]:pb:::0]
     --~DruidPB|string;numericonly;[&DruidPB]
     --?"[&DruidPB]" -eq ""|[ --&DruidPB|0 --]|
     --~FormSTRMOD|string;numericonly;[&FormSTRMOD] --~FormDEXMOD|string;numericonly;[&FormDEXMOD] --~FormCONMOD|string;numericonly;[&FormCONMOD]
@@ -712,13 +620,7 @@
     --&FormINTMODDisplay|[&Plus][&FormINTMOD] --&FormWISMODDisplay|[&Plus][&FormWISMOD] --&FormCHAMODDisplay|[&Plus][&FormCHAMOD]
     --?"[&FormSTRMOD]" -lt "0"|[ --&FormSTRMODDisplay|[&FormSTRMOD] --]| --?"[&FormDEXMOD]" -lt "0"|[ --&FormDEXMODDisplay|[&FormDEXMOD] --]| --?"[&FormCONMOD]" -lt "0"|[ --&FormCONMODDisplay|[&FormCONMOD] --]|
     --?"[&FormINTMOD]" -lt "0"|[ --&FormINTMODDisplay|[&FormINTMOD] --]| --?"[&FormWISMOD]" -lt "0"|[ --&FormWISMODDisplay|[&FormWISMOD] --]| --?"[&FormCHAMOD]" -lt "0"|[ --&FormCHAMODDisplay|[&FormCHAMOD] --]|
-    --?"[&Rules]" -eq "2014"|[
-      --?"[&Beacon]" -eq "1"|[
-        --&NPCHPDisplay|[*[&BeastID]:hp^:::]
-      --]|[
-        --&NPCHPDisplay|[&ClassicBeastHPMax]
-      --]|
-    --]|
+    --?"[&Rules]" -eq "2014"|[ --&NPCHPDisplay|[*[&BeastID]:hp^:::] --]|
     --?"[&Rules]" -eq "2014" -and "[&NPCHPFormula]" -ne ""|[ --&NPCHPDisplay|+&nbsp;([&NPCHPFormula]) --]|
     -->BuildWildShapeSaveSummary|
     -->BuildWildShapeSkillSummary|
@@ -739,129 +641,100 @@
     -->RenderCard|
     --X|
   --:FormNotAssigned|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|That NPC is no longer assigned as a Wild Shape form for [&DruidName].
-    --&ErrorButtonLabel|Back --&ErrorButtonTarget|Main
-    --^ErrorCard|
+    --&ErrorMode|MAIN --&ErrorMessage|That NPC is no longer assigned as a Wild Shape form for [&DruidName]. --^ErrorCard|
   --:FormMissing|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|The selected Wild Shape NPC character no longer exists.
-    --&ErrorButtonLabel|Choose Another Form --&ErrorButtonTarget|ChooseForm
-    --^ErrorCard|
+    --&ErrorMode|CHOOSE --&ErrorMessage|The selected Wild Shape NPC character no longer exists. --^ErrorCard|
   --:FormNoToken|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|[b][&RequestedFormName][/b] does not have a usable default token. Assign a default token to that NPC before using it as a Wild Shape form.
-    --&ErrorButtonLabel|Choose Another Form --&ErrorButtonTarget|ChooseForm
-    --^ErrorCard|
+    --&ErrorMode|CHOOSE --&ErrorMessage|[b][&RequestedFormName][/b] does not have a usable default token. Assign a default token to that NPC before using it as a Wild Shape form. --^ErrorCard|
   --:FormImageUnavailable|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|[b][&RequestedFormName][/b] uses a Marketplace or otherwise API-incompatible token image. Roll20 Mod scripts can create tokens only from images uploaded to My Library. Assign that NPC a default token or character avatar using a My Library image, then try again.
-    --&ErrorButtonLabel|Choose Another Form --&ErrorButtonTarget|ChooseForm
-    --^ErrorCard|
+    --&ErrorMode|CHOOSE --&ErrorMessage|[b][&RequestedFormName][/b] uses a Marketplace or otherwise API-incompatible token image. Roll20 Mod scripts can create tokens only from images uploaded to My Library. Assign that NPC a default token or character avatar using a My Library image, then try again. --^ErrorCard|
   --:DruidTokenUnavailable|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|The script found [$GMDruidTokenCount.Raw] placed token(s) linked to the selected [b][&DruidName][/b] character sheet, including [$GMPlayerPageTokenCount.Raw] on the campaign player page. Place exactly one token linked to that specific sheet on the player page, then try again.
-    --&ErrorButtonLabel|Back --&ErrorButtonTarget|Main
-    --^ErrorCard|
+    --&ErrorMode|MAIN --&ErrorMessage|The script found [$GMDruidTokenCount.Raw] placed token(s) linked to the selected [b][&DruidName][/b] character sheet, including [$GMPlayerPageTokenCount.Raw] on the campaign player page. Place exactly one token linked to that specific sheet on the player page, then try again. --^ErrorCard|
   --:ActiveTokenMissing|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|The token recorded for this Wild Shape state can no longer be found. The character sheet has not been changed.
-    --&ErrorButtonLabel|Back --&ErrorButtonTarget|Main
-    --^ErrorCard|
+    --&ErrorMode|MAIN --&ErrorMessage|The token recorded for this Wild Shape state can no longer be found. The character sheet has not been changed. --^ErrorCard|
   --:RestoreStateMissing|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|The original token image was not stored, so automatic reversion cannot safely restore this token.
-    --&ErrorButtonLabel|Back --&ErrorButtonTarget|Main
-    --^ErrorCard|
+    --&ErrorMode|MAIN --&ErrorMessage|The original token image was not stored, so automatic reversion cannot safely restore this token. --^ErrorCard|
   --:OriginalImageUnavailable|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|The preserved original token can no longer be found, and Roll20 cannot recreate its image through the Mod API. In DM View, use [b]Force Revert[/b] to clear the recorded state, delete the transformed token, and drag the Druid token back onto the page once.
-    --&ErrorButtonLabel|Back --&ErrorButtonTarget|Main
-    --^ErrorCard|
+    --&ErrorMode|MAIN --&ErrorMessage|The preserved original token can no longer be found, and Roll20 cannot recreate its image through the Mod API. In DM View, use [b]Force Revert[/b] to clear the recorded state, delete the transformed token, and drag the Druid token back onto the page once. --^ErrorCard|
   --:ReplacementFailed|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|[b]Token Replacement Failed[/b][br]Roll20 did not return a usable replacement token. If an extra token appeared, delete that extra token before trying again; the Wild Shape state was not changed.
-    --&ErrorButtonLabel|Back --&ErrorButtonTarget|Main
-    --^ErrorCard|
+    --&ErrorMode|MAIN --&ErrorMessage|[b]Token Replacement Failed[/b][br]Roll20 did not return a usable replacement token. If an extra token appeared, delete that extra token before trying again; the Wild Shape state was not changed. --^ErrorCard|
   --:RulesWhileActive|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|A Wild Shape state is still active. Revert normally, or use the Force Revert button in DM Settings for that Druid before changing between the 2014 and 2024 rules.
-    --&ErrorButtonLabel|Back --&ErrorButtonTarget|GMSettings
-    --^ErrorCard|
+    --&ErrorMode|GM_SETTINGS --&ErrorMessage|A Wild Shape state is still active. Revert normally, or use the Force Revert button in DM Settings for that Druid before changing between the 2014 and 2024 rules. --^ErrorCard|
   --:Unauthorized|
-    --&ErrorTitle|Wild Shape
-    --&ErrorMessage|This Wild Shape menu belongs to another player or requires DM access.
-    --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE
-    --^ErrorCard|
+    --&ErrorMode|NONE --&ErrorMessage|This Wild Shape menu belongs to another player or requires DM access. --^ErrorCard|
   --:LoadDruidRules|
     -->LoadGlobalSettings|
+  --:LoadDruidRulesCurrentGlobal|
     -->GetDruidLevel|[&DruidID]
+    -->LoadTheme|
+  --<|
+  --:LoadDruidEligibilityRules|
+    -->LoadDruidRules|
     --&MaxCRNumeric|0 --&MaxCRDisplay|None --&FlyAllowed|0 --&SwimAllowed|0 --&KnownFormsMax|0
     --?"[&DruidLevel]" -ge "2"|[ --&MaxCRNumeric|0.25 --&MaxCRDisplay|1/4 --&KnownFormsMax|4 --]|
     --?"[&DruidLevel]" -ge "4"|[ --&MaxCRNumeric|0.5 --&MaxCRDisplay|1/2 --&SwimAllowed|1 --&KnownFormsMax|6 --]|
     --?"[&DruidLevel]" -ge "8"|[ --&MaxCRNumeric|1 --&MaxCRDisplay|1 --&FlyAllowed|1 --&SwimAllowed|1 --&KnownFormsMax|8 --]|
     --?"[&Rules]" -eq "2024" -and "[&DruidLevel]" -ge "2"|[ --&SwimAllowed|1 --]|
     --?"[&Rules]" -eq "2014"|[ --&KnownFormsMax|0 --]|
-    -->LoadTheme|
   --<|
   --:GetClassicAttribute|characterid;attributename;default
-    --&ClassicAttributeValue|[%3%]
+    --&ClassicAttributeValue|[%3%] --&ClassicAttributeMax|[%3%]
     --~|array;define;ClassicAttributeMatches
     --~|array;attributes;ClassicAttributeMatches;[%1%];[%2%]
     --?[@ClassicAttributeMatches()] -eq 0|<
     --%ClassicAttributeLoop|foreach;ClassicAttributeMatches
       --?"[*O:[&ClassicAttributeLoop]:attribute:name]" -eq "[%2%]"|[
         --&ClassicAttributeValue|[*O:[&ClassicAttributeLoop]:attribute:current]
-      --]|
-    --%|
-  --<|
-  --:GetClassicAttributeMax|characterid;attributename;default
-    --&ClassicAttributeMax|[%3%]
-    --~|array;define;ClassicAttributeMaxMatches
-    --~|array;attributes;ClassicAttributeMaxMatches;[%1%];[%2%]
-    --?[@ClassicAttributeMaxMatches()] -eq 0|<
-    --%ClassicAttributeMaxLoop|foreach;ClassicAttributeMaxMatches
-      --?"[*O:[&ClassicAttributeMaxLoop]:attribute:name]" -eq "[%2%]"|[
-        --&ClassicAttributeMax|[*O:[&ClassicAttributeMaxLoop]:attribute:max]
+        --&ClassicAttributeMax|[*O:[&ClassicAttributeLoop]:attribute:max]
       --]|
     --%|
   --<|
   --:GetDruidLevel|characterid
     --&DruidLevel|0
     --?"[&Beacon]" -eq "1"|[
-      --?"[*[%1%]:class:::]" -eqi "Druid"|[ --&DruidLevel|[*[%1%]:base_level:::0] --]|
-      --?"[&DruidLevel]" -le "0"|[ --?"[*[%1%]:multiclass1:::]" -eqi "Druid"|&DruidLevel;[*[%1%]:multiclass1_lvl:::0] --]|
-      --?"[&DruidLevel]" -le "0"|[ --?"[*[%1%]:multiclass2:::]" -eqi "Druid"|&DruidLevel;[*[%1%]:multiclass2_lvl:::0] --]|
-      --?"[&DruidLevel]" -le "0"|[ --?"[*[%1%]:multiclass3:::]" -eqi "Druid"|&DruidLevel;[*[%1%]:multiclass3_lvl:::0] --]|
+      --?"[*[%1%]:class:::]" -eqi "Druid"|&DruidLevel;[*[%1%]:base_level:::0]
+      --?"[&DruidLevel]" -le "0" -and "[*[%1%]:multiclass1:::]" -eqi "Druid"|&DruidLevel;[*[%1%]:multiclass1_lvl:::0]
+      --?"[&DruidLevel]" -le "0" -and "[*[%1%]:multiclass2:::]" -eqi "Druid"|&DruidLevel;[*[%1%]:multiclass2_lvl:::0]
+      --?"[&DruidLevel]" -le "0" -and "[*[%1%]:multiclass3:::]" -eqi "Druid"|&DruidLevel;[*[%1%]:multiclass3_lvl:::0]
     --]|[
       -->GetClassicAttribute|[%1%];class;
-      --?"[&ClassicAttributeValue]" -eqi "Druid"|[ -->GetClassicAttribute|[%1%];base_level;0 --&DruidLevel|[&ClassicAttributeValue] --]|
-      --?"[&DruidLevel]" -le "0"|[
-        -->GetClassicAttribute|[%1%];multiclass1;
-        --?"[&ClassicAttributeValue]" -eqi "Druid"|[ -->GetClassicAttribute|[%1%];multiclass1_lvl;0 --&DruidLevel|[&ClassicAttributeValue] --]|
-      --]|
-      --?"[&DruidLevel]" -le "0"|[
-        -->GetClassicAttribute|[%1%];multiclass2;
-        --?"[&ClassicAttributeValue]" -eqi "Druid"|[ -->GetClassicAttribute|[%1%];multiclass2_lvl;0 --&DruidLevel|[&ClassicAttributeValue] --]|
-      --]|
-      --?"[&DruidLevel]" -le "0"|[
-        -->GetClassicAttribute|[%1%];multiclass3;
-        --?"[&ClassicAttributeValue]" -eqi "Druid"|[ -->GetClassicAttribute|[%1%];multiclass3_lvl;0 --&DruidLevel|[&ClassicAttributeValue] --]|
-      --]|
+      --?"[&ClassicAttributeValue]" -nei "Druid"|ClassicDruidMulticlass1
+      -->GetClassicAttribute|[%1%];base_level;0
+      --&DruidLevel|[&ClassicAttributeValue]
+      --:ClassicDruidMulticlass1|
+      --?"[&DruidLevel]" -gt "0"|ClassicDruidLevelDone
+      -->GetClassicAttribute|[%1%];multiclass1;
+      --?"[&ClassicAttributeValue]" -nei "Druid"|ClassicDruidMulticlass2
+      -->GetClassicAttribute|[%1%];multiclass1_lvl;0
+      --&DruidLevel|[&ClassicAttributeValue]
+      --:ClassicDruidMulticlass2|
+      --?"[&DruidLevel]" -gt "0"|ClassicDruidLevelDone
+      -->GetClassicAttribute|[%1%];multiclass2;
+      --?"[&ClassicAttributeValue]" -nei "Druid"|ClassicDruidMulticlass3
+      -->GetClassicAttribute|[%1%];multiclass2_lvl;0
+      --&DruidLevel|[&ClassicAttributeValue]
+      --:ClassicDruidMulticlass3|
+      --?"[&DruidLevel]" -gt "0"|ClassicDruidLevelDone
+      -->GetClassicAttribute|[%1%];multiclass3;
+      --?"[&ClassicAttributeValue]" -nei "Druid"|ClassicDruidLevelDone
+      -->GetClassicAttribute|[%1%];multiclass3_lvl;0
+      --&DruidLevel|[&ClassicAttributeValue]
+      --:ClassicDruidLevelDone|
     --]|
+  --<|
+  --:LoadDruidHP|
+    --?"[&Beacon]" -eq "1"|[ --&DruidHPCurrent|[*[&DruidID]:hp:::] --&DruidHPMax|[*[&DruidID]:hp^:::] --]|[ -->GetClassicAttribute|[&DruidID];hp; --&DruidHPCurrent|[&ClassicAttributeValue] --&DruidHPMax|[&ClassicAttributeMax] --]|
   --<|
   --:LoadTheme|
     --&BodyStyle|font-size:12px;letter-spacing:0.01em;line-height:18px;
     --&SectionSpacer|
     --&ButtonChrome|white-space:nowrap;background:#F2DDB8;color:#7A2008;border:1px solid #D7B57D;border-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.3),inset 0 1px 1px rgba(255,255,255,.45),inset 0 -1px 1px rgba(92,28,20,.14);
-    --&ButtonCellCSS|[&ButtonChrome]text-align:center;vertical-align:middle;padding:0 4px;
     --&ManagerButtonOffBG|background:#F2DDB8;border:1px solid #D7B57D;
     --&ManagerButtonOnBG|background:#FFF1CE;border:1px solid #7A2008;box-shadow:0 0 0 1px rgba(122,32,8,.7),0 1px 4px rgba(71,38,17,.45),inset 0 1px 1px rgba(255,255,255,.55);
     --&ChooseExhibitBackdrop|radial-gradient(circle at 50% 34%,#FFFDF2 0%,#F2DDB8 43%,#D7B57D 72%,#7A2008 100%)
     --&ChooseExhibitRim|#D7B57D --&ChooseExhibitInner|#FFF1CE
     --&ChooseExhibitCap|linear-gradient(180deg,#FFF1CE 0%,#D7B57D 45%,#9A6B32 100%)
     --&ChooseExhibitBase|linear-gradient(180deg,#9A6B32 0%,#5C1C14 100%) --&ChooseExhibitShadow|rgba(71,38,17,.55)
-    --&SkillGridSpacing|2px 3px
     --&RuleBase|width:302px;height:4px;background-image:url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;)!important;background-size:100% 4px;background-repeat:no-repeat;background-position:center;display:block;border-radius:2px;position:relative;right:2px;padding:0;line-height:0;font-size:0;
     --&CardOpen|[t style='width:300px;table-layout:fixed;position:relative;left:-30px;border:0;border-collapse:separate;border-spacing:0;background-color:#264C5E;background-image:url(https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png);background-size:100% 100%;background-position:center;background-repeat:no-repeat;font-size:12px;line-height:1.2em;'][tr][td style='[&RuleBase]border:1px solid #3d0d03;top:-6px;'][/td][/tr][tr][td style='border:0;padding:0 15px;background:transparent;color:#7A2008;font-family:"Segoe UI",Tahoma,sans-serif;']
     --&CardClose|[/td][/tr][tr][td style='[&RuleBase]border:1px solid #2f2112;bottom:-6px;'][/td][/tr][/t]
@@ -872,21 +745,18 @@
     --&TightDivider|[t style="width:100%;border-collapse:collapse;table-layout:fixed;"][tr][td style="padding:0;border:0;background:transparent;line-height:0;"][t style="border-collapse:collapse;border-spacing:0;margin:0;"][tr][td style="[&DividerLineCell]"][/td][/tr][/t][/td][/tr][tr][td style="height:4px;line-height:2px;font-size:1px;padding:0;border:0;background:transparent;"]&nbsp;[/td][/tr][/t]
     --&ControlDivider|[t width=100%][tr][td style="line-height:4px"]&nbsp;[/td][/tr][tr][td style="border-bottom:2px solid #7A2008;padding-bottom:2px;letter-spacing:.8px;text-shadow:.6px 0 0 currentColor;"][/td][/tr][tr][td style="line-height:4px"]&nbsp;[/td][/tr][/t]
     --&SectionHeadCSS|border:0;border-bottom:2px solid #7A2008;padding:2px 0 1px;color:#7A2008;font-weight:bold;font-variant:small-caps;letter-spacing:.8px;background:transparent;
-    --&ActionPairCellCSS|width:50%;height:18px;line-height:18px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#000;cursor:help;
     --&AbilityHeaderColor|#7A2008 --&AbilityBorderColor|#D7B57D --&AbilityPhysicalBase|#F2DDB8
     --&AbilityPhysicalValue|#E5C58F --&AbilityMentalBase|#FAEBD2 --&AbilityMentalValue|#EDD2A5
     --#buttontextcolor|#7A2008
     --?"[&Rules]" -eq "2024"|[
       --&BodyStyle|font-size:12px;letter-spacing:0;line-height:normal;
       --&ButtonChrome|white-space:nowrap;background:#EBE4D8;color:#5C1C14;border:1px solid #C9AD6A;border-radius:4px;box-shadow:none;
-      --&ButtonCellCSS|[&ButtonChrome]text-align:center;vertical-align:middle;padding:0 4px;
       --&ManagerButtonOffBG|background:#EBE4D8;
       --&ManagerButtonOnBG|background:#DED1CA;
       --&ChooseExhibitBackdrop|radial-gradient(circle at 50% 34%,#FFFFFF 0%,#F5F4EB 42%,#D4DACD 72%,#65717A 100%)
       --&ChooseExhibitRim|#C9AD6A --&ChooseExhibitInner|#F5F4EB
       --&ChooseExhibitCap|linear-gradient(180deg,#F5F4EB 0%,#C9AD6A 45%,#8B7445 100%)
       --&ChooseExhibitBase|linear-gradient(180deg,#8B7445 0%,#5C1C14 100%) --&ChooseExhibitShadow|rgba(51,57,61,.5)
-      --&SkillGridSpacing|2px 3px
       --&CardOpen|[t style='width:300px;table-layout:fixed;position:relative;left:-30px;border:0;border-radius:8px;border-collapse:separate;border-spacing:0;background-color:#F5F4EB;box-shadow:0 2px 5px rgba(0,0,0,.4),inset 0 0 0 2px #F5F4EB,inset 0 0 0 3px #C9AD6A;overflow:hidden;font-size:12px;line-height:1.2em;'][tr][td style='border:0;padding:8px 12px 6px;background:transparent;color:#5C1C14;font-family:"Segoe UI",Tahoma,sans-serif;']
       --&CardClose|[/td][/tr][/t]
       --&TitleStyle|style="font-family:Georgia,'Noto Serif','Liberation Serif','Nimbus Roman No9 L','Nimbus Roman','DejaVu Serif','Times New Roman',serif;font-variant:small-caps;font-size:24px;font-weight:bold;line-height:1.05em;letter-spacing:0;"
@@ -896,44 +766,25 @@
       --&ControlDivider|[t width=100%][tr][td style="line-height:4px"]&nbsp;[/td][/tr][tr][td style="border-bottom:1px solid #7A2008;padding-bottom:2px;letter-spacing:.8px;text-shadow:.6px 0 0 currentColor;"][/td][/tr][tr][td style="line-height:4px"]&nbsp;[/td][/tr][/t]
       --&SectionSpacer|[t style="width:100%;border-collapse:collapse;table-layout:fixed;"][tr][td style="height:8px;line-height:8px;font-size:1px;padding:0;border:0;background:transparent;"]&nbsp;[/td][/tr][/t]
       --&SectionHeadCSS|border:0;border-bottom:1px solid #7A2008;padding:2px 0 1px;color:#5C1C14;font-weight:bold;font-variant:small-caps;letter-spacing:.8px;background:transparent;
-      --&ActionPairCellCSS|width:50%;height:18px;line-height:18px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#000;cursor:help;
       --&AbilityHeaderColor|#65717A --&AbilityBorderColor|#F5F4EB --&AbilityPhysicalBase|#EBE4D8
       --&AbilityPhysicalValue|#DED1CA --&AbilityMentalBase|#D4DACD --&AbilityMentalValue|#CDC7C8
       --#buttontextcolor|#5C1C14
     --]|
+    --&ButtonCellCSS|[&ButtonChrome]text-align:center;vertical-align:middle;padding:0 4px;
+    --&SkillGridSpacing|2px 3px
+    --&ActionPairCellCSS|width:50%;height:18px;line-height:18px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#000;cursor:help;
   --<|
   --:AppendAbilityGrid|
     --&AbilityNameCell|width:13%;padding:2px 0 2px 4px;text-align:left;vertical-align:middle;border-bottom:1px solid [&AbilityBorderColor];font-weight:bold;
     --&AbilityScoreCell|width:8%;padding:2px 1px;text-align:center;vertical-align:middle;border-bottom:1px solid [&AbilityBorderColor];
     --&AbilityValueCell|width:13%;padding:2px 0;text-align:center;vertical-align:middle;border-bottom:1px solid [&AbilityBorderColor];
     --&AbilityHeaderCell|color:[&AbilityHeaderColor];font-size:9px;line-height:10px;padding:0 0 2px;text-align:center;vertical-align:bottom;
-    --?"[&Beacon]" -eq "1"|[
-      --&STRCheckName|[button]STR::~[&BeastID]|npc_str[/button]
-      --&STRCheckScore|[button][&FormSTR]::~[&BeastID]|npc_str[/button]
-      --&STRCheckMod|[button][&FormSTRMODDisplay]::~[&BeastID]|npc_str[/button]
-      --&DEXCheckName|[button]DEX::~[&BeastID]|npc_dex[/button]
-      --&DEXCheckScore|[button][&FormDEX]::~[&BeastID]|npc_dex[/button]
-      --&DEXCheckMod|[button][&FormDEXMODDisplay]::~[&BeastID]|npc_dex[/button]
-      --&CONCheckName|[button]CON::~[&BeastID]|npc_con[/button]
-      --&CONCheckScore|[button][&FormCON]::~[&BeastID]|npc_con[/button]
-      --&CONCheckMod|[button][&FormCONMODDisplay]::~[&BeastID]|npc_con[/button]
-      --&INTCheckName|[button]INT::~[&DruidID]|intelligence[/button]
-      --&INTCheckScore|[button][&FormINT]::~[&DruidID]|intelligence[/button]
-      --&INTCheckMod|[button][&FormINTMODDisplay]::~[&DruidID]|intelligence[/button]
-      --&WISCheckName|[button]WIS::~[&DruidID]|wisdom[/button]
-      --&WISCheckScore|[button][&FormWIS]::~[&DruidID]|wisdom[/button]
-      --&WISCheckMod|[button][&FormWISMODDisplay]::~[&DruidID]|wisdom[/button]
-      --&CHACheckName|[button]CHA::~[&DruidID]|charisma[/button]
-      --&CHACheckScore|[button][&FormCHA]::~[&DruidID]|charisma[/button]
-      --&CHACheckMod|[button][&FormCHAMODDisplay]::~[&DruidID]|charisma[/button]
-    --]|[
-      --&STRCheckName|[button]STR::~[&BeastID]|npc_str[/button] --&STRCheckScore|[button][&FormSTR]::~[&BeastID]|npc_str[/button] --&STRCheckMod|[button][&FormSTRMODDisplay]::~[&BeastID]|npc_str[/button]
-      --&DEXCheckName|[button]DEX::~[&BeastID]|npc_dex[/button] --&DEXCheckScore|[button][&FormDEX]::~[&BeastID]|npc_dex[/button] --&DEXCheckMod|[button][&FormDEXMODDisplay]::~[&BeastID]|npc_dex[/button]
-      --&CONCheckName|[button]CON::~[&BeastID]|npc_con[/button] --&CONCheckScore|[button][&FormCON]::~[&BeastID]|npc_con[/button] --&CONCheckMod|[button][&FormCONMODDisplay]::~[&BeastID]|npc_con[/button]
-      --&INTCheckName|[button]INT::~[&DruidID]|intelligence[/button] --&INTCheckScore|[button][&FormINT]::~[&DruidID]|intelligence[/button] --&INTCheckMod|[button][&FormINTMODDisplay]::~[&DruidID]|intelligence[/button]
-      --&WISCheckName|[button]WIS::~[&DruidID]|wisdom[/button] --&WISCheckScore|[button][&FormWIS]::~[&DruidID]|wisdom[/button] --&WISCheckMod|[button][&FormWISMODDisplay]::~[&DruidID]|wisdom[/button]
-      --&CHACheckName|[button]CHA::~[&DruidID]|charisma[/button] --&CHACheckScore|[button][&FormCHA]::~[&DruidID]|charisma[/button] --&CHACheckMod|[button][&FormCHAMODDisplay]::~[&DruidID]|charisma[/button]
-    --]|
+    --&STRCheckName|[button]STR::~[&BeastID]|npc_str[/button] --&STRCheckScore|[button][&FormSTR]::~[&BeastID]|npc_str[/button] --&STRCheckMod|[button][&FormSTRMODDisplay]::~[&BeastID]|npc_str[/button]
+    --&DEXCheckName|[button]DEX::~[&BeastID]|npc_dex[/button] --&DEXCheckScore|[button][&FormDEX]::~[&BeastID]|npc_dex[/button] --&DEXCheckMod|[button][&FormDEXMODDisplay]::~[&BeastID]|npc_dex[/button]
+    --&CONCheckName|[button]CON::~[&BeastID]|npc_con[/button] --&CONCheckScore|[button][&FormCON]::~[&BeastID]|npc_con[/button] --&CONCheckMod|[button][&FormCONMODDisplay]::~[&BeastID]|npc_con[/button]
+    --&INTCheckName|[button]INT::~[&DruidID]|intelligence[/button] --&INTCheckScore|[button][&FormINT]::~[&DruidID]|intelligence[/button] --&INTCheckMod|[button][&FormINTMODDisplay]::~[&DruidID]|intelligence[/button]
+    --&WISCheckName|[button]WIS::~[&DruidID]|wisdom[/button] --&WISCheckScore|[button][&FormWIS]::~[&DruidID]|wisdom[/button] --&WISCheckMod|[button][&FormWISMODDisplay]::~[&DruidID]|wisdom[/button]
+    --&CHACheckName|[button]CHA::~[&DruidID]|charisma[/button] --&CHACheckScore|[button][&FormCHA]::~[&DruidID]|charisma[/button] --&CHACheckMod|[button][&FormCHAMODDisplay]::~[&DruidID]|charisma[/button]
     --&StatsBlock|[t style="width:100%;table-layout:fixed;text-align:center;border-collapse:collapse;border-spacing:0;"]
     --&StatsBlock|+[tr][td style="width:13%;padding:0;"]&nbsp;[/td][td style="width:8%;padding:0;"]&nbsp;[/td][td style="width:13%;[&AbilityHeaderCell]"]MOD[/td][td style="width:13%;[&AbilityHeaderCell]"]SAVE[/td][td style="width:6%;padding:0;border:0;background:transparent;"]&nbsp;[/td][td style="width:13%;padding:0;"]&nbsp;[/td][td style="width:8%;padding:0;"]&nbsp;[/td][td style="width:13%;[&AbilityHeaderCell]"]MOD[/td][td style="width:13%;[&AbilityHeaderCell]"]SAVE[/td][/tr]
     --&StatsBlock|+[tr][td style="[&AbilityNameCell]background:[&AbilityPhysicalBase];"][&STRCheckName][/td][td style="[&AbilityScoreCell]background:[&AbilityPhysicalBase];"][&STRCheckScore][/td][td style="[&AbilityValueCell]background:[&AbilityPhysicalValue];"][&STRCheckMod][/td][td style="[&AbilityValueCell]background:[&AbilityPhysicalValue];"][&FormSTRSaveControl][/td][td style="width:6%;padding:0;border:0;background:transparent;"]&nbsp;[/td][td style="[&AbilityNameCell]background:[&AbilityMentalBase];"][&INTCheckName][/td][td style="[&AbilityScoreCell]background:[&AbilityMentalBase];"][&INTCheckScore][/td][td style="[&AbilityValueCell]background:[&AbilityMentalValue];"][&INTCheckMod][/td][td style="[&AbilityValueCell]background:[&AbilityMentalValue];"][&FormINTSaveControl][/td][/tr]
@@ -1004,10 +855,8 @@
       --?"[&FormFlyRaw]" -ne "0" -and "[&FormFlyRaw]" -ne "" -and "[&FormFlyRaw]" -ne "undefined"|&FormHasFly;1
       --?"[&FormSwimRaw]" -ne "0" -and "[&FormSwimRaw]" -ne "" -and "[&FormSwimRaw]" -ne "undefined"|&FormHasSwim;1
     --]|[
-      -->GetClassicAttribute|[%1%];npc_challenge;
-      --&FormCRRaw|[&ClassicAttributeValue]
-      -->GetClassicAttribute|[%1%];npc_speed;
-      --&FormSpeedRaw|[&ClassicAttributeValue]
+      --&FormCRRaw|[*[%1%]:npc_challenge]
+      --&FormSpeedRaw|[*[%1%]:npc_speed]
       --?"[&FormSpeedRaw]" -inc "fly"|&FormHasFly;1
       --?"[&FormSpeedRaw]" -inc "swim"|&FormHasSwim;1
     --]|
@@ -1022,7 +871,7 @@
     --?"[&SwimAllowed]" -ne "1" -and "[&FormHasSwim]" -eq "1"|[ --&FormEligible|0 --&FormEligibilityReason|Swim Speed is not available yet --]|
   --<|
   --:BuildWildShapeSaveSummary|
-    --~|array;define;SaveStats;strength!@!str!@!Strength;dexterity!@!dex!@!Dexterity;constitution!@!con!@!Constitution;intelligence!@!int!@!Intelligence;wisdom!@!wis!@!Wisdom;charisma!@!cha!@!Charisma
+    --~|array;define;SaveStats;strength!@!str;dexterity!@!dex;constitution!@!con;intelligence!@!int;wisdom!@!wis;charisma!@!cha
     --%SaveLoop|foreach;SaveStats
       --~SaveInfo|string;split;!@!;[&SaveLoop]
       --&SaveAbility|[&SaveInfo1] --&SaveNPCKey|[&SaveInfo2]
@@ -1030,52 +879,46 @@
       --&SavePhysical|0
       --?"[&SaveAbility]" -eq "strength" -or "[&SaveAbility]" -eq "dexterity" -or "[&SaveAbility]" -eq "constitution"|&SavePhysical;1
       --=FinalSave|[&FormAbilityMod]
-      --?"[&SavePhysical]" -eq "1"|[
-        --&BeastSaveFlag|0 --&BeastSaveRaw|
-        --?"[&Beacon]" -eq "1"|[
-          --&BeastSaveFlag|[*[&BeastID]:npc_[&SaveNPCKey]_save_flag:::0]
-          --&BeastSaveRaw|[*[&BeastID]:npc_[&SaveNPCKey]_save:::]
-        --]|[
-          -->GetClassicAttribute|[&BeastID];npc_[&SaveNPCKey]_save_flag;0
-          --&BeastSaveFlag|[&ClassicAttributeValue]
-          -->GetClassicAttribute|[&BeastID];npc_[&SaveNPCKey]_save;
-          --&BeastSaveRaw|[&ClassicAttributeValue]
-        --]|
-        --?"[&BeastSaveFlag]" -eq "1" -or "[&BeastSaveFlag]" -eq "on"|[
-          --~BeastSaveRaw|string;numericonly;[&BeastSaveRaw]
-          --?"[&BeastSaveRaw]" -ne ""|=FinalSave;[&BeastSaveRaw]
-        --]|
-      --]|[
-        --&DruidSaveProf|0
-        --?"[&Beacon]" -eq "1"|[
-          --&DruidSaveProf|[*[&DruidID]:[&SaveAbility]_save_prof:::0]
-        --]|[
-          -->GetClassicAttribute|[&DruidID];[&SaveAbility]_save_prof;0
-          --&DruidSaveProf|[&ClassicAttributeValue]
-        --]|
-        --?"[&DruidSaveProf]" -ne "" -and "[&DruidSaveProf]" -ne "0" -and "[&DruidSaveProf]" -ne "undefined"|=FinalSave;[&FormAbilityMod] + [&DruidPB]
-      --]|
+      --?"[&SavePhysical]" -eq "1"|>ResolvePhysicalWildShapeSave
+      --?"[&SavePhysical]" -ne "1"|>ResolveMentalWildShapeSave
       --C[&SaveAbility]|strength:&FormSTRSAVERaw;[$FinalSave.Raw]|dexterity:&FormDEXSAVERaw;[$FinalSave.Raw]|constitution:&FormCONSAVERaw;[$FinalSave.Raw]|intelligence:&FormINTSAVERaw;[$FinalSave.Raw]|wisdom:&FormWISSAVERaw;[$FinalSave.Raw]|charisma:&FormCHASAVERaw;[$FinalSave.Raw]
     --%|
     --&FormSTRSAVE|[&Plus][&FormSTRSAVERaw] --&FormDEXSAVE|[&Plus][&FormDEXSAVERaw] --&FormCONSAVE|[&Plus][&FormCONSAVERaw]
     --&FormINTSAVE|[&Plus][&FormINTSAVERaw] --&FormWISSAVE|[&Plus][&FormWISSAVERaw] --&FormCHASAVE|[&Plus][&FormCHASAVERaw]
     --?"[&FormSTRSAVERaw]" -lt "0"|[ --&FormSTRSAVE|[&FormSTRSAVERaw] --]| --?"[&FormDEXSAVERaw]" -lt "0"|[ --&FormDEXSAVE|[&FormDEXSAVERaw] --]| --?"[&FormCONSAVERaw]" -lt "0"|[ --&FormCONSAVE|[&FormCONSAVERaw] --]|
     --?"[&FormINTSAVERaw]" -lt "0"|[ --&FormINTSAVE|[&FormINTSAVERaw] --]| --?"[&FormWISSAVERaw]" -lt "0"|[ --&FormWISSAVE|[&FormWISSAVERaw] --]| --?"[&FormCHASAVERaw]" -lt "0"|[ --&FormCHASAVE|[&FormCHASAVERaw] --]|
+    --&FormSTRSaveControl|[button][&FormSTRSAVE]::~[&BeastID]|npc_str_save[/button]
+    --&FormDEXSaveControl|[button][&FormDEXSAVE]::~[&BeastID]|npc_dex_save[/button]
+    --&FormCONSaveControl|[button][&FormCONSAVE]::~[&BeastID]|npc_con_save[/button]
+    --&FormINTSaveControl|[button][&FormINTSAVE]::~[&DruidID]|intelligence_save[/button]
+    --&FormWISSaveControl|[button][&FormWISSAVE]::~[&DruidID]|wisdom_save[/button]
+    --&FormCHASaveControl|[button][&FormCHASAVE]::~[&DruidID]|charisma_save[/button]
+  --<|
+  --:ResolvePhysicalWildShapeSave|
+    --&BeastSaveFlag|0 --&BeastSaveRaw|
     --?"[&Beacon]" -eq "1"|[
-      --&FormSTRSaveControl|[button][&FormSTRSAVE]::~[&BeastID]|npc_str_save[/button]
-      --&FormDEXSaveControl|[button][&FormDEXSAVE]::~[&BeastID]|npc_dex_save[/button]
-      --&FormCONSaveControl|[button][&FormCONSAVE]::~[&BeastID]|npc_con_save[/button]
-      --&FormINTSaveControl|[button][&FormINTSAVE]::~[&DruidID]|intelligence_save[/button]
-      --&FormWISSaveControl|[button][&FormWISSAVE]::~[&DruidID]|wisdom_save[/button]
-      --&FormCHASaveControl|[button][&FormCHASAVE]::~[&DruidID]|charisma_save[/button]
+      --&BeastSaveFlag|[*[&BeastID]:npc_[&SaveNPCKey]_save_flag:::0]
+      --&BeastSaveRaw|[*[&BeastID]:npc_[&SaveNPCKey]_save:::]
     --]|[
-      --&FormSTRSaveControl|[button][&FormSTRSAVE]::~[&BeastID]|npc_str_save[/button]
-      --&FormDEXSaveControl|[button][&FormDEXSAVE]::~[&BeastID]|npc_dex_save[/button]
-      --&FormCONSaveControl|[button][&FormCONSAVE]::~[&BeastID]|npc_con_save[/button]
-      --&FormINTSaveControl|[button][&FormINTSAVE]::~[&DruidID]|intelligence_save[/button]
-      --&FormWISSaveControl|[button][&FormWISSAVE]::~[&DruidID]|wisdom_save[/button]
-      --&FormCHASaveControl|[button][&FormCHASAVE]::~[&DruidID]|charisma_save[/button]
+      -->GetClassicAttribute|[&BeastID];npc_[&SaveNPCKey]_save_flag;0
+      --&BeastSaveFlag|[&ClassicAttributeValue]
+      -->GetClassicAttribute|[&BeastID];npc_[&SaveNPCKey]_save;
+      --&BeastSaveRaw|[&ClassicAttributeValue]
     --]|
+    --?"[&BeastSaveFlag]" -eq "1" -or "[&BeastSaveFlag]" -eq "on"|[
+      --~BeastSaveRaw|string;numericonly;[&BeastSaveRaw]
+      --?"[&BeastSaveRaw]" -ne ""|=FinalSave;[&BeastSaveRaw]
+    --]|
+  --<|
+  --:ResolveMentalWildShapeSave|
+    --&DruidSaveProf|0
+    --?"[&Beacon]" -eq "1"|[
+      --&DruidSaveProf|[*[&DruidID]:[&SaveAbility]_save_prof:::0]
+    --]|[
+      -->GetClassicAttribute|[&DruidID];[&SaveAbility]_save_prof;0
+      --&DruidSaveProf|[&ClassicAttributeValue]
+    --]|
+    --?"[&DruidSaveProf]" -ne "" -and "[&DruidSaveProf]" -ne "0" -and "[&DruidSaveProf]" -ne "undefined"|=FinalSave;[&FormAbilityMod] + [&DruidPB]
   --<|
   --:BuildWildShapeSkillSummary|
     --&SkillSummary|
@@ -1083,12 +926,7 @@
     --&SkillGrid|[t style="width:100%;table-layout:fixed;border-collapse:separate;border-spacing:[&SkillGridSpacing];"][tr]
     --&SkillButtonCounter|0
     --&BeastSkillsFlag|0
-    --?"[&Beacon]" -eq "1"|[
-      --&BeastSkillsFlag|[*[&BeastID]:npc_skills_flag:::0]
-    --]|[
-      -->GetClassicAttribute|[&BeastID];npc_skills_flag;0
-      --&BeastSkillsFlag|[&ClassicAttributeValue]
-    --]|
+    --?"[&Beacon]" -eq "1"|[ --&BeastSkillsFlag|[*[&BeastID]:npc_skills_flag:::0] --]|[ -->GetClassicAttribute|[&BeastID];npc_skills_flag;0 --&BeastSkillsFlag|[&ClassicAttributeValue] --]|
     --~|array;define;Skills;acrobatics!@!Acrobatics!@!Acrobatics!@!dexterity;animal_handling!@!Animal Handling!@!Animal Hand.!@!wisdom;arcana!@!Arcana!@!Arcana!@!intelligence;athletics!@!Athletics!@!Athletics!@!strength;deception!@!Deception!@!Deception!@!charisma;history!@!History!@!History!@!intelligence;insight!@!Insight!@!Insight!@!wisdom;intimidation!@!Intimidation!@!Intimidation!@!charisma;investigation!@!Investigation!@!Investigation!@!intelligence;medicine!@!Medicine!@!Medicine!@!wisdom;nature!@!Nature!@!Nature!@!intelligence;perception!@!Perception!@!Perception!@!wisdom;performance!@!Performance!@!Performance!@!charisma;persuasion!@!Persuasion!@!Persuasion!@!charisma;religion!@!Religion!@!Religion!@!intelligence;sleight_of_hand!@!Sleight of Hand!@!Sleight of Hand!@!dexterity;stealth!@!Stealth!@!Stealth!@!dexterity;survival!@!Survival!@!Survival!@!wisdom
     --%SkillLoop|foreach;Skills
       --~SkillInfo|string;split;!@!;[&SkillLoop]
@@ -1096,29 +934,15 @@
       --&SkillPhysical|0
       --?"[&SkillAbility]" -eq "strength" -or "[&SkillAbility]" -eq "dexterity"|&SkillPhysical;1
       --&BeastSkillRaw| --&BeastSkillFlag|0
+      -->ResolveWildShapeSkillDisplay|
       --?"[&SkillPhysical]" -eq "1"|[
-        --?"[&Beacon]" -eq "1"|[
-          --&BeastSkillFlag|[*[&BeastID]:npc_[&SkillKey]_flag:::0]
-          --?"[&BeastSkillFlag]" -eq "1" -or "[&BeastSkillFlag]" -eq "on"|&BeastSkillRaw;[*[&BeastID]:npc_[&SkillKey]_base:::]
-        --]|[
-          -->GetClassicAttribute|[&BeastID];npc_[&SkillKey]_base;
-          --?"[&BeastSkillsFlag]" -ne "0"|&BeastSkillRaw;[&ClassicAttributeValue]
-        --]|
-        --?"[&BeastSkillRaw]" -ne "" -and "[&Beacon]" -eq "1"|[ --&SkillSummary|+[&SkillLabel]&nbsp;[&BeastSkillRaw],&nbsp; --]|
-        --?"[&BeastSkillRaw]" -ne "" -and "[&Beacon]" -ne "1"|[ --&SkillSummary|+[&SkillLabel]&nbsp;&#43;[&BeastSkillRaw],&nbsp; --]|
+        --&SkillRollButton|[button][&SkillInfo3]::~[&BeastID]|npc_[&SkillKey][/button]
       --]|
-      --?"[&Beacon]" -eq "1"|[
-        --?"[&SkillPhysical]" -eq "1"|[
-          --&SkillRollButton|[button][&SkillInfo3]::~[&BeastID]|npc_[&SkillKey][/button]
-        --]|[
-          --&SkillRollButton|[button][&SkillInfo3]::~[&DruidID]|no_relevant_action(&#34;[&SkillLabel] Check&#34;)[/button]
-        --]|
-      --]|[
-        --?"[&SkillPhysical]" -eq "1"|[
-          --&SkillRollButton|[button][&SkillInfo3]::~[&BeastID]|npc_[&SkillKey][/button]
-        --]|[
-          --&SkillRollButton|[button][&SkillInfo3]::~[&DruidID]|[&SkillKey][/button]
-        --]|
+      --?"[&SkillPhysical]" -ne "1" -and "[&Beacon]" -eq "1"|[
+        --&SkillRollButton|[button][&SkillInfo3]::~[&DruidID]|no_relevant_action(&#34;[&SkillLabel] Check&#34;)[/button]
+      --]|
+      --?"[&SkillPhysical]" -ne "1" -and "[&Beacon]" -ne "1"|[
+        --&SkillRollButton|[button][&SkillInfo3]::~[&DruidID]|[&SkillKey][/button]
       --]|
       --&SkillButtonBackground|background:[&AbilityMentalBase];
       --?"[&SkillPhysical]" -eq "1"|[ --&SkillButtonBackground|background:[&AbilityPhysicalBase]; --]|
@@ -1128,14 +952,30 @@
     --%|
     --&SkillGrid|+[/tr][/t]
   --<|
+  --:ResolveWildShapeSkillDisplay|
+    --?"[&Beacon]" -eq "1"|ResolveBeaconWildShapeSkillDisplay
+    -->GetClassicAttribute|[&BeastID];npc_[&SkillKey]_base;
+    --?"[&BeastSkillsFlag]" -eq "0" -or "[&ClassicAttributeValue]" -eq ""|<
+    --&BeastSkillRaw|[&ClassicAttributeValue]
+    --&SkillSummary|+[&SkillLabel]&nbsp;&#43;[&BeastSkillRaw],&nbsp;
+    --<|
+  --:ResolveBeaconWildShapeSkillDisplay|
+    --&BeastSkillFlag|[*[&BeastID]:npc_[&SkillKey]_flag:::0]
+    --?"[&BeastSkillFlag]" -eq "1"|BeaconWildShapeSkillPresent
+    --?"[&BeastSkillFlag]" -eq "on"|BeaconWildShapeSkillPresent
+    --<|
+  --:BeaconWildShapeSkillPresent|
+    --&BeastSkillRaw|[*[&BeastID]:npc_[&SkillKey]_base:::]
+    --?"[&BeastSkillRaw]" -eq ""|<
+    --&SkillSummary|+[&SkillLabel]&nbsp;[&BeastSkillRaw],&nbsp;
+  --<|
   --:LoadGlobalSettings|
     --?"[&GlobalHandoutID]" -eq "" -or "[&GlobalHandoutID]" -eq "undefined"|LoadGlobalSettingsLookup
     --&GlobalHandoutIDName|[*O:[&GlobalHandoutID]:handout:name]
     --?"[&GlobalHandoutIDName]" -eq "[&GlobalHandoutName]"|LoadGlobalSettingsRead
   --:LoadGlobalSettingsLookup|
     --~|array;objects:handout;GlobalHandoutIDs;[&GlobalHandoutName]
-    --?"[@GlobalHandoutIDs(maxindex)]" -eq "-1"|[ -->CreateGlobalSettings| --]|
-    --?"[@GlobalHandoutIDs(maxindex)]" -ne "-1"|[ --&GlobalHandoutID|[@GlobalHandoutIDs(0)] --]|
+    --?"[@GlobalHandoutIDs(maxindex)]" -eq "-1"|[ -->CreateGlobalSettings| --]|[ --&GlobalHandoutID|[@GlobalHandoutIDs(0)] --]|
   --:LoadGlobalSettingsRead|
     --&GlobalStateRaw|[*O:[&GlobalHandoutID]:handout:gmnotes]
     --?"[&GlobalStateRaw]" -eq "" -or "[&GlobalStateRaw]" -eq "undefined"|[
@@ -1162,10 +1002,10 @@
     --&GlobalSeedID|[&DruidID]
     --?"[&GlobalSeedID]" -eq "" -or "[&GlobalSeedID]" -eq "undefined"|[
       -->BuildDruidList|
-      --?[$DruidCount.Raw] -gt 0|[
-        --~GMThemeDruid|string;split;!@!;[@DruidList(0)]
-        --&GlobalSeedID|[&GMThemeDruid2]
-      --]|
+      --?[$DruidCount.Raw] -le 0|CreateGlobalSettingsSeedDone
+      --~GMThemeDruid|string;split;!@!;[@DruidList(0)]
+      --&GlobalSeedID|[&GMThemeDruid2]
+      --:CreateGlobalSettingsSeedDone|
     --]|
     -->SeedGlobalSettings|[&GlobalSeedID]
     --&GlobalStateRaw|rules=[&Rules],nonbeast=[&AllowNonBeast],gmview=[&GMView],
@@ -1197,8 +1037,7 @@
     --~|array;objects:handout;HandoutIDs;[&HandoutName]
     --?"[@HandoutIDs(maxindex)]" -eq "-1"|[
       --!oh:HandoutID|name:"[&HandoutName]"|notes:","|gmnotes:""|archived:true
-    --]|
-    --?"[@HandoutIDs(maxindex)]" -ne "-1"|[
+    --]|[
       --&HandoutID|[@HandoutIDs(0)]
     --]|
   --:LoadStateRead|
@@ -1218,6 +1057,13 @@
     --&StateMigrationNeedsWrite|1
   --:StateMigrationWrite|
     --?"[&StateMigrationNeedsWrite]" -eq "1"|[ -->WriteState| --]|
+  --<|
+  --:ClearTransformState|
+    --&ActiveFormID| --&TransformedTokenID| --&OriginalImage| --&OriginalWidth| --&OriginalHeight| --&OriginalTokenID| --&OriginalTokenLayer| --&ForceRevertMode|0
+    --&OriginalBar1Value| --&OriginalBar1Max| --&OriginalBar1Link|
+    --&OriginalBar2Value| --&OriginalBar2Max| --&OriginalBar2Link|
+    --&OriginalBar3Value| --&OriginalBar3Max| --&OriginalBar3Link|
+    --&OriginalBar4Value| --&OriginalBar4Max| --&OriginalBar4Link|
   --<|
   --:CaptureOriginalBars|tokenid
     --&OriginalBar1Value|[*O:[%1%]:graphic:bar1_value] --&OriginalBar1Max|[*O:[%1%]:graphic:bar1_max] --&OriginalBar1Link|[*O:[%1%]:graphic:bar1_link]
@@ -1317,8 +1163,7 @@
       --?"[&Beacon]" -eq "1"|[
         --?"[*[&DruidCandidateLoop]:npc:::0]" -eq "1"|%
       --]|[
-        -->GetClassicAttribute|[&DruidCandidateLoop];npc;0
-        --?"[&ClassicAttributeValue]" -eq "1"|%
+        --?"[*[&DruidCandidateLoop]:npc]" -eq "1"|%
       --]|
       -->GetDruidLevel|[&DruidCandidateLoop]
       --?"[&DruidLevel]" -le "0"|%
@@ -1341,6 +1186,7 @@
         --~ActiveWildShapeCandidateID|string;trim;[&ActiveWildShapeCandidateID]
       --]|
       --?"[&ActiveWildShapeCandidateID]" -ne "" -and "[&ActiveWildShapeCandidateID]" -ne "undefined"|&AnyActiveWildShapeState;1
+      --?"[&AnyActiveWildShapeState]" -eq "1"|%!
     --%|
   --<|
   --:BuildNPCList|
@@ -1357,37 +1203,30 @@
       --%|
     --]|[
       --~|array;objects:character;AllCharacters;
-      --%CharacterLoop|foreach;AllCharacters
-        -->GetClassicAttribute|[&CharacterLoop];npc;0
-        --?"[&ClassicAttributeValue]" -ne "1"|%
-        --&NPCCandidateIDs(99999)|[&CharacterLoop]
+      --%ClassicCharacterScanLoop|foreach;AllCharacters
+        --?"[*[&ClassicCharacterScanLoop]:npc]" -ne "1"|%
+        --&NPCCandidateIDs(99999)|[&ClassicCharacterScanLoop]
       --%|
     --]|
-    --%CharacterLoop|foreach;NPCCandidateIDs
-      --&CandidateName|[*O:[&CharacterLoop]:character:name]
+    --%NPCCandidateLoop|foreach;NPCCandidateIDs
+      --&CandidateName|[*O:[&NPCCandidateLoop]:character:name]
       --?"[&CandidateName]" -eq "" -or "[&CandidateName]" -eq "undefined"|%
-      --?"[*O:[&CharacterLoop]:character:archived]" -eq "true"|%
+      --?"[*O:[&NPCCandidateLoop]:character:archived]" -eq "true"|%
       --?"[&CandidateName]" -imatch "^SBM_"|%
       --?"[&CandidateName]" -imatch "^ScriptCards"|%
       --&CandidateAllowed|[&AllowNonBeast]
       --?"[&AllowNonBeast]" -ne "1"|[
-        --&CandidateAllowed|0
         --&CandidateType|
-        --?"[&Beacon]" -eq "1"|[
-          --&CandidateType|[*[&CharacterLoop]:npc_type:::]
-        --]|[
-          -->GetClassicAttribute|[&CharacterLoop];npc_type;
-          --&CandidateType|[&ClassicAttributeValue]
-        --]|
+        --?"[&Beacon]" -eq "1"|NPCCandidateBeaconType
+        --&CandidateType|[*[&NPCCandidateLoop]:npc_type]
+        --^NPCCandidateTypeDone|
+        --:NPCCandidateBeaconType|
+        --&CandidateType|[*[&NPCCandidateLoop]:npc_type:::]
+        --:NPCCandidateTypeDone|
         --?"[&CandidateType]" -inc "beast"|&CandidateAllowed;1
       --]|
       --?"[&CandidateAllowed]" -ne "1"|%
-      --&CandidateDefaultToken|[*O:[&CharacterLoop]:character:_defaulttoken]
-      --?[&CandidateDefaultToken(contains,imgsrc)] -eq 0|[
-        --&CandidateAvatar|[*O:[&CharacterLoop]:character:avatar]
-        --?[&CandidateAvatar(contains,://)] -eq 0|%
-      --]|
-      --&NPCList(99999)|[&CandidateName]!@![&CharacterLoop]
+      --&NPCList(99999)|[&CandidateName]!@![&NPCCandidateLoop]
     --%|
     --=NPCCount|[@NPCList(maxindex)] + 1
     --?[$NPCCount.Raw] -gt 0|[ --~|array;sort;NPCList --]|
@@ -1421,10 +1260,7 @@
       --&AlphaRow|+[td style="width:18px;min-width:18px;max-width:18px;box-sizing:border-box;[&ButtonChrome]text-align:center;vertical-align:middle;padding:0;"][&AlphaText][/td]
       --=AlphaRowCount|[$AlphaRowCount.Raw] + 1
     --%|
-    --?"[$AlphaRowCount.Raw]" -gt "0"|[
-      --&AlphaRow|+[/tr][/t]
-      --&AlphaOutput|+[&AlphaRow]
-    --]|
+    --?"[$AlphaRowCount.Raw]" -gt "0"|[ --&AlphaRow|+[/tr][/t] --&AlphaOutput|+[&AlphaRow] --]|
     --&CardBody|+[&AlphaOutput]
     --#buttonwidth|auto
   --<|
@@ -1467,16 +1303,16 @@
     --?"[&FormImageCreatable]" -ne "1"|[
       --&FormAvatar|[*O:[%1%]:character:avatar]
       -->CheckCreatableImage|[&FormAvatar]
-      --?"[&ImageCreatable]" -eq "1"|[
-        --&FormImage|[&FormAvatar]
-        --&FormImageCreatable|1
-      --]|
+      --?"[&ImageCreatable]" -ne "1"|ResolveFormImageAvatarDone
+      --&FormImage|[&FormAvatar]
+      --&FormImageCreatable|1
+      --:ResolveFormImageAvatarDone|
     --]|
     --?"[&FormWidth]" -eq "" -or "[&FormWidth]" -eq "undefined"|[ --&FormWidth|70 --]|
     --?"[&FormHeight]" -eq "" -or "[&FormHeight]" -eq "undefined"|[ --&FormHeight|70 --]|
   --<|
   --:ReplaceToken|
-    --&ReplaceSucceeded|0 --&ReplacementTokenID|
+    --&ReplacementTokenID|
     --&ReplaceBar1Value| --&ReplaceBar1Max| --&ReplacePostBar1Link|
     --&ReplaceBar2Value| --&ReplaceBar2Max| --&ReplacePostBar2Link|
     --&ReplaceBar3Value| --&ReplaceBar3Max| --&ReplacePostBar3Link|
@@ -1511,14 +1347,12 @@
     --?"[&ChangeFX]" -ne ""|[ --vtoken|[%1%] [&ChangeFX] --]|
     --!ot:ReplacementTokenID|pageid:[*O:[%1%]:graphic:_pageid]|layer:[*O:[%1%]:graphic:layer]|left:[*O:[%1%]:graphic:left]|top:[*O:[%1%]:graphic:top]|width:[%5%]|height:[%6%]|rotation:[*O:[%1%]:graphic:rotation]|name:"[*O:[%1%]:graphic:name]"|imgsrc:"[%4%]"|represents:[%2%]|controlledby:[*O:[%1%]:graphic:controlledby]|statusmarkers:"[*O:[%1%]:graphic:statusmarkers]"|tint_color:[*O:[%1%]:graphic:tint_color]|bar1_value:"[&ReplaceBar1Value]"|bar1_max:"[&ReplaceBar1Max]"|bar2_value:"[&ReplaceBar2Value]"|bar2_max:"[&ReplaceBar2Max]"|bar3_value:"[&ReplaceBar3Value]"|bar3_max:"[&ReplaceBar3Max]"|bar4_value:"[&ReplaceBar4Value]"|bar4_max:"[&ReplaceBar4Max]"|aura1_radius:"[*O:[%1%]:graphic:aura1_radius]"|aura1_color:[*O:[%1%]:graphic:aura1_color]|aura1_square:[*O:[%1%]:graphic:aura1_square]|aura2_radius:"[*O:[%1%]:graphic:aura2_radius]"|aura2_color:[*O:[%1%]:graphic:aura2_color]|aura2_square:[*O:[%1%]:graphic:aura2_square]|showname:[*O:[%1%]:graphic:showname]|showplayers_name:[*O:[%1%]:graphic:showplayers_name]|showplayers_bar1:[*O:[%1%]:graphic:showplayers_bar1]|showplayers_bar2:[*O:[%1%]:graphic:showplayers_bar2]|showplayers_bar3:[*O:[%1%]:graphic:showplayers_bar3]|showplayers_bar4:[*O:[%1%]:graphic:showplayers_bar4]|playersedit_name:[*O:[%1%]:graphic:playersedit_name]|playersedit_bar1:[*O:[%1%]:graphic:playersedit_bar1]|playersedit_bar2:[*O:[%1%]:graphic:playersedit_bar2]|playersedit_bar3:[*O:[%1%]:graphic:playersedit_bar3]|playersedit_bar4:[*O:[%1%]:graphic:playersedit_bar4]|playersedit_aura1:[*O:[%1%]:graphic:playersedit_aura1]|playersedit_aura2:[*O:[%1%]:graphic:playersedit_aura2]|lockmovement:[*O:[%1%]:graphic:lockmovement]|flipv:[*O:[%1%]:graphic:flipv]|fliph:[*O:[%1%]:graphic:fliph]
     --?"[&ReplacementTokenID]" -eq "" -or "[&ReplacementTokenID]" -eq "undefined" -or "[&ReplacementTokenID]" -eq "OBJECT_CREATION_ERROR"|[ --<| --]|
-    --&ReplaceSucceeded|1
     --!t:[&ReplacementTokenID]|represents:[%3%]
     --?"[&ReplacePostBar1Link]" -ne ""|[ --!t:[&ReplacementTokenID]|bar1_link:[&ReplacePostBar1Link] --]|
     --?"[&ReplacePostBar2Link]" -ne ""|[ --!t:[&ReplacementTokenID]|bar2_link:[&ReplacePostBar2Link] --]|
     --?"[&ReplacePostBar3Link]" -ne ""|[ --!t:[&ReplacementTokenID]|bar3_link:[&ReplacePostBar3Link] --]|
     --?"[&ReplacePostBar4Link]" -ne ""|[ --!t:[&ReplacementTokenID]|bar4_link:[&ReplacePostBar4Link] --]|
     --!t:[&ReplacementTokenID]|has_bright_light_vision:[*O:[%1%]:graphic:has_bright_light_vision]|has_night_vision:[*O:[%1%]:graphic:has_night_vision]|night_vision_distance:[*O:[%1%]:graphic:night_vision_distance]|night_vision_effect:[*O:[%1%]:graphic:night_vision_effect]|emits_bright_light:[*O:[%1%]:graphic:emits_bright_light]|bright_light_distance:[*O:[%1%]:graphic:bright_light_distance]|emits_low_light:[*O:[%1%]:graphic:emits_low_light]|low_light_distance:[*O:[%1%]:graphic:low_light_distance]|light_sensitivity_multiplier:[*O:[%1%]:graphic:light_sensitivity_multiplier]|has_limit_field_of_vision:[*O:[%1%]:graphic:has_limit_field_of_vision]|limit_field_of_vision_center:[*O:[%1%]:graphic:limit_field_of_vision_center]|limit_field_of_vision_total:[*O:[%1%]:graphic:limit_field_of_vision_total]|has_limit_field_of_night_vision:[*O:[%1%]:graphic:has_limit_field_of_night_vision]|limit_field_of_night_vision_center:[*O:[%1%]:graphic:limit_field_of_night_vision_center]|limit_field_of_night_vision_total:[*O:[%1%]:graphic:limit_field_of_night_vision_total]|has_directional_bright_light:[*O:[%1%]:graphic:has_directional_bright_light]|directional_bright_light_center:[*O:[%1%]:graphic:directional_bright_light_center]|directional_bright_light_total:[*O:[%1%]:graphic:directional_bright_light_total]|has_directional_dim_light:[*O:[%1%]:graphic:has_directional_dim_light]|directional_dim_light_center:[*O:[%1%]:graphic:directional_dim_light_center]|directional_dim_light_total:[*O:[%1%]:graphic:directional_dim_light_total]|light_radius:[*O:[%1%]:graphic:light_radius]|light_dimradius:[*O:[%1%]:graphic:light_dimradius]|light_otherplayers:[*O:[%1%]:graphic:light_otherplayers]|light_hassight:[*O:[%1%]:graphic:light_hassight]|light_angle:[*O:[%1%]:graphic:light_angle]|light_losangle:[*O:[%1%]:graphic:light_losangle]|adv_fow_view_distance:[*O:[%1%]:graphic:adv_fow_view_distance]
-    --/| Preserve non-creatable original tokens on the GM layer; normal image tokens keep the established delete/recreate path.
     --?"[%7%]" -eq "form" -and "[&OriginalTokenID]" -eq "[%1%]"|[
       --!t:[%1%]|layer:gmlayer
     --]|[
@@ -1536,11 +1370,15 @@
     --&PublicRollPrivacy| --&PublicRollWType|
     --?"[&Beacon]" -eq "1"|[
       --&PublicRollPrivacy|[*[%1%]:sheet->settings->rolls->privacy:::public]
-      --?"[&PublicRollPrivacy]" -ne "public"|[ --!c:[%1%]|sheet->settings->rolls->privacy:public --]|
+      --?"[&PublicRollPrivacy]" -eq "public"|EnsureNPCBeaconRollsDone
+      --!c:[%1%]|sheet->settings->rolls->privacy:public
+      --:EnsureNPCBeaconRollsDone|
     --]|[
       -->GetClassicAttribute|[%1%];wtype;
       --&PublicRollWType|[&ClassicAttributeValue]
-      --?"[&PublicRollWType]" -ne ""|[ --!a:[%1%]|$wtype: --]|
+      --?"[&PublicRollWType]" -eq ""|EnsureNPCClassicRollsDone
+      --!a:[%1%]|$wtype:
+      --:EnsureNPCClassicRollsDone|
     --]|
   --<|
   --:GrantAssignedFormControllers|
@@ -1628,6 +1466,15 @@
     --&CardBody|+[/t]
   --<|
   --:ErrorCard|
+    --&ErrorTitle|Wild Shape --&ErrorButtonLabel|Back --&ErrorButtonTarget|Main
+    --?"[&ErrorMode]" -eq "NONE"|[ --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE --]|
+    --?"[&ErrorMode]" -eq "GM_NONE"|[ --&ErrorTitle|Wild Shape DM --&ErrorButtonLabel|NONE --&ErrorButtonTarget|NONE --]|
+    --?"[&ErrorMode]" -eq "GM_SETTINGS"|[ --&ErrorButtonTarget|GMSettings --]|
+    --?"[&ErrorMode]" -eq "CHOOSE"|[ --&ErrorButtonLabel|Choose Another Form --&ErrorButtonTarget|ChooseForm --]|
+    --?"[&ErrorMode]" -eq "MANAGE_SETTINGS"|[ --&ErrorTitle|Manage Wild Shape Forms --&ErrorButtonTarget|GMSettings --]|
+    --?"[&ErrorMode]" -eq "MANAGE_LIST"|[
+      --&ErrorTitle|Manage Wild Shape Forms --&ErrorButtonTarget|ManageForms;[&ManageLetter]
+    --]|
     --&CardTitle|[&ErrorTitle]
     --&CardBody|[t style="width:100%;[&BodyStyle]"][tr][td][&ErrorMessage][/td][/tr]
     --?"[&ErrorButtonLabel]" -ne "NONE"|[ --&CardBody|+[tr][td style="[&ButtonCellCSS]"][rbutton][&ErrorButtonLabel]::[&ErrorButtonTarget][/rbutton][/td][/tr] --]|
