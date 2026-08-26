@@ -4,6 +4,7 @@
   --/| Version     : 1.0.3
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
+  --/| Github URL  : https://github.com/VirulentArc/ScriptCards/tree/main/Wild%20Shape
   --/| ============================================================================
   --#title| --#hidetitlecard|1 --#tableborder|0 --#tablebgcolor|transparent --#tableshadow|none --#tableborderradius|0px --#oddrowbackground|transparent --#evenrowbackground|transparent
   --#oddrowfontcolor|#000000 --#evenrowfontcolor|#000000 --#bodyfontface|serif --#bodyfontsize|12px --#lineheight|normal --#buttonbackground|transparent
@@ -935,15 +936,8 @@
       --?"[&SkillAbility]" -eq "strength" -or "[&SkillAbility]" -eq "dexterity"|&SkillPhysical;1
       --&BeastSkillRaw| --&BeastSkillFlag|0
       -->ResolveWildShapeSkillDisplay|
-      --?"[&SkillPhysical]" -eq "1"|[
-        --&SkillRollButton|[button][&SkillInfo3]::~[&BeastID]|npc_[&SkillKey][/button]
-      --]|
-      --?"[&SkillPhysical]" -ne "1" -and "[&Beacon]" -eq "1"|[
-        --&SkillRollButton|[button][&SkillInfo3]::~[&DruidID]|no_relevant_action(&#34;[&SkillLabel] Check&#34;)[/button]
-      --]|
-      --?"[&SkillPhysical]" -ne "1" -and "[&Beacon]" -ne "1"|[
-        --&SkillRollButton|[button][&SkillInfo3]::~[&DruidID]|[&SkillKey][/button]
-      --]|
+      --?"[&SkillPhysical]" -eq "1"|>BuildPhysicalSkillRollButton
+      --?"[&SkillPhysical]" -ne "1"|>BuildMentalSkillRollButton
       --&SkillButtonBackground|background:[&AbilityMentalBase];
       --?"[&SkillPhysical]" -eq "1"|[ --&SkillButtonBackground|background:[&AbilityPhysicalBase]; --]|
       --?"[= [&SkillButtonCounter] % 3 ]" -eq "0" -and "[&SkillButtonCounter]" -ne "0"|[ --&SkillGrid|+[/tr][tr] --]|
@@ -951,6 +945,12 @@
       --&SkillButtonCounter|[= [&SkillButtonCounter] + 1 ]
     --%|
     --&SkillGrid|+[/tr][/t]
+  --<|
+  --:BuildPhysicalSkillRollButton|
+    --&SkillRollButton|[button][&SkillInfo3]::~[&BeastID]|npc_[&SkillKey][/button]
+  --<|
+  --:BuildMentalSkillRollButton|
+    --&SkillRollButton|[button][&SkillInfo3]::~[&DruidID]|[&SkillKey][/button]
   --<|
   --:ResolveWildShapeSkillDisplay|
     --?"[&Beacon]" -eq "1"|ResolveBeaconWildShapeSkillDisplay
