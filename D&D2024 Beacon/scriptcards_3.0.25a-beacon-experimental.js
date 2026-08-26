@@ -27,7 +27,7 @@ const ScriptCards = (async () => { // eslint-disable-line no-unused-vars
 	*/
 
 	const APINAME = "ScriptCards";
-	const APIVERSION = "3.0.25a-beacon-experimental.137 EXPERIMENTAL";
+	const APIVERSION = "3.0.25a-beacon-experimental.138 EXPERIMENTAL";
 	const NUMERIC_VERSION = "300251"
 	const APIAUTHOR = "Kurt Jaegers";
 	const debugMode = false;
@@ -15518,12 +15518,16 @@ const ScriptCards = (async () => { // eslint-disable-line no-unused-vars
 		}
 
 		if (["speed", "npcspeed"].includes(normalized)) {
-			const value = beaconSingleNumericRecordValue(
-				characterId,
-				adapter.collections.speeds,
-				(record) => normalizeBeaconLookupName(beaconProperty(record, adapter.fields.speed)) === normalizeBeaconLookupName(adapter.movementModes.walking),
-				adapter.valuePaths.formulaFlatValue
+			const speedSelection = findDnd2024BeaconActiveTypedRecord(characterId, adapter.collections.speeds, (record) =>
+				normalizeBeaconLookupName(beaconProperty(record, adapter.fields.speed)) === normalizeBeaconLookupName(adapter.movementModes.walking)
 			);
+			if (!speedSelection.resolved) {
+				return { handled: false };
+			}
+			if (!speedSelection.record) {
+				return { handled: true, found: true, value: "", source: "dnd2024-local-speed-empty" };
+			}
+			const value = beaconNumericPrimitive(speedSelection.record, adapter.valuePaths.formulaFlatValue);
 			return value === undefined ? { handled: false } : { handled: true, found: true, value: String(value), source: "dnd2024-local-speed" };
 		}
 
@@ -15599,6 +15603,31 @@ const ScriptCards = (async () => { // eslint-disable-line no-unused-vars
 
 
 		for (const [skillKey, skillName] of Object.entries(adapter.skillNames)) {
+			if ([`${skillKey}prof`, `${skillKey}type`].includes(normalized)) {
+				const proficiencySelection = findDnd2024BeaconActiveTypedRecord(characterId, adapter.collections.proficiencies, (candidate) =>
+					normalizeBeaconLookupName(beaconProperty(candidate, adapter.fields.category)) === normalizeBeaconLookupName(adapter.proficiencyCategories.skill)
+					&& normalizeBeaconLookupName(beaconProperty(candidate, adapter.fields.proficiency)) === normalizeBeaconLookupName(skillName)
+				);
+				if (!proficiencySelection.resolved) {
+					return { handled: false };
+				}
+				const level = proficiencySelection.record
+					? beaconProperty(proficiencySelection.record, adapter.fields.proficiencyLevel)
+					: undefined;
+				const multiplier = proficiencySelection.record ? dnd2024BeaconProficiencyMultiplier(level) : 0;
+				if (multiplier === undefined) {
+					return { handled: false };
+				}
+				const value = normalized === `${skillKey}type`
+					? String(multiplier)
+					: (multiplier > 0 ? "1" : "0");
+				return {
+					handled: true,
+					found: true,
+					value,
+					source: normalized === `${skillKey}type` ? "dnd2024-local-skill-type" : "dnd2024-local-skill-prof"
+				};
+			}
 			if ([`${skillKey}bonus`, `${skillKey}flat`, `npc${skillKey}`, `npc${skillKey}base`].includes(normalized)) {
 				const value = dnd2024BeaconSkillTotal(characterId, skillName);
 				return value === undefined ? { handled: false } : { handled: true, found: true, value: String(value), source: "dnd2024-local-skill-total" };
@@ -15608,13 +15637,30 @@ const ScriptCards = (async () => { // eslint-disable-line no-unused-vars
 		for (const abilityName of new Set(Object.values(adapter.abilityNames))) {
 			const abilityKey = normalizeBeaconLookupName(abilityName);
 			const abbreviation = abilityKey.slice(0, 3);
+			if (normalized === `${abilityKey}saveprof`) {
+				const proficiencySelection = findDnd2024BeaconActiveTypedRecord(characterId, adapter.collections.proficiencies, (candidate) =>
+					normalizeBeaconLookupName(beaconProperty(candidate, adapter.fields.category)) === normalizeBeaconLookupName(adapter.proficiencyCategories.savingThrow)
+					&& normalizeBeaconLookupName(beaconProperty(candidate, adapter.fields.proficiency)) === abilityKey
+				);
+				if (!proficiencySelection.resolved) {
+					return { handled: false };
+				}
+				const level = proficiencySelection.record
+					? beaconProperty(proficiencySelection.record, adapter.fields.proficiencyLevel)
+					: undefined;
+				return {
+					handled: true,
+					found: true,
+					value: beaconProficiencyIsActive(level) ? "1" : "0",
+					source: "dnd2024-local-save-prof"
+				};
+			}
 			if ([`${abilityKey}savebonus`, `${abilityKey}savemod`, `npc${abbreviation}save`, `npc${abbreviation}savebase`].includes(normalized)) {
 				if (dnd2024BeaconHasRelevantRollBonus(characterId, "save", abilityName, abilityName)) {
 					return { handled: false };
 				}
 				const abilityModifier = dnd2024BeaconAbilityModifier(characterId, abilityName);
-				const proficiencyBonus = dnd2024BeaconProficiencyBonus(characterId);
-				if (abilityModifier === undefined || proficiencyBonus === undefined) {
+				if (abilityModifier === undefined) {
 					return { handled: false };
 				}
 				const proficiencySelection = findDnd2024BeaconActiveTypedRecord(characterId, adapter.collections.proficiencies, (candidate) =>
@@ -15628,6 +15674,16 @@ const ScriptCards = (async () => { // eslint-disable-line no-unused-vars
 				const multiplier = proficiencyRecord
 					? dnd2024BeaconProficiencyMultiplier(beaconProperty(proficiencyRecord, adapter.fields.proficiencyLevel))
 					: 0;
+				if (multiplier === undefined) {
+					return { handled: false };
+				}
+				if (multiplier === 0) {
+					return { handled: true, found: true, value: String(abilityModifier), source: "dnd2024-local-save-total" };
+				}
+				const proficiencyBonus = dnd2024BeaconProficiencyBonus(characterId);
+				if (proficiencyBonus === undefined) {
+					return { handled: false };
+				}
 				const contribution = dnd2024BeaconProficiencyContribution(proficiencyBonus, multiplier);
 				return contribution === undefined
 					? { handled: false }
