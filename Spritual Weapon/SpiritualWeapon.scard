@@ -1,94 +1,127 @@
 !scriptcards {{ --/|{& skip}
   --/| ==========================================================================
   --/| Script Name : Tim's Spiritual Weapon Mod for D&D 5E 2014
-  --/| Version     : 2.1.2
+  --/| Version     : 2.1.3
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
+  --/| GitHub URL  : https://github.com/VirulentArc/ScriptCards/tree/main/Spritual%20Weapon
   --/| ==========================================================================
-  --/| Automates Spiritual Weapon for the 2014 D&D 5E sheet.
-  --/| Summons a configurable weapon token beside the caster and builds a token
-  --/| action attack based on the spell slot used.
-  --/| FEATURES:
-  --/| * Weapon Library: 157 BG3 weapon tokens, plus miscellaneous token options.
-  --/| * Spell Slot Support: Cast at 2nd through 9th level and deducts the slot.
-  --/| * Scaling Attack: Updates the Spiritual Weapon attack for the chosen slot level.
-  --/| * Token Customization: Save a random weapon, chosen weapon, custom image URL,
-  --/|   custom name, custom FX and sound effect on the SpiritualWeapon NPC mule.
-  --/| * Spell Display: Shows the spell details with a settings gear and spellbook button.
-  --/| SETUP INSTRUCTIONS:
-  --/| 1. Create a character named: ScriptCards_TemplateMule (for CSS).
-  --/| 2. Create an NPC character named: SpiritualWeapon.
-  --/| 3. Run the script once to initialize the templates and NPC action.
-  --/| 4. Create a macro on the caster's sheet and enable "Show as Token Action."
-  --/| 5. Select the caster's token and launch the macro to begin.
-  --/| ==========================================================================
-  --~|array;objects:character;TemplateID;ScriptCards_TemplateMule
-  --?"[@TemplateID(0)]" -eq ""|[ --#title|Spiritual Weapon Setup --+|[c]Please make sure you've created a character called [b]ScriptCards_TemplateMule[/b][br] in your game journal. It has to be exactly this name and is case sensitive. [br]This is where the style information for Spiritual Weapon will be kept.[/c] --X| --]|
-  --/| GET STYLE ABILITY ON TEMPLATE MULE CHARACTER AND CHECK IF FIRST RUN
-  --~IsTemplate|system;findability;ScriptCards_TemplateMule;statblockv4public
-  --?"[&IsTemplate]" -eq "AbilityNotFound"|[
-    --+|[c]The style information has been written, please run the Mod again.[/c]
-    --&StatBlock|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; position: relative ; left: -30px ;'}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
-    --!ob:StyleSaveResult:[@TemplateID(0)]:statblockv4:0|[&StatBlock]
-    --&StatBlockPublic|boxcode::{div style='background-image: url(&quot;https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png&quot;) ; background-size: 100% 100% ; width: 300px ; background-repeat: no-repeat ; background-color: #264C5E ; display: block ; text-align: left ; font-size: 12px ; padding: 10px 0 20px 0 ; font-family: serif ; font-style: normal ; line-height: 1.2em ; '}||titlecode::{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #3d0d03; border-radius: 2px ; vertical-align: top ; position: relative ;  top: -16px ; left: -2px ;'}{/div}{div style='margin: 0 15px ; font-size: 24px ; font-variant: small-caps ; font-family: serif ; color: #7A2008 ; display: block ; font-weight: bold ; font-style: normal ; vertical-align: top ; position: relative ; top: -8px; left: 0px ; line-height: .9em ;'}||textcode::{/div}{div}{div style='color: #7A2008 ; font-family: "Segoe UI", Tahoma, sans-serif ; font-weight: normal; display: block ; width: 270px ; margin: 0 15px ; vertical-align: top ; position: relative ; top: -5px ;'}||buttonwrapper::{div style='display: block ; width: 100% ;'}{div style='background-image: url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;) !important ; background-size: 100% 4px ; width: 302px ; height:4px; display: block ; border: 1px solid #2f2112; border-radius: 2px ; vertical-align: bottom ; position: relative ;  bottom: -26px ; left: -17px ;'}{/div}||buttonstyle::style='color: #7A2008 ; background-color: transparent ; padding: 2px ; border: none'||footer::
-    --!ob:StyleSaveResult:[@TemplateID(0)]:statblockv4public:0|[&StatBlockPublic]
-    --@sc-reloadtemplates|
-    --X|
-  --]|
-  --#overridetemplate|statblockv4
+  --#title| --#hidetitlecard|1 --#tableborder|0 --#tablebgcolor|transparent --#tableshadow|none --#tableborderradius|0px --#oddrowbackground|transparent
+  --#evenrowbackground|transparent --#oddrowfontcolor|#000000 --#evenrowfontcolor|#000000 --#bodyfontface|serif --#bodyfontsize|12px --#lineheight|normal
+  --#buttonbackground|transparent --#buttontextcolor|#5C1C14 --#buttonbordercolor|transparent --#buttonpadding|2px --#buttonfontface|inherit --#buttonfontsize|inherit
+  --#buttonwidth|auto
+  --&SWRules|2024
+  --&DefaultWeaponImage|https://files.d20.io/images/409077949/kMTFu728yEn4tLK6JJc4mA/original.webp
+  -->ApplySWTheme|
   --?"[@SC_SelectedTokens()]" -eq "undefined array"|NoSelectedToken
   --?"[@SC_SelectedTokens()]" -gt "1"|MultipleSelectedTokens|RestartMod
-  --:NoSelectedToken| --#title|Spiritual Weapon --+No Token Selected|Please select the caster's token before running Spiritual Weapon. --X|
-  --:MultipleSelectedTokens| --#title|Spiritual Weapon --+Multiple Tokens Selected|Please select only one caster token before running Spiritual Weapon. --X|
+  --:NoSelectedToken|
+    --&SWCardTitle|Spiritual Weapon
+    --&SWCardBody|[t style="width:100%;[&BodyStyle];"][tr][td][b]No Token Selected[/b][br]Please select the caster's token before running Spiritual Weapon.[/td][/tr][/t]
+    -->RenderSWCard|
+    --X|
+  --:MultipleSelectedTokens|
+    --&SWCardTitle|Spiritual Weapon
+    --&SWCardBody|[t style="width:100%;[&BodyStyle];"][tr][td][b]Multiple Tokens Selected[/b][br]Please select only one caster token before running Spiritual Weapon.[/td][/tr][/t]
+    -->RenderSWCard|
+    --X|
   --:RestartMod|
   --&CasterToken|[@SC_SelectedTokens(0)]
-  --#sourceToken|[&CasterToken] --#activepage|[*S:t-_pageid] --#Debug|0 --#emoteState|0 --#emoteBackground|#f1e5c9 --#emoteFontColor|#6e2425 --#whisper|self --#reentrant|SpiritualWeapon- [&CasterToken]
-  --~|array;objects:character;SpiritualWeaponID;SpiritualWeapon
-  --&SW_TokenID|[@SpiritualWeaponID(0)]
-  --?"[&SW_TokenID]" -eq ""|NoCharacter
-  --&obrac|{ --&cbrac|} --&perc|%
-  -->TokenVariables|
-  --~|array;define;WeaponTypes;BattleAxe;Club;Dagger;Flail;Glaive;Greataxe;Greatclub;Greatsword;Halberd;Handaxe;Javelin;Lance;Light-Hammer;Longsword;Mace;Maul;Morningstar;Pike;Quarterstaff;Rapier;Scimitar;Shortsword;Sickle;Spear;Trident;Warhammer;Warpick;Miscellaneous
-  --~|hash;set;WeaponMax;BattleAxe==3;Club==3;Dagger==8;Flail==5;Glaive==3;Greataxe==3;Greatclub==3;Greatsword==10;Halberd==5;Handaxe==3;Javelin==3;Lance==1;Light-Hammer==6;Longsword==11;Mace==10;Maul==7;Morningstar==5;Pike==6;Quarterstaff==8;Rapier==7;Scimitar==11;Shortsword==9;Sickle==3;Spear==9;Trident==7;Warhammer==5;Warpick==3;Miscellaneous==43
-  --~|hash;set;Misc;Miscellaneous1==Anvil;Miscellaneous2==Bagpipes;Miscellaneous3==Banana;Miscellaneous4==Barrel;Miscellaneous5==Floating-Boot;Miscellaneous6==Floating-Boot;Miscellaneous7==Chess-Piece;Miscellaneous8==Storm-Cloud;Miscellaneous9==Storm-Cloud;Miscellaneous10==Crowbar;Miscellaneous11==Demon-Skull;Miscellaneous12==Trout;Miscellaneous13==Flute;Miscellaneous14==Pan;Miscellaneous15==Castiron-Pan;Miscellaneous16==Horn;Miscellaneous17==Hourglass;Miscellaneous18==Ice-Pick;Miscellaneous19==Rainbow-Lollipop;Miscellaneous20==Pink-Lollipop;Miscellaneous21==Colorful-Lollipop;Miscellaneous22==Mage-Hand;Miscellaneous23==Hand-Mirror;Miscellaneous24==Golden-Moon;Miscellaneous25==Magical-Moon;Miscellaneous26==Crescent-Moon;Miscellaneous27==Beer-Mug;Miscellaneous28==Beer-Stein;Miscellaneous29==Needle;Miscellaneous30==Rolling-Pin;Miscellaneous31==Handsaw;Miscellaneous32==Scroll;Miscellaneous33==Shovel;Miscellaneous34==Skull;Miscellaneous35==Spellbook;Miscellaneous36==Grimoire;Miscellaneous37==Ancient-Spellbook;Miscellaneous38==Warlock-Grimoire;Miscellaneous39==Spellbook;Miscellaneous40==Necromancer-Spellbook;Miscellaneous41==Wooden-Spoon;Miscellaneous42==Gravestone;Miscellaneous43==Torch
-  --~SWCleanupTrigger|system;findability;ScriptCards_Triggers;change:campaign:turnorder
-  --&BodyStyle|font-size: 12px ; letter-spacing: 0.01em ; line-height: 18px
-  --&ButtonStyle|style="align-self: center;  background-color: transparent ; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: #6e2425; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
-  --#overridetemplate|statblockv4
-  --&CasterCharID|[*S:character_id] --&CasterName|[*S:character_name] --&SpellAttackBonus|[*S:spell_attack_bonus]
+  --#sourceToken|[&CasterToken] --#activepage|[*S:t-_pageid] --#Debug|0 --#emoteState|0 --#whisper|self --#reentrant|SpiritualWeapon- [&CasterToken]
+  --&CasterCharID|[*S:character_id]
+  --&CasterName|[*S:character_name]
   --?"[&CasterCharID]" -eq "" -or "[&CasterCharID]" -eq "undefined"|NoCasterCharacter
-  --?"[*[&SW_TokenID]:charactersheet_type]" -ne "npc"|NoCharacter|SpellInfo
-  --:NoCharacter| --#title|Spiritual Weapon Setup --+|[b]Please make sure to create an NPC character named SpiritualWeapon, then rerun the script.[/b] --X|
-  --:NoCasterCharacter| --#title|Spiritual Weapon --+No Character Linked|Please select the caster's token. The selected token must represent the character sheet that has Spiritual Weapon. --X|
+  --Rfind|[&CasterCharID];Spiritual Weapon;repeating_spell-2;spellname
+  --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|[
+    --&SWCardTitle|Spell Missing
+    --&SWCardBody|[t style="width:100%;[&BodyStyle];"][tr][td]Could not find the Spiritual Weapon spell on [&CasterName].[/td][/tr][/t]
+    -->RenderSWCard|
+    --X|
+  --]|
+  --&SWCharacterName|[&CasterName]'s Spiritual Weapon
+  --&SW_TokenID|
+  --~|array;objects:character;SpiritualWeaponID;[&SWCharacterName]
+  --?"[@SpiritualWeaponID()]" -gt "0"|[
+    --%SWCharacterCandidate|foreach;SpiritualWeaponID
+      --?"[*O:[&SWCharacterCandidate]:character:name]" -eq "[&SWCharacterName]"|&SW_TokenID;[&SWCharacterCandidate]
+    --%|
+  --]|
+  --?"[&SW_TokenID]" -eq ""|CreateSpiritualWeaponCharacter
+  --^SpiritualWeaponCharacterReady|
+  --:CreateSpiritualWeaponCharacter|
+    --!oc:SW_TokenID|[&SWCharacterName]
+    --?"[&SW_TokenID]" -eq "" -or "[&SW_TokenID]" -eq "OBJECT_CREATION_ERROR"|SpiritualWeaponCharacterError
+    --&CreatedSWCharacterName|[*O:[&SW_TokenID]:character:name]
+    --?"[&CreatedSWCharacterName]" -ne "[&SWCharacterName]"|SpiritualWeaponCharacterError
+  --^SpiritualWeaponCharacterReady|
+  --:SpiritualWeaponCharacterReady|
+  --&ResolvedSWCharacterName|[*O:[&SW_TokenID]:character:name]
+  --?"[&SW_TokenID]" -eq "" -or "[&ResolvedSWCharacterName]" -ne "[&SWCharacterName]"|SpiritualWeaponCharacterError
+  --?"[*O:[&SW_TokenID]:character:archived]" -ne "true"|[ --!c:[&SW_TokenID]|archived:true --]|
+  --&ExistingControl|[*O:[&SW_TokenID]:character:controlledby]
+  --&ExistingControlCheck|,[&ExistingControl],
+  --?"[&ExistingControl]" -eq ""|[ --!c:[&SW_TokenID]|controlledby:[&SendingPlayerID] --]|
+  --?"[&ExistingControl]" -ne "" -and "[&ExistingControlCheck]" -ninc ",all," -and "[&ExistingControlCheck]" -ninc ",[&SendingPlayerID],"|[
+    --&NewControl|[&ExistingControl],[&SendingPlayerID]
+    --!c:[&SW_TokenID]|controlledby:[&NewControl]
+  --]|
+  --?"[*[&SW_TokenID]:SpiritualWeaponOwnerID]" -ne "[&CasterCharID]"|[ --!a:[&SW_TokenID]|!SpiritualWeaponOwnerID:[&CasterCharID] --]|
+  --?"[*[&SW_TokenID]:SpiritualWeaponCasterName]" -ne "[&CasterName]"|[ --!a:[&SW_TokenID]|!SpiritualWeaponCasterName:[&CasterName] --]|
+  --^SpellInfo|
+  --:SpiritualWeaponCharacterError|
+  --&SWCardTitle|Spiritual Weapon Setup
+  --&SWCardBody|[t style="width:100%;[&BodyStyle];"][tr][td][b]Character Creation Failed[/b][br]ScriptCards did not return a valid Character ID for [&SWCharacterName]. The script stopped before attempting any utility Attribute reads.[/td][/tr][/t]
+  -->RenderSWCard|
+  --X|
+  --:NoCasterCharacter|
+  --&SWCardTitle|Spiritual Weapon
+  --&SWCardBody|[t style="width:100%;[&BodyStyle];"][tr][td][b]No Character Linked[/b][br]Please select the caster's token. The selected token must represent the character sheet that has Spiritual Weapon.[/td][/tr][/t]
+  -->RenderSWCard|
+  --X|
 --X|
 --:SpellInfo|
-  --#emoteState|0 --#emoteText| --#whisper|self --#overridetemplate|statblockv4
-  --~MacroButton|system;findability;[*[&SW_TokenID]:character_name];Spiritual-Weapon-Attack
-  --?"[&MacroButton]" -eq "AbilityNotFound"|[
-    --!a:[&SW_TokenID]|!npc_name:Spiritual Weapon
-    --!a:[&SW_TokenID]|!WeaponChosen:[&Maul1]
+  --#emoteState|0 --#emoteText| --#whisper|self
+  --?"[*[&SW_TokenID]:WeaponChosen]" -eq "" -or "[*[&SW_TokenID]:WeaponChosen]" -eq "undefined"|[
+    --!a:[&SW_TokenID]|!WeaponChosen:[&DefaultWeaponImage]
     --!a:[&SW_TokenID]|!WeaponName:Maul
     --!a:[&SW_TokenID]|!WeaponCustom:0
     --!a:[&SW_TokenID]|!swsoundfx:
     --!a:[&SW_TokenID]|!swfxtype:burn
     --!a:[&SW_TokenID]|!swfxcolor:magic
-    --!or:[&SW_TokenID]:npcaction|name:Attack Spell Level 2|attack_flag:on|attack_type:Melee|attack_target:one target|attack_range:5 ft.|attack_tohit:[&SpellAttackBonus]|attack_damage:1d8+[&SpellAttackBonus]|attack_damagetype:force|attack_tohitrange:+[&SpellAttackBonus], Reach 5ft., one target|attack_onhit:11 (1d8 + [&SpellAttackBonus]) force damage|attack_crit:1d8
-    --!ob:AbilID:[&SW_TokenID]:Spiritual-Weapon-Attack:y|[&perc][&obrac]SpiritualWeapon|repeating_npcaction_$0_npc_action[&cbrac]
+    --!a:[&SW_TokenID]|!SWRules:2024
   --]|
+  --&SWRules|[*[&SW_TokenID]:SWRules]
+  --?"[&SWRules]" -ne "2014" -and "[&SWRules]" -ne "2024"|[ --&SWRules|2024 --!a:[&SW_TokenID]|!SWRules:2024 --]|
+  --?"[&AppliedSWRules]" -ne "[&SWRules]"|[ -->ApplySWTheme| --]|
   --Rfind|[&CasterCharID];Spiritual Weapon;repeating_spell-2;spellname
-  --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|[ --#title|Spell Missing --+|Could not find the "Spiritual Weapon" spell on this character. --X| --]|
-  --#title|[*R:spellname]
+  --?"[*R:spellname]" -eq "NoRepeatingAttributeLoaded"|[
+    --&SWCardTitle|Spell Missing
+    --&SWCardBody|[t style="width:100%;[&BodyStyle];"][tr][td]Could not find the Spiritual Weapon spell on [&CasterName].[/td][/tr][/t]
+    -->RenderSWCard|
+    --X|
+  --]|
   --&SpellDesc|[*R:spelldescription]
-  --&SpellStats|[t style="width: 100% ; margin-bottom: 5px ; [&BodyStyle] ; "][tr][td][i]2nd-Level [*R:spellschool][/i][/td][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::[&CasterName]::[*R>output][/sheetbutton][/td][td width=20px style="text-align: right ; font-size: 18px ;"][rbutton]&#x2699;::ChooseWeaponType[/rbutton][/td][/tr][/t]
+  --&DisplayDuration|[*R:spellduration]
+  --&HigherLevelsText|The damage increases by 1d8 for every slot level above 2nd.
+  --&RulesSummary|2024 rules: Concentration, up to 1 minute. Damage gains 1d8 for every slot level above 2nd.
+  --&RulesToggle|2014
+  --?"[&SWRules]" -eq "2014"|&RulesToggle;2024
+  --?"[&SWRules]" -eq "2014"|[
+    --&DisplayDuration|1 Minute
+    --&HigherLevelsText|The damage increases by 1d8 for every two slot levels above 2nd.
+    --&RulesSummary|2014 rules: No concentration. Damage gains 1d8 for every two slot levels above 2nd.
+  --]|
+  --&SpellStats|[t style="width: 100% ; margin-bottom: 5px ; [&BodyStyle] ; "][tr][td][i]2nd-Level [*R:spellschool][/i][/td][td style="text-align:right;font-size:12px;"][t style="width:auto;margin-left:auto;border-collapse:collapse;"][tr][td [&ButtonStyle]][rbutton][&SWRules]::SetRules;[&RulesToggle][/rbutton][/td][/tr][/t][/td][td style="text-align: right  ; font-size: 16px ; "][sheetbutton]&#x1F56E;::[&CasterName]::[*R>output][/sheetbutton][/td][td width=20px style="text-align: right ; font-size: 18px ;"][rbutton]&#x2699;::ChooseWeaponType[/rbutton][/td][/tr][/t]
   --&SpellStats|+[t style="width: 100% ; [&BodyStyle] ; "][tr][td][b]Casting Time:[/b]&nbsp;[*R:spellcastingtime][/td][/tr]
   --&SpellStats|+[tr][td][b]Range:[/b]&nbsp;[*R:spellrange][/td][/tr]
   --&SpellStats|+[tr][td][b]Components:[/b]&nbsp;V, S[/td][/tr]
-  --&SpellStats|+[tr][td][b]Duration:[/b]&nbsp;[*R:spellduration][/td][/tr]
+  --&SpellStats|+[tr][td][b]Duration:[/b]&nbsp;[&DisplayDuration][/td][/tr]
+  --&SpellStats|+[tr][td][b]Rules:[/b]&nbsp;[&RulesSummary][/td][/tr]
   --&SpellStats|+[tr][td][b]Classes:[/b]&nbsp;Cleric[/td][/tr][/t]
-  --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td style="margin-bottom: 5px ; pointer-events: auto ; cursor: help ; "][&SpellDesc][/td][/tr][/t]
-  --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td]&nbsp;&nbsp;&nbsp;&nbsp;[b][i]At Higher Levels:[/i][/b]&nbsp;[*R:spellathigherlevels][/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td style="margin-bottom: 5px ; "][&SpellDesc][/td][/tr][/t]
+  --&SpellStats|+[t width=100% style="[&BodyStyle] ; "][tr][td]&nbsp;&nbsp;&nbsp;&nbsp;[b][i]At Higher Levels:[/i][/b]&nbsp;[&HigherLevelsText][/td][/tr][/t]
   --&SpellStats|+[t width=100% style="[&BodyStyle] ; text-align: center ; font-weight: bold ; margin-top: 5px ; "][tr][td]At what level is the spell being cast?[/td][/tr][/t]
-  --&SpellStats|+[t width=110% style="[&BodyStyle] ; text-align: center ; position: relative ; left: -14px ; "][tr]
+  --&SpellStats|+[t style="width:auto;margin:0 auto;border-collapse:separate;border-spacing:3px 2px;[&BodyStyle];text-align:center;"][tr]
   --&HasSlots|0
   --%ButtonLoop|2;9;1
     --?"[*S:lvl[&ButtonLoop]_slots_expended]" -gt "0"|AddSlotButton|SkipSlotButton
@@ -100,68 +133,84 @@
     --&SpellStats|+[td [&ButtonStyle]][rbutton][&ButtonLoop][&ButtonSuffix]::GetWeapon;[&ButtonLoop][/rbutton][/td]
     --:SkipSlotButton|
   --%|
-  --?"[&HasSlots]" -eq "0"|[
-    --&SpellStats|+[td colspan=8 style="font-size: 14px ; font-weight: bold ;"]No available spell slots.[/td]
-  --]|
+  --?"[&HasSlots]" -eq "0"|[ --&SpellStats|+[td colspan=8 style="font-size: 14px ; font-weight: bold ;"]No available spell slots.[/td] --]|
   --&SpellStats|+[/tr][/t]
-  --+|[&SpellStats]
+  --&SWCardTitle|[*R:spellname]
+  --&SWCardBody|[&SpellStats]
+  -->RenderSWCard|
 --X|
+--:SetRules|
+  --&SWRules|[&reentryval]
+  --!a:[&SW_TokenID]|!SWRules:[&SWRules]
+  --^SpellInfo|
+--X|
+--:UseOriginalWeaponButtons|
+  --&OriginalWeaponButtonStyle|style="align-self: center;  background-color: transparent ; background-image: none; background-position: 0 90%; background-repeat: repeat no-repeat; background-size: 4px 3px; border-radius: 15px 225px 255px 15px 15px 255px 225px 15px; border-style: solid; border-width: 2px; box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px; box-sizing: border-box; color: #6e2425; display: inline-block; font-size: .95em; line-height: 23px; outline: none; padding: .2rem; text-decoration: none; border-bottom-left-radius: 15px 255px; border-bottom-right-radius: 225px 15px; border-top-left-radius: 255px 15px; border-top-right-radius: 15px 225px;text-transform: uppercase; font-weight: bold ; margin: 2px ;"
+--<|
 --:ChooseWeaponType|
-  --#emoteState|0 --#emoteText| --#title|Choose Weapon Type --#Whisper|self --#overridetemplate|statblockv4
-  --&TypesPerRow|3
-  --&TypeCounter|1
+  -->InitWeaponMetadata|
+  --#emoteState|0 --#emoteText| --#Whisper|self
+  -->UseOriginalWeaponButtons|
+  --&TypesPerRow|3 --&TypeCounter|1
   --&AllTypes|[t style="width:120% ; text-align: center ; position: relative ; left: -24px ; "][tr]
   --%typeloop|foreach;WeaponTypes
-    --&AllTypes|+[td [&ButtonStyle]][rbutton][&typeloop]::ChooseToken;[&typeloop][/rbutton][/td]
+    --&AllTypes|+[td [&OriginalWeaponButtonStyle]][rbutton][&typeloop]::ChooseToken;[&typeloop][/rbutton][/td]
     --?[= [&TypeCounter] % [&TypesPerRow] ] -eq 0|&AllTypes;+[/tr][tr]
     --&TypeCounter|[= [&TypeCounter] + 1]
   --%|
-  --&AllTypes|+[td [&ButtonStyle]][rbutton]Random Weapon::SaveToken;Random[/rbutton][/td][/tr][tr][td [&ButtonStyle]][rbutton]Custom Token::CustomToken[/rbutton][/td][td [&ButtonStyle]][rbutton]Custom FX/Sound::Effects[/rbutton][/td][/tr][/t]
-  --+|[&AllTypes]
-  --+|[t style="width: 95% ;"][tr][td width=100% [&ButtonStyle]][c][rbutton]BACK::SpellInfo[/rbutton][/c][/td][/tr][/t]
+  --&AllTypes|+[td [&OriginalWeaponButtonStyle]][rbutton]Random Weapon::SaveToken;Random[/rbutton][/td][/tr][tr][td [&OriginalWeaponButtonStyle]][rbutton]Custom Token::CustomToken[/rbutton][/td][td [&OriginalWeaponButtonStyle]][rbutton]Custom FX/Sound::Effects[/rbutton][/td][/tr][/t]
+  --&SWCardTitle|Choose Weapon Type
+  --&SWCardBody|[&AllTypes][t style="width: 95% ;"][tr][td width=100% [&OriginalWeaponButtonStyle]][c][rbutton]BACK::SpellInfo[/rbutton][/c][/td][/tr][/t]
+  -->RenderSWCard|
 --X|
 --:ChooseToken|
+  -->InitWeaponMetadata|
+  -->TokenVariables|
   --&WeaponType|[&reentryval]
-  --#emoteState|0 --#emoteText| --#title| --#whisper|self
+  --#emoteState|0 --#emoteText| --#whisper|self
   --&TokensPerRow|3 --&TokenCounter|1
   --?"[&WeaponType]" -inc "miscellaneous"|[ --&WeaponNameTitle|[&WeaponType] Weapon --]|[ --&WeaponNameTitle|[&WeaponType] --]|
-  --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 16px ; "][c][b]Choose Your Spiritual [&WeaponNameTitle][/b][/c][/td][/tr][/t]
-  --&AllTokens|[t style="width: 100% ; table-layout: fixed ;"][tr]
+  --&SWCardTitle|Choose Your Spiritual [&WeaponNameTitle]
+  --&AllTokens|[t style="width:110%;table-layout:fixed;position:relative;left:-14px;border-collapse:separate;border-spacing:1px;"][tr]
   --&MaxToken|[:WeaponMax("[&WeaponType]")]
     --%TokenLoop|1;[&MaxToken];1
       --&TokenImage|[&[&WeaponType][&TokenLoop]]
  	    --?"[&TokenImage]" -ne ""|[
-        --&WeaponMat|
-        --?"[&WeaponType]" -ninc "misc"|>SpecificName;[&WeaponType];[&RandomToken]|&WeaponMat;[:Misc("[&WeaponType][&TokenLoop]")]
+        -->SpecificName|[&WeaponType][&TokenLoop]
         --~WeaponMat|string;replaceall;-; ;[&WeaponMat]
         --?"[&WeaponType]" -ninc "misc"|=WeaponMatLength;[&WeaponMat(length)] - 1|=WeaponMatLength;[&WeaponMat(length)]
-        --&AllTokens|+[td style="width: 33% ; text-align: center ; vertical-align: top ;"][t style="width: 100% ; table-layout: fixed ;"][tr][td [&ButtonStyle]][rbutton][img width=70][&TokenImage][/img]::SaveToken;[&WeaponType][&TokenLoop][/rbutton][/td][/tr][tr][td style="width: 80px ; max-width: 80px ; text-align: center ; font-weight: bold ; font-size: 12px ; line-height: 13px ; white-space: normal ; word-break: break-word ; overflow-wrap: anywhere ;"][&WeaponMat(0,[$WeaponMatLength.Raw])][/td][/tr][/t][/td]
+        --&AllTokens|+[td style="width:33%;text-align:center;vertical-align:top;padding:2px;border:0;background:transparent;"][t style="width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0 2px;[&BodyStyle]"][tr][td style="height:84px;text-align:center;vertical-align:middle;padding:0;border:0;background:transparent;"][t style="width:88px;margin:0 auto;table-layout:fixed;border-collapse:separate;border-spacing:0;[&BodyStyle]"][tr][td style="width:84px;height:72px;box-sizing:border-box;text-align:center;vertical-align:middle;padding:2px 4px 0;border:2px solid [&ChooseExhibitRim];border-radius:42px 42px 9px 9px;background:[&ChooseExhibitBackdrop];box-shadow:inset 0 0 0 2px [&ChooseExhibitInner],inset 0 -10px 16px rgba(0,0,0,.14),0 3px 5px [&ChooseExhibitShadow];overflow:hidden;"][rbutton][img width=68 style="max-height:68px;object-fit:contain;vertical-align:bottom;filter:drop-shadow(0 3px 2px rgba(0,0,0,.45));"][&TokenImage][/img]::SaveToken;[&WeaponType][&TokenLoop][/rbutton][/td][/tr][tr][td style="height:5px;line-height:5px;padding:0;border:1px solid [&ChooseExhibitRim];border-radius:2px;background:[&ChooseExhibitCap];box-shadow:0 2px 3px [&ChooseExhibitShadow];"][/td][/tr][tr][td style="height:3px;line-height:3px;padding:0 13px;border:0;background:transparent;"][t style="width:54px;margin:0 auto;table-layout:fixed;border-collapse:collapse;"][tr][td style="height:3px;line-height:3px;padding:0;border:0;border-radius:0 0 3px 3px;background:[&ChooseExhibitBase];"][/td][/tr][/t][/td][/tr][/t][/td][/tr][tr][td style="width:88px;max-width:88px;text-align:center;font-weight:bold;font-size:12px;line-height:13px;white-space:normal;word-break:break-word;overflow-wrap:anywhere;"][&WeaponMat(0,[$WeaponMatLength.Raw])][/td][/tr][/t][/td]
         --?[= [&TokenCounter] % [&TokensPerRow] ] -eq 0|&AllTokens;+[/tr][tr]
         --&TokenCounter|[= [&TokenCounter] + 1]
       --]|
     --%|
   --&AllTokens|+[/tr][/t]
-  --+|[&AllTokens]
-  --+|[t style="width: 95% ;"][tr][td width=100% [&ButtonStyle]][c][rbutton]BACK::ChooseWeaponType[/rbutton][/c][/td][/tr][/t]
+  --&SWCardBody|[&AllTokens][t style="width:auto;margin:4px auto 0;"][tr][td [&ButtonStyle]][rbutton]BACK::ChooseWeaponType[/rbutton][/td][/tr][/t]
+  -->RenderSWCard|
 --X|
 --:SaveToken|
+  -->UseOriginalWeaponButtons|
   --&WeaponChosen|[&reentryval]
   --#whisper|self
   --?"[&WeaponChosen]" -eq "Random"|[
     --!a:[&SW_TokenID]|!WeaponChosen:[&WeaponChosen]
     --!a:[&SW_TokenID]|!WeaponCustom:0
-    --+|[t style="width: 100% ; text-align: center ; font-size: 14px ; "][tr][td][b]Spiritual Weapon set to Random. A Random Spiritual Weapon will be chosen at each summoning.[/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
+    --&SWCardTitle|Spiritual Weapon
+    --&SWCardBody|[t style="width:auto;margin:0 auto;text-align:center;font-size:14px;"][tr][td][b]Spiritual Weapon set to Random. A Random Spiritual Weapon will be chosen at each summoning.[/b][/td][/tr][tr][td [&OriginalWeaponButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
+    -->RenderSWCard|
   --]|[
+    -->TokenVariables|
     --~WeaponName|string;nonumbers;[&WeaponChosen]
     --!a:[&SW_TokenID]|!WeaponChosen:[&WeaponChosen]
     --!a:[&SW_TokenID]|!WeaponName:[&WeaponName]
     --!a:[&SW_TokenID]|!WeaponCustom:0
     --#emoteText|Spiritual Weapon changed
     --&TokenImage|[&[&WeaponChosen]]
-    --&WeaponMat|
-    -->SpecificName|[&WeaponName];[&RandomToken]
+    -->SpecificName|[&WeaponChosen]
  	  --?"[&WeaponName]" -inc "Misc"|&WeaponName;
-    --+|[t style="width: 100% ; text-align: center ; font-size: 14px ; "][tr][td][img width=120][&[&WeaponChosen]][/img][br][b][&WeaponMat][&WeaponName][/b][/td][/tr][tr][td [&ButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
+    --&SWCardTitle|Spiritual Weapon
+    --&SWCardBody|[t style="width:auto;margin:0 auto;text-align:center;font-size:14px;"][tr][td][img width=120][&[&WeaponChosen]][/img][br][b][&WeaponMat][&WeaponName][/b][/td][/tr][tr][td [&OriginalWeaponButtonStyle]][rbutton]Restart::SpellInfo[/rbutton][/td][/tr][/t]
+    -->RenderSWCard|
   --]|
 --X|
 --:SaveFX|
@@ -173,90 +222,118 @@
   --^Effects|
 --X|
 --:GetWeapon|
-  --#title| --#whisper| --#overridetemplate|statblockv4public --#emoteState|visible
+  --#title| --#whisper| --#emoteState|visible
+  --&SWCardOpenActive|[&SWCardOpenPublic]
   --&SlotLevel|[&reentryval]
+  --=SlotsExpended|[*S:lvl[&SlotLevel]_slots_expended]
+  --&SlotsTotal|[*S:lvl[&SlotLevel]_slots_total]
+  --?[$SlotsExpended.Raw] -eq 0|[
+    --#emoteState|0
+    --&SWCardTitle|Spiritual Weapon
+    --&SWCardBody|[t style="width:100%;font-size:14px;text-align:center;"][tr][td][&CasterName] has no level [b][&SlotLevel][/b] spell slots available.[/td][/tr][/t]
+    -->RenderSWCard|
+    --^GetWeaponDone|
+  --]|
+  --&SpellAttackBonus|[*S:spell_attack_bonus]
+  --~SpellAbility|string;before;};[*S:spellcasting_ability]
+  --~SpellAbility|string;after;{;[&SpellAbility]
+  --&SpellAbilityModifier|[*S:[&SpellAbility]]
+  --?"[&SpellAbilityModifier]" -eq "" -or "[&SpellAbilityModifier]" -eq "undefined"|&SpellAbilityModifier;0
   --&WeaponCustom|[*[&SW_TokenID]:WeaponCustom]
-  --?"[&WeaponCustom]" -eq ""|&WeaponCustom;0
-  --&TokenImage|[*[&SW_TokenID]:WeaponChosen]
-  --?"[&TokenImage]" -inc "http"|SW_GetURLToken
-  --?"[&TokenImage]" -eq "Random"|SW_GetRandomToken
+  --?"[&WeaponCustom]" -eq "" -or "[&WeaponCustom]" -eq "undefined"|&WeaponCustom;0
+  --&WeaponKey|[*[&SW_TokenID]:WeaponChosen]
+  --&TokenImage|[&WeaponKey]
+  --?"[&WeaponKey]" -inc "http"|SW_GetURLToken
+  --?"[&WeaponKey]" -eq "Random"|SW_GetRandomToken
+  -->TokenVariables|
   --&WeaponName|[*[&SW_TokenID]:WeaponName]
-  --&TokenImage|[&[&TokenImage]]
+  --&TokenImage|[&[&WeaponKey]]
   --^SW_TokenReady|
   --:SW_GetURLToken|
   --&WeaponName|[*[&SW_TokenID]:WeaponName]
   --^SW_TokenReady|
   --:SW_GetRandomToken|
+  -->InitWeaponMetadata|
+  -->TokenVariables|
   --=WeaponRoll|1d28 - 1
   --&WeaponType|[@WeaponTypes([$WeaponRoll.Raw])]
   --=WeaponNum|1d[:WeaponMax("[&WeaponType]")]
-  --&RandomToken|[&WeaponType][$WeaponNum.Raw]
-  --~WeaponName|string;nonumbers;[&RandomToken]
-  --&TokenImage|[&[&RandomToken]]
+  --&WeaponKey|[&WeaponType][$WeaponNum.Raw]
+  --~WeaponName|string;nonumbers;[&WeaponKey]
+  --&TokenImage|[&[&WeaponKey]]
   --:SW_TokenReady|
-  --=SlotsExpended|[*S:lvl[&SlotLevel]_slots_expended]
-  --&SlotsTotal|[*S:lvl[&SlotLevel]_slots_total]
-  --?[$SlotsExpended.Raw] -eq 0|[
-    --#emoteState|0
-    --+|[t width=267px][tr][td style="height: 30px ; font-size: 14px ; "][c][&CasterName] has no level [b][&SlotLevel][/b] spell slots available.[/c][/td][/tr][/t]
-    --^GetWeaponDone|
+  --=SummonLeft|[*S:t-left] + 70 --&CasterTop|[*S:t-top] --&CasterWidth|[*S:t-width] --&CasterHeight|[*S:t-height] --&WeaponMat|
+  --?"[&WeaponCustom]" -ne "1"|>SpecificName;[&WeaponKey]
+  --?"[&WeaponName]" -inc "Misc"|&WeaponName;
+  --!ot:NewTID|name:"[&WeaponMat][&WeaponName]"|left:[$SummonLeft.Raw]|top:[&CasterTop]|width:[&CasterWidth]|height:[&CasterHeight]|imgsrc:"[&TokenImage]"|represents:"[&SW_TokenID]"|showname:1|order:toFront|showplayers_name:1|pageid:"[*S:t-_pageid]"
+  --~SWCleanupTrigger|system;findability;ScriptCards_Triggers;change:campaign:turnorder
+  --?"[&SWCleanupTrigger]" -ne "AbilityNotFound"|[ --&CasterFirstName|[&CasterName(word,1)] --&SWTurnName|[&CasterFirstName]'s Spiritual Weapon --~|turnorder;addtoken;[&NewTID];10;[&SWTurnName];-1 --]|
+  --&SoundFX|[*[&SW_TokenID]:swsoundfx]
+  --?"[&SoundFX]" -eq "undefined"|&SoundFX;
+  --?"[&SoundFX]" -ne ""|[ --a|[&SoundFX] --]|
+  --&SWFXType|[*[&SW_TokenID]:swfxtype]
+  --&SWFXColor|[*[&SW_TokenID]:swfxcolor]
+  --?"[&SWFXType]" -eq "" -and "[&SWFXColor]" -eq ""|SW_NoVFX
+  --?"[&SWFXType]" -eq "Default"|SW_DefaultVFX
+  --vpoint|[$SummonLeft.Raw] [&CasterTop] [&SWFXType]-[&SWFXColor]
+  --^SW_VFXDone|
+  --:SW_DefaultVFX|
+  --vpoint|[$SummonLeft.Raw] [&CasterTop] [&default]
+  --^SW_VFXDone|
+  --:SW_NoVFX|
+  --:SW_VFXDone|
+  --=SlotsLeft|[$SlotsExpended.Raw] - 1
+  --!a:[&CasterCharID]|lvl[&SlotLevel]_slots_expended:[$SlotsLeft.Raw]
+  --=Dice|1
+  --?"[&SWRules]" -eq "2024"|[
+    --=Dice|[&SlotLevel] - 1
   --]|[
-    --=SummonLeft|[*S:t-left] + 70 --&CasterTop|[*S:t-top] --&CasterWidth|[*S:t-width] --&CasterHeight|[*S:t-height] --&WeaponMat|
-    --?"[&WeaponCustom]" -ne "1"|>SpecificName;[&WeaponName];[&RandomToken]
-    --?"[&WeaponName]" -inc "Misc"|&WeaponName;
-    --+|[t style="width: 100% ; text-align: center ; "][tr][td][img width=120][&TokenImage][/img][/td][/tr][/t]
-    --&ExistingControl|[*O:[&SW_TokenID]:character:controlledby]
-    --&ExistingControlCheck|,[&ExistingControl],
-    --?"[&ExistingControl]" -eq ""|[ --!c:[&SW_TokenID]|controlledby:[&SendingPlayerID] --]|
-    --?"[&ExistingControl]" -ne "" -and "[&ExistingControlCheck]" -ninc ",all," -and "[&ExistingControlCheck]" -ninc ",[&SendingPlayerID],"|[
-      --&NewControl|[&ExistingControl],[&SendingPlayerID]
-      --!c:[&SW_TokenID]|controlledby:[&NewControl]
-    --]|
-    --!ot:NewTID|name:"[&WeaponMat][&WeaponName]"|left:[$SummonLeft.Raw]|top:[&CasterTop]|width:[&CasterWidth]|height:[&CasterHeight]|imgsrc:"[&TokenImage]"|represents:"[&SW_TokenID]"|showname:1|order:toFront|showplayers_name:1|pageid:"[*S:t-_pageid]"
-    --?"[&SWCleanupTrigger]" -ne "AbilityNotFound"|[ --&CasterFirstName|[&CasterName(word,1)] --&SWTurnName|[&CasterFirstName]'s Spiritual Weapon --~|turnorder;addtoken;[&NewTID];10;[&SWTurnName];-1 --]|
-    --&SoundFX|[*[&SW_TokenID]:swsoundfx]
-    --?"[&SoundFX]" -ne ""|[ --a|[&SoundFX] --]|
-    --&SWFXType|[*[&SW_TokenID]:swfxtype]
-    --&SWFXColor|[*[&SW_TokenID]:swfxcolor]
-    --?"[&SWFXType]" -eq "" -and "[&SWFXColor]" -eq ""|SW_NoVFX
-    --?"[&SWFXType]" -eq "Default"|SW_DefaultVFX
-    --vpoint|[$SummonLeft.Raw] [&CasterTop] [&SWFXType]-[&SWFXColor]
-    --^SW_VFXDone|
-    --:SW_DefaultVFX|
-    --vpoint|[$SummonLeft.Raw] [&CasterTop] [&default]
-    --^SW_VFXDone|
-    --:SW_NoVFX|
-    --:SW_VFXDone|
-    --=SlotsLeft|[$SlotsExpended.Raw] - 1
-    --!a:[&CasterCharID]|lvl[&SlotLevel]_slots_expended:[$SlotsLeft.Raw]
-    --Rfirst|[&SW_TokenID];repeating_npcaction
-    --=Dice|1
-    --?[&SlotLevel] -ge 4|=Dice;2 --?[&SlotLevel] -ge 6|=Dice;3 --?[&SlotLevel] -ge 8|=Dice;4
-    --!a:[&SW_TokenID]|[*R>name]:Attack Spell Level [&SlotLevel]|[*R>attack_flag]:on|[*R>attack_type]:Melee|[*R>attack_target]:one target|[*R>attack_range]:5 ft.|[*R>attack_tohit]:[&SpellAttackBonus]|[*R>attack_damage]:[$Dice.Total]d8+[&SpellAttackBonus]|[*R>attack_damagetype]:force|[*R>attack_onhit]:|[*R>attack_onhit]:([$Dice.Total]d8+[&SpellAttackBonus]) force damage|[*R>attack_crit]:[$Dice.Total]d8
+    --?[&SlotLevel] -ge 4|=Dice;2
+    --?[&SlotLevel] -ge 6|=Dice;3
+    --?[&SlotLevel] -ge 8|=Dice;4
   --]|
+  --&DiceCount|[$Dice.Raw]
+  --=SWAttackModifier|[&SpellAttackBonus]
+  --=SWDamageModifier|[&SpellAbilityModifier]
+  --&SWDamageModifierText|[$SWDamageModifier.Raw]
+  --?[$SWDamageModifier.Raw] -ge 0|&SWDamageModifierText;+[$SWDamageModifier.Raw]
+  --&obrac|{ --&cbrac|} --&lbrac|[ --&rbrac|] --&Amp|&
+  --&SWAttackAbility|[&Amp][&obrac]template:npcaction[&cbrac] [&obrac][&obrac]npc_name_flag=1[&cbrac][&cbrac] [&obrac][&obrac]name=[&SWCharacterName][&cbrac][&cbrac] [&obrac][&obrac]rname=[&WeaponMat][&WeaponName] (Level [&SlotLevel])[&cbrac][&cbrac] [&obrac][&obrac]mod=[&lbrac][&lbrac][&lbrac][&lbrac][$SWAttackModifier.Raw][&rbrac][&rbrac][&lbrac]TO HIT[&rbrac][&rbrac][&rbrac][&cbrac][&cbrac] [&obrac][&obrac]r1=[&lbrac][&lbrac]1d20 + [&lbrac][&lbrac][$SWAttackModifier.Raw][&rbrac][&rbrac][&lbrac]TO HIT[&rbrac][&rbrac][&rbrac][&cbrac][&cbrac] [&obrac][&obrac]normal=1[&cbrac][&cbrac] [&obrac][&obrac]r2=[&lbrac][&lbrac]0d20 + [&lbrac][&lbrac][$SWAttackModifier.Raw][&rbrac][&rbrac][&lbrac]TO HIT[&rbrac][&rbrac][&rbrac][&cbrac][&cbrac] [&obrac][&obrac]attack=1[&cbrac][&cbrac] [&obrac][&obrac]damage=1[&cbrac][&cbrac] [&obrac][&obrac]dmg1flag=1[&cbrac][&cbrac] [&obrac][&obrac]dmg1=[&lbrac][&lbrac][&DiceCount]d8 [&SWDamageModifierText][&rbrac][&rbrac][&cbrac][&cbrac] [&obrac][&obrac]dmg1type=Force[&cbrac][&cbrac] [&obrac][&obrac]crit1=[&lbrac][&lbrac][&DiceCount]d8[&rbrac][&rbrac][&cbrac][&cbrac] [&obrac][&obrac]charname=[&SWCharacterName][&cbrac][&cbrac]
+  --~MacroButton|system;findability;[&SWCharacterName];Spiritual-Weapon-Attack
+  --?"[&MacroButton]" -eq "AbilityNotFound"|[ --!ob:MacroButton:[&SW_TokenID]:Spiritual-Weapon-Attack:y|[&SWAttackAbility] --]|[ --!ability:[&MacroButton]|action:[&SWAttackAbility]|name:Spiritual-Weapon-Attack|istokenaction:true --]|
   --#emoteText|[&CasterName] summons their Spiritual [&WeaponMat] [&WeaponName]
-  --+|[t width=267px][tr][td style="height: 20px ; "][c][f14][&CasterName] has [b][$SlotsLeft.Raw][/b] of [b][&SlotsTotal][/b] level [b][&SlotLevel][/b] slots left.[/f][/c][/td][/tr][/t]
+  --&SWCardTitle|Spiritual Weapon
+  --&SWCardBody|[t style="width:100%;text-align:center;"][tr][td][img width=120][&TokenImage][/img][/td][/tr][tr][td style="height:20px;"][f14][&CasterName] has [b][$SlotsLeft.Raw][/b] of [b][&SlotsTotal][/b] level [b][&SlotLevel][/b] slots left.[/f][/td][/tr][/t]
+  -->RenderSWCard|
   --:GetWeaponDone|
+  --&SWCardOpenActive|[&SWCardOpen]
 --X|
 --:CustomToken|
-  --#emoteState|0 --#emoteText| --#title| --#whisper|self
+  -->UseOriginalWeaponButtons|
+  --#emoteState|0 --#emoteText| --#whisper|self
   --&CurrentToken|[*[&SW_TokenID]:WeaponChosen] --&CurrentName|[*[&SW_TokenID]:WeaponName] --&CurrentCustom|[*[&SW_TokenID]:WeaponCustom]
-  --?"[&CurrentCustom]" -eq ""|&CurrentCustom;0
+  --?"[&CurrentCustom]" -eq "" -or "[&CurrentCustom]" -eq "undefined"|&CurrentCustom;0
   --&PreviewImage|[&CurrentToken]
   --&CurrentTokenText|Selected Weapon Image
   --?"[&CurrentToken]" -eq "Random"|&PreviewImage;
   --?"[&CurrentToken]" -eq "Random"|&CurrentTokenText;Random Weapon
   --?"[&CurrentCustom]" -eq "1"|&CurrentTokenText;Custom Image
-  --?"[&PreviewImage]" -ne "" -and "[&PreviewImage]" -ninc "http"|&PreviewImage;[&[&PreviewImage]]
+  --?"[&PreviewImage]" -ne "" -and "[&PreviewImage]" -ninc "http" -and "[&PreviewImage]" -ne "Random"|[ -->TokenVariables| --&PreviewImage|[&[&PreviewImage]] --]|
   --&PreviewBlock|
   --?"[&PreviewImage]" -ne ""|&PreviewBlock;[img width=120][&PreviewImage][/img][br]
-  --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 16px ; "][c][b]Custom Spiritual Weapon Settings[/b][/c][/td][/tr][/t]
-  --+|[t style="width: 100% ; text-align: center ; font-size: 14px ; "][tr][td colspan=2][&PreviewBlock][b]Current Name:[/b] [&CurrentName][br][b]Current Token:[/b] [&CurrentTokenText][/td][/tr][tr][td [&ButtonStyle]][rbutton]Change Token Image::ProcessUpdate;WeaponChosen[/rbutton][/td][td [&ButtonStyle]][rbutton]Change Name::ProcessUpdate;WeaponName[/rbutton][/td][/tr][tr][td [&ButtonStyle]][rbutton]Reset to Maul::ProcessReset;Weapon[/rbutton][/td][td [&ButtonStyle]][rbutton]Back::ChooseWeaponType[/rbutton][/td][/tr][/t]
+  --&SWCardTitle|Custom Spiritual Weapon Settings
+  --&SWCardBody|[t style="width:auto;margin:0 auto;text-align:center;font-size:14px;border-collapse:separate;border-spacing:4px 2px;"][tr][td colspan=2][&PreviewBlock][b]Current Name:[/b] [&CurrentName][br][b]Current Token:[/b] [&CurrentTokenText][/td][/tr][tr][td [&OriginalWeaponButtonStyle]][rbutton]Change Token Image::ProcessUpdate;WeaponChosen[/rbutton][/td][td [&OriginalWeaponButtonStyle]][rbutton]Change Name::ProcessUpdate;WeaponName[/rbutton][/td][/tr][tr][td [&OriginalWeaponButtonStyle]][rbutton]Reset to Maul::ProcessReset;Weapon[/rbutton][/td][td [&OriginalWeaponButtonStyle]][rbutton]Back::ChooseWeaponType[/rbutton][/td][/tr][/t]
+  -->RenderSWCard|
 --X|
+--:PromptButtonStyle|
+  --#buttonbackground|#58180D --#buttonbordercolor|#C9AD6A --#buttontextcolor|#FDF1DC
+  --#buttonfontface|Tahoma --#buttonfontsize|12px --#buttonpadding|5px
+--<|
 --:ProcessUpdate|
   --?"[&reentryval]" -eq "WeaponName"|[ --&BtnText|Click Here to add custom token name --&Prompt|What name do you want to give your Spiritual Weapon? --]|
   --?"[&reentryval]" -eq "WeaponChosen"|[ --&BtnText|Click Here to add image URL --&Prompt|What Is The URL To Your Token Image? It must be an image from your Roll20 Library. --]|
   --?"[&reentryval]" -eq "swsoundfx"|[ --&BtnText|Click Here to add Jukebox track name --&Prompt|What is the exact name of the Jukebox track to play when Spiritual Weapon is summoned? Leave blank to clear it. --]|
+  -->PromptButtonStyle|
   --I. ;[&BtnText]|q;UpdateValue;[&Prompt]
   --?"[&reentryval]" -eq "swsoundfx"|[ --!a:[&SW_TokenID]|!swsoundfx:[&UpdateValue] --^Effects| --]|
   --?"[&UpdateValue]" -eq ""|CustomToken
@@ -265,254 +342,225 @@
   --^CustomToken|
 --X|
 --:ProcessReset|
-    --!a:[&SW_TokenID]|!WeaponChosen:[&Maul1] --!a:[&SW_TokenID]|!WeaponName:Maul --!a:[&SW_TokenID]|!WeaponCustom:0
+    --!a:[&SW_TokenID]|!WeaponChosen:[&DefaultWeaponImage] --!a:[&SW_TokenID]|!WeaponName:Maul --!a:[&SW_TokenID]|!WeaponCustom:0
     --^CustomToken|
 --X|
 --:Effects|
-  --#emoteState|0 --#emoteText| --#title| --#whisper|self
-  --&CurrentSound|[*[&SW_TokenID]:swsoundfx] --&CurrentFXType|[*[&SW_TokenID]:swfxtype] --&CurrentFXColor|[*[&SW_TokenID]:swfxcolor] --&CurrentVisualFX|[&CurrentFXType]-[&CurrentFXColor]
+  -->UseOriginalWeaponButtons|
+  --#emoteState|0 --#emoteText| --#whisper|self
+  --&CurrentSound|[*[&SW_TokenID]:swsoundfx] --&CurrentFXType|[*[&SW_TokenID]:swfxtype] --&CurrentFXColor|[*[&SW_TokenID]:swfxcolor]
+  --?"[&CurrentSound]" -eq "undefined"|&CurrentSound;
+  --?"[&CurrentFXType]" -eq "undefined"|&CurrentFXType;
+  --?"[&CurrentFXColor]" -eq "undefined"|&CurrentFXColor;
+  --&CurrentVisualFX|[&CurrentFXType]-[&CurrentFXColor]
   --?"[&CurrentFXType]" -eq "Default"|&CurrentVisualFX;Default
   --?"[&CurrentFXType]" -eq "" -and "[&CurrentFXColor]" -eq ""|&CurrentVisualFX;None
   --~|array;define;FXTypes;bomb;breath;bubbling;burn;burst;explode;glow;nova;splatter
   --~|array;define;FXColors;acid;blood;charm;death;fire;frost;holy;magic;slime;smoke;water
-  --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 16px ; "][c][b]Custom Spiritual Weapon FX[/b][/c][/td][/tr][/t]
-  --+|[t style="width: 100% ; text-align: center ; font-size: 14px ;"][tr][td][b]Current Visual FX:[/b] [&CurrentVisualFX][br][b]Current Sound FX:[/b] [&CurrentSound][/td][/tr][tr][td [&ButtonStyle]][rbutton]Set Jukebox Sound::ProcessUpdate;swsoundfx[/rbutton][/td][/tr][/t]
-  --+|[t style="width: 95% ; text-align: center ;"][tr][td width=50% [&ButtonStyle]][rbutton]Default FX::SaveFX;Default|[/rbutton][/td][td width=50% [&ButtonStyle]][rbutton]No FX::SaveFX;None|[/rbutton][/td][/tr][/t]
-  --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 15px ; "][c][b]Effect Type[/b][/c][/td][/tr][/t]
-  --&FXTypeButtons|[t style="width: 100% ; text-align: center ; table-layout: fixed ;"][tr]
+  --&SWCardTitle|Custom Spiritual Weapon FX
+  --&SWCardBody|[t style="width:auto;margin:0 auto;text-align:center;font-size:14px;"][tr][td][b]Current Visual FX:[/b] [&CurrentVisualFX][br][b]Current Sound FX:[/b] [&CurrentSound][/td][/tr][tr][td [&OriginalWeaponButtonStyle]][rbutton]Set Jukebox Sound::ProcessUpdate;swsoundfx[/rbutton][/td][/tr][/t]
+  --&SWCardBody|+[t style="width:auto;margin:0 auto;border-collapse:separate;border-spacing:4px 2px;text-align:center;"][tr][td [&OriginalWeaponButtonStyle]][rbutton]Default FX::SaveFX;Default|[/rbutton][/td][td [&OriginalWeaponButtonStyle]][rbutton]No FX::SaveFX;None|[/rbutton][/td][/tr][/t]
+  --&SWCardBody|+[t style="width:100%;table-layout:fixed;"][tr][td style="font-variant:small-caps;font-size:15px;"][c][b]Effect Type[/b][/c][/td][/tr][/t]
+  --&FXTypeButtons|[t style="width:auto;margin:0 auto;text-align:center;border-collapse:separate;border-spacing:4px 2px;"][tr]
   --&FXTypeCounter|1
   --%FXTypeLoop|foreach;FXTypes
-    --&FXTypeButtons|+[td [&ButtonStyle]][rbutton][&FXTypeLoop]::SaveFX;Type|[&FXTypeLoop][/rbutton][/td]
+    --&FXTypeButtons|+[td [&OriginalWeaponButtonStyle]][rbutton][&FXTypeLoop]::SaveFX;Type|[&FXTypeLoop][/rbutton][/td]
     --?[= [&FXTypeCounter] % 3 ] -eq 0|&FXTypeButtons;+[/tr][tr]
     --&FXTypeCounter|[= [&FXTypeCounter] + 1]
   --%|
   --&FXTypeButtons|+[/tr][/t]
-  --+|[&FXTypeButtons]
-  --+|[t style="width: 100% ; table-layout: fixed ;"][tr][td style="font-variant: small-caps ; font-size: 15px ; "][c][b]Effect Color[/b][/c][/td][/tr][/t]
-  --&FXColorButtons|[t style="width: 100% ; text-align: center ; table-layout: fixed ;"][tr]
+  --&SWCardBody|+[&FXTypeButtons]
+  --&SWCardBody|+[t style="width:100%;table-layout:fixed;"][tr][td style="font-variant:small-caps;font-size:15px;"][c][b]Effect Color[/b][/c][/td][/tr][/t]
+  --&FXColorButtons|[t style="width:auto;margin:0 auto;text-align:center;border-collapse:separate;border-spacing:4px 2px;"][tr]
   --&FXColorCounter|1
   --%FXColorLoop|foreach;FXColors
-    --&FXColorButtons|+[td [&ButtonStyle]][rbutton][&FXColorLoop]::SaveFX;Color|[&FXColorLoop][/rbutton][/td]
+    --&FXColorButtons|+[td [&OriginalWeaponButtonStyle]][rbutton][&FXColorLoop]::SaveFX;Color|[&FXColorLoop][/rbutton][/td]
     --?[= [&FXColorCounter] % 3 ] -eq 0|&FXColorButtons;+[/tr][tr]
     --&FXColorCounter|[= [&FXColorCounter] + 1]
   --%|
   --&FXColorButtons|+[/tr][/t]
-  --+|[&FXColorButtons]
-  --+|[t style="width: 95% ;"][tr][td width=100% [&ButtonStyle]][c][rbutton]Back::ChooseWeaponType[/rbutton][/c][/td][/tr][/t]
+  --&SWCardBody|+[&FXColorButtons]
+  --&SWCardBody|+[t style="width:auto;margin:4px auto 0;"][tr][td [&OriginalWeaponButtonStyle]][rbutton]Back::ChooseWeaponType[/rbutton][/td][/tr][/t]
+  -->RenderSWCard|
 --X|
+--:ApplySWTheme|
+  --?"[&SWRules]" -eq "2014"|SWTheme2014|SWTheme2024
+  --:SWTheme2014|
+    --#buttontextcolor|#7A2008
+    --#emoteBackground|#f1e5c9
+    --#emoteFontColor|#7A2008
+    --&BodyStyle|font-size:12px;letter-spacing:0.01em;line-height:18px;color:#7A2008
+    --&ButtonStyle|style="white-space:nowrap;background:#F2DDB8;color:#7A2008;border:1px solid #D7B57D;border-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.3),inset 0 1px 1px rgba(255,255,255,.45),inset 0 -1px 1px rgba(92,28,20,.14);box-sizing:border-box;text-align:center;vertical-align:middle;padding:0 4px;"
+    --&ChooseExhibitBackdrop|radial-gradient(circle at 50% 34%,#FFFDF2 0%,#F2DDB8 43%,#D7B57D 72%,#7A2008 100%)
+    --&ChooseExhibitRim|#D7B57D
+    --&ChooseExhibitInner|#FFF1CE
+    --&ChooseExhibitCap|linear-gradient(180deg,#FFF1CE 0%,#D7B57D 45%,#9A6B32 100%)
+    --&ChooseExhibitBase|linear-gradient(180deg,#9A6B32 0%,#5C1C14 100%)
+    --&ChooseExhibitShadow|rgba(71,38,17,.55)
+    --&SWRuleBase|width:302px;height:4px;background-image:url(&quot;https://files.d20.io/images/105716694/59KW_4mBR3y_Iz45sQw2-g/med.png&quot;)!important;background-size:100% 4px;background-repeat:no-repeat;background-position:center;display:block;border-radius:2px;position:relative;right:2px;padding:0;line-height:0;font-size:0;
+    --&SWCardOpen|[t style='width:300px;table-layout:fixed;position:relative;left:-30px;border:0;border-collapse:separate;border-spacing:0;background-color:#264C5E;background-image:url(https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png);background-size:100% 100%;background-position:center;background-repeat:no-repeat;font-size:12px;line-height:1.2em;'][tr][td style='[&SWRuleBase]border:1px solid #3d0d03;top:-6px;'][/td][/tr][tr][td style='border:0;padding:0 15px;background:transparent;color:#7A2008;font-family:"Segoe UI",Tahoma,sans-serif;']
+    --&SWCardOpenPublic|[t style='width:300px;table-layout:fixed;border:0;border-collapse:separate;border-spacing:0;background-color:#264C5E;background-image:url(https://files.d20.io/images/105716505/oymO0pnVyLCv-tQDw2vddA/med.png);background-size:100% 100%;background-position:center;background-repeat:no-repeat;font-size:12px;line-height:1.2em;'][tr][td style='[&SWRuleBase]border:1px solid #3d0d03;top:-6px;'][/td][/tr][tr][td style='border:0;padding:0 15px;background:transparent;color:#7A2008;font-family:"Segoe UI",Tahoma,sans-serif;']
+    --&SWCardClose|[/td][/tr][tr][td style='[&SWRuleBase]border:1px solid #2f2112;bottom:-6px;'][/td][/tr][/t]
+    --&SWTitleStyle|style="font-family:Georgia,'Noto Serif','Liberation Serif','Nimbus Roman No9 L','Nimbus Roman','DejaVu Serif','Times New Roman',serif;font-variant:small-caps;font-size:24px;font-weight:bold;font-style:normal;color:#7A2008;line-height:1.05em;letter-spacing:0;white-space:normal;word-wrap:normal;"
+    --&SWDividerLineCell|border:0;border-top:.10em solid transparent;border-bottom:.25em solid transparent;border-left:16em solid #910900;line-height:1.25em;font-size:1.4em;display:block;padding:0;background:transparent;
+    --&SWDivider|[t style="width:100%;border-collapse:collapse;table-layout:fixed;"][tr][td style="height:4px;line-height:2px;font-size:1px;padding:0;border:0;background:transparent;"]&nbsp;[/td][/tr][tr][td][t style="border-collapse:collapse;border-spacing:0;margin:0;"][tr][td style="[&SWDividerLineCell]"][/td][/tr][/t][/td][/tr][tr][td style="height:4px;line-height:2px;font-size:1px;padding:0;border:0;background:transparent;"]&nbsp;[/td][/tr][/t]
+    --^SWThemeComplete|
+  --:SWTheme2024|
+    --#buttontextcolor|#5C1C14
+    --#emoteBackground|#F5F4EB
+    --#emoteFontColor|#5C1C14
+    --&BodyStyle|font-size:12px;letter-spacing:0.01em;line-height:1.2em;color:#5C1C14
+    --&ButtonStyle|style="white-space:nowrap;background:#EBE4D8;color:#5C1C14;border:1px solid #C9AD6A;border-radius:4px;box-shadow:none;box-sizing:border-box;text-align:center;vertical-align:middle;padding:0 4px;"
+    --&ChooseExhibitBackdrop|radial-gradient(circle at 50% 34%,#FFFFFF 0%,#F5F4EB 42%,#D4DACD 72%,#65717A 100%)
+    --&ChooseExhibitRim|#C9AD6A
+    --&ChooseExhibitInner|#F5F4EB
+    --&ChooseExhibitCap|linear-gradient(180deg,#F5F4EB 0%,#C9AD6A 45%,#8B7445 100%)
+    --&ChooseExhibitBase|linear-gradient(180deg,#8B7445 0%,#5C1C14 100%)
+    --&ChooseExhibitShadow|rgba(51,57,61,.5)
+    --&SWRuleBase|
+    --&SWCardOpen|[t style='width:300px;table-layout:fixed;position:relative;left:-30px;border:0;border-radius:8px;border-collapse:separate;border-spacing:0;background-color:#F5F4EB;box-shadow:0 2px 5px rgba(0,0,0,.4),inset 0 0 0 2px #F5F4EB,inset 0 0 0 3px #C9AD6A;overflow:hidden;font-size:12px;line-height:1.2em;'][tr][td style='border:0;padding:8px 12px 6px;background:transparent;color:#5C1C14;font-family:"Segoe UI",Tahoma,sans-serif;']
+    --&SWCardOpenPublic|[t style='width:300px;table-layout:fixed;border:0;border-radius:8px;border-collapse:separate;border-spacing:0;background-color:#F5F4EB;box-shadow:0 2px 5px rgba(0,0,0,.4),inset 0 0 0 2px #F5F4EB,inset 0 0 0 3px #C9AD6A;overflow:hidden;font-size:12px;line-height:1.2em;'][tr][td style='border:0;padding:8px 12px 6px;background:transparent;color:#5C1C14;font-family:"Segoe UI",Tahoma,sans-serif;']
+    --&SWCardClose|[/td][/tr][/t]
+    --&SWTitleStyle|style="font-family:Georgia,'Noto Serif','Liberation Serif','Nimbus Roman No9 L','Nimbus Roman','DejaVu Serif','Times New Roman',serif;font-variant:small-caps;font-size:24px;font-weight:bold;font-style:normal;color:#5C1C14;line-height:1.05em;letter-spacing:0;white-space:normal;word-wrap:normal;"
+    --&SWDividerLineCell|
+    --&SWDivider|[t style="width:100%;border-collapse:collapse;table-layout:fixed;"][tr][td style="height:1px;line-height:1px;font-size:1px;padding:0;border:0;border-bottom:1px solid #7A2008;background:transparent;"][/td][/tr][tr][td style="height:2px;line-height:2px;font-size:1px;padding:0;border:0;background:transparent;"]&nbsp;[/td][/tr][/t]
+  --:SWThemeComplete|
+    --&AppliedSWRules|[&SWRules]
+    --&SWCardOpenActive|[&SWCardOpen]
+--<|
+--:RenderSWCard|
+  --&SWRenderedCard|[&SWCardOpenActive][t style="width:100%;"][tr][td [&SWTitleStyle]][&SWCardTitle][/td][/tr][/t][&SWDivider][&SWCardBody][&SWCardClose]
+  --#disableattributereplacement|1 --#disablerollvariableexpansion|1 --#disableparameterexpansion|1
+  --+|[&SWRenderedCard]
+  --#disableattributereplacement|0 --#disablerollvariableexpansion|0 --#disableparameterexpansion|0
+  --&SWRenderedCard| --&SWCardTitle| --&SWCardBody|
+--<|
+--:InitWeaponMetadata|
+  --?"[&WeaponMetadataLoaded]" -eq "1"|WeaponMetadataDone
+  --~|array;define;WeaponTypes;BattleAxe;Club;Dagger;Flail;Glaive;Greataxe;Greatclub;Greatsword;Halberd;Handaxe;Javelin;Lance;Light-Hammer;Longsword;Mace;Maul;Morningstar;Pike;Quarterstaff;Rapier;Scimitar;Shortsword;Sickle;Spear;Trident;Warhammer;Warpick;Miscellaneous
+  --~|hash;set;WeaponMax;BattleAxe==3;Club==3;Dagger==8;Flail==5;Glaive==3;Greataxe==3;Greatclub==3;Greatsword==10;Halberd==5;Handaxe==3;Javelin==3;Lance==1;Light-Hammer==6;Longsword==11;Mace==10;Maul==7;Morningstar==5;Pike==6;Quarterstaff==8;Rapier==7;Scimitar==11;Shortsword==9;Sickle==3;Spear==9;Trident==7;Warhammer==5;Warpick==3;Miscellaneous==43
+  --&WeaponMetadataLoaded|1
+  --:WeaponMetadataDone|
+--<|
+--:InitMiscNames|
+  --?"[&MiscNamesLoaded]" -eq "1"|MiscNamesDone
+  --~|hash;set;Misc;Miscellaneous1==Anvil;Miscellaneous2==Bagpipes;Miscellaneous3==Banana;Miscellaneous4==Barrel;Miscellaneous5==Floating-Boot;Miscellaneous6==Floating-Boot;Miscellaneous7==Chess-Piece;Miscellaneous8==Storm-Cloud;Miscellaneous9==Storm-Cloud;Miscellaneous10==Crowbar;Miscellaneous11==Demon-Skull;Miscellaneous12==Trout;Miscellaneous13==Flute;Miscellaneous14==Pan;Miscellaneous15==Castiron-Pan;Miscellaneous16==Horn;Miscellaneous17==Hourglass;Miscellaneous18==Ice-Pick;Miscellaneous19==Rainbow-Lollipop;Miscellaneous20==Pink-Lollipop;Miscellaneous21==Colorful-Lollipop;Miscellaneous22==Mage-Hand;Miscellaneous23==Hand-Mirror;Miscellaneous24==Golden-Moon;Miscellaneous25==Magical-Moon;Miscellaneous26==Crescent-Moon;Miscellaneous27==Beer-Mug;Miscellaneous28==Beer-Stein;Miscellaneous29==Needle;Miscellaneous30==Rolling-Pin;Miscellaneous31==Handsaw;Miscellaneous32==Scroll;Miscellaneous33==Shovel;Miscellaneous34==Skull;Miscellaneous35==Spellbook;Miscellaneous36==Grimoire;Miscellaneous37==Ancient-Spellbook;Miscellaneous38==Warlock-Grimoire;Miscellaneous39==Spellbook;Miscellaneous40==Necromancer-Spellbook;Miscellaneous41==Wooden-Spoon;Miscellaneous42==Gravestone;Miscellaneous43==Torch
+  --&MiscNamesLoaded|1
+  --:MiscNamesDone|
+--<|
 --:SpecificName|
-  --?"[%1%]" -inc "Misc" -and "[%2%]" -eq ""|&WeaponMat;[:Misc("[*[&SW_TokenID]:WeaponChosen]")]
-  --?"[%1%]" -inc "Misc" -and "[%2%]" -ne ""|&WeaponMat;[:Misc("[%2%]")]
-  --?"[%1%]" -inc "random"|&TokenImage;[&[%2%]]
-  --?";[&Longsword11];[&Mace3];[&Maul1];[&Maul4];[&Morningstar3];[&Quarterstaff1];[&Quarterstaff8];[&Scimitar1];[&Scimitar3];[&Scimitar4];[&Scimitar10];[&Sickle3];[&Trident2];[&Trident7];[&Pike6];" -inc ";[&TokenImage];"|&WeaponMat;Magic-
-  --?";[&BattleAxe3];[&Club3];[&Dagger1];[&Flail5];[&Glaive2];[&Greataxe2];[&Greatsword1];[&Mace7];[&Morningstar5];[&Rapier5];[&Rapier7];[&Scimitar5];[&Scimitar6];[&Scimitar7];[&Trident5];[&Warhammer1];[&Warhammer4];[&Pike5];" -inc ";[&TokenImage];"|&WeaponMat;Adamantine-
-  --?";[&Greatclub2];[&Greatclub3];[&Greatsword5];[&Greatsword6];[&Greatsword7];[&Greatsword8];[&Greatsword9];[&Halberd3];[&Halberd4];[&Halberd5];[&Handaxe2];[&Javelin1];[&Javelin3];[&Light-Hammer2];[&Light-Hammer4];[&Light-Hammer5];[&Longsword3];[&Longsword7];[&Longsword9];[&Mace1];[&Mace9];[&Maul3];[&Morningstar4];[&Quarterstaff2];[&Rapier2];[&Scimitar8];[&Shortsword3];[&Shortsword6];[&Shortsword7];[&Spear4];[&Spear6];[&Spear7];[&Trident1];[&Trident6];[&Warhammer2];[&Warpick1];[&Mace2];" -inc ";[&TokenImage];"|&WeaponMat;Radiant-
-  --?";[&BattleAxe2];[&Dagger6];[&Glaive3];[&Greataxe3];[&Greatsword3];[&Greatsword4];[&Halberd1];[&Handaxe3];[&Longsword4];[&Light-Hammer6];[&Mace6];[&Maul5];[&Morningstar1];[&Pike2];[&Rapier6];[&Scimitar11];[&Shortsword4];[&Sickle2];[&Spear3];[&Trident3];[&Warhammer3];[&Warpick2];[&Scimitar9];" -inc ";[&TokenImage];"|&WeaponMat;Rusty-
-  --?";[&Dagger5];[&Dagger8];[&Flail3];[&Quarterstaff3];[&Rapier3];[&Shortsword1];[&Shortsword8];[&Spear8];[&Spear9];[&Greatsword10];[&Longsword8];" -inc ";[&TokenImage];"|&WeaponMat;Cursed-
-  --?"[&WeaponMat]" -eq ""|&WeaponMat;Common-
+  --&WeaponMat|Common-
+  --?"[%1%]" -inc "Misc"|[ -->InitMiscNames| --&WeaponMat|[:Misc("[%1%]")] --]|
+  --?";Longsword11;Mace3;Maul1;Maul4;Morningstar3;Quarterstaff1;Quarterstaff8;Scimitar1;Scimitar3;Scimitar4;Scimitar10;Sickle3;Trident2;Trident7;Pike6;" -inc ";[%1%];"|&WeaponMat;Magic-
+  --?";BattleAxe3;Club3;Dagger1;Flail5;Glaive2;Greataxe2;Greatsword1;Mace7;Morningstar5;Rapier5;Rapier7;Scimitar5;Scimitar6;Scimitar7;Trident5;Warhammer1;Warhammer4;Pike5;" -inc ";[%1%];"|&WeaponMat;Adamantine-
+  --?";Greatclub2;Greatclub3;Greatsword5;Greatsword6;Greatsword7;Greatsword8;Greatsword9;Halberd3;Halberd4;Halberd5;Handaxe2;Javelin1;Javelin3;Light-Hammer2;Light-Hammer4;Light-Hammer5;Longsword3;Longsword7;Longsword9;Mace1;Mace9;Maul3;Morningstar4;Quarterstaff2;Rapier2;Scimitar8;Shortsword3;Shortsword6;Shortsword7;Spear4;Spear6;Spear7;Trident1;Trident6;Warhammer2;Warpick1;Mace2;" -inc ";[%1%];"|&WeaponMat;Radiant-
+  --?";BattleAxe2;Dagger6;Glaive3;Greataxe3;Greatsword3;Greatsword4;Halberd1;Handaxe3;Longsword4;Light-Hammer6;Mace6;Maul5;Morningstar1;Pike2;Rapier6;Scimitar11;Shortsword4;Sickle2;Spear3;Trident3;Warhammer3;Warpick2;Scimitar9;" -inc ";[%1%];"|&WeaponMat;Rusty-
+  --?";Dagger5;Dagger8;Flail3;Quarterstaff3;Rapier3;Shortsword1;Shortsword8;Spear8;Spear9;Greatsword10;Longsword8;" -inc ";[%1%];"|&WeaponMat;Cursed-
   --&WeaponMat|[&WeaponMat(replace,-, )]
 --<|
 --:TokenVariables|
-  --&URL|https://files.d20.io/images/
-  --&BattleAxe1|[&URL]409077658/KzwQT9XRqmgC5a9ucaRIgw/original.webp
-  --&BattleAxe2|[&URL]409077659/P__XMkLmyxq5d7uxuoS5NQ/original.webp
-  --&BattleAxe3|[&URL]409077660/DiCHIu99Hz4G3lbxhezV4g/original.webp
-  --&Club1|[&URL]409077677/emvzijz1rJ_dxHAxieR1AA/original.webp
-  --&Club2|[&URL]409077678/MwJ-Kp72xK98udMg5NFy1A/original.webp
-  --&Club3|[&URL]409077679/9M73vuyMaeUT776_ZocMsg/original.webp
-  --&Dagger1|[&URL]409077696/WhkkhW81XZaKZL6p6vpiIg/original.webp
-  --&Dagger2|[&URL]409077705/mgFZUxkJ_DpbELZ9f1_vxw/original.webp
-  --&Dagger3|[&URL]409077701/vX4XqpfYM8X5mivBWURsYw/original.webp
-  --&Dagger4|[&URL]409077695/0olUbB2P5_R4z5MO3mC87w/original.webp
-  --&Dagger5|[&URL]409077697/n9GZRLZT1_4YK4fSWXrHiA/original.webp
-  --&Dagger6|[&URL]409077699/l9rZXJIYP72-r9__VJ7lLQ/original.webp
-  --&Dagger7|[&URL]409077700/H0N4_oe-in-VhB_Tu938RA/original.webp
-  --&Dagger8|[&URL]409077702/QC4KRwQM25UnhZfSQD9ARQ/original.webp
-  --&Flail1|[&URL]409083962/Dz9T8IfmRoqIPkj_zgR7yg/original.webp
-  --&Flail2|[&URL]409083963/MIHEldJbGlhEay1CPRUqKQ/original.webp
-  --&Flail3|[&URL]409083964/cf3JIHgGnFVhWa80tTsBqA/original.webp
-  --&Flail4|[&URL]409083961/uplkTNXkSau2AsVW4oD6lg/original.webp
-  --&Flail5|[&URL]409083960/ulmRYL81O2KmW8DL_QxAOQ/original.webp
-  --&Glaive1|[&URL]409084650/ZclkB6yhgtDFtwCdXYt4Ew/original.webp
-  --&Glaive2|[&URL]409084651/n7sc2hjWQVl7SXK6Zz-wtw/original.webp
-  --&Glaive3|[&URL]409084649/fAs6YaO-SSiMXm4q1Na5Ow/original.webp
-  --&Greataxe1|[&URL]409077762/InSbDm06SfP3utFbPGu7xA/original.webp
-  --&Greataxe2|[&URL]409077764/mEP7sghBkiBFLrQDxIXydA/original.webp
-  --&Greataxe3|[&URL]409077763/78QfhXK7oBjYn_fiRBhyrQ/original.webp
-  --&Greatclub1|[&URL]409077779/xQO_UkWF0MMpo6WO4K6rJA/original.webp
-  --&Greatclub2|[&URL]409077778/2OR4zUVQUQiobUvL4TVPOQ/original.webp
-  --&Greatclub3|[&URL]409077780/GXdZ8LqvMDl8Bi_Cx9zskQ/original.webp
-  --&Greatsword1|[&URL]409077804/JY1CuX6YqgC5kwdJOA1XCA/original.webp
-  --&Greatsword2|[&URL]409077802/jAnxRb-Q7zTFqlpw8lTCeQ/original.webp
-  --&Greatsword3|[&URL]409077803/J5Xu5rL7wLPONihZefJTVQ/original.webp
-  --&Greatsword4|[&URL]409077806/6kmHOJeXIMbPZWoe3DzPbA/original.webp
-  --&Greatsword5|[&URL]409077800/H7lUQrmegL9MQJ6-eL2_Kw/original.webp
-  --&Greatsword6|[&URL]409077805/Uo9FFxyWH0k4ND1yw8INmg/original.webp
-  --&Greatsword7|[&URL]409077808/mV7OffAQUiNzyCZLSYI0aw/original.webp
-  --&Greatsword8|[&URL]409077807/qp1nOf-vEoJ60lbbqAIrhg/original.webp
-  --&Greatsword9|[&URL]409077801/Zc7ClIshvm5RVpPovMwZQQ/original.webp
-  --&Greatsword10|[&URL]409077809/-1yovXR3LKaMqxTM_Lv6bg/original.webp
-  --&Halberd1|[&URL]409077829/hTW8ihd_BK5B4-KvEWADOg/original.webp
-  --&Halberd2|[&URL]409077830/yxV_ywc_SBT9CqRUpM3J7g/original.webp
-  --&Halberd3|[&URL]409077828/rX0dmmX7sRh0Vvcy9Q7H3w/original.webp
-  --&Halberd4|[&URL]409077831/nOy6D0RCCyIA0LPDuNYHDQ/original.webp
-  --&Halberd5|[&URL]409077827/9fhc1fCuwq2CmqX-5pnZEw/original.webp
-  --&Handaxe1|[&URL]409077845/puNBiWkBW53fiofLdJ6_fA/original.webp
-  --&Handaxe2|[&URL]409077844/mZqtUklh6-IRBJHUzi059w/original.webp
-  --&Handaxe3|[&URL]409077846/Mt4rrM3vredsolsADqfgrA/original.webp
-  --&Javelin1|[&URL]409077861/tWqD6w7ve6mmDhjfJ8nTqA/original.webp
-  --&Javelin2|[&URL]409077863/vuKfCTbIEiPiWt2CjgcGgA/original.webp
-  --&Javelin3|[&URL]409077862/FDNhHsLkgwAEj7kel7k8LA/original.webp
-  --&Lance1|[&URL]409077877/fiic5X4d9HuArOZ-pieDjw/original.webp
-  --&Light-Hammer1|[&URL]409077894/5rV86I721GiUfkMRas4KNw/original.webp
-  --&Light-Hammer2|[&URL]409077893/Z9u23D2i5KObMVhd4JGOhg/original.webp
-  --&Light-Hammer3|[&URL]409077896/YvlN0Ip41QDJlPz3FbjWag/original.webp
-  --&Light-Hammer4|[&URL]409077892/oTd7qvVEmVbBbzCxUaVIfQ/original.webp
-  --&Light-Hammer5|[&URL]409077897/US6UxW8DGFRoBAXRdAO4kg/original.webp
-  --&Light-Hammer6|[&URL]409077895/uG0gD2dvKauT9WU7suiPrw/original.webp
-  --&Longsword1|[&URL]409077905/geTgGs7s_gt9GR5lkwh5tw/original.webp
-  --&Longsword2|[&URL]409077913/fhIU_8sqCf3P2KI5Mfzohg/original.webp
-  --&Longsword3|[&URL]409077907/6nX_uigHgANCcQJNEtgo5Q/original.webp
-  --&Longsword4|[&URL]409077906/rO0W2TehnRhVtYJYI0GtuA/original.webp
-  --&Longsword5|[&URL]409077910/srsMjjv4Cd7ZYiJ9uIa3KA/original.webp
-  --&Longsword6|[&URL]409077911/aFmSbsEGOhqpqMRX2BjasA/original.webp
-  --&Longsword7|[&URL]409077909/_Cqjid4KbDzaEKASkFIUtg/original.webp
-  --&Longsword8|[&URL]409077904/O_s_97cYKe_3e2_BDa75Hw/original.webp
-  --&Longsword9|[&URL]409077914/o4B0T0z7ACKLfhvWznHBjw/original.webp
-  --&Longsword10|[&URL]409077908/gCRlLnNaDzaU_dARZWdmJA/original.webp
-  --&Longsword11|[&URL]409077912/XLWeLqCkmEMwDz3yVg8Z7Q/original.webp
-  --&Mace1|[&URL]409077935/H9ydL9BFbWbWQ3kZ3AJNKw/original.webp
-  --&Mace2|[&URL]409077931/Sv3HBr0RKUamLzQXfs1Chg/original.webp
-  --&Mace3|[&URL]409077932/1Xa2RHbcrpqjIivAXKtfTQ/original.webp
-  --&Mace4|[&URL]409077938/j3Lu92BDgewoqpV2GQB54w/original.webp
-  --&Mace5|[&URL]409077939/JzyhieNoihTM4dZdwde3Og/original.webp
-  --&Mace6|[&URL]409077933/xj3I7PeEEVTzS1letZtHGg/original.webp
-  --&Mace7|[&URL]409077929/zcY5oC_vbPDMpACvtK4IWg/original.webp
-  --&Mace8|[&URL]409077930/rFnAH4uBwBqQAD7NYucy5g/original.webp
-  --&Mace9|[&URL]409077934/8rKqOeVfIfVC_rtMgO4qWQ/original.webp
-  --&Mace10|[&URL]409077928/8-gyOinRdRbM822vYzg6vQ/original.webp
-  --&Maul1|[&URL]409077949/kMTFu728yEn4tLK6JJc4mA/original.webp
-  --&Maul2|[&URL]409077951/aRauDipB4POkce4JUWex4A/original.webp
-  --&Maul3|[&URL]409077950/9Q1L4yC0StSbtYe-DIX8jg/original.webp
-  --&Maul4|[&URL]409077953/lOlPEqlkJlvjPHIUi0VP4A/original.webp
-  --&Maul5|[&URL]409077952/9554si0hlQt3jBExbeN5tA/original.webp
-  --&Maul6|[&URL]409077954/AyfuF6FZXRcYJGWs0D173w/original.webp
-  --&Maul7|[&URL]409077955/5Ytbc2-FvvWzItxFF0B28g/original.webp
-  --&Morningstar1|[&URL]409077966/GN3gDQA5pfmiNpwF0nIAXA/original.webp
-  --&Morningstar2|[&URL]409077968/NbdrhG3RPB6Fr0YQhQPdbQ/original.webp
-  --&Morningstar3|[&URL]409077970/Rkt-F27C-nd58fMFvGj1SQ/original.webp
-  --&Morningstar4|[&URL]409077969/AcQUoEGsOb8ugmVShLDugw/original.webp
-  --&Morningstar5|[&URL]409077967/qvle9izYMBsHlsXnYLLqRw/original.webp
-  --&Pike1|[&URL]409077982/KDAbHCY4f_tGL9JcZpwoxA/original.webp
-  --&Pike2|[&URL]409077984/aqHrVDNDXD8t-gmiXQoctw/original.webp
-  --&Pike3|[&URL]409077981/ql25Fb1aO6JZL0WIxMWBzg/original.webp
-  --&Pike4|[&URL]409077979/PeJe652ibuoFcI3XsI8YnQ/original.webp
-  --&Pike5|[&URL]409077985/gJ3Lx224S4uepr26I-Ywhw/original.webp
-  --&Pike6|[&URL]409077980/P_IUrR84eeZIPOsKF3kiIw/original.webp
-  --&Quarterstaff1|[&URL]409078000/C9AIOZtz9PJxwfSBDa3FsA/original.webp
-  --&Quarterstaff2|[&URL]409077999/uNUCd98sbt3SG778VbnFLQ/original.webp
-  --&Quarterstaff3|[&URL]409078001/ICojSYyEoqd7EGNyxeQ7Bg/original.webp
-  --&Quarterstaff4|[&URL]409077997/H0ZGv5rrOEwXn3_q2LZB8Q/original.webp
-  --&Quarterstaff5|[&URL]409077998/dkk07Ye_3_4-XBolPDBDeQ/original.webp
-  --&Quarterstaff6|[&URL]409077996/37oEy1W32TXDzugUJsYOnA/original.webp
-  --&Quarterstaff7|[&URL]409077994/-k2wvYwtLe0wCROHaGmaWA/original.webp
-  --&Quarterstaff8|[&URL]409077995/jK8KlZxT2wovzIynCG_R4Q/original.webp
-  --&Rapier1|[&URL]409078016/lPiSW0MGjIsr6zG5qSUOMw/original.webp
-  --&Rapier2|[&URL]409078017/nAHrGyB4ctnT5HFbPumZIA/original.webp
-  --&Rapier3|[&URL]409078020/_vpGkDL3tUnTSQCdpDPVAw/original.webp
-  --&Rapier4|[&URL]409078019/M-YHqPN33VCOEGwZf0wK7g/original.webp
-  --&Rapier5|[&URL]409078018/vKhlyvOJDuLmxDeCJFdq9g/original.webp
-  --&Rapier6|[&URL]409078021/j16SGIWijYz6tqZce-yFTA/original.webp
-  --&Rapier7|[&URL]409078015/2OXlvAWN5aqXMwY-xFX0cg/original.webp
-  --&Scimitar1|[&URL]409078042/04pC7KFURg2LwBCAiQgwqw/original.webp
-  --&Scimitar2|[&URL]409078037/2_uVzar4vu6Us4O8ue1ZTQ/original.webp
-  --&Scimitar3|[&URL]409078036/ExPtfCbaSnVAPjhFxTyrVw/original.webp
-  --&Scimitar4|[&URL]409078039/6XENuFa1Ix5FWamHWJ4ESg/original.webp
-  --&Scimitar5|[&URL]409078033/8SVeKCbGPiPvUZvGDlYqcA/original.webp
-  --&Scimitar6|[&URL]409078043/3jhKqphtPnJTVCtvHMUWjA/original.webp
-  --&Scimitar7|[&URL]409078034/9Rt1DBet_gnbcfPzB6BBxw/original.webp
-  --&Scimitar8|[&URL]409078041/w87WoWlpigMYnLQ4RlSzjA/original.webp
-  --&Scimitar9|[&URL]409078035/Jla7i3fsnnlwWqE-woQRMw/original.webp
-  --&Scimitar10|[&URL]409078040/K_cmKy8tKsdvOb4Q5II2fw/original.webp
-  --&Scimitar11|[&URL]409078038/kOibAGJYwh59ALRxrdMepQ/original.webp
-  --&Shortsword1|[&URL]409078058/kPixV7xR5nJrDRXmwKkeOQ/original.webp
-  --&Shortsword2|[&URL]409078055/geVB4KXDlCyqoO9d5uEFlA/original.webp
-  --&Shortsword3|[&URL]409078063/DoNYFcDHkdFVL8jZ85eGug/original.webp
-  --&Shortsword4|[&URL]409078056/4Ko1DrRfBgXL3ERcBXlK5A/original.webp
-  --&Shortsword5|[&URL]409078057/5aTAe5pe4CajJNJ3bIRp7A/original.webp
-  --&Shortsword6|[&URL]409078065/BoqMSBuQRxKGE9iEwPw-Cw/original.webp
-  --&Shortsword7|[&URL]409078059/pf6XhczBZ7Qb7_TYzRmYgg/original.webp
-  --&Shortsword8|[&URL]409078060/s1FnIZaJ_UoW2YI0NHveSQ/original.webp
-  --&Shortsword9|[&URL]409078061/2bws011CJNo4xYVC-lY1HQ/original.webp
-  --&Sickle1|[&URL]409078074/QcNEy-8sYIqKImxrhC7qcQ/original.webp
-  --&Sickle2|[&URL]409078075/nFpEg-1ekXkXWT6_jVaE7A/original.webp
-  --&Sickle3|[&URL]409077703/POjIuhiVFQ_bpP2i_tIjYQ/original.webp
-  --&Spear1|[&URL]409078094/Yi56EaHNd5DcvAmLkBrXog/original.webp
-  --&Spear2|[&URL]409078093/i0Smes-9JHYu3PU0TbPXOw/original.webp
-  --&Spear3|[&URL]409078095/unjx1BeZHubRPF2tqXHTIA/original.webp
-  --&Spear4|[&URL]409078090/QU3UFob2t__Ah4bD8IV-9w/original.webp
-  --&Spear5|[&URL]409078089/b50wWjKN0lZ5WUkNvLAt2A/original.webp
-  --&Spear6|[&URL]409078091/E2wvovnVJQv7CCnNxYiIVQ/original.webp
-  --&Spear7|[&URL]409078097/cWRdJ6BlsUFIKChXI6lPmw/original.webp
-  --&Spear8|[&URL]409078096/kFQA6iCTlDJy_w3p17w6jg/original.webp
-  --&Spear9|[&URL]409078092/6MSSyf6oJZ3l5eBmEhiD4Q/original.webp
-  --&Trident1|[&URL]409078106/97VmFK-mS-7_7TP6gl36KA/original.webp
-  --&Trident2|[&URL]409078108/EkGZpo-dgLk7SReKcvhApA/original.webp
-  --&Trident3|[&URL]409078110/nSdVmOhbyZN3RYRyqDKTQw/original.webp
-  --&Trident4|[&URL]409078107/-QT33PS-8XGtJ1B68FLrUw/original.webp
-  --&Trident5|[&URL]409078109/EdoG1sJ4Y_MVRLNj3eQEsQ/original.webp
-  --&Trident6|[&URL]409078112/qgrl3qrP6SfExwpBIJ1iVw/original.webp
-  --&Trident7|[&URL]409078111/zQZQP_B26NwfLvLOn0km8w/original.webp
-  --&Warhammer1|[&URL]409078120/u_tHVl5P3l7LwKEU4p87-A/original.webp
-  --&Warhammer2|[&URL]409078123/DZUS-HXHEi1YVzhQl1c-SQ/original.webp
-  --&Warhammer3|[&URL]409078119/RVG5nyPuPcbmXUxZk1TMKA/original.webp
-  --&Warhammer4|[&URL]409078122/6A58zKRA22WNh3wnRSWODw/original.webp
-  --&Warhammer5|[&URL]409078121/nZkbPa1ZuwEiQXSOt0iOYw/original.webp
-  --&Warpick1|[&URL]409078131/AXJIMbJ92TCuFeYGu-t1rQ/original.webp
-  --&Warpick2|[&URL]409078132/GfKKHrqWfBCwgcu2FEGy1A/original.webp
-  --&Warpick3|[&URL]409078133/RnqkAqHB06CCtUasb18zag/original.webp
-  --&Miscellaneous1|[&URL]438882017/wukPASLxU2LF8xxDVFRQ5Q/original.webp
-  --&Miscellaneous2|[&URL]438882005/2F9l5eqTX4D206i99smJJA/original.webp
-  --&Miscellaneous3|[&URL]438882007/skK3-XXdZKIdFKTDgKUgBQ/original.webp
-  --&Miscellaneous4|[&URL]438882006/ttM4hIg8LgaMGSCe7HO7iA/original.webp
-  --&Miscellaneous5|[&URL]438882008/pgK3RrG7NtQ3ZWO6tIl49g/original.webp
-  --&Miscellaneous6|[&URL]438882011/E-ueQ16SKfUqJZJbX1GQRQ/original.webp
-  --&Miscellaneous7|[&URL]438882014/rXPYomxbzoOjI0YBfhYrww/original.webp
-  --&Miscellaneous8|[&URL]438882012/JV1YxEqbTubak6EUhC2GwQ/original.webp
-  --&Miscellaneous9|[&URL]438882016/5Lwbw664YgwGHXfKSGsJZg/original.webp
-  --&Miscellaneous10|[&URL]438882018/O-9HFfCBaLIwFrRaB7Pj0w/original.webp
-  --&Miscellaneous11|[&URL]438882019/vuui1j8WlGyD67NAzP6Scw/original.webp
-  --&Miscellaneous12|[&URL]438882021/bple62pyePfdBlxBo9FRHQ/original.webp
-  --&Miscellaneous13|[&URL]438882022/ocQiVloMs5u88oP5VucUlg/original.webp
-  --&Miscellaneous14|[&URL]438882027/to6rKubnef_WfIEHLhSA5g/original.webp
-  --&Miscellaneous15|[&URL]438882028/XCjtdNppRuyGusqawT1tpA/original.webp
-  --&Miscellaneous16|[&URL]438882029/3ytG0DZCbD1Uq_9-jrzBMg/original.webp
-  --&Miscellaneous17|[&URL]438882030/q0UjBxgTm3RoBs38asvSEg/original.webp
-  --&Miscellaneous18|[&URL]438882031/DDk-cGWaBMpX71IcE4LDQw/original.webp
-  --&Miscellaneous19|[&URL]438882032/ZdhCl8Rwnyy6VNi95MQnFA/original.webp
-  --&Miscellaneous20|[&URL]438882033/DtJ9XZ0y393wAukEn6nHvg/original.webp
-  --&Miscellaneous21|[&URL]438882034/49cEN93OVT7risbXzlF9UA/original.webp
-  --&Miscellaneous22|[&URL]438882035/amxmhHyr_4y3Pwa_hlLdxA/original.webp
-  --&Miscellaneous23|[&URL]438882036/S6MLXfdh5ZE_2CekkET47w/original.webp
-  --&Miscellaneous24|[&URL]438882037/Z6bIFId5gZsvv1PmSs5xLA/original.webp
-  --&Miscellaneous25|[&URL]438882038/mtgK5PdR1LYG2SdfMwbVaQ/original.webp
-  --&Miscellaneous26|[&URL]438882040/FURmDEHUKfZbkVVtfDi3XA/original.webp
-  --&Miscellaneous27|[&URL]438882043/5LLoq_KS2xW-OBd7x3ntCA/original.webp
-  --&Miscellaneous28|[&URL]438882045/Adn2XJi4ueOcYfUSxW_MYg/original.webp
-  --&Miscellaneous29|[&URL]438882047/C42wQoyPEIu-ZcSw4MydgQ/original.webp
-  --&Miscellaneous30|[&URL]438882052/F8X8tQcnCDw_lzjCJ7mxMA/original.webp
-  --&Miscellaneous31|[&URL]438882048/tk4tpyXMUXGvZUtYwnRzKQ/original.webp
-  --&Miscellaneous32|[&URL]438882050/1o4l1MpeXMcKOTKl8UJJ7Q/original.webp
-  --&Miscellaneous33|[&URL]438882051/STYCr1etT4_NxAX-S1R1Xw/original.webp
-  --&Miscellaneous34|[&URL]438882053/eHxsWO3Ystz-5GG1wJsluQ/original.webp
-  --&Miscellaneous35|[&URL]438882056/6QvAWREBdPV0qakmPTHZQw/original.webp
-  --&Miscellaneous36|[&URL]438882057/0G0_oLf1jxK1i50qTgFzJg/original.webp
-  --&Miscellaneous37|[&URL]438882058/OrQMcWYwYXrxmvqKvYg1XA/original.webp
-  --&Miscellaneous38|[&URL]438882059/LBO08OBSmDoi15ygrH-vDg/original.webp
-  --&Miscellaneous39|[&URL]438882060/9GFU845YqAMsbfFKpMsQhQ/original.webp
-  --&Miscellaneous40|[&URL]438882061/lcgaSxBMUtbsXAQ4A12A-w/original.webp
-  --&Miscellaneous41|[&URL]438882062/2wbMIDTgDOJK8cVXzKW-iA/original.webp
-  --&Miscellaneous42|[&URL]438882063/7itg9ygL5qKnhbj1wej-NA/original.webp
-  --&Miscellaneous43|[&URL]438882066/0UUg1xYN42oG3X5F-mB5jw/original.webp
+  --?"[&WeaponImagesLoaded]" -eq "1"|TokenVariablesDone
+  --&URL|https://files.d20.io/images/ --&BattleAxe1|[&URL]409077658/KzwQT9XRqmgC5a9ucaRIgw/original.webp
+  --&BattleAxe2|[&URL]409077659/P__XMkLmyxq5d7uxuoS5NQ/original.webp --&BattleAxe3|[&URL]409077660/DiCHIu99Hz4G3lbxhezV4g/original.webp
+  --&Club1|[&URL]409077677/emvzijz1rJ_dxHAxieR1AA/original.webp --&Club2|[&URL]409077678/MwJ-Kp72xK98udMg5NFy1A/original.webp
+  --&Club3|[&URL]409077679/9M73vuyMaeUT776_ZocMsg/original.webp --&Dagger1|[&URL]409077696/WhkkhW81XZaKZL6p6vpiIg/original.webp
+  --&Dagger2|[&URL]409077705/mgFZUxkJ_DpbELZ9f1_vxw/original.webp --&Dagger3|[&URL]409077701/vX4XqpfYM8X5mivBWURsYw/original.webp
+  --&Dagger4|[&URL]409077695/0olUbB2P5_R4z5MO3mC87w/original.webp --&Dagger5|[&URL]409077697/n9GZRLZT1_4YK4fSWXrHiA/original.webp
+  --&Dagger6|[&URL]409077699/l9rZXJIYP72-r9__VJ7lLQ/original.webp --&Dagger7|[&URL]409077700/H0N4_oe-in-VhB_Tu938RA/original.webp
+  --&Dagger8|[&URL]409077702/QC4KRwQM25UnhZfSQD9ARQ/original.webp --&Flail1|[&URL]409083962/Dz9T8IfmRoqIPkj_zgR7yg/original.webp
+  --&Flail2|[&URL]409083963/MIHEldJbGlhEay1CPRUqKQ/original.webp --&Flail3|[&URL]409083964/cf3JIHgGnFVhWa80tTsBqA/original.webp
+  --&Flail4|[&URL]409083961/uplkTNXkSau2AsVW4oD6lg/original.webp --&Flail5|[&URL]409083960/ulmRYL81O2KmW8DL_QxAOQ/original.webp
+  --&Glaive1|[&URL]409084650/ZclkB6yhgtDFtwCdXYt4Ew/original.webp --&Glaive2|[&URL]409084651/n7sc2hjWQVl7SXK6Zz-wtw/original.webp
+  --&Glaive3|[&URL]409084649/fAs6YaO-SSiMXm4q1Na5Ow/original.webp --&Greataxe1|[&URL]409077762/InSbDm06SfP3utFbPGu7xA/original.webp
+  --&Greataxe2|[&URL]409077764/mEP7sghBkiBFLrQDxIXydA/original.webp --&Greataxe3|[&URL]409077763/78QfhXK7oBjYn_fiRBhyrQ/original.webp
+  --&Greatclub1|[&URL]409077779/xQO_UkWF0MMpo6WO4K6rJA/original.webp --&Greatclub2|[&URL]409077778/2OR4zUVQUQiobUvL4TVPOQ/original.webp
+  --&Greatclub3|[&URL]409077780/GXdZ8LqvMDl8Bi_Cx9zskQ/original.webp --&Greatsword1|[&URL]409077804/JY1CuX6YqgC5kwdJOA1XCA/original.webp
+  --&Greatsword2|[&URL]409077802/jAnxRb-Q7zTFqlpw8lTCeQ/original.webp --&Greatsword3|[&URL]409077803/J5Xu5rL7wLPONihZefJTVQ/original.webp
+  --&Greatsword4|[&URL]409077806/6kmHOJeXIMbPZWoe3DzPbA/original.webp --&Greatsword5|[&URL]409077800/H7lUQrmegL9MQJ6-eL2_Kw/original.webp
+  --&Greatsword6|[&URL]409077805/Uo9FFxyWH0k4ND1yw8INmg/original.webp --&Greatsword7|[&URL]409077808/mV7OffAQUiNzyCZLSYI0aw/original.webp
+  --&Greatsword8|[&URL]409077807/qp1nOf-vEoJ60lbbqAIrhg/original.webp --&Greatsword9|[&URL]409077801/Zc7ClIshvm5RVpPovMwZQQ/original.webp
+  --&Greatsword10|[&URL]409077809/-1yovXR3LKaMqxTM_Lv6bg/original.webp --&Halberd1|[&URL]409077829/hTW8ihd_BK5B4-KvEWADOg/original.webp
+  --&Halberd2|[&URL]409077830/yxV_ywc_SBT9CqRUpM3J7g/original.webp --&Halberd3|[&URL]409077828/rX0dmmX7sRh0Vvcy9Q7H3w/original.webp
+  --&Halberd4|[&URL]409077831/nOy6D0RCCyIA0LPDuNYHDQ/original.webp --&Halberd5|[&URL]409077827/9fhc1fCuwq2CmqX-5pnZEw/original.webp
+  --&Handaxe1|[&URL]409077845/puNBiWkBW53fiofLdJ6_fA/original.webp --&Handaxe2|[&URL]409077844/mZqtUklh6-IRBJHUzi059w/original.webp
+  --&Handaxe3|[&URL]409077846/Mt4rrM3vredsolsADqfgrA/original.webp --&Javelin1|[&URL]409077861/tWqD6w7ve6mmDhjfJ8nTqA/original.webp
+  --&Javelin2|[&URL]409077863/vuKfCTbIEiPiWt2CjgcGgA/original.webp --&Javelin3|[&URL]409077862/FDNhHsLkgwAEj7kel7k8LA/original.webp
+  --&Lance1|[&URL]409077877/fiic5X4d9HuArOZ-pieDjw/original.webp --&Light-Hammer1|[&URL]409077894/5rV86I721GiUfkMRas4KNw/original.webp
+  --&Light-Hammer2|[&URL]409077893/Z9u23D2i5KObMVhd4JGOhg/original.webp --&Light-Hammer3|[&URL]409077896/YvlN0Ip41QDJlPz3FbjWag/original.webp
+  --&Light-Hammer4|[&URL]409077892/oTd7qvVEmVbBbzCxUaVIfQ/original.webp --&Light-Hammer5|[&URL]409077897/US6UxW8DGFRoBAXRdAO4kg/original.webp
+  --&Light-Hammer6|[&URL]409077895/uG0gD2dvKauT9WU7suiPrw/original.webp --&Longsword1|[&URL]409077905/geTgGs7s_gt9GR5lkwh5tw/original.webp
+  --&Longsword2|[&URL]409077913/fhIU_8sqCf3P2KI5Mfzohg/original.webp --&Longsword3|[&URL]409077907/6nX_uigHgANCcQJNEtgo5Q/original.webp
+  --&Longsword4|[&URL]409077906/rO0W2TehnRhVtYJYI0GtuA/original.webp --&Longsword5|[&URL]409077910/srsMjjv4Cd7ZYiJ9uIa3KA/original.webp
+  --&Longsword6|[&URL]409077911/aFmSbsEGOhqpqMRX2BjasA/original.webp --&Longsword7|[&URL]409077909/_Cqjid4KbDzaEKASkFIUtg/original.webp
+  --&Longsword8|[&URL]409077904/O_s_97cYKe_3e2_BDa75Hw/original.webp --&Longsword9|[&URL]409077914/o4B0T0z7ACKLfhvWznHBjw/original.webp
+  --&Longsword10|[&URL]409077908/gCRlLnNaDzaU_dARZWdmJA/original.webp --&Longsword11|[&URL]409077912/XLWeLqCkmEMwDz3yVg8Z7Q/original.webp
+  --&Mace1|[&URL]409077935/H9ydL9BFbWbWQ3kZ3AJNKw/original.webp --&Mace2|[&URL]409077931/Sv3HBr0RKUamLzQXfs1Chg/original.webp
+  --&Mace3|[&URL]409077932/1Xa2RHbcrpqjIivAXKtfTQ/original.webp --&Mace4|[&URL]409077938/j3Lu92BDgewoqpV2GQB54w/original.webp
+  --&Mace5|[&URL]409077939/JzyhieNoihTM4dZdwde3Og/original.webp --&Mace6|[&URL]409077933/xj3I7PeEEVTzS1letZtHGg/original.webp
+  --&Mace7|[&URL]409077929/zcY5oC_vbPDMpACvtK4IWg/original.webp --&Mace8|[&URL]409077930/rFnAH4uBwBqQAD7NYucy5g/original.webp
+  --&Mace9|[&URL]409077934/8rKqOeVfIfVC_rtMgO4qWQ/original.webp --&Mace10|[&URL]409077928/8-gyOinRdRbM822vYzg6vQ/original.webp
+  --&Maul1|[&URL]409077949/kMTFu728yEn4tLK6JJc4mA/original.webp --&Maul2|[&URL]409077951/aRauDipB4POkce4JUWex4A/original.webp
+  --&Maul3|[&URL]409077950/9Q1L4yC0StSbtYe-DIX8jg/original.webp --&Maul4|[&URL]409077953/lOlPEqlkJlvjPHIUi0VP4A/original.webp
+  --&Maul5|[&URL]409077952/9554si0hlQt3jBExbeN5tA/original.webp --&Maul6|[&URL]409077954/AyfuF6FZXRcYJGWs0D173w/original.webp
+  --&Maul7|[&URL]409077955/5Ytbc2-FvvWzItxFF0B28g/original.webp --&Morningstar1|[&URL]409077966/GN3gDQA5pfmiNpwF0nIAXA/original.webp
+  --&Morningstar2|[&URL]409077968/NbdrhG3RPB6Fr0YQhQPdbQ/original.webp --&Morningstar3|[&URL]409077970/Rkt-F27C-nd58fMFvGj1SQ/original.webp
+  --&Morningstar4|[&URL]409077969/AcQUoEGsOb8ugmVShLDugw/original.webp --&Morningstar5|[&URL]409077967/qvle9izYMBsHlsXnYLLqRw/original.webp
+  --&Pike1|[&URL]409077982/KDAbHCY4f_tGL9JcZpwoxA/original.webp --&Pike2|[&URL]409077984/aqHrVDNDXD8t-gmiXQoctw/original.webp
+  --&Pike3|[&URL]409077981/ql25Fb1aO6JZL0WIxMWBzg/original.webp --&Pike4|[&URL]409077979/PeJe652ibuoFcI3XsI8YnQ/original.webp
+  --&Pike5|[&URL]409077985/gJ3Lx224S4uepr26I-Ywhw/original.webp --&Pike6|[&URL]409077980/P_IUrR84eeZIPOsKF3kiIw/original.webp
+  --&Quarterstaff1|[&URL]409078000/C9AIOZtz9PJxwfSBDa3FsA/original.webp --&Quarterstaff2|[&URL]409077999/uNUCd98sbt3SG778VbnFLQ/original.webp
+  --&Quarterstaff3|[&URL]409078001/ICojSYyEoqd7EGNyxeQ7Bg/original.webp --&Quarterstaff4|[&URL]409077997/H0ZGv5rrOEwXn3_q2LZB8Q/original.webp
+  --&Quarterstaff5|[&URL]409077998/dkk07Ye_3_4-XBolPDBDeQ/original.webp --&Quarterstaff6|[&URL]409077996/37oEy1W32TXDzugUJsYOnA/original.webp
+  --&Quarterstaff7|[&URL]409077994/-k2wvYwtLe0wCROHaGmaWA/original.webp --&Quarterstaff8|[&URL]409077995/jK8KlZxT2wovzIynCG_R4Q/original.webp
+  --&Rapier1|[&URL]409078016/lPiSW0MGjIsr6zG5qSUOMw/original.webp --&Rapier2|[&URL]409078017/nAHrGyB4ctnT5HFbPumZIA/original.webp
+  --&Rapier3|[&URL]409078020/_vpGkDL3tUnTSQCdpDPVAw/original.webp --&Rapier4|[&URL]409078019/M-YHqPN33VCOEGwZf0wK7g/original.webp
+  --&Rapier5|[&URL]409078018/vKhlyvOJDuLmxDeCJFdq9g/original.webp --&Rapier6|[&URL]409078021/j16SGIWijYz6tqZce-yFTA/original.webp
+  --&Rapier7|[&URL]409078015/2OXlvAWN5aqXMwY-xFX0cg/original.webp --&Scimitar1|[&URL]409078042/04pC7KFURg2LwBCAiQgwqw/original.webp
+  --&Scimitar2|[&URL]409078037/2_uVzar4vu6Us4O8ue1ZTQ/original.webp --&Scimitar3|[&URL]409078036/ExPtfCbaSnVAPjhFxTyrVw/original.webp
+  --&Scimitar4|[&URL]409078039/6XENuFa1Ix5FWamHWJ4ESg/original.webp --&Scimitar5|[&URL]409078033/8SVeKCbGPiPvUZvGDlYqcA/original.webp
+  --&Scimitar6|[&URL]409078043/3jhKqphtPnJTVCtvHMUWjA/original.webp --&Scimitar7|[&URL]409078034/9Rt1DBet_gnbcfPzB6BBxw/original.webp
+  --&Scimitar8|[&URL]409078041/w87WoWlpigMYnLQ4RlSzjA/original.webp --&Scimitar9|[&URL]409078035/Jla7i3fsnnlwWqE-woQRMw/original.webp
+  --&Scimitar10|[&URL]409078040/K_cmKy8tKsdvOb4Q5II2fw/original.webp --&Scimitar11|[&URL]409078038/kOibAGJYwh59ALRxrdMepQ/original.webp
+  --&Shortsword1|[&URL]409078058/kPixV7xR5nJrDRXmwKkeOQ/original.webp --&Shortsword2|[&URL]409078055/geVB4KXDlCyqoO9d5uEFlA/original.webp
+  --&Shortsword3|[&URL]409078063/DoNYFcDHkdFVL8jZ85eGug/original.webp --&Shortsword4|[&URL]409078056/4Ko1DrRfBgXL3ERcBXlK5A/original.webp
+  --&Shortsword5|[&URL]409078057/5aTAe5pe4CajJNJ3bIRp7A/original.webp --&Shortsword6|[&URL]409078065/BoqMSBuQRxKGE9iEwPw-Cw/original.webp
+  --&Shortsword7|[&URL]409078059/pf6XhczBZ7Qb7_TYzRmYgg/original.webp --&Shortsword8|[&URL]409078060/s1FnIZaJ_UoW2YI0NHveSQ/original.webp
+  --&Shortsword9|[&URL]409078061/2bws011CJNo4xYVC-lY1HQ/original.webp --&Sickle1|[&URL]409078074/QcNEy-8sYIqKImxrhC7qcQ/original.webp
+  --&Sickle2|[&URL]409078075/nFpEg-1ekXkXWT6_jVaE7A/original.webp --&Sickle3|[&URL]409077703/POjIuhiVFQ_bpP2i_tIjYQ/original.webp
+  --&Spear1|[&URL]409078094/Yi56EaHNd5DcvAmLkBrXog/original.webp --&Spear2|[&URL]409078093/i0Smes-9JHYu3PU0TbPXOw/original.webp
+  --&Spear3|[&URL]409078095/unjx1BeZHubRPF2tqXHTIA/original.webp --&Spear4|[&URL]409078090/QU3UFob2t__Ah4bD8IV-9w/original.webp
+  --&Spear5|[&URL]409078089/b50wWjKN0lZ5WUkNvLAt2A/original.webp --&Spear6|[&URL]409078091/E2wvovnVJQv7CCnNxYiIVQ/original.webp
+  --&Spear7|[&URL]409078097/cWRdJ6BlsUFIKChXI6lPmw/original.webp --&Spear8|[&URL]409078096/kFQA6iCTlDJy_w3p17w6jg/original.webp
+  --&Spear9|[&URL]409078092/6MSSyf6oJZ3l5eBmEhiD4Q/original.webp --&Trident1|[&URL]409078106/97VmFK-mS-7_7TP6gl36KA/original.webp
+  --&Trident2|[&URL]409078108/EkGZpo-dgLk7SReKcvhApA/original.webp --&Trident3|[&URL]409078110/nSdVmOhbyZN3RYRyqDKTQw/original.webp
+  --&Trident4|[&URL]409078107/-QT33PS-8XGtJ1B68FLrUw/original.webp --&Trident5|[&URL]409078109/EdoG1sJ4Y_MVRLNj3eQEsQ/original.webp
+  --&Trident6|[&URL]409078112/qgrl3qrP6SfExwpBIJ1iVw/original.webp --&Trident7|[&URL]409078111/zQZQP_B26NwfLvLOn0km8w/original.webp
+  --&Warhammer1|[&URL]409078120/u_tHVl5P3l7LwKEU4p87-A/original.webp --&Warhammer2|[&URL]409078123/DZUS-HXHEi1YVzhQl1c-SQ/original.webp
+  --&Warhammer3|[&URL]409078119/RVG5nyPuPcbmXUxZk1TMKA/original.webp --&Warhammer4|[&URL]409078122/6A58zKRA22WNh3wnRSWODw/original.webp
+  --&Warhammer5|[&URL]409078121/nZkbPa1ZuwEiQXSOt0iOYw/original.webp --&Warpick1|[&URL]409078131/AXJIMbJ92TCuFeYGu-t1rQ/original.webp
+  --&Warpick2|[&URL]409078132/GfKKHrqWfBCwgcu2FEGy1A/original.webp --&Warpick3|[&URL]409078133/RnqkAqHB06CCtUasb18zag/original.webp
+  --&Miscellaneous1|[&URL]438882017/wukPASLxU2LF8xxDVFRQ5Q/original.webp --&Miscellaneous2|[&URL]438882005/2F9l5eqTX4D206i99smJJA/original.webp
+  --&Miscellaneous3|[&URL]438882007/skK3-XXdZKIdFKTDgKUgBQ/original.webp --&Miscellaneous4|[&URL]438882006/ttM4hIg8LgaMGSCe7HO7iA/original.webp
+  --&Miscellaneous5|[&URL]438882008/pgK3RrG7NtQ3ZWO6tIl49g/original.webp --&Miscellaneous6|[&URL]438882011/E-ueQ16SKfUqJZJbX1GQRQ/original.webp
+  --&Miscellaneous7|[&URL]438882014/rXPYomxbzoOjI0YBfhYrww/original.webp --&Miscellaneous8|[&URL]438882012/JV1YxEqbTubak6EUhC2GwQ/original.webp
+  --&Miscellaneous9|[&URL]438882016/5Lwbw664YgwGHXfKSGsJZg/original.webp --&Miscellaneous10|[&URL]438882018/O-9HFfCBaLIwFrRaB7Pj0w/original.webp
+  --&Miscellaneous11|[&URL]438882019/vuui1j8WlGyD67NAzP6Scw/original.webp --&Miscellaneous12|[&URL]438882021/bple62pyePfdBlxBo9FRHQ/original.webp
+  --&Miscellaneous13|[&URL]438882022/ocQiVloMs5u88oP5VucUlg/original.webp --&Miscellaneous14|[&URL]438882027/to6rKubnef_WfIEHLhSA5g/original.webp
+  --&Miscellaneous15|[&URL]438882028/XCjtdNppRuyGusqawT1tpA/original.webp --&Miscellaneous16|[&URL]438882029/3ytG0DZCbD1Uq_9-jrzBMg/original.webp
+  --&Miscellaneous17|[&URL]438882030/q0UjBxgTm3RoBs38asvSEg/original.webp --&Miscellaneous18|[&URL]438882031/DDk-cGWaBMpX71IcE4LDQw/original.webp
+  --&Miscellaneous19|[&URL]438882032/ZdhCl8Rwnyy6VNi95MQnFA/original.webp --&Miscellaneous20|[&URL]438882033/DtJ9XZ0y393wAukEn6nHvg/original.webp
+  --&Miscellaneous21|[&URL]438882034/49cEN93OVT7risbXzlF9UA/original.webp --&Miscellaneous22|[&URL]438882035/amxmhHyr_4y3Pwa_hlLdxA/original.webp
+  --&Miscellaneous23|[&URL]438882036/S6MLXfdh5ZE_2CekkET47w/original.webp --&Miscellaneous24|[&URL]438882037/Z6bIFId5gZsvv1PmSs5xLA/original.webp
+  --&Miscellaneous25|[&URL]438882038/mtgK5PdR1LYG2SdfMwbVaQ/original.webp --&Miscellaneous26|[&URL]438882040/FURmDEHUKfZbkVVtfDi3XA/original.webp
+  --&Miscellaneous27|[&URL]438882043/5LLoq_KS2xW-OBd7x3ntCA/original.webp --&Miscellaneous28|[&URL]438882045/Adn2XJi4ueOcYfUSxW_MYg/original.webp
+  --&Miscellaneous29|[&URL]438882047/C42wQoyPEIu-ZcSw4MydgQ/original.webp --&Miscellaneous30|[&URL]438882052/F8X8tQcnCDw_lzjCJ7mxMA/original.webp
+  --&Miscellaneous31|[&URL]438882048/tk4tpyXMUXGvZUtYwnRzKQ/original.webp --&Miscellaneous32|[&URL]438882050/1o4l1MpeXMcKOTKl8UJJ7Q/original.webp
+  --&Miscellaneous33|[&URL]438882051/STYCr1etT4_NxAX-S1R1Xw/original.webp --&Miscellaneous34|[&URL]438882053/eHxsWO3Ystz-5GG1wJsluQ/original.webp
+  --&Miscellaneous35|[&URL]438882056/6QvAWREBdPV0qakmPTHZQw/original.webp --&Miscellaneous36|[&URL]438882057/0G0_oLf1jxK1i50qTgFzJg/original.webp
+  --&Miscellaneous37|[&URL]438882058/OrQMcWYwYXrxmvqKvYg1XA/original.webp --&Miscellaneous38|[&URL]438882059/LBO08OBSmDoi15ygrH-vDg/original.webp
+  --&Miscellaneous39|[&URL]438882060/9GFU845YqAMsbfFKpMsQhQ/original.webp --&Miscellaneous40|[&URL]438882061/lcgaSxBMUtbsXAQ4A12A-w/original.webp
+  --&Miscellaneous41|[&URL]438882062/2wbMIDTgDOJK8cVXzKW-iA/original.webp --&Miscellaneous42|[&URL]438882063/7itg9ygL5qKnhbj1wej-NA/original.webp
+  --&Miscellaneous43|[&URL]438882066/0UUg1xYN42oG3X5F-mB5jw/original.webp --&WeaponImagesLoaded|1
+  --:TokenVariablesDone|
 --<|
 }}
