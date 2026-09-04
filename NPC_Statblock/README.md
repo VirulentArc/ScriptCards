@@ -6,8 +6,9 @@ Select an NPC token, run the macro, and the script prints a chat stat block with
 
 The Mod is designed to resemble official D&D NPC stat blocks as closely as possible while still keeping Roll20 functionality practical at the table.
 
-<!-- IMAGE PLACEHOLDER: Main NPC stat block in 2014 Full Mode -->
-<!-- ![NPC Stat Block - 2014 Full Mode](docs/images/npc-statblock-2014-full.png) -->
+![NPC Stat Block — 2014 Full Mode](docs/images/npc-statblock-2014-full.png)
+
+*Screenshot reference: The main NPC stat block using the 2014 theme in Full Mode, showing the NPC header, core stats, ability/save grid, skills, actions, and header tools.*
 
 ---
 
@@ -45,11 +46,11 @@ The Mod also supports both **2014** and **2024** presentation styles. The select
   - legendary actions
   - mythic actions
   - spells
-- Includes built-in **Disadvantage / Normal / Advantage** roll controls.
-- Includes a **Whisper to GM** toggle.
-- Includes an **Auto Roll Damage** toggle.
-- Includes **Full Mode** and **Combat Mode** display options.
-- Includes a **Spells** card for NPC spellcasting.
+- The Settings handout includes **Disadvantage / Normal / Advantage** roll modes.
+- The Settings handout includes **Public / Whisper to GM** roll visibility.
+- The Settings handout includes **Manual / Automatic** damage rolls.
+- Includes **Full Mode** and **Combat Mode** display options, selected from the Settings handout.
+- Includes a **Spells** card for supported 2014 NPC spellcasting.
 - Includes tooltips for traits, actions, and spells so the GM can review full text without sending it to chat.
 - Includes a **Recharge** button for abilities with Recharge text.
 - Includes a token-only **HP roll** button for NPCs with an HP formula.
@@ -143,19 +144,20 @@ NPC Stat Block Settings
 
 This handout stores the Mod's shared settings, including:
 
-- whisper mode
-- roll mode
-- auto damage mode
+- Roll Visibility
+- Roll Mode
+- Damage Rolls
 - Full/Combat mode
 - Rules/Theme
-- condition marker mappings
+- Condition Marker mappings
 
 Do not edit the GM Notes of this handout unless you are intentionally resetting or repairing the settings.
 
 If the handout is deleted, the script will recreate it the next time the macro runs.
 
-<!-- IMAGE PLACEHOLDER: NPC Stat Block Settings handout -->
-<!-- ![NPC Stat Block Settings](docs/images/npc-statblock-settings.png) -->
+![NPC Stat Block Settings handout](images/settings.png)
+
+*Screenshot reference: The NPC Stat Block Settings handout showing Rules/Theme, Full/Combat mode, Roll Visibility, Roll Mode, Damage Rolls, and the link to Condition Marker settings.*
 
 ---
 
@@ -173,17 +175,15 @@ Combat Mode is a tighter table-use view. It keeps combat-relevant information vi
 
 Traits are still shown in Combat Mode, because many NPC traits are important during combat.
 
-<!-- IMAGE PLACEHOLDER: Combat Mode example -->
-<!-- ![NPC Stat Block - Combat Mode](docs/images/npc-statblock-combat-mode.png) -->
+![NPC Stat Block — Combat Mode](images/dullahan_combat.png)
+
+*Screenshot reference: The main NPC stat block in Combat Mode, showing the compact combat-focused layout and the separate Skills button.*
 
 ### Switching Modes
 
-The mode button appears at the bottom of the card.
+Open the **NPC Stat Block Settings** handout with the gear button and choose **Full Mode** or **Combat Mode** under **Stat Block**.
 
-- **Combat Mode** means the card is currently in Full Mode and will switch to Combat Mode.
-- **Full Mode** means the card is currently in Combat Mode and will switch to Full Mode.
-
-The selected mode is saved in the settings handout and is shared for the game.
+The selected mode is saved in the settings handout and is shared for the game. Use **Reload Stat Block** in the handout to redraw the current NPC after changing settings.
 
 ---
 
@@ -191,8 +191,9 @@ The selected mode is saved in the settings handout and is shared for the game.
 
 The Mod supports both **2014** and **2024** visual presentation styles.
 
-<!-- IMAGE PLACEHOLDER: 2014 and 2024 theme comparison -->
-<!-- ![NPC Stat Block - 2014 and 2024 Themes](docs/images/npc-statblock-theme-comparison.png) -->
+![2014 and 2024 Rules/Theme comparison](images/goblin2014.png)(images/goblin2024.png)
+
+*Screenshot reference: A side-by-side comparison of the same NPC displayed with the 2014 theme and the 2024 theme.*
 
 This is a display setting, not a sheet-type lock.
 
@@ -205,41 +206,30 @@ The setting is saved in the shared settings handout.
 
 ---
 
-## Card Controls
+## Header and Settings Controls
 
-The bottom controls determine how card rolls behave.
+The v5.5.0 stat block keeps the main card controls deliberately small.
 
-### Whisper to GM
+### Header Tools
 
-The speech-bubble button toggles whether the stat block's rolls and related outputs are whispered.
+The header contains:
 
-- Whisper on: outputs are whispered to the GM.
-- Whisper off: outputs are public.
+- **Spells** — opens the separate Spells card when spell data is available on a supported 2014 NPC.
+- **Manage Conditions** — opens the condition manager for the selected token.
+- **Settings** — the gear button opens the **NPC Stat Block Settings** handout.
 
-### Auto Roll Damage
+### Settings Handout
 
-The **DMG** button controls how attack damage is handled.
+The Settings handout contains the persistent controls for the Mod:
 
-- **Off / Pick Damage**: attack rolls use Roll20's normal damage links or buttons.
-- **On / Full Damage**: attack rolls include damage automatically.
+- **Rules / Theme** — 2014 or 2024.
+- **Stat Block** — Full Mode or Combat Mode.
+- **Roll Visibility** — Public or Whisper to GM.
+- **Roll Mode** — Disadvantage, Normal, or Advantage.
+- **Damage Rolls** — Manual or Automatic.
+- **Condition Markers** — configure the token marker assigned to each supported condition.
 
-### D / N / A Buttons
-
-The **D**, **N**, and **A** buttons control the roll mode.
-
-- **D** = disadvantage
-- **N** = normal
-- **A** = advantage
-
-These controls are used by the card's rolls, including initiative.
-
-### Settings Button
-
-The gear button opens the **NPC Stat Block Settings** handout.
-
-### Manage Conditions Button
-
-The condition-management button opens the **Manage Conditions** card for the selected token.
+After changing settings, use **Reload Stat Block** in the handout to redraw the currently selected NPC with the new settings.
 
 ---
 
@@ -295,7 +285,7 @@ In Full Mode, skill buttons appear directly on the main card.
 
 In Combat Mode, click **Skills** to open a separate skill card.
 
-Initiative uses the NPC's initiative bonus when present. If no separate initiative bonus exists, it falls back to Dexterity. Initiative rolls respect the card's D / N / A mode and update the turn order for the selected token.
+Initiative uses the NPC's initiative bonus when present. If no separate initiative bonus exists, it falls back to Dexterity. Initiative rolls respect the current **Roll Mode** setting and update the turn order for the selected token.
 
 ### Actions
 
@@ -313,12 +303,15 @@ Many NPC traits are rules-critical during combat, such as Magic Resistance, Lege
 
 ## Spells
 
-If the NPC has spellcasting data, the card shows a **Spells** button.
+On supported **2014 NPC sheets**, NPCs with spellcasting data receive a **Spells** button.
 
-Click **Spells** to open a spell list card.
+Click **Spells** to open a separate spell list card.
 
-<!-- IMAGE PLACEHOLDER: Spells card -->
-<!-- ![NPC Stat Block - Spells](docs/images/npc-statblock-spells.png) -->
+The dedicated Spells card is not currently part of the experimental Beacon path.
+
+![NPC Stat Block — Spells card](images/flameskull_spells.png)
+
+*Screenshot reference: The separate Spells card opened from an NPC stat block, showing several spell levels and spell rows/buttons.*
 
 Spells are grouped by level:
 
@@ -379,8 +372,9 @@ A second button resets the token's HP to the sheet HP value.
 
 The Mod includes a **Manage Conditions** card for the selected token.
 
-<!-- IMAGE PLACEHOLDER: Manage Conditions card -->
-<!-- ![NPC Stat Block - Manage Conditions](docs/images/npc-statblock-manage-conditions.png) -->
+![NPC Stat Block — Manage Conditions](images/conditions.png)
+
+*Screenshot reference: The Manage Conditions card for a selected NPC token, showing available condition buttons with at least one active condition highlighted.*
 
 Supported conditions are:
 
@@ -410,8 +404,9 @@ If the NPC has Condition Immunities, immune conditions are automatically omitted
 
 Condition marker mappings are stored in the shared settings handout.
 
-<!-- IMAGE PLACEHOLDER: Condition Marker settings -->
-<!-- ![NPC Stat Block - Condition Marker Settings](docs/images/npc-statblock-condition-markers.png) -->
+![NPC Stat Block — Condition Marker Settings](images/conditionsettings.png)
+
+*Screenshot reference: The Condition Marker settings page in the NPC Stat Block Settings handout, showing assigned markers and the Change/Clear controls.*
 
 On first setup, the Mod attempts to auto-match Roll20's default token markers by name where possible.
 
@@ -434,10 +429,10 @@ The script stores these settings in the `NPC Stat Block Settings` handout:
 
 | Setting | What it controls |
 | --- | --- |
-| Whisper to GM | Whether outputs are public or whispered to the GM. |
+| Roll Visibility | Public or Whisper to GM. |
 | Roll Mode | Disadvantage, Normal, or Advantage. |
-| Auto Roll Damage | Pick damage or include damage automatically. |
-| Display Mode | Full Mode or Combat Mode. |
+| Damage Rolls | Manual or Automatic. |
+| Stat Block | Full Mode or Combat Mode. |
 | Rules / Theme | 2014 or 2024 presentation style. |
 | Condition Markers | Which token marker is assigned to each supported condition. |
 
@@ -451,7 +446,7 @@ The script reads the selected NPC sheet and displays a chat stat block.
 
 It does not rewrite the NPC's stat block contents.
 
-To keep native sheet-style button behavior consistent with the card's roll controls, the script may update the selected NPC sheet's normal whisper and damage roll settings. This is the same kind of setting changed by the Roll20 5E sheet's own controls.
+To keep native sheet output consistent with the Mod's settings, the script may synchronize the relevant NPC sheet roll settings, such as roll visibility and damage behavior. The experimental Beacon path also synchronizes its native roll mode.
 
 The script can also:
 
@@ -502,17 +497,18 @@ Make sure the NPC has spellcasting data on the NPC sheet. The **Spells** button 
 
 ### Rolls are whispered or public unexpectedly
 
-Use the speech-bubble button on the card. The setting is saved globally in `NPC Stat Block Settings`.
+Open **NPC Stat Block Settings** and check **Roll Visibility**. Choose **Public** or **Whisper to GM** as needed.
 
 ### Damage is not rolling the way you want
 
-Use the **DMG** button.
+Open **NPC Stat Block Settings** and check **Damage Rolls**.
 
-Pick-damage mode gives Roll20's normal damage links. Full-damage mode includes damage directly in the roll output.
+- **Manual** uses the normal damage buttons/links.
+- **Automatic** includes damage with the attack output.
 
 ### The card is too large in chat
 
-Switch to Combat Mode. Combat Mode keeps combat-relevant information visible while moving the full skill grid to the **Skills** button.
+Open **NPC Stat Block Settings** and choose **Combat Mode** under **Stat Block**. Combat Mode keeps combat-relevant information visible while moving the full skill grid to the **Skills** button.
 
 ### Long text is cut off
 
