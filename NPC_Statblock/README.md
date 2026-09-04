@@ -6,7 +6,7 @@ Select an NPC token, run the macro, and the script prints a chat stat block with
 
 The Mod is designed to resemble official D&D NPC stat blocks as closely as possible while still keeping Roll20 functionality practical at the table.
 
-![NPC Stat Block — 2014 Full Mode](images/golbin2014.png)
+![NPC Stat Block — 2014 Full Mode](images/goblin2014.png)
 
 *Screenshot reference: The main NPC stat block using the 2014 theme in Full Mode, showing the NPC header, core stats, ability/save grid, skills, actions, and header tools.*
 
