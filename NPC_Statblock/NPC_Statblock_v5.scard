@@ -4,6 +4,7 @@
   --/| Version     : 5.5.0
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
+  --/| Github URL  : https://github.com/VirulentArc/ScriptCards/tree/main/NPC_Statblock
   --/| ==========================================================================
   --&Version|5.5.0
   --#functionbenchmarking|0 --#Debug|0 --#Whisper|self --#emoteState|0 --#dontcheckbuttonsforapi|1 --#title|
