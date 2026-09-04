@@ -6,6 +6,9 @@ Select an NPC token, run the macro, and the script prints a chat stat block with
 
 The Mod is designed to resemble official D&D NPC stat blocks as closely as possible while still keeping Roll20 functionality practical at the table.
 
+<!-- IMAGE PLACEHOLDER: Main NPC stat block in 2014 Full Mode -->
+<!-- ![NPC Stat Block - 2014 Full Mode](docs/images/npc-statblock-2014-full.png) -->
+
 ---
 
 ## Support Status
@@ -18,7 +21,7 @@ The Mod is designed to resemble official D&D NPC stat blocks as closely as possi
 
 - **Beacon character sheet**
 
-Beacon support is currently **experimental only** and requires the **Beacon experimental version of ScriptCards from my GitHub**. It is not part of the normal public ScriptCards release at this time.
+Beacon support is currently **experimental only** and requires the [Beacon-compatible experimental version of ScriptCards](https://github.com/VirulentArc/ScriptCards/tree/main/D%26D2024%20Beacon). It is not part of the normal public ScriptCards release at this time.
 
 The Mod also supports both **2014** and **2024** presentation styles. The selected Rules/Theme setting is separate from the sheet type, so either supported sheet can display either theme.
 
@@ -59,33 +62,6 @@ The Mod also supports both **2014** and **2024** presentation styles. The select
 
 ---
 
-## Image Placeholders
-
-Add screenshots later in the following locations.
-
-> **Image placeholder:** Main stat block in **2014 Full Mode**  
-> Suggested path: `docs/images/npc-statblock-2014-full.png`
-
-> **Image placeholder:** Main stat block in **2024 Theme**  
-> Suggested path: `docs/images/npc-statblock-2024-full.png`
-
-> **Image placeholder:** **Combat Mode** example  
-> Suggested path: `docs/images/npc-statblock-combat-mode.png`
-
-> **Image placeholder:** **Spells** card example  
-> Suggested path: `docs/images/npc-statblock-spells.png`
-
-> **Image placeholder:** **NPC Stat Block Settings** handout  
-> Suggested path: `docs/images/npc-statblock-settings.png`
-
-> **Image placeholder:** **Manage Conditions** card  
-> Suggested path: `docs/images/npc-statblock-manage-conditions.png`
-
-> **Image placeholder:** **Condition Marker Settings** handout section  
-> Suggested path: `docs/images/npc-statblock-condition-markers.png`
-
----
-
 ## Requirements
 
 ### For Officially Supported 2014 Use
@@ -99,7 +75,7 @@ Add screenshots later in the following locations.
 ### For Experimental Beacon Use
 
 - A Roll20 Pro game with Mod/API access.
-- The **Beacon experimental ScriptCards build** from my GitHub.
+- The [**Beacon-compatible experimental ScriptCards build**](https://github.com/VirulentArc/ScriptCards/tree/main/D%26D2024%20Beacon).
 - A Beacon NPC sheet.
 - A token linked to that NPC sheet.
 
@@ -107,18 +83,37 @@ Add screenshots later in the following locations.
 
 ## Installation
 
-1. Install ScriptCards in your Roll20 game.
+### D&D 5E 2014
+
+1. Install the normal release of **ScriptCards** in your Roll20 game.
 2. Copy the full contents of `NPC_Statblock_v5.5.0.scard`.
 3. In Roll20, open the **Collections** tab.
 4. Create a new macro, such as `NPC-Statblock`.
-5. Paste the full script into the macro.
+5. Paste the full NPC Stat Block script into the macro.
 6. Save the macro.
 7. Select a token that represents an NPC character.
 8. Run the macro.
 
-The script is installed as a Roll20 macro. It is not a separate Mod/API script.
+The NPC Stat Block script is installed as a Roll20 **Game Macro**. It is not a separate Mod/API script.
 
-For updates, replace the entire macro with the newest full script. Large ScriptCards macros are easiest to maintain in an external editor, then copied into Roll20 as one complete block.
+### Experimental Beacon
+
+Beacon requires the experimental Beacon-compatible build of ScriptCards instead of the normal ScriptCards release.
+
+1. Go to the [D&D 2024 Beacon folder in the ScriptCards GitHub repository](https://github.com/VirulentArc/ScriptCards/tree/main/D%26D2024%20Beacon).
+2. Open the current Beacon-compatible ScriptCards `.js` file and copy its complete contents.
+3. In Roll20, open your game's **Mod (API) Scripts** page.
+4. Create a new custom Mod script and give it a name such as `ScriptCards-Beacon`.
+5. Paste the complete Beacon-compatible ScriptCards JavaScript into the new Mod script and save it.
+6. If the normal release of ScriptCards is already installed in the game, disable or remove it while using the Beacon build. **Do not run both versions of ScriptCards at the same time.**
+7. Copy the full contents of `NPC_Statblock_v5.5.0.scard`.
+8. In Roll20, open the **Collections** tab and create a new Game Macro, such as `NPC-Statblock`.
+9. Paste the full NPC Stat Block script into the macro and save it.
+10. Select a token representing a Beacon NPC and run the macro.
+
+The experimental Beacon ScriptCards build replaces the normal ScriptCards Mod for Beacon use. The NPC Stat Block itself is still installed as a **Game Macro** in the same way as the 2014 version.
+
+For updates, replace the entire NPC Stat Block macro with the newest full script. Large ScriptCards macros are easiest to maintain in an external editor, then copied into Roll20 as one complete block.
 
 ---
 
@@ -159,6 +154,9 @@ Do not edit the GM Notes of this handout unless you are intentionally resetting 
 
 If the handout is deleted, the script will recreate it the next time the macro runs.
 
+<!-- IMAGE PLACEHOLDER: NPC Stat Block Settings handout -->
+<!-- ![NPC Stat Block Settings](docs/images/npc-statblock-settings.png) -->
+
 ---
 
 ## Display Modes
@@ -175,6 +173,9 @@ Combat Mode is a tighter table-use view. It keeps combat-relevant information vi
 
 Traits are still shown in Combat Mode, because many NPC traits are important during combat.
 
+<!-- IMAGE PLACEHOLDER: Combat Mode example -->
+<!-- ![NPC Stat Block - Combat Mode](docs/images/npc-statblock-combat-mode.png) -->
+
 ### Switching Modes
 
 The mode button appears at the bottom of the card.
@@ -189,6 +190,9 @@ The selected mode is saved in the settings handout and is shared for the game.
 ## Rules / Theme
 
 The Mod supports both **2014** and **2024** visual presentation styles.
+
+<!-- IMAGE PLACEHOLDER: 2014 and 2024 theme comparison -->
+<!-- ![NPC Stat Block - 2014 and 2024 Themes](docs/images/npc-statblock-theme-comparison.png) -->
 
 This is a display setting, not a sheet-type lock.
 
@@ -313,6 +317,9 @@ If the NPC has spellcasting data, the card shows a **Spells** button.
 
 Click **Spells** to open a spell list card.
 
+<!-- IMAGE PLACEHOLDER: Spells card -->
+<!-- ![NPC Stat Block - Spells](docs/images/npc-statblock-spells.png) -->
+
 Spells are grouped by level:
 
 - Cantrips
@@ -372,6 +379,9 @@ A second button resets the token's HP to the sheet HP value.
 
 The Mod includes a **Manage Conditions** card for the selected token.
 
+<!-- IMAGE PLACEHOLDER: Manage Conditions card -->
+<!-- ![NPC Stat Block - Manage Conditions](docs/images/npc-statblock-manage-conditions.png) -->
+
 Supported conditions are:
 
 - Blinded
@@ -399,6 +409,9 @@ If the NPC has Condition Immunities, immune conditions are automatically omitted
 ## Condition Marker Settings
 
 Condition marker mappings are stored in the shared settings handout.
+
+<!-- IMAGE PLACEHOLDER: Condition Marker settings -->
+<!-- ![NPC Stat Block - Condition Marker Settings](docs/images/npc-statblock-condition-markers.png) -->
 
 On first setup, the Mod attempts to auto-match Roll20's default token markers by name where possible.
 
