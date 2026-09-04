@@ -8,8 +8,6 @@ The Mod is designed to resemble official D&D NPC stat blocks as closely as possi
 
 ![NPC Stat Block — 2014 Full Mode](images/goblin2014.png)
 
-*Screenshot reference: The main NPC stat block using the 2014 theme in Full Mode, showing the NPC header, core stats, ability/save grid, skills, actions, and header tools.*
-
 ---
 
 ## Support Status
@@ -157,8 +155,6 @@ If the handout is deleted, the script will recreate it the next time the macro r
 
 ![NPC Stat Block Settings handout](images/settings.png)
 
-*Screenshot reference: The NPC Stat Block Settings handout showing Rules/Theme, Full/Combat mode, Roll Visibility, Roll Mode, Damage Rolls, and the link to Condition Marker settings.*
-
 ---
 
 ## Display Modes
@@ -179,8 +175,6 @@ Traits are still shown in Combat Mode, because many NPC traits are important dur
 
 ![NPC Stat Block — Combat Mode](images/dullahan_combat.png)
 
-*Screenshot reference: The main NPC stat block in Combat Mode, showing the compact combat-focused layout and the separate Skills button.*
-
 ### Switching Modes
 
 Open the **NPC Stat Block Settings** handout with the gear button and choose **Full Mode** or **Combat Mode** under **Stat Block**.
@@ -194,8 +188,6 @@ The selected mode is saved in the settings handout and is shared for the game. U
 The Mod supports both **2014** and **2024** visual presentation styles.
 
 ![2014 and 2024 Rules/Theme comparison](images/goblin2014.png) ![2014 and 2024 Rules/Theme comparison](images/goblin2024.png)
-
-*Screenshot reference: A side-by-side comparison of the same NPC displayed with the 2014 theme and the 2024 theme.*
 
 This is a display setting, not a sheet-type lock.
 
@@ -313,8 +305,6 @@ The dedicated Spells card is not currently part of the experimental Beacon path 
 
 ![NPC Stat Block — Spells card](images/flameskull_spells.png)
 
-*Screenshot reference: The separate Spells card opened from an NPC stat block, showing several spell levels and spell rows/buttons.*
-
 Spells are grouped by level:
 
 - Cantrips
@@ -376,8 +366,6 @@ The Mod includes a **Manage Conditions** card for the selected token.
 
 ![NPC Stat Block — Manage Conditions](images/conditions.png)
 
-*Screenshot reference: The Manage Conditions card for a selected NPC token, showing available condition buttons with at least one active condition highlighted.*
-
 Supported conditions are:
 
 - Blinded
@@ -407,8 +395,6 @@ If the NPC has Condition Immunities, immune conditions are automatically omitted
 Condition marker mappings are stored in the shared settings handout.
 
 ![NPC Stat Block — Condition Marker Settings](images/conditionsettings.png)
-
-*Screenshot reference: The Condition Marker settings page in the NPC Stat Block Settings handout, showing assigned markers and the Change/Clear controls.*
 
 On first setup, the Mod attempts to auto-match Roll20's default token markers by name where possible.
 
