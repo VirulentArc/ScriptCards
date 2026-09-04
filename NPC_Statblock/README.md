@@ -193,7 +193,7 @@ The selected mode is saved in the settings handout and is shared for the game. U
 
 The Mod supports both **2014** and **2024** visual presentation styles.
 
-![2014 and 2024 Rules/Theme comparison](images/goblin2014.png)(images/goblin2024.png)
+![2014 and 2024 Rules/Theme comparison](images/goblin2014.png) ![2014 and 2024 Rules/Theme comparison](images/goblin2024.png)
 
 *Screenshot reference: A side-by-side comparison of the same NPC displayed with the 2014 theme and the 2024 theme.*
 
