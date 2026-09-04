@@ -169,6 +169,8 @@ The stat block has two display modes.
 
 Full Mode shows the most complete version of the NPC entry. It includes the NPC's core statistics, full ability and saving throw block, skill buttons, combat defenses, senses, languages, challenge, proficiency bonus, traits, actions, bonus actions, reactions, legendary actions, mythic actions, and spell access when available.
 
+![NPC Stat Block — Full Mode](images/dullahan.png)
+
 ### Combat Mode
 
 Combat Mode is a tighter table-use view. It keeps combat-relevant information visible while moving the full skill grid onto a separate **Skills** button.
