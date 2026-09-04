@@ -309,7 +309,7 @@ On supported **2014 NPC sheets**, NPCs with spellcasting data receive a **Spells
 
 Click **Spells** to open a separate spell list card.
 
-The dedicated Spells card is not currently part of the experimental Beacon path.
+The dedicated Spells card is not currently part of the experimental Beacon path since NPC spells are presented as actions on a beacon NPC sheet.
 
 ![NPC Stat Block — Spells card](images/flameskull_spells.png)
 
