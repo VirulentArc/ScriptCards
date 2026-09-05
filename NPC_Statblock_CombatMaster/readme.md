@@ -12,6 +12,8 @@ The installer can be run again at any time to update the installed abilities.
 - **ScriptCards** installed and running
 - **CombatMaster** if you want the automatic NPC statblock display on turns
 
+> **CombatMaster users:** CombatMaster's **Announce Turns** setting must remain enabled. The automatic statblock integration listens for CombatMaster's turn announcements in chat to detect when an NPC's turn begins.
+
 ## Installation
 
 1. Run **`NPC_Statblock_Installer.scard`** once in your Roll20 game.
@@ -36,9 +38,11 @@ The installer can be run again at any time to update the installed abilities.
 
 5. Configure the game macro's visibility and Token Action setting however you want for your game.
 
-6. **Restart the Mod sandbox once after installation.** ScriptCards registers `chat:message` triggers when the sandbox starts, so the restart is required for the CombatMaster turn trigger to become active.
+6. If using CombatMaster integration, make sure **Announce → Announce Turns** is enabled in CombatMaster and leave it enabled. The NPC Statblock trigger uses CombatMaster's turn announcement in chat to detect the active NPC.
 
-7. Select an NPC token and run the **NPC-Statblock** macro.
+7. **Restart the Mod sandbox once after installation.** ScriptCards registers `chat:message` triggers when the sandbox starts, so the restart is required for the CombatMaster turn trigger to become active.
+
+8. Select an NPC token and run the **NPC-Statblock** macro.
 
 ## Updating
 
