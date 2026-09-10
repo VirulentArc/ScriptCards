@@ -1,9 +1,10 @@
 !script {{ --/|{& skip}
   --/| ==========================================================================
   --/| Script Name : Tim's NPC Stat Block Mod v5 /w CombatMaster Support
-  --/| Version     : 1.0.0 branched from original 5.5.0
+  --/| Version     : 1.0.1
   --/| Author      : Timothy Beasley
   --/| API Mods    : ScriptCards
+  --/| Github URL  : https://github.com/VirulentArc/ScriptCards/tree/main/NPC_Statblock_CombatMaster
   --/| ==========================================================================
   --#hidecard|1 --#whisper|self --#emoteState|0 --#debug|0
   -->EnsureNSBTurnIntegration|
@@ -64,8 +65,8 @@
   --]|
   --#sourceToken|[&TokenID] --#reentrant|NPCBlock- [&TokenID]
   --&TokenRepresents|[*S:t-represents]
-  --?[&AutoTurn] -eq 1 -and "[&TokenRepresents]" -eq ""|X
-  --?[&AutoTurn] -eq 1 -and "[&TokenRepresents]" -eq "undefined"|X
+  --?[&AutoTurn] -eq 1 -and "[&TokenRepresents]" -eq ""|SilentExit
+  --?[&AutoTurn] -eq 1 -and "[&TokenRepresents]" -eq "undefined"|SilentExit
   --?"[&TokenRepresents]" -eq "" -or "[&TokenRepresents]" -eq "undefined"|NoLinkedCharacter
   --&Beacon|0 --&SheetName|[*O:[&TokenRepresents]:character:charactersheetname]
   --~|array;define;NSBBackendClassicProbe
@@ -73,8 +74,9 @@
   --?[@NSBBackendClassicProbe()] -eq 0 -and "[&SheetName]" -imatch "^dnd2024byroll20$"|&Beacon;1
   --#beaconsheet|[&Beacon]
   --&SourceNPCFlag|[*S:npc:::0]
-  --?[&AutoTurn] -eq 1 -and "[&SourceNPCFlag]" -ne "1"|X
+  --?[&AutoTurn] -eq 1 -and "[&SourceNPCFlag]" -ne "1"|SilentExit
   --?"[&SourceNPCFlag]" -ne "1"|NotNPC|Continue
+  --:SilentExit| --#hidecard|1 --X|
   --:NoLinkedCharacter| --#title|NPC Stat Block --+No Character Sheet|[*S:t-name] is not linked to a character sheet. Please select a token that represents an NPC character. --X|
   --:NotNPC| --#title|NPC Stat Block --+Wrong Token Type|[*S:t-name] is not an NPC character. Please select an NPC token to continue. --X|
   --:NoSelectedToken| --#title|NPC Stat Block --+No Token Selected|Please select an NPC token to continue. --X|
@@ -1178,7 +1180,6 @@
   --:Done|
   --X|
 !}!}
-  --/|TRIGGER_REPLACEMENTS
 $}
   --#disablevariableexpansion|0
   --?"[&NSBInstallCarrier]" -eq "" -or "[&NSBInstallCarrier]" -eq "OBJECT_CREATION_ERROR"|NSBIntegrationInstallFailed
@@ -1204,5 +1205,4 @@ $}
     --+|[&InstallRenderedCard]
     --#disableattributereplacement|0 --#disablerollvariableexpansion|0 --#disableparameterexpansion|0
     --<|
-  --/| End of NPC Stat Block Installer
 }}
